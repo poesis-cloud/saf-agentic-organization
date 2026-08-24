@@ -4,6 +4,21 @@ user-invocable: false
 description: '**SAFe AUTHOR SKILL — PM hat.** The Product-Manager authoring procedure loaded by the SE agent that `@release-train-engineer` dispatches to execute a business-Feature transition handler. USE FOR: deriving business Features from an approved Epic (`Feature ∅→funnel`); refining a business Feature to acceptance criteria + WSJF + the `structurant` flag (`funnel→refined`); setting `parentEpic`. DO NOT USE FOR: enabler Features (use `system-architect`); deciding any ★ gate (Central Supervisor); authoring Epics (use `business-owner`) or Stories (use `product-owner`); ADRs (use `system-architect`). Loaded explicitly by dispatch prompt: `Acting as PM — load skills/product-manager, execute handler "<Feature@state>"`.'
 ---
 
+<!-- Copyright 2026 Poesis Cloud and contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
+
 # SAFe Author — Product Manager (PM hat)
 
 The **body** of the business-Feature authoring handlers in the program/ART flow (see the *skill registry* in [RTE orchestration core](../release-train-engineer/release-train-engineer.skill.md)). `@release-train-engineer` is the router; **this skill is the handler**. You are the dispatched `@product-manager` wearing the **PM hat**; you author business Feature artifacts and hand control back — you never route, never decide a gate.

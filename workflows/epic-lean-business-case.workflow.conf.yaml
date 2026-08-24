@@ -1,0 +1,108 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: epic-lean-business-case
+orchestrator: value-management-officer
+steps:
+- slug: discovery-and-draft
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: business-owner
+  artifact: epic-lean-business-case
+  conditions: []
+  instructions:
+  - portfolio-epic-lean-business-case-discovery-open-items-recorded-or-explicitly-none
+- slug: ea-challenge
+  capabilities:
+    deep-reasoning: 9
+    coding: 2
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 6
+  actor: enterprise-architect
+  artifact: architecture-review
+  conditions:
+  - slug: after-discovery-and-draft
+    kind: precondition
+    step: discovery-and-draft
+  instructions: step-default
+- slug: security-challenge
+  capabilities:
+    deep-reasoning: 9
+    coding: 2
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 6
+  actor: security-expert
+  artifact: security-review
+  conditions:
+  - slug: after-discovery-and-draft
+    kind: precondition
+    step: discovery-and-draft
+  instructions: step-default
+- slug: owner-rewrite
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: business-owner
+  artifact: epic-lean-business-case
+  conditions:
+  - slug: after-ea-challenge
+    kind: precondition
+    step: ea-challenge
+  - slug: after-security-challenge
+    kind: precondition
+    step: security-challenge
+  instructions: step-default
+- slug: render-md
+  capabilities:
+    deep-reasoning: 2
+    coding: 3
+    tool-use: 5
+    long-context: 3
+    multimodal: 0
+    writing-quality: 4
+    instruction-following: 8
+    fast-iteration: 7
+    schema-adherence: 9
+  actor: business-owner
+  artifact: epic-lean-business-case
+  conditions:
+  - slug: after-owner-rewrite
+    kind: precondition
+    step: owner-rewrite
+  instructions: step-default

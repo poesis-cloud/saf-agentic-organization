@@ -55,7 +55,7 @@ jobs:
                     if ! grep -q "Copyright 2026 Poesis Cloud" "$f"; then
                       MISSING="$MISSING\n  $f"
                     fi
-                  done < <(find agents skills instructions conf templates artifacts \( -name '*.md' -o -name '*.yaml' \) -print0 2>/dev/null)
+                  done < <(find agents skills instructions conf workflows templates artifacts \( -name '*.md' -o -name '*.yaml' \) -print0 2>/dev/null)
                   if [ -n "$MISSING" ]; then
                     printf "ERROR: missing Apache-2.0 header in:%b\n" "$MISSING"
                     exit 1
@@ -78,7 +78,7 @@ jobs:
                     exit 1
                   fi
                   SCAN_DIRS=""
-                  for d in agents skills instructions conf templates artifacts; do
+                  for d in agents skills instructions conf workflows templates artifacts; do
                     [ -d "$d" ] && SCAN_DIRS="$SCAN_DIRS $d"
                   done
                   if [ -z "$SCAN_DIRS" ]; then
@@ -98,3 +98,27 @@ jobs:
                     exit 1
                   fi
                   echo "OK: zero WITHHOLD keyword hits in shipped content"
+
+    verify:
+        name: Verify
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout organization
+              uses: actions/checkout@v4
+
+            - name: Checkout harness
+              uses: actions/checkout@v4
+              with:
+                  repository: poesis-cloud/saf-agentic-harness
+                  path: .harness
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+
+            - name: Install test dependencies
+              run: python3 -m pip install -r requirements-dev.txt
+
+            - name: make verify
+              run: make verify SAF_HARNESS_SRC=.harness/src

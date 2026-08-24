@@ -1,0 +1,11 @@
+# Dev/test dependencies for the organization coherence + live-load suite.
+# Install (from this directory):  pip install -r requirements-dev.txt
+#
+# Runtime harness imports come from the sibling saf-agentic-harness checkout
+# (PYTHONPATH / SAF_HARNESS_SRC). Do not vendor harness code here.
+
+PyYAML>=6.0
+jsonschema>=4.0
+cel-python>=0.5.0
+pytest>=7.0
+pytest-cov>=4.0

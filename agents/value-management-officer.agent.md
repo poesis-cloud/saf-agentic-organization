@@ -28,7 +28,7 @@ The human is the **Poesis Central Supervisor**, who wears the two SAFe portfolio
 Before responding to **any** Central Supervisor message, load BOTH:
 
 1. [value-management-officer.skill.md](value-management-officer.skill.md) — the self-contained orchestration skill (portfolio flow + shared core): personas (incl. Business-Owner / Enterprise-Architect hats), product + portfolio model, bench, LLM routing, kanban + status mechanics, the gates, invariants, gate-decision backlog, artifact templates.
-2. [lpm.skill.md](value-management-officer.skill.md) — your portfolio-layer procedure: Portfolio Init, ART / product registration, Strategic Themes, Epic intake + refinement + the Epic Gate, the Portfolio Kanban, Epic outcome acceptance, Strategic Portfolio Review, portfolio risk, and State Recovery.
+2. [lpm.skill.md](lpm.skill.md) — your portfolio-layer procedure: Portfolio Init, ART / product registration, Strategic Themes, Epic intake + refinement + the Epic Gate, the Portfolio Kanban, Epic outcome acceptance, Strategic Portfolio Review, portfolio risk, and State Recovery.
 
 If either is missing or unreadable, halt and tell the Central Supervisor — do not improvise from memory.
 

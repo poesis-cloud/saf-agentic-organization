@@ -40,6 +40,7 @@ agent execution environments that support custom agents and skills. It includes:
 - **Orchestrators**: `@value-management-officer`, `@release-train-engineer`, `@scrum-master`
 - **Specialist bench**: framework-owned author, architecture, development, QA, security, operator, docs, and UX agents
 - **Skills**: SAFe ceremony, practice, authoring, and orchestration playbooks loaded on demand
+- **Agent-adapted ceremonies**: ART Sync, System Demo, Daily Sync, Retrospective, Inspect & Adapt, PI Planning, iteration plan/review (plus portfolio sync/review and Feature/Story refinement)
 - **Model routing**: deterministic LLM tier + capability-score routing — no random model selection
 - **Portable harness**: deterministic artifact, gate-packet, and runtime-trace checks independent of VS Code hooks —
   methodology- and host-agnostic, so the same familiar agentic work method follows you from host to host as you
@@ -53,7 +54,8 @@ The framework is host-agnostic source; each host's manifest lives beside its ren
 - [`agents/`](agents/) — the orchestrators and the specialist bench (`<name>.agent.md`)
 - [`skills/`](skills/) — SAFe ceremony, practice, authoring, and orchestration playbooks (`<name>.skill.md`)
 - [`instructions/`](instructions/) — persistent conventions injected into agent sessions (`<name>.instructions.md`)
-- [`conf/`](conf/) — the harness's external configuration: `workflows/`, `model-profiles`, `access-control-list`, `workspace`
+- [`workflows/`](workflows/) — SAFe-named ceremony and practice catalogs (`<slug>.workflow.conf.yaml`)
+- [`conf/`](conf/) — remaining harness configuration: `model-profiles`, `access-control-list`, `workspace`
 - [`templates/`](templates/) — artifact Markdown templates, organized per layer and actor
 - [`artifacts/`](artifacts/) — the JSON Schema contract for every artifact kind the workflows produce
 - [`builds/`](builds/) — host bundle renderers (currently `github-copilot/`)
@@ -108,8 +110,32 @@ python3 ../saf-agentic-harness/harness.py \
 cat event.json | python3 ../saf-agentic-harness/harness.py hook --event preToolUse
 ```
 
-The harness never writes artifacts — it reports the value/edge; the orchestrator commits. The framework
-constitution (workflow contracts + artifact catalog) is verified separately by the pytest suite:
+The harness never writes artifacts — it reports the value/edge; the orchestrator commits.
+
+### Load contract
+
+Point `FRAMEWORK_DIR` at this checkout. Layout keys live in [`.env`](.env) (`FRAMEWORK_*_DIR`);
+process environment overrides the file. Workflows live at [workflows/](workflows/). The sibling
+[`saf-agentic-harness`](https://github.com/poesis-cloud/saf-agentic-harness) `ConfigLoader` must
+load layout, ACL, model-profiles, workspace, and the workflow catalog without
+`ConfigurationError`. Workflow `skills` / `instructions` slugs are filename stems under
+`skills/` and `instructions/`. Workflow `artifact` slugs are stems of
+`artifacts/<slug>.artifact.schema.json`.
+
+### Verify this organization
+
+```bash
+# sibling checkout: ../saf-agentic-harness  (override with SAF_HARNESS_SRC)
+python3 -m pip install -r requirements-dev.txt
+make verify
+```
+
+`make verify` runs unit coherence (slug resolve, ceremony pairs, ACL, required-reading,
+plugin 1:1) plus functional live-load (`start-session` / `resolve-step` /
+`check-step-authorization` on one portfolio, program, and team workflow). Coverage on
+organization Python (`tests/loaders.py` + `render_bundle.py`) must be ≥95%.
+
+The harness constitution itself is verified separately:
 `make -C ../saf-agentic-harness verify`.
 
 ---

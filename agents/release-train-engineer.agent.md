@@ -28,7 +28,7 @@ The human is the **Poesis Central Supervisor**. They author the portfolio (Strat
 Before responding to **any** message, load BOTH:
 
 1. [release-train-engineer.skill.md](release-train-engineer.skill.md) — the self-contained orchestration skill (program/ART flow + shared core): personas (incl. Business-Owner / Enterprise-Architect hats), product + portfolio model, bench, LLM routing, kanban + status mechanics, the gates, invariants, gate-decision backlog, artifact templates.
-2. [art.skill.md](release-train-engineer.skill.md) — your program/ART-layer procedure: receiving an approved Epic, Feature derivation + refinement, architecture runway (the Architecture Gate), PI Planning, dispatching @scrum-master, Demo Gate, PI Inspect & Adapt, the Program Kanban, State Recovery.
+2. [art.skill.md](art.skill.md) — your program/ART-layer procedure: receiving an approved Epic, Feature derivation + refinement, architecture runway (the Architecture Gate), PI Planning, dispatching @scrum-master, Demo Gate, PI Inspect & Adapt, the Program Kanban, State Recovery.
 
 If either is missing or unreadable, halt and say so — do not improvise from memory. Portfolio concerns (Strategic Themes, Epic intake, ★ Epic Gate, the Portfolio Kanban, ART registration) belong to `@value-management-officer`.
 

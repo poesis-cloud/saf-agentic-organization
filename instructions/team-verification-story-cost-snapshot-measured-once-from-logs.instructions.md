@@ -2,6 +2,21 @@
 description: 'the scrum-master writes the Story `cost:` block exactly once at `in-qa → awaiting-pr`, measured net-of-cache from the immutable ecosystem debug logs (matched by `S-N`) — never fabricated, never re-incremented, immutable once committed'
 ---
 
+<!-- Copyright 2026 Poesis Cloud and contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
+
 # Invariant: story_cost_snapshot_measured_once_from_logs
 
 At the Story's terminal `in-qa → awaiting-pr` transition the **scrum-master** commits the `cost:` block **exactly once**, **measured** net-of-cache (`Σ(inputTokens − cachedTokens) + Σ outputTokens`) directly from this Story's dev + QA dispatch debug logs (matched by `S-N`) — or transparently `estimated` only when those logs are gone. The figure is **never fabricated as if measured**, **never re-incremented per dispatch**, and is **immutable** once `committed` is set. The companion CEL postcondition `story_cost_committed_once` only checks that the block exists; this invariant governs its **provenance + write-once** discipline. The full normative model is inlined below.

@@ -1,3 +1,17 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # Workspace structure map.
 #
 # This file is a structural blueprint for the workspace: a recursive tree of
@@ -38,6 +52,30 @@ nodes:
         template: layers/portfolio/actors/value-management-officer/artifacts/portfolio-roadmap
         cardinality: "1"
 
+      - slug: budget-allocation.md
+        description: Participatory-budgeting allocation record.
+        artifact: budget-allocation
+        template: layers/portfolio/actors/value-management-officer/artifacts/budget-allocation
+        cardinality: "1"
+
+      - slug: sync
+        description: Portfolio Sync records.
+        children:
+          - slug: <sync-slug>.portfolio-sync.md
+            description: One Portfolio Sync record.
+            artifact: portfolio-sync-record
+            template: layers/portfolio/actors/value-management-officer/artifacts/portfolio-sync-record
+            cardinality: "0..*"
+
+      - slug: reviews
+        description: Strategic Portfolio Review decisions.
+        children:
+          - slug: <review-slug>.portfolio-review.md
+            description: One portfolio review decision.
+            artifact: portfolio-review-decision
+            template: layers/portfolio/actors/value-management-officer/artifacts/portfolio-review-decision
+            cardinality: "0..*"
+
       - slug: portfolio-backlog
         description: Portfolio-scoped epics backlog.
         children:
@@ -70,6 +108,12 @@ nodes:
                 description: ART manifest and registry entry.
                 artifact: art-manifest
                 template: layers/program/actors/release-train-engineer/artifacts/art-manifest
+                cardinality: "1"
+
+              - slug: program-kanban.md
+                description: Program Kanban rendered from Feature frontmatter.
+                artifact: program-kanban
+                template: layers/program/actors/release-train-engineer/artifacts/program-kanban
                 cardinality: "1"
 
               - slug: improvement-backlog
@@ -169,6 +213,32 @@ nodes:
                                 artifact: qa-signoff
                                 template: layers/team/actors/quality-engineer/artifacts/qa-signoff
                                 cardinality: "1"
+                              - slug: <story-slug>.code-change.md
+                                description: Pair-programming code-change record.
+                                artifact: code-change
+                                template: layers/team/actors/developer/artifacts/code-change
+                                cardinality: "0..1"
+
+                      - slug: daily
+                        description: Daily Sync records.
+                        children:
+                          - slug: <daily-slug>.daily-sync.md
+                            description: One Daily Sync record.
+                            artifact: daily-sync
+                            template: layers/team/actors/scrum-master/artifacts/daily-sync
+                            cardinality: "0..*"
+
+                      - slug: retrospective.md
+                        description: Iteration Retrospective record.
+                        artifact: retrospective
+                        template: layers/team/actors/scrum-master/artifacts/retrospective
+                        cardinality: "0..1"
+
+                      - slug: iteration-review.md
+                        description: Iteration Review record.
+                        artifact: iteration-review
+                        template: layers/team/actors/scrum-master/artifacts/iteration-review
+                        cardinality: "0..1"
 
               - slug: pi-<pi-slug>
                 description: PI folder.
@@ -183,6 +253,16 @@ nodes:
                     artifact: risks
                     template: layers/program/actors/release-train-engineer/artifacts/risks
                     cardinality: "1"
+                  - slug: art-sync.md
+                    description: ART Sync reconcile record.
+                    artifact: art-sync
+                    template: layers/program/actors/release-train-engineer/artifacts/art-sync
+                    cardinality: "0..1"
+                  - slug: system-demo.md
+                    description: System Demo / Demo Gate packet.
+                    artifact: system-demo
+                    template: layers/program/actors/release-train-engineer/artifacts/system-demo
+                    cardinality: "0..1"
                   - slug: iterations
                     description: PI iterations.
                     children:

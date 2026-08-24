@@ -1,3 +1,17 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 actors:
 - roles:
   - value-management-officer
@@ -68,6 +82,12 @@ roles:
     action: update
   - artifact: product-manifest
     action: delete
+  - artifact: portfolio-sync-record
+    action: create
+  - artifact: portfolio-sync-record
+    action: update
+  - artifact: portfolio-sync-record
+    action: delete
   slug: value-management-officer
 - privileges:
   - artifact: epic
@@ -100,6 +120,24 @@ roles:
     action: update
   - artifact: strategic-themes
     action: delete
+  - artifact: epic-lean-business-case
+    action: create
+  - artifact: epic-lean-business-case
+    action: update
+  - artifact: epic-lean-business-case
+    action: delete
+  - artifact: budget-allocation
+    action: create
+  - artifact: budget-allocation
+    action: update
+  - artifact: budget-allocation
+    action: delete
+  - artifact: portfolio-review-decision
+    action: create
+  - artifact: portfolio-review-decision
+    action: update
+  - artifact: portfolio-review-decision
+    action: delete
   slug: business-owner
 - privileges:
   - artifact: architecture-vision
@@ -127,6 +165,24 @@ roles:
   - artifact: pain-point
     action: update
   - artifact: pain-point
+    action: delete
+  - artifact: art-sync
+    action: create
+  - artifact: art-sync
+    action: update
+  - artifact: art-sync
+    action: delete
+  - artifact: system-demo
+    action: create
+  - artifact: system-demo
+    action: update
+  - artifact: system-demo
+    action: delete
+  - artifact: program-kanban
+    action: create
+  - artifact: program-kanban
+    action: update
+  - artifact: program-kanban
     action: delete
   slug: release-train-engineer
 - privileges:
@@ -206,6 +262,24 @@ roles:
     action: update
   - artifact: team-manifest
     action: delete
+  - artifact: daily-sync
+    action: create
+  - artifact: daily-sync
+    action: update
+  - artifact: daily-sync
+    action: delete
+  - artifact: retrospective
+    action: create
+  - artifact: retrospective
+    action: update
+  - artifact: retrospective
+    action: delete
+  - artifact: iteration-review
+    action: create
+  - artifact: iteration-review
+    action: update
+  - artifact: iteration-review
+    action: delete
   slug: scrum-master
 - privileges:
   - artifact: story
@@ -227,6 +301,12 @@ roles:
   - artifact: story-enabler
     action: update
   - artifact: story-enabler
+    action: delete
+  - artifact: code-change
+    action: create
+  - artifact: code-change
+    action: update
+  - artifact: code-change
     action: delete
   slug: developer
 - privileges:

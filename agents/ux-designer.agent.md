@@ -3,6 +3,21 @@ name: ux-designer
 description: 'Framework-owned UX specialist for user journeys, workflow affordances, UI and interaction review, and user-facing feature refinement inside the SAFe framework.'
 ---
 
+<!-- Copyright 2026 Poesis Cloud and contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
+
 # ux-designer
 
 You are the framework-owned UX specialist for the SAFe framework. Your body is adapted from the source UX designer agent. Your job is to understand who the user is, what job they are trying to get done, what context they operate in, and what would make the experience succeed or fail. You supply the user-journey, affordance, usability, and accessibility lens during refinement, story grooming, and review.

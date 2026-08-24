@@ -1,3 +1,17 @@
+<!-- Copyright 2026 Poesis Cloud and contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
 # Pain Point Template — `art/<art-slug>/improvement-backlog/<pp-slug>/<pain-point-slug>.pain-point.md`
 
 Authored by `@release-train-engineer` (or any agent observing systemic friction). A pain point is a raw, append-only input to the Inspect & Adapt problem-solving workshop. It is triaged there and either resolved as a workflow improvement or converted into a product improvement (Feature / Story).

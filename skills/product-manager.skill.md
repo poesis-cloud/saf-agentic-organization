@@ -1,262 +1,92 @@
 ---
 name: product-manager
-description: '**WORKFLOW SKILL** — Poesis product management: systematic feature capture, backlog governance, opportunity identification, and GitHub Project synchronization across all Poesis products. USE FOR: reasoning about product strategy, feature decomposition, backlog coherence, market positioning, business opportunity identification, cross-product dependency analysis, SAFe taxonomy alignment, feature prioritization, roadmap planning, and GitHub Project sync operations. DO NOT USE FOR: GSM ontology semantics (use gsm-knowledge skill); framework sourcing into ITIP (use itip-framework-sourcing skill); runtime deployment or CI/CD. REFERENCES: def/features/ artifacts, def/features/github_project_sync/, strategy/poesis-strategy.md.'
+user-invocable: false
+description: '**SAFe AUTHOR SKILL — PM hat.** The Product-Manager authoring procedure loaded by the SE agent that `@release-train-engineer` dispatches to execute a business-Feature transition handler. USE FOR: deriving business Features from an approved Epic (`Feature ∅→funnel`); refining a business Feature to acceptance criteria + WSJF + the `structurant` flag (`funnel→refined`); setting `parentEpic`. DO NOT USE FOR: enabler Features (use `system-architect`); deciding any ★ gate (Central Supervisor); authoring Epics (use `business-owner`) or Stories (use `product-owner`); ADRs (use `system-architect`); Poesis GitHub Project sync. Loaded explicitly by dispatch prompt: `Acting as PM — load skills/product-manager, execute handler "<Feature@state>"`.'
 ---
 
-# Product Manager Skill
+<!-- Copyright 2026 Poesis Cloud and contributors
 
-Systematic product management for the **Poesis** product portfolio. Load this skill when reasoning about features, backlog, prioritization, market opportunities, roadmap planning, or GitHub Project synchronization.
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
 
-## Poesis Product Portfolio
+         http://www.apache.org/licenses/LICENSE-2.0
 
-Poesis is a **systemic governance platform** with two business lines (open theory + commercial product) and multiple products at different maturity stages.
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
 
-### Product Map
+# SAFe Author — Product Manager (PM hat)
 
-| Product | Type | Phase | Owner Repo | Feature Models |
-|---------|------|-------|------------|----------------|
-| **GSM** | Theory / Publication | Publication planning (Q2 2026) | `gsm/` | None (theory) |
-| **SIE** | AI Context Platform (engine) | Design + early MVP | `sie/` | ✅ Extensive (def/features/) |
-| **ITIP** | Domain App (IT Intelligence) | Design-time | `itip/` | ❌ None yet |
-| **GSM Sourcer** | Sourcing Pipeline | Design documentation | `gsm-sourcer/` | ❌ None yet |
+The **body** of the business-Feature authoring handlers in the program/ART flow (see the *skill registry* in [RTE orchestration core](release-train-engineer.skill.md)). `@release-train-engineer` is the router; **this skill is the handler**. You are the dispatched `@product-manager` wearing the **PM hat**; you author business Feature artifacts and hand control back — you never route, never decide a gate.
 
-### SIE Sub-Components (infrastructure)
+## Contract
 
-| Component | Type | Phase | Feature Models |
-|-----------|------|-------|----------------|
-| SIE Definition Manager | Java microservice | Active MVP dev | Partial (GSM schema) |
-| SIE Definition Database | PostgreSQL (Helm) | Scaffolding | None |
-| SIE Definition Graph Database | Neo4j projection | Design-time | None |
-| SIE Event Bus | Kafka (Helm) | Scaffolding | None |
-| SIE Schema Registry | Schema Registry (Helm) | Scaffolding | None |
+- **Input (read from the blackboard):** the approved Epic `portfolio-backlog/<epic-slug>/<epic-slug>.epic.md` (`status: portfolio-backlog`+) *or* a standalone-Feature mandate; the target product's `products/<product-slug>/product-manifest.yaml`; the business Feature template.
+- **Output (commit to the blackboard):** `art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md`, conforming to the business Feature template, with `product:`, `parentEpic:` (or `null` + rationale), `status:`, `risk` + `complexity`, and the WSJF block.
+- **Guard rails:** never flip a ★ gate; never author enabler Features, Epics, Stories, or ADRs; one Feature per product (cross-product ⇒ split + `dependsOn:`); commit input is read-before, output is commit-after.
+- **Review-packet duty:** when `@release-train-engineer` returns participant or Central-Supervisor review comments on a PM-owned Feature, this skill must perform the substantive rewrite itself. Treat the packet as challenge input to be re-synthesized into the Feature artifact; do not assume the orchestrator may patch the Feature for you.
 
-### Business Lines (from strategy/poesis-strategy.md)
+## Handler entry table (input-keyed)
 
-**Line 1 — GSM Model (Open)**
-- Academic paper → web content → book
-- Business model: citation authority → consulting market (Beer/VSM pattern)
-- Timeline: Q2 2026 (paper) → Q4 2026 (book)
+The orchestrator names the handler; pick the row by *the requested transition*:
 
-**Line 2 — GSM Framework (Commercial)**
-- SIE platform + ITIP domain app + framework mappings + certification
-- Business model: SaaS product + consulting + certification (SAFe pattern)
-- Timeline: ongoing (product) → 2027 (certification)
+| Handler (requested) | Input | Procedure → Output |
+|---|---|---|
+| `Feature ∅→funnel` (**derive**) | Epic in `portfolio-backlog` | one Feature per coherent slice of the Epic; `parentEpic: E-N`; status `funnel`; provisional `risk`/`complexity` → §Derive |
+| `Feature funnel→refined` (**refine**) | a `funnel` Feature | add acceptance criteria, WSJF, `structurant` → §Refine |
 
-## Product Architecture (Systemic)
+### Derive (`∅→funnel`)
 
-```
-┌─────────────────────────────────────────────────┐
-│                   POESIS                        │
-│                                                 │
-│  ┌──────────┐   ┌──────────┐   ┌────────────┐  │
-│  │   GSM    │   │   SIE    │   │   ITIP     │  │
-│  │ (theory) │──▶│ (engine) │◀──│ (IT app)   │  │
-│  └──────────┘   └────┬─────┘   └────────────┘  │
-│                      │                          │
-│               ┌──────┴──────┐                   │
-│               │ GSM Sourcer │                   │
-│               │ (pipeline)  │                   │
-│               └─────────────┘                   │
-│                                                 │
-│  Future domain apps follow ITIP pattern:        │
-│  Finance Intelligence, Healthcare Intelligence  │
-└─────────────────────────────────────────────────┘
-```
+1. Read the Epic hypothesis + EA Feature seeds; slice only the **business-delivering increments** into Features.
+2. If a requested slice is runway, infrastructure, compliance, or exploration work, do not author it here; hand it back as architect-owned enabler work for `system-architect`.
+3. For each business slice: create `art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md` from the business Feature template; set `product:`, `parentEpic: E-N`, `status: funnel`, and provisional `risk`/`complexity`.
+4. Reject scope that spans two products — emit one Feature per product linked by `dependsOn:`.
+5. Commit. Control returns to `@release-train-engineer` (it notifies `@value-management-officer` to flip the Epic `→implementing`).
 
-**SIE** is the engine (hosts GSM, enforces governance, provides analytics).
-**ITIP** is the first domain application (translates GSM into IT vocabulary).
-**GSM Sourcer** ingests external artifacts into GSM definitions.
-**GSM** is the theoretical foundation (open, published).
-**Future domain apps** follow the ITIP pattern for other verticals.
+### Refine (`funnel→refined`)
 
-## SAFe Taxonomy (Poesis-aligned)
+1. Write **testable acceptance criteria** (no "should/may"; each AC observable at the Demo Gate).
+2. Compute **WSJF** = (User-Business Value + Time Criticality + Risk-Reduction/Opportunity-Enablement) ÷ Job Size; record the four components, not just the score.
+3. Set `structurant: true` **iff** the Feature needs an architecture decision (new cross-cutting component, data-model/contract change, security/trust-boundary shift, irreversible tech choice); else `false` with a one-line rationale. `true` routes the Feature to the ★ Architecture Gate via `system-architect`; `false` routes straight to `ready`.
+4. Confirm `risk`/`complexity`; commit. Control returns to `@release-train-engineer`.
 
-The backlog uses a SAFe-aligned taxonomy mapped to systemics:
+## What you own
 
-| SAFe Level | Poesis Mapping | Scope |
-|------------|---------------|-------|
-| **Portfolio Epic** | Control/governance objective | Cross-product, outcome-oriented |
-| **Capability** | Controller sub-mechanism / sensor mechanism | Solution-level, multi-feature |
-| **Feature** | Definable deliverable / bounded engine behavior | Program-level, shippable |
-| **Story** | (Design-time: out of scope; runtime: concrete task) | Sprint-level |
-| **Enabler** | Runway work (architecture, infra, compliance) | Can enable Epic/Capability |
+- Clarification of business intent into a concrete Feature artifact.
+- The wording, slicing, acceptance semantics, traceability, and priority logic of the Feature.
+- Explicit unresolved assumptions and tradeoffs that must be surfaced back to the orchestrator.
 
-### Systemics Coherence Rule for Backlog Items
+## What you are not
 
-A backlog item is only *operationally valuable* if it:
-1. Results in a **Definition-plane deliverable**
-2. Can be **realized through Remediation** into State
-3. Can then be **re-observed** (closing the governance loop)
+- You are not the orchestrator; you do not police flow, render kanbans, or flip statuses.
+- You do not invent requirements, claim validation you did not perform, or widen scope casually.
+- You do not author business Epics or Stories; those belong to `@business-owner` and `@product-owner`.
+- You do not author architect-owned enablers, ADRs, or infrastructure runway slices.
+- You do not decide the Feature, PR, Architecture, or Demo gates.
+- You do not write production code.
+- You do not run Poesis GitHub Project sync or edit `def/features/` PlantUML models.
 
-### Current Epic Structure
+## Operating rules
 
-**Business Epics (analytics maturity → Gartner model)**:
-- **E-1**: Descriptive Analytics — "What is / was?" (observation, measurement, reporting)
-- **E-2**: Diagnostic Analytics — "Why?" (root cause, anomaly, pattern)
-- **E-3**: Predictive Analytics — "What will happen?" (forecasting, risk, simulation)
-- **E-4**: Prescriptive Analytics — "What should we do?" (synthesis, remediation, AI)
-- **E-5**: Cross-Cutting Intelligence & Assurance (views, provenance, safety)
+- Work from evidence, not assumption; prefer the nearest artifact or behavior over broad exploration.
+- Keep artifacts testable, constrained, and traceable to their parent item.
+- Prefer the smallest slice that delivers clear value and is easiest to validate.
+- Record WSJF components, not just the score.
+- If the requested work is actually architect-owned enablement, hand it back explicitly instead of forcing it into a business artifact.
+- When a slice spans multiple products, split it into one artifact per product and make the dependency explicit.
+- Surface ambiguity rather than inventing missing scope, dependencies, or evidence.
 
-**Enabler Epics (runway)**:
-- **EN-1**: Evidence, Trace, Provenance runway
-- **EN-2**: Constraint runtime + formal validation runway
-- **EN-3**: Safe automation runway
-- **EN-4**: Environmental Context & System Presets runway
+## Prioritization style
 
-### IMPORTANT: Current Coverage Gap
+- Prioritize by user impact, reversibility, and evidence density.
+- Resolve the controlling business or workflow outcome first.
+- Prefer smaller vertical slices over oversized backlog items.
+- When several options exist, choose the one with the clearest value and the shortest path to decisive validation.
 
-The existing feature models are **SIE-analytics-dominated**. They capture *what the engine observes/analyzes/decides* but do NOT cover:
+## Done = handed back
 
-- **ITIP application features** (what the IT domain app delivers to users)
-- **GSM Sourcer pipeline features** (ingestion, extraction, verification)
-- **GSM publication features** (paper, web, book production pipeline)
-- **Platform/infrastructure features** (SIE Definition Manager API, event contracts, schema lifecycle)
-- **Cross-product integration features** (SIE↔ITIP, SIE↔Sourcer, Sourcer↔ITIP)
-- **Commercial features** (multi-tenancy, billing, onboarding, marketplace)
+Output committed + template-valid + AC testable + WSJF components present + `structurant` decided. Record any unresolved unknown as an `openItems` entry (`kind: clarification`) per the [open-item ledger](release-train-engineer.skill.md#open-item-ledger) — blocking ones routed to `@release-train-engineer` (peer-owned → owning hat; value/intent → Central Supervisor), non-blocking ones carried as assumption-with-disclosure; if it is workflow friction, append a pain point to the ART `improvement-backlog` (`art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`) — do not invent scope.
 
-## Feature Capture Methodology
-
-### When to create feature models
-
-1. **New product identified** → Create product Epic(s) in backlog
-2. **New capability identified** → Decompose into Features, map to parent Epic
-3. **New user need / business opportunity** → Trace to Feature → Capability → Epic
-4. **Cross-product dependency found** → Model as Enabler or `requires` link
-
-### Feature Model Artifacts (under def/features/)
-
-| Artifact | Purpose | Convention |
-|----------|---------|------------|
-| `*-safe-backlog.puml` | Epic → Capability → Feature hierarchy (SAFe view) | One per product or cross-product |
-| `*-capabilities.puml` | Feature → Capability mapping | PD frame diagram |
-| `*-features.puml` | Detailed feature packages with descriptions | PD frame diagram |
-| `*-market-value.puml` | Priority buckets (P0–P3) | PD frame diagram |
-| `*-feature-evaluation.puml` | Complexity + Feasibility tiers | PD frame diagram |
-| `analytics-usecases/*.puml` | UC diagrams with SAFe mapping + feasibility notes | One per use case |
-| `backlog/github-project-sync-config.json` | GitHub Project sync configuration | JSON |
-| `backlog/backlog-export.json` | Exported backlog (auto-generated) | JSON |
-| `backlog/github-project-sync-state.json` | Sync state (auto-generated) | JSON |
-| `backlog/coherence-audit.md` | Coherence audit report (auto-generated) | Markdown |
-
-### Feature Naming Conventions
-
-- Epic IDs: `E-{n}` (business), `EN-{n}` (enabler)
-- Capability IDs: `{epic-id}/{slug}` (e.g., `E-1/state-monitoring-audit`)
-- Feature IDs: `{capability-id}/{slug}`
-- UseCase IDs: `UC:{filename-stem}`
-
-### PlantUML Conventions for Features
-
-- Frame prefix: `PD - Poesis - {title} - v1`
-- Stereotypes: `<<Epic>>`, `<<Capability>>`, `<<Feature>>`, `<<Story>>`, `<<Enabler>>`
-- Combined stereotypes: `<<Capability, Enabler>>` for enabler capabilities
-- Notes with `**Validation Rules:**` for constraints
-- Notes with `**SAFe mapping:**` for UC → Epic/Capability/Feature tracing
-
-## GitHub Project Synchronization
-
-### Toolchain
-
-Located at `def/features/github_project_sync/`:
-
-| Tool | Purpose | Command |
-|------|---------|---------|
-| `export_backlog.py` | Parse PlantUML → JSON export | `python3 def/features/github_project_sync/export_backlog.py def/features/backlog/github-project-sync-config.json > def/features/backlog/backlog-export.json` |
-| `sync_project.py` | Push/update GitHub Project v2 items | `python3 def/features/github_project_sync/sync_project.py def/features/backlog/backlog-export.json def/features/backlog/github-project-sync-config.json` |
-| `audit_backlog.py` | Coherence audit of exported backlog | `python3 def/features/github_project_sync/audit_backlog.py --export def/features/backlog/backlog-export.json --out def/features/backlog/coherence-audit.md` |
-
-**All commands run from the workspace root** (`poesis/`).
-
-### GitHub Project Configuration
-
-- **Org**: `<github-org>`
-- **Project**: #2 — "Poesis Product Features"
-- **Fields**: Status, Priority (P0–P3), Estimate, Item SAFe Type, Complexity
-- **Auth**: `gh auth status` must show logged-in; scopes needed: `read:project`, `project`
-
-### Sync Workflow (standard)
-
-1. Edit PlantUML feature models
-2. Export: `python3 def/features/github_project_sync/export_backlog.py ...`
-3. Sync: `python3 def/features/github_project_sync/sync_project.py ...`
-4. Audit: `python3 def/features/github_project_sync/audit_backlog.py ...`
-5. Review coherence audit for gaps
-6. Iterate
-
-### Sync Semantics
-
-- Items are matched by `localId` (from state file) or by title (fallback search)
-- New items are created as Draft Issues with default status "Backlog"
-- Existing items get updated: SAFe Type, Priority, Complexity, Effort, description
-- **Status is never overwritten** for existing items (preserves workflow changes in GitHub)
-- Status is **pulled back** from GitHub into state file after sync
-
-## Product Opportunity Analysis Framework
-
-When analyzing business opportunities for Poesis, evaluate along these dimensions:
-
-### 1. Market Timing
-
-- **Regulatory pressure** (GDPR, NIS2, DORA, AI Act → compliance automation demand)
-- **Technical debt awareness** (industry shift toward systematic architecture governance)
-- **AI/LLM adoption** (organizations seeking structured AI governance, not just chatbots)
-- **Framework fatigue** (TOGAF, SAFe, ITIL → fragmented, no unifying theory)
-
-### 2. Competitive Positioning
-
-- **No direct competitor** combines: systemics theory + governance engine + domain apps + sourcing pipeline
-- **Indirect competitors**: ServiceNow (CMDB), Backstage (developer portal), ArchiMate tools (architecture), GRC platforms (compliance)
-- **Differentiation**: Poesis is *generative* (defines, then derives) vs competitors who are *descriptive* (observe, then report)
-
-### 3. Value Chain Analysis
-
-Map every feature to the value chain position:
-- **Define** (GSM theory → SIE engine → domain vocabularies)
-- **Source** (external artifacts → GSM definitions via Sourcer)
-- **Govern** (DNA grammar → constraint enforcement → drift detection)
-- **Observe** (evidence → analytics → dashboards)
-- **Act** (remediation → homeostasis → closed-loop)
-
-### 4. Customer Journey Stages
-
-| Stage | Product | Key Feature |
-|-------|---------|-------------|
-| **Discover** | GSM (paper, web) | Conceptual authority, framework comparisons |
-| **Evaluate** | SIE + ITIP (free tier / demo) | Instant architecture discovery, conformance analysis |
-| **Adopt** | SIE + ITIP (paid) | Continuous dashboards, data lineage, LLM governance |
-| **Expand** | Multi-domain apps, Sourcer | Regulatory sourcing, cross-domain governance |
-| **Champion** | GSM Certification | Training, certification, consulting market |
-
-### 5. Product-Led Growth Signals
-
-Features that drive adoption virally:
-- **Architecture Discovery** (instant value, shareable maps → social proof)
-- **Conformance Dashboards** (replaces quarterly audits → visible ROI)
-- **Regulatory Presets** (GDPR/NIS2/DORA → compliance in a box)
-- **LLM Definition Authoring** (natural language → governance definitions → low barrier)
-
-## Backlog Coherence Checks
-
-When adding or modifying features, verify:
-
-1. **Epic completeness**: Every Capability has a parent Epic
-2. **Capability coverage**: Every Capability has at least one UseCase (functional grounding)
-3. **Priority coverage**: Every Capability has a priorityBucket (P0–P3)
-4. **Feasibility coverage**: Every Capability has complexity + feasibility tier
-5. **Enabler tracing**: Business Epics `requires` Enabler Epics where runway is needed
-6. **Cross-product tracing**: Features touching multiple products have explicit dependency links
-7. **Plane placement**: Every feature maps to at least one governance plane (Definition/Description/Remediation)
-8. **Systemics coherence**: Feature closes the governance loop (define → realize → observe)
-
-## Proactive Opportunity Identification
-
-When working with the business owner, proactively surface:
-
-1. **Uncovered products**: Which products have no feature models? (currently: ITIP, GSM Sourcer, platform infra)
-2. **Missing customer journeys**: Which user personas lack end-to-end feature coverage?
-3. **Enabler bottlenecks**: Which enablers block the most business features?
-4. **Quick wins**: Features with HIGH value + LOW complexity + NOW feasibility
-5. **Competitive moats**: Features that create switching costs or network effects
-6. **Publication-product alignment**: How does GSM publication timeline align with product readiness?
-7. **Framework sourcing opportunities**: Which regulatory/governance frameworks are in demand but not yet sourced?
-8. **Cross-product synergies**: Where does integrating SIE+ITIP+Sourcer create value > sum of parts?

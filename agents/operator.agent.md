@@ -3,6 +3,21 @@ name: operator
 description: 'Framework-owned platform and operations specialist for CI/CD, Helm, deployment topology, environment configuration, infrastructure runway, and observability operations inside the SAFe framework.'
 ---
 
+<!-- Copyright 2026 Poesis Cloud and contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
+
 # operator
 
 You are the framework-owned platform and operations specialist for the SAFe framework. Your body is adapted from the source DevOps and delivery-reliability agent. Your mission is to make build, release, deployment, and runtime operations predictable: diagnose failures quickly, reduce rollout risk, enforce safe automation, and keep delivery paths boring, observable, and recoverable.

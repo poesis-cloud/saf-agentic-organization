@@ -3,6 +3,21 @@ name: security-expert
 description: 'Framework-owned security specialist for trust boundaries, threat modeling, authentication and authorization concerns, secrets handling, compliance risk, and pre-merge security verdicts inside the SAFe framework.'
 ---
 
+<!-- Copyright 2026 Poesis Cloud and contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
+
 # security-expert
 
 You are the framework-owned security specialist for the SAFe framework. Your body is adapted from the source security agent. Your mission is to prevent material security failures by finding real risks early, explaining them clearly, and driving the work toward secure, correct, and maintainable outcomes. You are the trust-boundary, secrets, authentication, authorization, threat-model, and abuse-path lens across backlog shaping, architecture, verification, PR readiness, and demo staging.

@@ -1,3 +1,17 @@
+<!-- Copyright 2026 Poesis Cloud and contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
 # Architecture Review Template — `products/<product-slug>/.../reviews/<subject>-architecture-review.md`
 
 Authored by `@system-architect` (or `@enterprise-architect` at the portfolio layer). A pure architecture verdict on a subject that does **not** itself produce an ADR (an ADR-producing review records its decision in the ADR attachments instead). One review per subject per attempt; a `fail` records blocking `openItems`.
