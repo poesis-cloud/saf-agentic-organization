@@ -26,13 +26,88 @@ from tests.loaders import (
 ORG = organization_root()
 
 
+def test_every_workflow_and_step_has_a_description() -> None:
+    for slug, workflow in load_workflows().items():
+        description = workflow.get("description")
+        assert isinstance(description, str) and description.strip(), slug
+        for step in workflow["steps"]:
+            step_description = step.get("description")
+            assert isinstance(step_description, str) and step_description.strip(), (
+                f"{slug}/{step['slug']}"
+            )
+
+
+SPEECH_ACT_INSTRUCTION = {
+    "value-management-officer": "value-management-officer-interpret-speech-acts",
+    "release-train-engineer": "release-train-engineer-interpret-speech-acts",
+    "scrum-master": "scrum-master-interpret-speech-acts",
+}
+
+
+def test_every_workflow_loads_orchestrator_speech_act_instruction() -> None:
+    for slug, workflow in load_workflows().items():
+        expected = SPEECH_ACT_INSTRUCTION[workflow["orchestrator"]]
+        assert expected in slug_refs(workflow.get("instructions")), slug
+
+
+def test_catalog_split_keeps_architecture_out_of_feature_refinement() -> None:
+    catalog = load_workflows()
+    feature_artifacts = {step["artifact"] for step in catalog["feature-backlog-refinement"]["steps"]}
+    assert feature_artifacts == {
+        "feature",
+        "feature-enabler",
+        "feasibility-review",
+        "architecture-review",
+        "security-review",
+        "ux-review",
+    }
+    assert {"adr", "nfr-list", "architecture-runway", "operability-review"}.isdisjoint(feature_artifacts)
+
+    runway_steps = catalog["architectural-runway-extension"]["steps"]
+    runway_slugs = [step["slug"] for step in runway_steps]
+    assert runway_slugs[:2] == ["author-nfrs", "author-adr"]
+    adr = next(step for step in runway_steps if step["slug"] == "author-adr")
+    assert any(condition.get("step") == "author-nfrs" for condition in adr["conditions"])
+    assert {step["artifact"] for step in runway_steps} >= {"nfr-list", "adr", "architecture-runway"}
+
+    vision_artifacts = {step["artifact"] for step in catalog["architectural-vision"]["steps"]}
+    assert "architecture-vision" in vision_artifacts
+    assert "adr" not in vision_artifacts
+
+    derivation_artifacts = {step["artifact"] for step in catalog["feature-derivation"]["steps"]}
+    assert derivation_artifacts == {"feature", "feature-enabler"}
+    assert "story-derivation" not in catalog
+
+    story_artifacts = {step["artifact"] for step in catalog["team-backlog-refinement"]["steps"]}
+    assert {"story", "story-enabler", "architecture-review", "ux-review"} <= story_artifacts
+    assert {"adr", "nfr-list", "architecture-runway"}.isdisjoint(story_artifacts)
+
+    from tests.loaders import load_json
+
+    nfr_schema = load_json(ORG / "artifacts" / "system-architect" / "nfr-list.artifact.schema.json")
+    assert nfr_schema["x-artifact"]["pathPatterns"] == ["products/*/nfr-list.md"]
+
+
+def test_every_schema_is_a_workflow_step_artifact() -> None:
+    schemas = set(schema_slugs())
+    used = {
+        step["artifact"]
+        for workflow in load_workflows().values()
+        for step in workflow["steps"]
+    }
+    assert schemas == used, f"unused={sorted(schemas - used)} missing_schema={sorted(used - schemas)}"
+
+
 def test_every_workflow_skill_and_instruction_slug_resolves() -> None:
     skills = set(skill_slugs())
     instructions = set(instruction_slugs())
     schemas = set(schema_slugs())
     agents = set(agent_slugs())
     for slug, workflow in load_workflows().items():
-        assert slug in {path.stem.replace(".workflow.conf", "") for path in (ORG / "workflows").glob("*.yaml")}
+        assert slug in {
+            path.stem.replace(".workflow.conf", "")
+            for path in (ORG / "workflows").rglob("*.yaml")
+        }
         assert workflow["orchestrator"] in agents
         for ref in slug_refs(workflow.get("skills")):
             assert ref in skills, f"{slug} skill {ref}"

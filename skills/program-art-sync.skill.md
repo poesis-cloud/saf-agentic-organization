@@ -20,7 +20,7 @@ description: '**SAFe CEREMONY SKILL.** The ART Sync playbook (Coach Sync + PO Sy
 
 # SAFe Ceremony — ART Sync (Coach + PO Sync)
 
-A **reconcile** ceremony in the program / ART layer. The **normative spec** is the machine-readable **[conf/workflows/art-sync.workflow.conf.yaml](../../../../../../conf/workflows/art-sync.workflow.conf.yaml)** — every step + its `conditions` (the trigger as the first step's preconditions; the reconcile obligations as judgment conditions; the structural `after`/`input`/`output` wiring), consumed by `@release-train-engineer` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+A **reconcile** ceremony in the program / ART layer. The **normative spec** is the machine-readable **[workflows/program/art-sync.workflow.conf.yaml](../workflows/program/art-sync.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@release-train-engineer` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
 
-Shared model (the open-item ledger, ★ gates, the bench, invariants, artifact templates) lives in **[RTE orchestration core](../../../actors/release-train-engineer/release-train-engineer.skill.md)**. The facilitator reconciles cross-team Feature progress + dependencies, delegates runway questions to `@system-architect`, updates ROAM risk, and flips `→blocked`/unblock only — it authors no Feature/ADR and flips no ★ gate; **only `@release-train-engineer` writes `status:`**.
+Shared model lives in **[RTE orchestration core](release-train-engineer.skill.md)**. The facilitator reconciles cross-team Feature progress + dependencies, delegates runway questions to `@system-architect`, updates ROAM risk, and flips `→blocked`/unblock only — it authors no Feature/ADR and flips no ★ gate; **only `@release-train-engineer` writes `status:`**.
 Features reconciled to objectives + runway ahead of need + risks current + board refreshed.

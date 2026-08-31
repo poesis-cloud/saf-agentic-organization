@@ -42,7 +42,7 @@ Central-Supervisor review comments do not relax that boundary. Route them back t
 
 The program/ART workflow **is the Feature FSM**: `funnel → refined → arch-pending → ready → committed → in-progress → done` (flag `blocked`). **Step 0:** if the product is unregistered, **escalate to `@value-management-officer`**.
 
-Before executing any ceremony or practice row, load that sub-orchestration skill plus `conf/workflows/<name>.workflow.conf.yaml`.
+Before executing any ceremony or practice row, load that sub-orchestration skill plus `workflows/{portfolio,program,team}/<name>.workflow.conf.yaml`.
 
 | Event (Feature reaches…) | Kind | Sub-orchestration | Gate | → rte commits |
 |---|---|---|---|---|

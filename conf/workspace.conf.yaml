@@ -43,19 +43,30 @@ nodes:
       - slug: portfolio-vision.md
         description: Portfolio vision.
         artifact: portfolio-vision
-        template: layers/portfolio/actors/value-management-officer/artifacts/portfolio-vision
+        template: layers/portfolio/actors/business-owner/artifacts/portfolio-vision
         cardinality: "1"
 
       - slug: portfolio-roadmap.md
         description: Portfolio roadmap.
         artifact: portfolio-roadmap
-        template: layers/portfolio/actors/value-management-officer/artifacts/portfolio-roadmap
+        template: layers/portfolio/actors/business-owner/artifacts/portfolio-roadmap
         cardinality: "1"
 
       - slug: budget-allocation.md
-        description: Participatory-budgeting allocation record.
+        description: Strategic Investment Planning allocation record.
         artifact: budget-allocation
         template: layers/portfolio/actors/value-management-officer/artifacts/budget-allocation
+        cardinality: "1"
+      - slug: budget-allocation.feasibility-review.md
+        description: Feasibility challenge of the Strategic Investment Planning allocation.
+        artifact: feasibility-review
+        template: layers/team/actors/developer/artifacts/feasibility-review
+        cardinality: "0..1"
+
+      - slug: portfolio-kanban.md
+        description: Portfolio Kanban rendered from Epic frontmatter.
+        artifact: portfolio-kanban
+        template: layers/portfolio/actors/value-management-officer/artifacts/portfolio-kanban
         cardinality: "1"
 
       - slug: sync
@@ -63,8 +74,8 @@ nodes:
         children:
           - slug: <sync-slug>.portfolio-sync.md
             description: One Portfolio Sync record.
-            artifact: portfolio-sync-record
-            template: layers/portfolio/actors/value-management-officer/artifacts/portfolio-sync-record
+            artifact: portfolio-sync
+            template: layers/portfolio/actors/value-management-officer/artifacts/portfolio-sync
             cardinality: "0..*"
 
       - slug: reviews
@@ -97,6 +108,11 @@ nodes:
                 artifact: lean-business-case
                 template: layers/portfolio/actors/business-owner/artifacts/lean-business-case
                 cardinality: "1"
+              - slug: <epic-slug>.feasibility-review.md
+                description: Feasibility challenge of the Epic and Lean Business Case.
+                artifact: feasibility-review
+                template: layers/team/actors/developer/artifacts/feasibility-review
+                cardinality: "0..1"
 
       - slug: art
         description: Agile Release Train (ART) workspace (one folder per ART slug).
@@ -115,6 +131,23 @@ nodes:
                 artifact: program-kanban
                 template: layers/program/actors/release-train-engineer/artifacts/program-kanban
                 cardinality: "1"
+
+              - slug: releases
+                description: Release on Demand records, decoupled from PI cadence.
+                children:
+                  - slug: <release-slug>
+                    description: One release subject.
+                    children:
+                      - slug: <release-slug>.release-on-demand.md
+                        description: Product Manager release decision.
+                        artifact: release-on-demand
+                        template: layers/program/actors/product-manager/artifacts/release-on-demand
+                        cardinality: "1"
+                      - slug: <release-slug>.operability-review.md
+                        description: Operator Continuous Deployment readiness for this release.
+                        artifact: operability-review
+                        template: layers/team/actors/operator/artifacts/operability-review
+                        cardinality: "1"
 
               - slug: improvement-backlog
                 description: ART-scoped continuous improvement backlog.
@@ -149,36 +182,31 @@ nodes:
                         artifact: adr
                         template: layers/program/actors/system-architect/artifacts/adr
                         cardinality: "0..*"
-                      - slug: <feature-slug>.nfr-list.md
-                        description: Non-functional requirements list.
-                        artifact: nfr-list
-                        template: layers/program/actors/system-architect/artifacts/nfr-list
-                        cardinality: "1"
-                      - slug: <feature-slug>.architecture-review.md
-                        description: Architecture review.
-                        artifact: architecture-review
-                        template: layers/program/actors/system-architect/artifacts/architecture-review
-                        cardinality: "1"
                       - slug: <feature-slug>.feasibility-review.md
-                        description: Feasibility review.
+                        description: Feasibility challenge from Feature Backlog Refinement or Architectural Runway Extension.
                         artifact: feasibility-review
                         template: layers/team/actors/developer/artifacts/feasibility-review
-                        cardinality: "1"
+                        cardinality: "0..1"
+                      - slug: <feature-slug>.architecture-review.md
+                        description: Architecture challenge from Feature Backlog Refinement (not an ADR).
+                        artifact: architecture-review
+                        template: layers/program/actors/system-architect/artifacts/architecture-review
+                        cardinality: "0..1"
                       - slug: <feature-slug>.operability-review.md
-                        description: Operability review.
+                        description: Operability challenge from Architectural Runway Extension.
                         artifact: operability-review
                         template: layers/team/actors/operator/artifacts/operability-review
-                        cardinality: "1"
+                        cardinality: "0..1"
                       - slug: <feature-slug>.security-review.md
-                        description: Security review.
+                        description: Security challenge from Feature Backlog Refinement or Architectural Runway Extension.
                         artifact: security-review
                         template: layers/team/actors/security-expert/artifacts/security-review
-                        cardinality: "1"
+                        cardinality: "0..1"
                       - slug: <feature-slug>.ux-review.md
-                        description: UX review.
+                        description: UX challenge from Feature Backlog Refinement.
                         artifact: ux-review
                         template: layers/team/actors/ux-designer/artifacts/ux-review
-                        cardinality: "1"
+                        cardinality: "0..1"
 
               - slug: teams
                 description: Teams belonging to the ART.
@@ -218,20 +246,35 @@ nodes:
                                 artifact: code-change
                                 template: layers/team/actors/developer/artifacts/code-change
                                 cardinality: "0..1"
+                              - slug: <story-slug>.feasibility-review.md
+                                description: Feasibility challenge from Team Backlog Refinement.
+                                artifact: feasibility-review
+                                template: layers/team/actors/developer/artifacts/feasibility-review
+                                cardinality: "0..1"
+                              - slug: <story-slug>.ux-review.md
+                                description: UX challenge from Team Backlog Refinement.
+                                artifact: ux-review
+                                template: layers/team/actors/ux-designer/artifacts/ux-review
+                                cardinality: "0..1"
+                              - slug: <story-slug>.architecture-review.md
+                                description: Architecture challenge from Team Backlog Refinement (not an ADR).
+                                artifact: architecture-review
+                                template: layers/program/actors/system-architect/artifacts/architecture-review
+                                cardinality: "0..1"
 
                       - slug: daily
-                        description: Daily Sync records.
+                        description: Team Sync records.
                         children:
-                          - slug: <daily-slug>.daily-sync.md
-                            description: One Daily Sync record.
-                            artifact: daily-sync
-                            template: layers/team/actors/scrum-master/artifacts/daily-sync
+                          - slug: <daily-slug>.team-sync.md
+                            description: One Team Sync record.
+                            artifact: team-sync
+                            template: layers/team/actors/scrum-master/artifacts/team-sync
                             cardinality: "0..*"
 
-                      - slug: retrospective.md
+                      - slug: iteration-retrospective.md
                         description: Iteration Retrospective record.
-                        artifact: retrospective
-                        template: layers/team/actors/scrum-master/artifacts/retrospective
+                        artifact: iteration-retrospective
+                        template: layers/team/actors/scrum-master/artifacts/iteration-retrospective
                         cardinality: "0..1"
 
                       - slug: iteration-review.md
@@ -248,6 +291,11 @@ nodes:
                     artifact: objectives
                     template: layers/program/actors/release-train-engineer/artifacts/objectives
                     cardinality: "1"
+                  - slug: objectives.feasibility-review.md
+                    description: Feasibility challenge of the committed PI Objectives.
+                    artifact: feasibility-review
+                    template: layers/team/actors/developer/artifacts/feasibility-review
+                    cardinality: "0..1"
                   - slug: risks.md
                     description: PI risks.
                     artifact: risks
@@ -274,6 +322,11 @@ nodes:
                             artifact: plan
                             template: layers/team/actors/scrum-master/artifacts/plan
                             cardinality: "1"
+                          - slug: plan.feasibility-review.md
+                            description: Feasibility challenge of the Iteration Plan.
+                            artifact: feasibility-review
+                            template: layers/team/actors/developer/artifacts/feasibility-review
+                            cardinality: "0..1"
 
       - slug: products
         description: Product definitions (not backlogs).
@@ -305,8 +358,32 @@ nodes:
                 template: layers/portfolio/actors/enterprise-architect/artifacts/architecture-vision
                 cardinality: "1"
 
+              - slug: architecture-vision.security-review.md
+                description: Security challenge of the Architectural Vision NFR backbone.
+                artifact: security-review
+                template: layers/team/actors/security-expert/artifacts/security-review
+                cardinality: "0..1"
+
+              - slug: architecture-vision.operability-review.md
+                description: Operability challenge of the Architectural Vision.
+                artifact: operability-review
+                template: layers/team/actors/operator/artifacts/operability-review
+                cardinality: "0..1"
+
+              - slug: nfr-list.md
+                description: Product Nonfunctional Requirements register. Canonical enduring constraints; Features and Stories only trace.
+                artifact: nfr-list
+                template: layers/program/actors/system-architect/artifacts/nfr-list
+                cardinality: "1"
+
               - slug: architecture-runway.md
                 description: Architecture runway.
                 artifact: architecture-runway
                 template: layers/program/actors/system-architect/artifacts/architecture-runway
                 cardinality: "1"
+
+              - slug: architecture-runway.operability-review.md
+                description: Operability challenge of Architecture Runway.
+                artifact: operability-review
+                template: layers/team/actors/operator/artifacts/operability-review
+                cardinality: "0..1"

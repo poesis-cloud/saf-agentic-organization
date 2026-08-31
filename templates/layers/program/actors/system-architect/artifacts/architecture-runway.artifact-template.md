@@ -27,8 +27,8 @@ enabler work that build technical foundation ahead of business Features. Seeded 
 
 This register tracks both the reference artifact and the backlog realization so PI Planning can
 budget enabler capacity without confusing architecture documentation with enabler backlog units. It
-is architecture-scoped and belongs under the product's `art/<art-slug>/program-backlog/` folder, not beside the
-backlog folders.
+is a **product singleton** at `products/<product-slug>/architecture-runway.md`, beside the product
+`nfr-list.md`. It is not a Feature-folder artifact.
 
 ```markdown
 ---
@@ -40,7 +40,7 @@ revised: YYYY-MM-DD
 
 | Runway item | Architecture reference | Realized by enabler Features | enablerType | Consumed by (Features) | Readiness |
 |---|---|---|---|---|---|
-| <capability> | ADR-N; `<adr-slug>.adr.md`; `<feature-slug>.nfr-list.md` | F-N (`type: enabler`) | architectural | F-AA, F-BB | building |
+| <capability> | ADR-N; `products/<product-slug>/nfr-list.md` | F-N (`type: enabler`) | architectural | F-AA, F-BB | building |
 
 enablerType: exploration · architectural · infrastructure · compliance.
 Readiness: building · ready · depleting.

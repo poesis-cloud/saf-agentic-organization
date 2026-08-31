@@ -20,6 +20,8 @@ description: '**SAFe CEREMONY SKILL.** The Story Backlog Refinement playbook loa
 
 # SAFe Ceremony — Story Backlog Refinement
 
-The **normative spec** is the machine-readable **[conf/workflows/story-backlog-refinement.workflow.conf.yaml](../../../../../../conf/workflows/story-backlog-refinement.workflow.conf.yaml)** — every step + its `conditions` (the trigger as the first step's preconditions; the two iteration-tier Discovery lenses — no generative lens at this tier — + facilitation obligations as judgment conditions; the structural `after`/`input`/`output` wiring), consumed by `@scrum-master` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+The **normative spec** is the machine-readable **[workflows/team/team-backlog-refinement.workflow.conf.yaml](../workflows/team/team-backlog-refinement.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
 
-Shared model (the open-item ledger, ★ gates, the bench, invariants, artifact templates) lives in **[scrum-master orchestration core](../../../actors/scrum-master/scrum-master.skill.md)**. Business Stories are authored via `product-owner`, enabler Stories via `system-architect`; the Story stays `backlog` and **only `@scrum-master` writes `status:`** (the ★ Story Gate / DoR runs at Iteration Planning).
+Mains are `story` and `story-enabler`. System Architect **challenges** those mains with `architecture-review`; ADR/NFR belong to program `architectural-runway-extension`.
+
+Shared model lives in **[scrum-master orchestration core](scrum-master.skill.md)**. Business Stories are authored via `product-owner`, enabler Stories via `system-architect`; the Story stays `backlog` and **only `@scrum-master` writes `status:`** (the ★ Story Gate / DoR runs at Iteration Planning).

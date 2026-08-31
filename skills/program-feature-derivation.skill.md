@@ -1,7 +1,7 @@
 ---
 name: feature-derivation
 user-invocable: false
-description: 'SAFe ART ceremony — Feature Derivation (suborchestration of @release-train-engineer). Normative spec (trigger, participants, steps, conditions, facilitation intent) is conf/workflows/feature-derivation.workflow.conf.yaml.'
+description: 'SAFe ART ceremony — Feature Derivation (suborchestration of @release-train-engineer). Normative spec is workflows/program/feature-derivation.workflow.conf.yaml. USE FOR: splitting an approved Epic into ART Features. DO NOT USE FOR: Feature AC/WSJF thickening (use feature-backlog-refinement); ADR/NFR (use architectural-runway-extension).'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors
@@ -20,6 +20,6 @@ description: 'SAFe ART ceremony — Feature Derivation (suborchestration of @rel
 
 # SAFe Ceremony — Feature Derivation
 
-The **normative spec** is the machine-readable **[conf/workflows/feature-derivation.workflow.conf.yaml](../../../../../../conf/workflows/feature-derivation.workflow.conf.yaml)** — the step sequence and every step's `conditions` (Epic-input trigger, owner-authoring obligations, and the structural `after`/`input`/`output` wiring), consumed by both `@release-train-engineer` and the deterministic harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+The **normative spec** is the machine-readable **[workflows/program/feature-derivation.workflow.conf.yaml](../workflows/program/feature-derivation.workflow.conf.yaml)** — the step sequence and every step's `conditions`, consumed by both `@release-train-engineer` and the deterministic harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
 
-Shared model (the open-item ledger, ★ gates, the bench, invariants, artifact templates) lives in **[RTE orchestration core](../../../actors/release-train-engineer/release-train-engineer.skill.md)**. Business Feature derivation loads `product-manager`; enabler Feature derivation loads `system-architect`.
+Shared model lives in **[RTE orchestration core](release-train-engineer.skill.md)**. Business Feature derivation loads `product-manager`; enabler Feature derivation loads `system-architect`. Derived items then enter `feature-backlog-refinement`.

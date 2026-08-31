@@ -1,0 +1,106 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: architectural-vision
+description: >
+  Purpose: establish the portfolio architectural runway and NFR backbone. Act:
+  Demand. Orchestrator: Value Management Officer. In-scope mains:
+  architecture-vision. Challenges: security (NFR backbone), operability (not
+  evaluated). Evaluate: architecture-vision; KO reiterates the EA owner step.
+  Use when: portfolio NFR backbone, target ARTs, enabler Epic seeds, Architectural
+  Vision itself. Refuse ART ADRs (architectural-runway-extension). Refuse Epic
+  hypothesis (epic-lean-business-case). Strategic Portfolio Review may confirm
+  this main during Cadence; it does not replace this practice.
+instructions: value-management-officer-interpret-speech-acts
+predecessors:
+- epic-lean-business-case
+orchestrator: value-management-officer
+skills: portfolio-architectural-vision
+steps:
+- slug: ea-draft
+  description: Main artifact draft — Enterprise Architect authors the Architectural Vision and NFR backbone.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: enterprise-architect
+  artifact: architecture-vision
+  conditions: []
+  instructions: portfolio-architectural-vision-draft
+- slug: challenge-security-nfr
+  description: Challenge packet — Security Expert security-review of the portfolio NFR backbone. Not itself challenged.
+  capabilities:
+    deep-reasoning: 9
+    coding: 2
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 6
+  actor: security-expert
+  artifact: security-review
+  conditions:
+  - slug: after-ea-draft
+    kind: precondition
+    step: ea-draft
+  instructions: program-feature-backlog-refinement-challenger-writes-no-owner-content
+- slug: challenge-operability
+  description: Challenge packet — Operator operability-review of the Architectural Vision. Not itself challenged.
+  capabilities:
+    deep-reasoning: 8
+    coding: 2
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 6
+  actor: operator
+  artifact: operability-review
+  conditions:
+  - slug: after-ea-draft
+    kind: precondition
+    step: ea-draft
+  instructions: program-feature-backlog-refinement-challenger-writes-no-owner-content
+- slug: owner-rewrite
+  description: Owner rewrite — Enterprise Architect commits Architectural Vision after the challenge packets.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: enterprise-architect
+  artifact: architecture-vision
+  conditions:
+  - slug: after-challenge-security-nfr
+    kind: precondition
+    step: challenge-security-nfr
+  - slug: after-challenge-operability
+    kind: precondition
+    step: challenge-operability
+  instructions: portfolio-architectural-vision-rewrite

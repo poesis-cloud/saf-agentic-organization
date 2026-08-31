@@ -20,9 +20,9 @@ description: '**SAFe CEREMONY SKILL.** The Inspect & Adapt playbook loaded by `@
 
 # SAFe Ceremony — Inspect & Adapt
 
-The **program-scope** closed-loop event at the end of a PI. It has **no demo gate** (that is handled by the ART workflow). The **normative spec** is the machine-readable **[conf/workflows/inspect-and-adapt.workflow.conf.yaml](../../../../../../conf/workflows/inspect-and-adapt.workflow.conf.yaml)** — every step + its `conditions` (metrics review → retrospective), consumed by `@release-train-engineer` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+The **program-scope** closed-loop event at the end of a PI. It has **no demo gate** (that is handled by the ART workflow). The **normative spec** is the machine-readable **[workflows/program/inspect-and-adapt.workflow.conf.yaml](../workflows/program/inspect-and-adapt.workflow.conf.yaml)** — every step + its `conditions` (metrics review → retrospective), consumed by `@release-train-engineer` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
 
-Shared model (the open-item ledger, ★ gates, the bench, invariants, artifact templates) lives in **[RTE orchestration core](../../../actors/release-train-engineer/release-train-engineer.skill.md)**.
+Shared model lives in **[RTE orchestration core](release-train-engineer.skill.md)**.
 
 ## Step instructions
 

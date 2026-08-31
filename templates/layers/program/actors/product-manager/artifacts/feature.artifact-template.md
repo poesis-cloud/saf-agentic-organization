@@ -93,9 +93,9 @@ Use a short paragraph or 2-3 bullets in this form:
 - Evidence: <how the value will be observed>
 
 ## NFR applicability / trace
-List the canonical product NFRs from `<feature-slug>.nfr-list.md` that apply to this Feature, plus any
-Feature-specific tightening or derived verification notes. Do not redefine the product's canonical
-NFR set here.
+List the canonical product NFRs from `products/<product-slug>/nfr-list.md` that apply to this Feature,
+plus any Feature-specific tightening or derived verification notes. Do not redefine the product's
+canonical NFR set here. A missing NFR is a runway concern, not Feature AC.
 
 ## Routing classification
 - Risk: low | medium | critical — consequence of being wrong.

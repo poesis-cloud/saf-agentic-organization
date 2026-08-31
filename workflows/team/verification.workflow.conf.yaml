@@ -1,0 +1,42 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: verification
+description: >
+  Purpose: is this Story done. Act: Advance. Orchestrator: Scrum Master.
+  Dispatch: qa-signoff, which IS the challenge of Story and code-change. Do not
+  Evaluate the signoff. Evaluate: Story done-ness. Security is not a second
+  verification actor. Not Demand.
+instructions: scrum-master-interpret-speech-acts
+predecessors:
+- pair-programming
+orchestrator: scrum-master
+skills: team-verification
+steps:
+- slug: verify
+  description: Challenge packet — Quality Engineer qa-signoff of the Story / code-change. Not itself challenged.
+  capabilities:
+    deep-reasoning: 4
+    coding: 8
+    tool-use: 8
+    long-context: 4
+    multimodal: 0
+    writing-quality: 2
+    instruction-following: 8
+    fast-iteration: 7
+    schema-adherence: 8
+  actor: quality-engineer
+  artifact: qa-signoff
+  conditions: []
+  instructions: team-verification-record-qa-signoff

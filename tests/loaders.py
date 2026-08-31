@@ -22,8 +22,8 @@ FRONTMATTER = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
 CEREMONY_PAIRS = (
     ("art-sync", "program-art-sync", "release-train-engineer"),
     ("system-demo", "program-system-demo", "release-train-engineer"),
-    ("daily-sync", "team-daily-sync", "scrum-master"),
-    ("retrospective", "team-retrospective", "scrum-master"),
+    ("team-sync", "team-daily-sync", "scrum-master"),
+    ("iteration-retrospective", "team-retrospective", "scrum-master"),
 )
 
 ORCHESTRATOR_READING = {
@@ -46,7 +46,7 @@ def load_json(path: Path) -> Any:
 
 
 def iter_named(directory: Path, suffix: str) -> Iterator[Path]:
-    yield from sorted(directory.glob(f"*{suffix}"))
+    yield from sorted(path for path in directory.rglob(f"*{suffix}") if path.is_file())
 
 
 def skill_slugs() -> tuple[str, ...]:

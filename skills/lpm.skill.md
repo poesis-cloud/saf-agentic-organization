@@ -43,7 +43,7 @@ The VMO **polices** the portfolio layer: it controls the input/output artifacts 
 
 The portfolio workflow **is the Epic FSM**: `funnel → reviewing → analyzing → portfolio-backlog → implementing → done` (flag `blocked`). **Step 0:** if `portfolio/` or the product is unregistered, run **Portfolio / ART Init** first.
 
-Before executing any ceremony or practice row, load that sub-orchestration skill plus `conf/workflows/<name>.workflow.conf.yaml`. The harness `check-step` result is the transition guard.
+Before executing any ceremony or practice row, load that sub-orchestration skill plus `workflows/{portfolio,program,team}/<name>.workflow.conf.yaml`. The harness `check-step` result is the transition guard.
 
 | Event (Epic reaches…) | Kind | Sub-orchestration | Gate | → vmo commits |
 |---|---|---|---|---|

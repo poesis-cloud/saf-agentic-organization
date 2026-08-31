@@ -39,7 +39,7 @@ LAYER_CASES = (
         "portfolio-sync",
         "value-management-officer",
         "portfolio/sync/q1.portfolio-sync.md",
-        "portfolio-sync-record",
+        "portfolio-sync",
     ),
     (
         "art-sync",
@@ -48,10 +48,10 @@ LAYER_CASES = (
         "art-sync",
     ),
     (
-        "daily-sync",
+        "team-sync",
         "scrum-master",
-        "portfolio/art/core/teams/alpha/daily/stand.daily-sync.md",
-        "daily-sync",
+        "portfolio/art/core/teams/alpha/daily/stand.team-sync.md",
+        "team-sync",
     ),
 )
 

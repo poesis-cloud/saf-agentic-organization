@@ -1,0 +1,198 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: feature-backlog-refinement
+description: >
+  Purpose: write a PI-ready Feature. Act: Demand. Orchestrator: Release Train
+  Engineer. In-scope mains: feature, feature-enabler. Same workflow for new
+  Feature, thicken AC/WSJF, Feature-sized impact of changing X, Feature-sized
+  UX/security gap, Enabler Feature sibling. Challenges of those mains:
+  feasibility, architecture-review (SA challenge, not an ADR), security, UX.
+  Evaluate: those mains; KO reiterates that main's owner step. Refuse Epic/Story
+  grain. Refuse ADR, NFR list, and runway — those are architectural-runway-extension.
+  Do not invent Impact Analysis.
+instructions: release-train-engineer-interpret-speech-acts
+predecessors:
+- epic-lean-business-case
+- feature-derivation
+orchestrator: release-train-engineer
+skills: program-feature-backlog-refinement
+steps:
+- slug: draft-business
+  description: Main artifact draft — Product Manager authors the business Feature.
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: product-manager
+  artifact: feature
+  conditions: []
+  instructions: program-feature-backlog-refinement-draft-business-feature
+- slug: draft-enabler
+  description: Main artifact draft — System Architect sibling Enabler Feature (not a review packet).
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: system-architect
+  artifact: feature-enabler
+  conditions:
+  - slug: after-draft-business
+    kind: precondition
+    step: draft-business
+  instructions: program-feature-backlog-refinement-author-enabler-feature
+- slug: challenge-feasibility
+  description: Challenge packet — Developer feasibility-review. Not itself challenged.
+  capabilities:
+    deep-reasoning: 8
+    coding: 8
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 6
+  actor: developer
+  artifact: feasibility-review
+  conditions:
+  - slug: after-draft-business
+    kind: precondition
+    step: draft-business
+  instructions: program-feature-backlog-refinement-challenger-writes-no-owner-content
+- slug: challenge-architecture
+  description: Challenge packet — System Architect architecture-review of the Feature/Enabler. Not an ADR.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 6
+  actor: system-architect
+  artifact: architecture-review
+  conditions:
+  - slug: after-draft-business
+    kind: precondition
+    step: draft-business
+  - slug: after-draft-enabler
+    kind: precondition
+    step: draft-enabler
+  instructions: program-feature-backlog-refinement-challenger-writes-no-owner-content
+- slug: challenge-security
+  description: Challenge packet — Security Expert security-review. Not itself challenged.
+  capabilities:
+    deep-reasoning: 9
+    coding: 2
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 6
+  actor: security-expert
+  artifact: security-review
+  conditions:
+  - slug: after-draft-business
+    kind: precondition
+    step: draft-business
+  instructions: program-feature-backlog-refinement-challenger-writes-no-owner-content
+- slug: challenge-ux
+  description: Challenge packet — UX Designer ux-review. Not itself challenged.
+  capabilities:
+    deep-reasoning: 8
+    coding: 2
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 6
+  actor: ux-designer
+  artifact: ux-review
+  conditions:
+  - slug: after-draft-business
+    kind: precondition
+    step: draft-business
+  instructions: program-feature-backlog-refinement-challenger-writes-no-owner-content
+- description: Owner rewrite — Product Manager commits the Feature after the four challenge packets.
+  slug: owner-rewrite-business
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: product-manager
+  artifact: feature
+  conditions:
+  - slug: after-challenge-architecture
+    kind: precondition
+    step: challenge-architecture
+  - slug: after-challenge-security
+    kind: precondition
+    step: challenge-security
+  - slug: after-challenge-ux
+    kind: precondition
+    step: challenge-ux
+  instructions: program-feature-backlog-refinement-only-owner-writes-business-feature
+- slug: owner-rewrite-enabler
+  description: Owner rewrite — System Architect commits the Enabler Feature after the challenge packets.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: system-architect
+  artifact: feature-enabler
+  conditions:
+  - slug: after-challenge-feasibility
+    kind: precondition
+    step: challenge-feasibility
+  - slug: after-challenge-architecture
+    kind: precondition
+    step: challenge-architecture
+  - slug: after-challenge-security
+    kind: precondition
+    step: challenge-security
+  - slug: after-challenge-ux
+    kind: precondition
+    step: challenge-ux
+  instructions: program-feature-backlog-refinement-only-owner-writes-enabler-feature

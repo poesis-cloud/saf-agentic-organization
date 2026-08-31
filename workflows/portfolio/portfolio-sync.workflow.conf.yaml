@@ -1,0 +1,97 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: portfolio-sync
+description: >
+  Purpose: cadence snapshot of portfolio risks, WIP, Kanban. Act: Cadence or
+  Inspect. Orchestrator: Value Management Officer. Dispatch: portfolio-sync
+  mediation record. Manifests and Kanban are projections, not mains. Evaluate:
+  nothing as a bet. An impediment that is Epic-sized is a later Demand, not this
+  workflow writing an Epic. Do not Evaluate the minutes.
+instructions: value-management-officer-interpret-speech-acts
+orchestrator: value-management-officer
+skills: portfolio-portfolio-sync
+steps:
+- slug: sync
+  description: Mediation record — Value Management Officer records the Portfolio Sync. Not itself challenged.
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: value-management-officer
+  artifact: portfolio-sync
+  instructions: portfolio-portfolio-sync-business-owner-priority-or-risk-view-recorded
+- slug: update-portfolio-manifest
+  description: Operational projection — Value Management Officer updates the portfolio manifest from the sync.
+  capabilities:
+    deep-reasoning: 2
+    coding: 3
+    tool-use: 8
+    long-context: 2
+    multimodal: 0
+    writing-quality: 1
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 8
+  actor: value-management-officer
+  artifact: portfolio-manifest
+  conditions:
+  - slug: after-sync
+    kind: precondition
+    step: sync
+  instructions: portfolio-portfolio-sync-update-portfolio-manifest
+- slug: update-product-manifest
+  description: Operational projection — Value Management Officer updates product manifests from the sync.
+  capabilities:
+    deep-reasoning: 2
+    coding: 3
+    tool-use: 8
+    long-context: 2
+    multimodal: 0
+    writing-quality: 1
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 8
+  actor: value-management-officer
+  artifact: product-manifest
+  conditions:
+  - slug: after-update-portfolio-manifest
+    kind: precondition
+    step: update-portfolio-manifest
+  instructions: portfolio-portfolio-sync-update-product-manifest
+- slug: update-portfolio-kanban
+  description: Operational projection — Value Management Officer refreshes Portfolio Kanban from Epic frontmatter.
+  capabilities:
+    deep-reasoning: 2
+    coding: 3
+    tool-use: 8
+    long-context: 2
+    multimodal: 0
+    writing-quality: 1
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 8
+  actor: value-management-officer
+  artifact: portfolio-kanban
+  conditions:
+  - slug: after-sync
+    kind: precondition
+    step: sync
+  instructions: portfolio-portfolio-sync-update-portfolio-kanban

@@ -12,14 +12,26 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# NFR Register Template — `art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.nfr-list.md`
+# NFR Register Template — `products/<product-slug>/nfr-list.md`
 
 The product **Nonfunctional Requirements** register (SAFe NFRs / quality attributes). Seeded from
 the **Architectural Vision** NFR backbone (`architecture-vision`), maintained by
-`@system-architect` + `@security-expert`. NFRs are **enduring constraints** on Features / Stories,
-**verified** at Verification & Sign-off and the Demo Gate. Compliance or architecture gaps may
-spawn **enabler** work. The canonical register is architecture-scoped and belongs under the
-product's `art/<art-slug>/program-backlog/` folder; Features should only trace which NFRs apply to them.
+`@system-architect` (Security is a challenger, not a co-author). NFRs are **enduring constraints**
+on Features and Stories, **verified** at Story DoD, Verification & Sign-off, and the Demo Gate.
+Compliance or architecture gaps may spawn **enabler** work.
+
+This file is a **product singleton**, same grain as `architecture-runway.md`. It is not a
+Feature-folder artifact. Features and Stories **trace** which NFRs apply; they never redefine the
+canonical set.
+
+| Artifact | Relation to this register |
+|---|---|
+| Architectural Vision | Seeds the cross-product backbone; does not replace this measurable product set |
+| This `nfr-list` | Canonical product NFRs. Architecture-owned. Authored in Architectural Runway Extension |
+| Feature / Feature-enabler | Traces which NFRs apply; optional tightening; never defines the set |
+| Story / Story-enabler | Inherits the parent Feature's applicable NFRs; verifies; never defines the set |
+| ADR | Design decisions that realize NFRs; written only after this register exists (or explicit-none) |
+| Architecture Runway | Points at this register + ADRs + enabler Features that pave them |
 
 ```markdown
 ---

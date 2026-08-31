@@ -20,7 +20,7 @@ description: '**SAFe CEREMONY SKILL.** The Iteration Review playbook loaded by `
 
 # SAFe Ceremony — Iteration Review
 
-A stage-and-capture review (**not a gate** — the ★ Demo Gate is the **Demo Gate**). The **normative spec** is the machine-readable **[conf/workflows/iteration-review.workflow.conf.yaml](../../../../../../conf/workflows/iteration-review.workflow.conf.yaml)** — every step + its `conditions` (the trigger as the first step's preconditions; the demo + feedback-capture obligations as conditions; the structural `after`/`input`/`output` wiring), consumed by `@scrum-master` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+A stage-and-capture review (**not a gate** — the ★ Demo Gate is the **Demo Gate**). The **normative spec** is the machine-readable **[workflows/team/iteration-review.workflow.conf.yaml](../workflows/team/iteration-review.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
 
-Shared model (the open-item ledger, ★ gates, the bench, invariants, artifact templates) lives in **[scrum-master orchestration core](../../../actors/scrum-master/scrum-master.skill.md)**. The facilitator stages + captures only: stakeholders + the Central Supervisor give feedback, which routes to new/changed backlog items (Stories via the PO; scope up to `@release-train-engineer`); it flips no ★ gate.
+Shared model lives in **[scrum-master orchestration core](scrum-master.skill.md)**. The facilitator stages + captures only: stakeholders + the Central Supervisor give feedback, which routes to new/changed backlog items (Stories via the PO; scope up to `@release-train-engineer`); it flips no ★ gate.
 Increment demoed + feedback captured + routed to the right backlog.

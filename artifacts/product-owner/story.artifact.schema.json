@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gsmarc://saf/artifacts/story.artifact/v1",
+  "$ref": "gsmarc://saf/harness/contracts/artifact/v1",
+  "title": "story artifact schema",
+  "type": "object",
+  "additionalProperties": true,
+  "x-artifact": {
+    "id": "story",
+    "kind": "story",
+    "template": "templates/layers/team/actors/product-owner/artifacts/story.artifact-template.md",
+    "pathPatterns": [
+      "art/*/teams/*/team-backlog/*/*.story.md"
+    ],
+    "renderOnly": false,
+    "type": "user",
+    "sections": {
+      "required": [
+        "Acceptance Criteria"
+      ],
+      "optional": [
+        "Preconditions",
+        "Implementation Notes",
+        "Open Items"
+      ],
+      "maxDepth": 2,
+      "allowUnknown": false,
+      "patterns": {
+        "Acceptance Criteria": "bulletList"
+      }
+    }
+  },
+  "required": [
+    "__path",
+    "__kind",
+    "__artifact_id",
+    "__frontmatter_present",
+    "status",
+    "type",
+    "title",
+    "parentFeature",
+    "workItemRelations",
+    "sprint",
+    "pi",
+    "adrs",
+    "driver",
+    "navigator",
+    "pairSwaps",
+    "estimatePoints",
+    "owner",
+    "created",
+    "openItems",
+    "cost",
+    "github"
+  ],
+  "properties": {
+    "__path": {
+      "description": "Workspace-relative path of the artifact file, injected by the orchestration harness (not authored in frontmatter).",
+      "type": "string",
+      "minLength": 1
+    },
+    "__kind": {
+      "description": "Artifact-kind discriminator injected by the harness; must equal x-artifact.kind.",
+      "const": "story"
+    },
+    "__artifact_id": {
+      "description": "Stable artifact id injected by the harness, derived from the file and frontmatter.",
+      "type": "string",
+      "minLength": 1
+    },
+    "__frontmatter_present": {
+      "description": "Harness assertion that YAML frontmatter was found and parsed; always true for a valid artifact.",
+      "const": true
+    },
+    "__sections": {
+      "description": "Artifact body sections keyed by their `## ` heading \u2014 one property per template section; the value is the raw Markdown under that heading. Authored artifacts may add or omit sections, so this is advisory (additionalProperties is permitted) and no section is individually required.",
+      "type": "object",
+      "properties": {
+        "User-facing intent": {
+          "description": "As a <persona>, I want <thin slice>, so that <benefit>.",
+          "type": "string"
+        },
+        "Definition of Ready (DoR)": {
+          "description": "[ ] AC complete and testable",
+          "type": "string"
+        },
+        "Acceptance criteria (Given/When/Then)": {
+          "description": "Use one flat bullet per criterion, labeled `AC1`, `AC2`, `AC3`",
+          "type": "string"
+        },
+        "NFR applicability / trace": {
+          "description": "Inherit the parent Feature's applicable NFRs from `products/<product-slug>/nfr-list.md`. Record verification notes for this slice. Do not redefine the product's canonical NFR set. A missing NFR is a runway concern.",
+          "type": "string"
+        },
+        "Routing classification": {
+          "description": "Risk: low | medium | critical \u2014 consequence of being wrong.",
+          "type": "string"
+        },
+        "Work-item relations": {
+          "description": "Use only relations that help the team decide DoR, execution order, or slice boundaries.",
+          "type": "string"
+        },
+        "Open items": {
+          "description": "The human-readable companion to the `openItems:` frontmatter ledger (the [open-item ledger](../../orchestrator/SKILL.md#open-item-ledger)) \u2014 this Story's **clarifications** (proactive unknowns surfaced by the CE Discovery turn) and **challenges** (reactive findings from peer review), forma...",
+          "type": "string"
+        },
+        "Definition of Done (DoD)": {
+          "description": "[ ] Code merged behind Central Supervisor approval (\u2605 PR Gate)",
+          "type": "string"
+        },
+        "Notes / decisions during pair work": {
+          "description": "(appended by pair during DRIVE/CRITIQUE)",
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "__body": {
+      "description": "Raw Markdown body of the artifact (everything after the frontmatter), injected by the harness.",
+      "type": "string"
+    },
+    "status": {
+      "description": "backlog | ready | in-progress | in-review | in-qa | awaiting-pr | done | blocked",
+      "enum": [
+        "backlog",
+        "ready",
+        "in-progress",
+        "in-review",
+        "in-qa",
+        "awaiting-pr",
+        "done",
+        "blocked"
+      ]
+    },
+    "type": {
+      "description": "Artifact type discriminator.",
+      "enum": [
+        "user"
+      ]
+    },
+    "title": {
+      "description": "Human-readable title of the artifact.",
+      "type": "string",
+      "minLength": 1
+    },
+    "workItemRelations": {
+      "description": "Typed work-item relations (dependsOn / enables / relatedTo / supersedes).",
+      "$ref": "gsmarc://saf/artifacts/framework-definitions/v1#/definitions/workItemRelations"
+    },
+    "wsjf": {
+      "description": "Weighted Shortest Job First scoring block.",
+      "$ref": "gsmarc://saf/artifacts/framework-definitions/v1#/definitions/wsjf"
+    },
+    "created": {
+      "description": "Authoring date (YYYY-MM-DD).",
+      "type": "string",
+      "minLength": 1
+    },
+    "openItems": {
+      "description": "clarification + challenge ledger \u2014 see orchestrator \"Open-item ledger\". Each entry: { id, kind, raised_by, owner, blocking, status, \u2026 }; kind: clarification | challenge. status: open | resolved | withdrawn. A blocking+open entry HALTS the \u2605 Story Gate (DoR).",
+      "$ref": "gsmarc://saf/artifacts/framework-definitions/v1#/definitions/openItems"
+    },
+    "cost": {
+      "description": "token cost accounting \u2014 see the cost-snapshot invariant instructions",
+      "$ref": "gsmarc://saf/artifacts/framework-definitions/v1#/definitions/cost"
+    },
+    "github": {
+      "description": "filled by portfolio/_sync (GitHub Projects board sync); null when authoring",
+      "$ref": "gsmarc://saf/artifacts/framework-definitions/v1#/definitions/githubSync"
+    },
+    "parentFeature": {
+      "description": "Parent Feature id this Story realizes.",
+      "type": "string",
+      "minLength": 1
+    },
+    "sprint": {
+      "description": "Iteration/sprint number this artifact is associated with.",
+      "type": [
+        "integer",
+        "number",
+        "string"
+      ]
+    },
+    "pi": {
+      "description": "Program Increment number this artifact is associated with.",
+      "type": [
+        "integer",
+        "number",
+        "string",
+        "null"
+      ]
+    },
+    "adrs": {
+      "description": "ADR ids the Story depends on",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "driver": {
+      "description": "assigned at Iteration Planning",
+      "type": "string",
+      "minLength": 1
+    },
+    "navigator": {
+      "description": "assigned at Iteration Planning",
+      "type": "string",
+      "minLength": 1
+    },
+    "pairSwaps": {
+      "description": "log of HUDDLE\u2192SWAP cycles",
+      "type": "array"
+    },
+    "estimatePoints": {
+      "description": "Relative story-point estimate.",
+      "type": "number"
+    },
+    "owner": {
+      "description": "Accountable owner role/hat for this artifact.",
+      "type": "string",
+      "minLength": 1
+    },
+    "sources": {
+      "description": "Derivation provenance (narrowed subtype of the base contract's sources): refs to the upstream artifact(s) this story was built from. Allowed source kinds: feature.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "(^|/)([a-z0-9-]+\\.)?(feature)\\.md$"
+      }
+    }
+  }
+}

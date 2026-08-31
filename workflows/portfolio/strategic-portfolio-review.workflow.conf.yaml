@@ -1,0 +1,123 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: strategic-portfolio-review
+description: >
+  Purpose: keep, pivot, stop, or re-rank portfolio bets. Act: Cadence.
+  Orchestrator: Value Management Officer. Dispatch mains: strategic-themes,
+  portfolio-vision, portfolio-roadmap, architecture-vision (EA sibling main).
+  portfolio-review-decision is mediation, not a main and not evaluated.
+  Evaluate: the four mains. Not Demand — kill/pivot of one Epic as a rewrite is
+  epic-lean-business-case Demand.
+instructions: value-management-officer-interpret-speech-acts
+orchestrator: value-management-officer
+skills: portfolio-strategic-portfolio-review
+steps:
+- slug: rerank
+  description: Main artifact rewrite — Business Owner re-ranks Strategic Themes.
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: business-owner
+  artifact: strategic-themes
+  instructions: portfolio-strategic-portfolio-review-update-strategic-themes
+- slug: update-portfolio-vision
+  description: Main artifact rewrite — Business Owner updates Portfolio Vision after the theme rerank.
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: business-owner
+  artifact: portfolio-vision
+  conditions:
+  - slug: after-rerank
+    kind: precondition
+    step: rerank
+  instructions: portfolio-strategic-portfolio-review-update-portfolio-vision
+- slug: update-portfolio-roadmap
+  description: Main artifact rewrite — Business Owner updates Portfolio Roadmap after the vision rewrite.
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: business-owner
+  artifact: portfolio-roadmap
+  conditions:
+  - slug: after-update-portfolio-vision
+    kind: precondition
+    step: update-portfolio-vision
+  instructions: portfolio-strategic-portfolio-review-update-portfolio-roadmap
+- slug: update-architecture-vision
+  description: Main artifact challenge-as-sibling — Enterprise Architect restates Architecture Vision against the new Portfolio Vision.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: enterprise-architect
+  artifact: architecture-vision
+  conditions:
+  - slug: after-update-portfolio-vision
+    kind: precondition
+    step: update-portfolio-vision
+  instructions: portfolio-strategic-portfolio-review-update-architecture-vision
+- slug: decide
+  description: Mediation record — Business Owner records the kill/pivot/continue decision. Not itself challenged.
+  capabilities:
+    deep-reasoning: 2
+    coding: 3
+    tool-use: 8
+    long-context: 2
+    multimodal: 0
+    writing-quality: 1
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 8
+  actor: business-owner
+  artifact: portfolio-review-decision
+  conditions:
+  - slug: after-rerank
+    kind: precondition
+    step: rerank
+  - slug: after-update-portfolio-roadmap
+    kind: precondition
+    step: update-portfolio-roadmap
+  - slug: after-update-architecture-vision
+    kind: precondition
+    step: update-architecture-vision
+  instructions: portfolio-strategic-portfolio-review-human-decides-pivots

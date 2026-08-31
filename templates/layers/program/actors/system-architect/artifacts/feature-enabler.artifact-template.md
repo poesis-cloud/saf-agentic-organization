@@ -108,8 +108,9 @@ Use 2-3 bullets in this form:
 - `Validation evidence expected before closure: <test, report, review, or artifact>`
 
 ## NFR applicability / trace
-List the canonical product NFRs from `<feature-slug>.nfr-list.md` that apply to this Feature, plus any
-Feature-specific tightening or derived verification notes.
+List the canonical product NFRs from `products/<product-slug>/nfr-list.md` that apply to this Feature,
+plus any Feature-specific tightening or derived verification notes. Do not redefine the product's
+canonical NFR set here. A missing NFR is a runway concern, not Feature AC.
 
 ## Routing classification
 - Risk: low | medium | critical.

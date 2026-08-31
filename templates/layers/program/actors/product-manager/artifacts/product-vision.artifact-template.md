@@ -40,5 +40,6 @@ For <customers> who <need>, <product> is a <category> that <value>; unlike <alt>
 Links to `strategic-themes.md`.
 
 ## NFR + runway anchors
-Pointers to `<feature-slug>.nfr-list.md` and `architecture-runway.md` that constrain the Vision.
+Pointers to `products/<product-slug>/nfr-list.md` and `products/<product-slug>/architecture-runway.md`
+that constrain the Vision.
 ```

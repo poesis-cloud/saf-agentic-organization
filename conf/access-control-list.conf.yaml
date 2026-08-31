@@ -82,11 +82,17 @@ roles:
     action: update
   - artifact: product-manifest
     action: delete
-  - artifact: portfolio-sync-record
+  - artifact: portfolio-sync
     action: create
-  - artifact: portfolio-sync-record
+  - artifact: portfolio-sync
     action: update
-  - artifact: portfolio-sync-record
+  - artifact: portfolio-sync
+    action: delete
+  - artifact: portfolio-kanban
+    action: create
+  - artifact: portfolio-kanban
+    action: update
+  - artifact: portfolio-kanban
     action: delete
   slug: value-management-officer
 - privileges:
@@ -102,29 +108,11 @@ roles:
     action: update
   - artifact: lean-business-case
     action: delete
-  - artifact: portfolio-roadmap
-    action: create
-  - artifact: portfolio-roadmap
-    action: update
-  - artifact: portfolio-roadmap
-    action: delete
-  - artifact: portfolio-vision
-    action: create
-  - artifact: portfolio-vision
-    action: update
-  - artifact: portfolio-vision
-    action: delete
   - artifact: strategic-themes
     action: create
   - artifact: strategic-themes
     action: update
   - artifact: strategic-themes
-    action: delete
-  - artifact: epic-lean-business-case
-    action: create
-  - artifact: epic-lean-business-case
-    action: update
-  - artifact: epic-lean-business-case
     action: delete
   - artifact: budget-allocation
     action: create
@@ -137,6 +125,18 @@ roles:
   - artifact: portfolio-review-decision
     action: update
   - artifact: portfolio-review-decision
+    action: delete
+  - artifact: portfolio-vision
+    action: create
+  - artifact: portfolio-vision
+    action: update
+  - artifact: portfolio-vision
+    action: delete
+  - artifact: portfolio-roadmap
+    action: create
+  - artifact: portfolio-roadmap
+    action: update
+  - artifact: portfolio-roadmap
     action: delete
   slug: business-owner
 - privileges:
@@ -184,6 +184,12 @@ roles:
     action: update
   - artifact: program-kanban
     action: delete
+  - artifact: objectives
+    action: create
+  - artifact: objectives
+    action: update
+  - artifact: objectives
+    action: delete
   slug: release-train-engineer
 - privileges:
   - artifact: feature
@@ -216,6 +222,12 @@ roles:
     action: update
   - artifact: risks
     action: delete
+  - artifact: release-on-demand
+    action: create
+  - artifact: release-on-demand
+    action: update
+  - artifact: release-on-demand
+    action: delete
   slug: product-manager
 - privileges:
   - artifact: adr
@@ -224,12 +236,6 @@ roles:
     action: update
   - artifact: adr
     action: delete
-  - artifact: architecture-review
-    action: create
-  - artifact: architecture-review
-    action: update
-  - artifact: architecture-review
-    action: delete
   - artifact: architecture-runway
     action: create
   - artifact: architecture-runway
@@ -247,6 +253,12 @@ roles:
   - artifact: nfr-list
     action: update
   - artifact: nfr-list
+    action: delete
+  - artifact: story-enabler
+    action: create
+  - artifact: story-enabler
+    action: update
+  - artifact: story-enabler
     action: delete
   slug: system-architect
 - privileges:
@@ -262,17 +274,17 @@ roles:
     action: update
   - artifact: team-manifest
     action: delete
-  - artifact: daily-sync
+  - artifact: team-sync
     action: create
-  - artifact: daily-sync
+  - artifact: team-sync
     action: update
-  - artifact: daily-sync
+  - artifact: team-sync
     action: delete
-  - artifact: retrospective
+  - artifact: iteration-retrospective
     action: create
-  - artifact: retrospective
+  - artifact: iteration-retrospective
     action: update
-  - artifact: retrospective
+  - artifact: iteration-retrospective
     action: delete
   - artifact: iteration-review
     action: create
@@ -290,23 +302,17 @@ roles:
     action: delete
   slug: product-owner
 - privileges:
-  - artifact: feasibility-review
+  - artifact: code-change
     action: create
-  - artifact: feasibility-review
+  - artifact: code-change
     action: update
-  - artifact: feasibility-review
+  - artifact: code-change
     action: delete
-  - artifact: story-enabler
+  - artifact: feasibility-review
     action: create
-  - artifact: story-enabler
+  - artifact: feasibility-review
     action: update
-  - artifact: story-enabler
-    action: delete
-  - artifact: code-change
-    action: create
-  - artifact: code-change
-    action: update
-  - artifact: code-change
+  - artifact: feasibility-review
     action: delete
   slug: developer
 - privileges:

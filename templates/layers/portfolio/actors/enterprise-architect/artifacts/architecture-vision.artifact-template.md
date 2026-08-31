@@ -36,7 +36,7 @@ Target architecture across the portfolio's products; key components and boundari
 The standing decisions + constraints (security, data, integration, observability, set-based options).
 
 ## NFR backbone
-Cross-product nonfunctional requirements (→ each product's `<feature-slug>.nfr-list.md`).
+Cross-product nonfunctional requirements (→ each product's `products/<product-slug>/nfr-list.md`).
 
 ## Runway direction & enabler Epics
 The runway the portfolio must build ahead of demand; seeds **enabler Epics** (`type: enabler`,

@@ -32,6 +32,12 @@ openItems: []
 ## Subject under review
 Link / id. Restate the design, NFR, or runway item under review.
 
+## NFR applicability
+When the subject is a Feature, Feature-enabler, Story, or Story-enabler: does
+`## NFR applicability / trace` match `products/<product-slug>/nfr-list.md`?
+Record omitted applicable NFRs, invented NFRs, or a missing product register
+(runway, not Feature/Story AC). Do not author the register in this packet.
+
 ## Findings
 | id | severity | finding | recommendation |
 |---|---|---|---|

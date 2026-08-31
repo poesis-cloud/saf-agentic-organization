@@ -1,0 +1,176 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: pi-planning
+description: >
+  Purpose: ART commit for the PI. Act: Cadence. Orchestrator: Release Train
+  Engineer. Dispatch: confirm product-vision, product-roadmap, feature intent,
+  architecture-runway; write objectives. Challenge: Developer feasibility-review
+  of drafted Objectives (not evaluated). risks is ROAM mediation, not a main.
+  Evaluate: objectives (and a confirmed main only if the user KOs that intent).
+  "I want SSO" here is Refuse — Demand feature-backlog-refinement first.
+instructions: release-train-engineer-interpret-speech-acts
+predecessors:
+- feature-backlog-refinement
+orchestrator: release-train-engineer
+skills: program-pi-planning
+steps:
+- slug: confirm-product-vision
+  description: Main artifact confirm — Product Manager restates product vision for this PI.
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: product-manager
+  artifact: product-vision
+  conditions: []
+  instructions: program-pi-planning-confirm-product-vision
+- slug: confirm-product-roadmap
+  description: Main artifact confirm — Product Manager restates the product roadmap for this PI.
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: product-manager
+  artifact: product-roadmap
+  conditions:
+  - slug: after-confirm-product-vision
+    kind: precondition
+    step: confirm-product-vision
+  instructions: program-pi-planning-confirm-product-roadmap
+- slug: confirm-intent
+  description: Main artifact confirm — Product Manager restates Feature intent that this PI will commit against.
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: product-manager
+  artifact: feature
+  conditions:
+  - slug: after-confirm-product-roadmap
+    kind: precondition
+    step: confirm-product-roadmap
+  instructions: program-pi-planning-confirm-feature-intent
+- slug: confirm-runway
+  description: Main artifact confirm — System Architect restates Architecture Runway capacity for this PI.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: system-architect
+  artifact: architecture-runway
+  instructions: program-pi-planning-confirm-architecture-runway
+- slug: draft-objectives
+  description: Main artifact draft — Release Train Engineer proposes committed and stretch PI Objectives.
+  capabilities:
+    deep-reasoning: 2
+    coding: 3
+    tool-use: 8
+    long-context: 2
+    multimodal: 0
+    writing-quality: 1
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 8
+  actor: release-train-engineer
+  artifact: objectives
+  conditions:
+  - slug: after-confirm-intent
+    kind: precondition
+    step: confirm-intent
+  - slug: after-confirm-runway
+    kind: precondition
+    step: confirm-runway
+  instructions: program-pi-planning-draft-pi-objectives
+- slug: challenge-feasibility
+  description: Challenge packet — Developer feasibility-review of the drafted PI Objectives. Not itself challenged.
+  capabilities:
+    deep-reasoning: 8
+    coding: 8
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 6
+  actor: developer
+  artifact: feasibility-review
+  conditions:
+  - slug: after-draft-objectives
+    kind: precondition
+    step: draft-objectives
+  instructions: program-feature-backlog-refinement-challenger-writes-no-owner-content
+- slug: commit-objectives
+  description: Owner rewrite — Release Train Engineer commits PI Objectives after the feasibility challenge.
+  capabilities:
+    deep-reasoning: 2
+    coding: 3
+    tool-use: 8
+    long-context: 2
+    multimodal: 0
+    writing-quality: 1
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 8
+  actor: release-train-engineer
+  artifact: objectives
+  conditions:
+  - slug: after-challenge-feasibility
+    kind: precondition
+    step: challenge-feasibility
+  instructions: program-pi-planning-commit-pi-objectives
+- slug: record-risks
+  description: Mediation ledger — Product Manager records ROAM risks. Not a main artifact; not challenged.
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: product-manager
+  artifact: risks
+  conditions:
+  - slug: after-commit-objectives
+    kind: precondition
+    step: commit-objectives
+  instructions: program-pi-planning-record-roam-risks

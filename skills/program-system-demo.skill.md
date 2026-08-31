@@ -20,7 +20,7 @@ description: '**SAFe CEREMONY SKILL.** The System Demo playbook loaded by `@rele
 
 # SAFe Ceremony — System Demo
 
-A **program / ART increment review**. The **normative spec** is the machine-readable **[conf/workflows/system-demo.workflow.conf.yaml](../../conf/workflows/system-demo.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@release-train-engineer` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+A **program / ART increment review**. The **normative spec** is the machine-readable **[workflows/program/system-demo.workflow.conf.yaml](../workflows/program/system-demo.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@release-train-engineer` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
 
 Shared model lives in **[RTE orchestration core](release-train-engineer.skill.md)**. The facilitator stages the Demo Gate packet only — it authors no Feature content and flips no ★ gate; **only the Central Supervisor decides**.
 ART increment demoed + Demo Gate packet staged + Feature cost written once.

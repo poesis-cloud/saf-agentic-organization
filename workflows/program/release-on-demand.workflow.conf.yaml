@@ -1,0 +1,61 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: release-on-demand
+description: >
+  Purpose: ship an accepted increment off-cadence. Act: Advance. Orchestrator:
+  Release Train Engineer. Dispatch: release-on-demand after Operator
+  operability-review (not evaluated). Evaluate: the release decision. Refuse:
+  "fix prod" with no Story — SM Demand first. Not Demand — do not mint a Feature.
+instructions: release-train-engineer-interpret-speech-acts
+predecessors:
+- system-demo
+orchestrator: release-train-engineer
+skills: program-release-on-demand
+steps:
+- slug: confirm-deployment
+  description: Challenge packet — Operator operability-review of Continuous Deployment readiness. Not itself challenged.
+  capabilities:
+    deep-reasoning: 7
+    coding: 3
+    tool-use: 8
+    long-context: 4
+    multimodal: 0
+    writing-quality: 4
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 8
+  actor: operator
+  artifact: operability-review
+  conditions: []
+  instructions: program-release-on-demand-confirm-deployment
+- slug: commit-release
+  description: Owner rewrite — Product Manager commits the release-on-demand decision after the operability challenge.
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: product-manager
+  artifact: release-on-demand
+  conditions:
+  - slug: after-confirm-deployment
+    kind: precondition
+    step: confirm-deployment
+  instructions: program-release-on-demand-commit-release

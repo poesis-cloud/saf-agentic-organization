@@ -1,0 +1,43 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: pair-programming
+description: >
+  Purpose: implement an already-OK Story. Act: Advance. Orchestrator: Scrum
+  Master. Dispatch: code-change (driver). Navigator authors no second artifact.
+  Built-In Quality of the code is verification qa-signoff, not an in-pair packet.
+  Evaluate: not the code-change as a Demand; "this isn't what I meant" is KO of
+  the Story (Demand rewrite) or stay in Advance. Not Demand — do not mint a Story.
+instructions: scrum-master-interpret-speech-acts
+predecessors:
+- iteration-planning
+orchestrator: scrum-master
+skills: team-pair-programming
+steps:
+- slug: drive
+  description: Main artifact — Developer records the pair-programming code-change. Challenged later by verification, not by a navigator packet.
+  capabilities:
+    deep-reasoning: 7
+    coding: 8
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: developer
+  artifact: code-change
+  conditions: []
+  instructions: team-pair-programming-drive-code-change

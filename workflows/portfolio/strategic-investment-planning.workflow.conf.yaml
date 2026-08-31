@@ -1,0 +1,79 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: strategic-investment-planning
+description: >
+  Purpose: allocate or guardrail value-stream / ART funding. Act: Cadence (or
+  Evaluate of the last allocation). Orchestrator: Value Management Officer.
+  Dispatch: budget-allocation. Challenge: Developer feasibility-review (not
+  evaluated). Evaluate: the allocation only. Not Demand — do not mint an Epic.
+  Use when: funding shift, guardrail change. Do not use for a new bet (Demand
+  epic-lean-business-case).
+instructions: value-management-officer-interpret-speech-acts
+orchestrator: value-management-officer
+skills: portfolio-participatory-budgeting
+steps:
+- slug: draft
+  description: Main artifact draft — Business Owner proposes the value-stream / ART budget allocation.
+  capabilities:
+    deep-reasoning: 2
+    coding: 3
+    tool-use: 8
+    long-context: 2
+    multimodal: 0
+    writing-quality: 1
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 8
+  actor: business-owner
+  artifact: budget-allocation
+  instructions: strategic-investment-planning-draft-allocation
+- slug: challenge-feasibility
+  description: Challenge packet — Developer feasibility-review of the draft allocation. Not itself challenged.
+  capabilities:
+    deep-reasoning: 8
+    coding: 8
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 6
+  actor: developer
+  artifact: feasibility-review
+  conditions:
+  - slug: after-draft
+    kind: precondition
+    step: draft
+  instructions: program-feature-backlog-refinement-challenger-writes-no-owner-content
+- slug: commit
+  description: Owner rewrite — Business Owner commits the allocation after the feasibility challenge.
+  capabilities:
+    deep-reasoning: 2
+    coding: 3
+    tool-use: 8
+    long-context: 2
+    multimodal: 0
+    writing-quality: 1
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 8
+  actor: business-owner
+  artifact: budget-allocation
+  conditions:
+  - slug: after-challenge-feasibility
+    kind: precondition
+    step: challenge-feasibility
+  instructions: strategic-investment-planning-commit-allocation
