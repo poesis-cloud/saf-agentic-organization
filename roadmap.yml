@@ -1,0 +1,12 @@
+scope: product
+name: SAF Agentic Organization
+milestones:
+  - version: v0.1.0
+    current: true
+  - version: v1.0.0
+    features:
+      - https://github.com/poesis-cloud/saf-agentic-organization/issues/1
+      - https://github.com/poesis-cloud/saf-agentic-organization/issues/2
+      - https://github.com/poesis-cloud/saf-agentic-organization/issues/3
+      - https://github.com/poesis-cloud/saf-agentic-organization/issues/4
+      - https://github.com/poesis-cloud/saf-agentic-organization/issues/5
