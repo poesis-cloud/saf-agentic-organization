@@ -286,3 +286,10 @@ This project uses the [Developer Certificate of Origin (DCO)](https://developerc
 Apache License, Version 2.0. See [LICENSE](LICENSE).
 
 Copyright 2026 Poesis Cloud and contributors.
+
+<!-- roadmap:start -->
+## Roadmap
+
+![Roadmap](docs/roadmap.svg)
+
+<!-- roadmap:end -->
