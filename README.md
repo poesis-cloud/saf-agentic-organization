@@ -34,7 +34,7 @@ not through a shared tree.
 
 ## Overview
 
-The Poesis SAFe Agentic Framework brings SAFe-shaped multi-agent orchestration into
+The Poesis SAFe Agentic Organization brings SAFe-shaped multi-agent orchestration into
 agent execution environments that support custom agents and skills. It includes:
 
 - **Orchestrators**: `@value-management-officer`, `@release-train-engineer`, `@scrum-master`

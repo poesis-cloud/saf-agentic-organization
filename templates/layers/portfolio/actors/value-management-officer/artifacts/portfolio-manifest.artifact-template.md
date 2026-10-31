@@ -42,11 +42,11 @@ created: YYYY-MM-DD
 # Canonical global portfolio configuration and product registry.
 # `products:` is authoritative; `arts:` may be retained as a derived compatibility list.
 products:
-  - slug: itip-web
-    path: portfolio/itip-web
+  - slug: oip-web
+    path: portfolio/oip-web
     topology: submodule
-  - slug: itip-blackboard-sourcer
-    path: portfolio/itip-blackboard-sourcer
+  - slug: oip-blackboard-sourcer
+    path: portfolio/oip-blackboard-sourcer
     topology: submodule
   - slug: sie-blackboard
     path: portfolio/sie-blackboard
@@ -57,8 +57,8 @@ products:
 
 # Epics may span any subset of these via their `products:` list.
 arts:
-  - itip-web
-  - itip-blackboard-sourcer
+  - oip-web
+  - oip-blackboard-sourcer
   - sie-blackboard
   - sie-definition
 

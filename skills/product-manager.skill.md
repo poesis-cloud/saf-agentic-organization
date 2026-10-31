@@ -1,6 +1,6 @@
 ---
 name: product-manager
-description: '**WORKFLOW SKILL** — Poesis product management: systematic feature capture, backlog governance, opportunity identification, and GitHub Project synchronization across all Poesis products. USE FOR: reasoning about product strategy, feature decomposition, backlog coherence, market positioning, business opportunity identification, cross-product dependency analysis, SAFe taxonomy alignment, feature prioritization, roadmap planning, and GitHub Project sync operations. DO NOT USE FOR: GSM ontology semantics (use gsm-knowledge skill); ontology sourcing into ITIP (use itip-ontology-sourcing skill); runtime deployment or CI/CD. REFERENCES: def/features/ artifacts, def/features/github_project_sync/, strategy/poesis-strategy.md.'
+description: '**WORKFLOW SKILL** — Poesis product management: systematic feature capture, backlog governance, opportunity identification, and GitHub Project synchronization across all Poesis products. USE FOR: reasoning about product strategy, feature decomposition, backlog coherence, market positioning, business opportunity identification, cross-product dependency analysis, SAFe taxonomy alignment, feature prioritization, roadmap planning, and GitHub Project sync operations. DO NOT USE FOR: GSM ontology semantics (use gsm-knowledge skill); ontology sourcing into OIP (use oip-ontology-sourcing skill); runtime deployment or CI/CD. REFERENCES: def/features/ artifacts, def/features/github_project_sync/, strategy/poesis-strategy.md.'
 ---
 
 # Product Manager Skill
@@ -17,7 +17,7 @@ Poesis is a **systemic governance platform** with two business lines (open theor
 |---------|------|-------|------------|----------------|
 | **GSM** | Theory / Publication | Publication planning (Q2 2026) | `gsm/` | None (theory) |
 | **SIE** | AI Context Platform (engine) | Design + early MVP | `sie/` | ✅ Extensive (def/features/) |
-| **ITIP** | Domain App (IT Intelligence) | Design-time | `itip/` | ❌ None yet |
+| **OIP** | Domain App (Organizational Intelligence) | Design-time | `oip/` | ❌ None yet |
 | **GSM Sourcer** | Sourcing Pipeline | Design documentation | `gsm-sourcer/` | ❌ None yet |
 
 ### SIE Sub-Components (infrastructure)
@@ -38,7 +38,7 @@ Poesis is a **systemic governance platform** with two business lines (open theor
 - Timeline: Q2 2026 (paper) → Q4 2026 (book)
 
 **Line 2 — GSM Framework (Commercial)**
-- SIE platform + ITIP domain app + framework mappings + certification
+- SIE platform + OIP domain app + framework mappings + certification
 - Business model: SaaS product + consulting + certification (SAFe pattern)
 - Timeline: ongoing (product) → 2027 (certification)
 
@@ -49,7 +49,7 @@ Poesis is a **systemic governance platform** with two business lines (open theor
 │                   POESIS                        │
 │                                                 │
 │  ┌──────────┐   ┌──────────┐   ┌────────────┐  │
-│  │   GSM    │   │   SIE    │   │   ITIP     │  │
+│  │   GSM    │   │   SIE    │   │   OIP      │  │
 │  │ (theory) │──▶│ (engine) │◀──│ (IT app)   │  │
 │  └──────────┘   └────┬─────┘   └────────────┘  │
 │                      │                          │
@@ -58,16 +58,16 @@ Poesis is a **systemic governance platform** with two business lines (open theor
 │               │ (pipeline)  │                   │
 │               └─────────────┘                   │
 │                                                 │
-│  Future domain apps follow ITIP pattern:        │
+│  Future domain apps follow OIP pattern:         │
 │  Finance Intelligence, Healthcare Intelligence  │
 └─────────────────────────────────────────────────┘
 ```
 
 **SIE** is the engine (hosts GSM, enforces governance, provides analytics).
-**ITIP** is the first domain application (translates GSM into IT vocabulary).
+**OIP** is the first domain application (translates GSM into IT vocabulary).
 **GSM Sourcer** ingests external artifacts into GSM definitions.
 **GSM** is the theoretical foundation (open, published).
-**Future domain apps** follow the ITIP pattern for other verticals.
+**Future domain apps** follow the OIP pattern for other verticals.
 
 ## SAFe Taxonomy (Poesis-aligned)
 
@@ -107,11 +107,11 @@ A backlog item is only *operationally valuable* if it:
 
 The existing feature models are **SIE-analytics-dominated**. They capture *what the engine observes/analyzes/decides* but do NOT cover:
 
-- **ITIP application features** (what the IT domain app delivers to users)
+- **OIP application features** (what the IT domain app delivers to users)
 - **GSM Sourcer pipeline features** (ingestion, extraction, verification)
 - **GSM publication features** (paper, web, book production pipeline)
 - **Platform/infrastructure features** (SIE Definition Manager API, event contracts, schema lifecycle)
-- **Cross-product integration features** (SIE↔ITIP, SIE↔Sourcer, Sourcer↔ITIP)
+- **Cross-product integration features** (SIE↔OIP, SIE↔Sourcer, Sourcer↔OIP)
 - **Commercial features** (multi-tenancy, billing, onboarding, marketplace)
 
 ## Feature Capture Methodology
@@ -222,8 +222,8 @@ Map every feature to the value chain position:
 | Stage | Product | Key Feature |
 |-------|---------|-------------|
 | **Discover** | GSM (paper, web) | Conceptual authority, framework comparisons |
-| **Evaluate** | SIE + ITIP (free tier / demo) | Instant architecture discovery, conformance analysis |
-| **Adopt** | SIE + ITIP (paid) | Continuous dashboards, data lineage, LLM governance |
+| **Evaluate** | SIE + OIP (free tier / demo) | Instant architecture discovery, conformance analysis |
+| **Adopt** | SIE + OIP (paid) | Continuous dashboards, data lineage, LLM governance |
 | **Expand** | Multi-domain apps, Sourcer | Regulatory sourcing, cross-domain governance |
 | **Champion** | GSM Certification | Training, certification, consulting market |
 
@@ -252,11 +252,11 @@ When adding or modifying features, verify:
 
 When working with the business owner, proactively surface:
 
-1. **Uncovered products**: Which products have no feature models? (currently: ITIP, GSM Sourcer, platform infra)
+1. **Uncovered products**: Which products have no feature models? (currently: OIP, GSM Sourcer, platform infra)
 2. **Missing customer journeys**: Which user personas lack end-to-end feature coverage?
 3. **Enabler bottlenecks**: Which enablers block the most business features?
 4. **Quick wins**: Features with HIGH value + LOW complexity + NOW feasibility
 5. **Competitive moats**: Features that create switching costs or network effects
 6. **Publication-product alignment**: How does GSM publication timeline align with product readiness?
 7. **Framework sourcing opportunities**: Which regulatory/governance frameworks are in demand but not yet sourced?
-8. **Cross-product synergies**: Where does integrating SIE+ITIP+Sourcer create value > sum of parts?
+8. **Cross-product synergies**: Where does integrating SIE+OIP+Sourcer create value > sum of parts?

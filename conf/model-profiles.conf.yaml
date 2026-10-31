@@ -61,7 +61,7 @@
 #   writing-quality       — AA GDPval-AA v2 + AA-Briefcase (real-world deliverables: memos, decks,
 #                           analysis). REPLACES the old `creative` + `editorial` pair: those two
 #                           tags never actually diverged in practice and had no benchmark backing;
-#                           this SAFe/ITIP harness dispatches PRDs/ADRs/reviews, not fiction, so a
+#                           this SAFe/OIP harness dispatches PRDs/ADRs/reviews, not fiction, so a
 #                           real-world-deliverable-quality proxy is more pertinent than "creative."
 #   instruction-following — AA "Instruction following" eval. ADDED: its leaderboard order is
 #                           essentially uncorrelated with the Intelligence Index (the top reasoning
