@@ -1,4 +1,4 @@
-# Contributing to SDLC Agentic Framework
+# Contributing to the SAFe Agentic Organization
 
 Thank you for your interest in contributing! This document covers the process,
 licensing, and conventions for contributions to this project.

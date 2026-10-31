@@ -45,11 +45,11 @@ products:
   - slug: oip-web
     path: portfolio/oip-web
     topology: submodule
-  - slug: oip-blackboard-sourcer
-    path: portfolio/oip-blackboard-sourcer
+  - slug: sis-code-sourcer
+    path: portfolio/sis-code-sourcer
     topology: submodule
-  - slug: sie-blackboard
-    path: portfolio/sie-blackboard
+  - slug: sis-blackboard-manager
+    path: portfolio/sis-blackboard-manager
     topology: submodule
   - slug: sie-definition
     path: portfolio/sie-definition
@@ -58,8 +58,8 @@ products:
 # Epics may span any subset of these via their `products:` list.
 arts:
   - oip-web
-  - oip-blackboard-sourcer
-  - sie-blackboard
+  - sis-code-sourcer
+  - sis-blackboard-manager
   - sie-definition
 
 github_project: null      # filled by `provision portfolio` (Portfolio Project URL)
