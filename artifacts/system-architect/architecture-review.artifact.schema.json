@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "gsmarc://saf/artifacts/architecture-review.artifact/v1",
-  "$ref": "gsmarc://saf/harness/contracts/artifact/v1",
+  "$ref": "gsmarc://saf/contracts/artifact/v1",
   "title": "architecture-review artifact schema",
   "type": "object",
   "additionalProperties": true,
@@ -110,7 +110,7 @@
     },
     "openItems": {
       "description": "Open-item ledger.",
-      "$ref": "gsmarc://saf/artifacts/framework-definitions/v1#/definitions/openItems"
+      "$ref": "#/$defs/openItems"
     },
     "sources": {
       "description": "Derivation provenance (narrowed subtype of the base contract's sources): refs to the upstream artifact(s) this architecture-review was built from. Allowed source kinds: feature, feature-enabler, story, story-enabler, adr.",
@@ -119,6 +119,15 @@
       "items": {
         "type": "string",
         "pattern": "(^|/)([a-z0-9-]+\\.)?(feature|feature-enabler|story|story-enabler|adr)\\.md$"
+      }
+    }
+  },
+  "$defs": {
+    "openItems": {
+      "description": "Clarification + challenge ledger entries (each an object: id, kind, raised_by, owner, blocking, status, ...).",
+      "type": "array",
+      "items": {
+        "type": "object"
       }
     }
   }

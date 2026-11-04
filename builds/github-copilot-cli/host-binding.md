@@ -20,20 +20,24 @@ Rendered by `builds/github-copilot-cli`; it binds the host-agnostic prose above 
   `agent_type` set to the step's `actor` exactly — one of {{AGENT_IDS}} (no `@`). Dispatch
   synchronously: background mode is denied for governed steps. Pass the model the harness resolved
   (`resolve-step-model`) as the `task` `model` argument, verbatim; never pick, omit, or hardcode one.
-- **Harness commands.** Run `python <harness>/harness.py resolve-step --workflow-slug <slug>` and
-  `python <harness>/harness.py resolve-step-model` through the shell tool (`bash` on Linux/macOS,
-  `powershell` on Windows), synchronously, and never with `--session-id` / `--parent-session-id`:
-  the harness hooks stamp the session; a command that carries them is denied. No other harness
-  function is agent-invoked. `<harness>` is the harness checkout the injected harness context
-  names; its Python is the one the harness was installed with (a venv on Windows and Linux/macOS).
-- **Skills.** Load a skill by name with the `skill` tool — the name is the source file stem
+- **Harness commands (orchestrators only).** Run exactly one plain command through the shell tool
+  (`bash` on Linux/macOS, `powershell` on Windows), synchronously:
+  `[&] <python | py -3 | interpreter full path> <installed harness.py> resolve-step --workflow-slug <slug>`
+  or the same with `resolve-step-model`. Take the interpreter and `harness.py` path from the
+  harness context injected when the session opened. Nothing else is allowed: no chaining (`;`,
+  `&&`, `||`, `|`), no redirection, no `cd` or environment prefix, no other harness function, and
+  never `--session-id` / `--parent-session-id`. The hooks stamp the session and deny any other
+  form.
+- **Writing artifacts.** Write every file with `create` / `edit`, never through the shell
+  (`echo >`, `Set-Content`, `Out-File`, heredocs, scripts). The harness authorizes and
+  schema-checks only file-tool writes, and reverts an invalid one.
+- **Skills.** Load a skill by name with the `skill` tool. The name is the source file stem
   (`team-verification`, `program-pi-planning`, …). When the harness injects a load directive
-  naming a framework file (`<FRAMEWORK_DIR>/skills/<name>.skill.md`), read that file.
+  naming a framework file (`<framework root>/skills/<name>.skill.md`), read that file.
 - **Framework paths.** Relative framework paths in this agent and its skills (`workflows/`,
   `conf/`, `templates/`, `artifacts/`, `instructions/`, `skills/`) resolve against the framework
-  root — the `FRAMEWORK_DIR` environment variable (`$FRAMEWORK_DIR` in bash,
-  `$env:FRAMEWORK_DIR` in PowerShell) — never against the current folder. Artifacts are written
-  in the workspace (`FRAMEWORK_WORKSPACE_DIR`, the trusted folder open in the app).
+  root that the injected harness context names, never against the current folder. Artifacts
+  are written in the workspace that the same context names.
 - **Hooks.** The harness hooks run only in a trusted folder. If no harness context was injected
   when this session opened, say so before the first dispatch and mark the gate packet
   `harness=unchecked`.

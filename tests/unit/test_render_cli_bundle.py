@@ -277,9 +277,27 @@ def test_live_bundle_matches_harness_contract(live_bundle: Path) -> None:
     for slug in orchestrators:
         text = (live_bundle / "agents" / f"{slug}.agent.md").read_text(encoding="utf-8")
         assert "agent_type" in text
-        commands = [line for line in text.splitlines() if "harness.py " in line]
+        commands = [line for line in text.splitlines() if re.search(r"harness\.py>? ", line)]
         assert commands, slug
-        assert not [line for line in commands if re.search(r"harness\.py \S+[^`]*--(parent-)?session-id", line)], slug
+        assert not [line for line in commands if re.search(r"harness\.py>? \S+[^`]*--(parent-)?session-id", line)], slug
+
+
+ALLOWED_HARNESS_COMMAND = re.compile(
+    r"\[&\] <python \| py -3 \| interpreter full path> <installed harness\.py> "
+    r"(resolve-step --workflow-slug <[a-z-]+>|resolve-step-model)"
+)
+
+
+def test_live_bundle_states_only_the_adapter_admitted_harness_command(live_bundle: Path) -> None:
+    files = [*(live_bundle / "agents").glob("*.agent.md"), *(live_bundle / "skills").glob("*/SKILL.md")]
+    commands = [span for path in files for span in re.findall(r"`([^`]*harness\.py>? [^`]*)`", path.read_text(encoding="utf-8"))]
+    assert commands
+    assert [span for span in commands if not ALLOWED_HARNESS_COMMAND.fullmatch(span)] == []
+    for slug in _orchestrators():
+        for path in (live_bundle / "agents" / f"{slug}.agent.md", live_bundle / "skills" / slug / "SKILL.md"):
+            text = path.read_text(encoding="utf-8")
+            assert ALLOWED_HARNESS_COMMAND.search(text), path
+            assert "resolve-step-model" in text and "never through the shell" in text, path
 
 
 def test_live_bundle_skills_are_cli_skill_folders(live_bundle: Path) -> None:

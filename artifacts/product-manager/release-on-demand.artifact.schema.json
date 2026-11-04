@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "gsmarc://saf/artifacts/release-on-demand.artifact/v1",
-  "$ref": "gsmarc://saf/harness/contracts/artifact/v1",
+  "$ref": "gsmarc://saf/contracts/artifact/v1",
   "title": "release-on-demand artifact schema",
   "type": "object",
   "additionalProperties": true,

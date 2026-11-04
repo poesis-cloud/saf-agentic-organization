@@ -234,8 +234,9 @@ def main() -> int:
         print(f"render failed: {error}", file=sys.stderr)
         return 1
     print(f"rendered GitHub Copilot CLI bundle: {bundle_root} ({agents} agents, {skills} skills)")
-    print("next: 1) harness hook install: python <harness>/adapters/github-copilot-cli/install.py"
-          f" --framework-dir <org checkout> --bundle-dir {os.fspath(bundle_root)}")
+    print("next: 1) harness hook install, with the harness venv python:"
+          " <venv python> <harness>/adapters/github-copilot-cli/install.py"
+          f" --framework-dir <org checkout> --bundle-dir {os.fspath(bundle_root)} [--workspace-dir <portfolio>]")
     print(f"      2) copilot plugin marketplace add {os.fspath(bundle_root)}")
     print(f"      3) copilot plugin install {plugin}@{marketplace_name(plugin)}")
     return 0

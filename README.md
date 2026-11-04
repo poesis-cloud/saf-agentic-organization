@@ -222,34 +222,46 @@ $Py = "$PWD\saf-agentic-harness\.venv\Scripts\python.exe"; $Org = "$PWD\saf-agen
 ```
 
 The workspace — where artifacts and session logs land — is your portfolio repository (a Git
-repo). Point the harness at it with `FRAMEWORK_WORKSPACE_DIR` and at this checkout with
-`FRAMEWORK_DIR`, both absolute, in the environment the host starts from (Windows:
-`setx FRAMEWORK_DIR $Org` and `setx FRAMEWORK_WORKSPACE_DIR C:\path\to\portfolio`, then restart
-the app).
+repo), passed to the installer as `--workspace-dir` (default: `FRAMEWORK_WORKSPACE_DIR` from this
+checkout's [`.env`](.env)). No user-level environment variables (`setx`) are needed: the installer
+writes `FRAMEWORK_DIR` and every `FRAMEWORK_*_DIR` into each hook's `env`, and the hooks hand the
+agents the absolute paths when a session opens.
 
 ### GitHub Copilot app / Copilot CLI
 
 The plugin renderer is [`builds/github-copilot-cli/`](builds/github-copilot-cli/); design notes
-are in [`docs/hosts/github-copilot-cli.md`](docs/hosts/github-copilot-cli.md). **Trust the
-portfolio folder** in the app (or when `copilot` asks): in an untrusted folder the harness hooks
-silently do not run and unattended file writes are denied.
+are in [`docs/hosts/github-copilot-cli.md`](docs/hosts/github-copilot-cli.md). **Trust the folder
+you open sessions in** (the portfolio repository) in the app, or when `copilot` asks: in an
+untrusted folder the harness hooks silently do not run and unattended file writes are denied.
 
 ```powershell
 $Bundle = "$HOME\.saf\github-copilot-cli"
 # 1. Render the plugin bundle
 & $Py "$Org\builds\github-copilot-cli\render_bundle.py" $Org $Bundle
-# 2. Register the harness hooks into it (from the harness checkout)
+# 2. Register the harness hooks into it, from the harness checkout, with the venv python
 cd saf-agentic-harness
-& $Py adapters\github-copilot-cli\install.py --framework-dir $Org --bundle-dir $Bundle `
-    --target-repo C:\path\to\portfolio --python $Py
+.venv\Scripts\python adapters\github-copilot-cli\install.py --framework-dir $Org `
+    --bundle-dir $Bundle --workspace-dir C:\path\to\portfolio
 # 3. Install: a one-plugin local marketplace, loaded live from $Bundle (nothing is copied)
 copilot plugin marketplace add $Bundle
 copilot plugin install poesis-saf-agentic-organization@poesis-saf-agentic-organization-local
 ```
 
-On Linux/macOS the steps are the same with `"$PY"`, `"$ORG"`, and `~/.saf/github-copilot-cli`
-(`make bundle-cli CLI_BUNDLE_DIR=...` wraps step 1). The plugin loads live, so after a re-render
-re-run steps 1–2 and open a new session. The orchestrators are `value-management-officer`,
+```bash
+BUNDLE=~/.saf/github-copilot-cli
+"$PY" "$ORG/builds/github-copilot-cli/render_bundle.py" "$ORG" "$BUNDLE"   # or: make bundle-cli CLI_BUNDLE_DIR=...
+make -C saf-agentic-harness install-hooks-copilot-cli FRAMEWORK_DIR="$ORG" BUNDLE_DIR="$BUNDLE" \
+    WORKSPACE_DIR=/path/to/portfolio HARNESS_PYTHON="$PY"
+copilot plugin marketplace add "$BUNDLE"
+copilot plugin install poesis-saf-agentic-organization@poesis-saf-agentic-organization-local
+```
+
+`--framework-dir` / `FRAMEWORK_DIR` is this **checkout**, not the rendered bundle. The hooks go
+into `<bundle>/hooks.json` by default; `--hooks-target repo --target-repo <portfolio>` writes
+`<portfolio>/.github/hooks/safe-harness-copilot-cli.json` instead, and `--hooks-target user`
+writes them under `~/.copilot/hooks/`. `--hook-style shell` writes `powershell`/`bash` command
+strings instead of `exec` entries. The plugin loads live, so after a re-render re-run steps 1–2
+and open a new session. The orchestrators are `value-management-officer`,
 `release-train-engineer`, and `scrum-master`: pick one in the app's agent picker, or run
 `copilot --agent value-management-officer`.
 
@@ -277,18 +289,20 @@ entrypoint, `harness.py`, with twelve functions (its `def/core/spec.md`): `start
 
 ```bash
 python harness.py <function> --session-id <id> [--parent-session-id <id>] [function flags]
-# e.g.  python harness.py resolve-step --session-id <id> --workflow-slug epic-lean-business-case
 ```
 
 The host's hooks call the session, load, and check functions on lifecycle events. Orchestrators
-call only `resolve-step` (`--workflow-slug`) and `resolve-step-model`, without session ids: the
-hooks stamp the session. Every call is journaled to
+run only one plain shell command,
+`[&] <python | py -3 | full interpreter path> <installed harness.py> resolve-step --workflow-slug <slug>`
+(or `resolve-step-model`): no chaining and no `--session-id`, because the hooks stamp the session.
+Agents write artifacts with the host's file tools (`create` / `edit`), never through the shell,
+so the harness can authorize and check every write. Every call is journaled to
 `<FRAMEWORK_WORKSPACE_DIR>/logs/<sessionId>.log.jsonl`. The harness never writes artifacts — it
 reports; the orchestrator commits.
 
 ### Load contract
 
-Point `FRAMEWORK_DIR` at this checkout. Layout keys live in [`.env`](.env) (`FRAMEWORK_*_DIR`);
+The harness hooks get `FRAMEWORK_DIR` (this checkout) from the installer. Layout keys live in [`.env`](.env) (`FRAMEWORK_*_DIR`);
 process environment overrides the file. Workflows live at [workflows/](workflows/). The sibling
 [`saf-agentic-harness`](https://github.com/poesis-cloud/saf-agentic-harness) `ConfigLoader` must
 load layout, ACL, model-profiles, workspace, and the workflow catalog without

@@ -10,7 +10,7 @@ untouched; both read the same `agents/`, `skills/`, `workflows/`, and `conf/`.
 | --- | --- |
 | `plugin.json` | Legacy-layout manifest: `name`, `version`, `description` (tracked against the VS Code manifest by a test), `agents: agents/`, `skills: skills/`. No `hooks` key. |
 | `tools.yaml` | Per-agent `tools:` as CLI aliases. Orchestrators: `read, edit, search, execute, agent, skill, ask_user`. Bench: `read, edit, search, execute, skill`. Must list exactly the source agents. |
-| `host-binding.md` | Section appended to every rendered agent: dispatch with `task`, the two agent-invoked harness commands, skill loading, `FRAMEWORK_DIR` path anchoring, and the trust note. |
+| `host-binding.md` | Section appended to every rendered agent: dispatch with `task`, the one allowed plain harness command form, artifact writes through `create`/`edit` only, skill loading, framework-path anchoring on the injected harness context, and the trust note. |
 | `render_bundle.py` | `render_bundle.py <source-root> <bundle-root>`. Wipes and rewrites the bundle and refuses any target that is the source, an ancestor of it, or an existing path that is not an earlier bundle. |
 
 ## Bundle layout
@@ -26,12 +26,17 @@ untouched; both read the same `agents/`, `skills/`, `workflows/`, and `conf/`.
 └── .env LICENSE NOTICE README.md
 ```
 
-Written later by the harness installer, never by the renderer:
+Written later by the harness installer (`adapters/github-copilot-cli/install.py --framework-dir
+<org checkout> --bundle-dir <bundle> [--workspace-dir <portfolio>] [--hooks-target
+plugin|repo|user] [--hook-style exec|shell]`, or `make install-hooks-copilot-cli FRAMEWORK_DIR=…
+BUNDLE_DIR=… [WORKSPACE_DIR=…] [HARNESS_PYTHON=…]`), never by the renderer:
 
-- `hooks.json`, the plugin-level hook file the CLI picks up from the plugin root;
+- `hooks.json`, the plugin-level hook file the CLI picks up from the plugin root. Each hook's
+  `env` carries `FRAMEWORK_DIR` and every `FRAMEWORK_*_DIR`, so no user-level variables are set;
 - the agent-scoped `hooks:` block between `# >>> safe-harness copilot-cli >>>` /
   `# <<< safe-harness copilot-cli <<<` in each orchestrator's frontmatter;
-- optionally `<portfolio>/.github/hooks/safe-harness-copilot-cli.json`.
+- with `--hooks-target repo`, `<portfolio>/.github/hooks/safe-harness-copilot-cli.json` instead
+  of `hooks.json`.
 
 The renderer refuses a source agent that declares `hooks:` and a manifest with `hooks`, so the
 installer's slots are always free. A test injects a marker block into a rendered orchestrator and
@@ -42,6 +47,13 @@ checks that the frontmatter still parses.
 - **Dispatch.** Orchestrators dispatch with `task`, `agent_type` = the step's `actor` slug,
   synchronously, passing the model `resolve-step-model` returned as `model`. The orchestrator
   skills name the host's dispatch tool generically; the binding pins it for this host.
+- **Harness commands.** The adapter admits exactly one plain command,
+  `[&] <python | py -3 | full interpreter path> <installed harness.py> resolve-step|resolve-step-model [--flags]`,
+  with no chaining and no `--session-id`, and rewrites it into the attributed call. The
+  orchestrator skills and the binding state that form verbatim.
+- **Artifact writes.** Only `create` / `edit` writes pass through the harness authorization and
+  artifact checks, so the binding and the orchestrator skills forbid writing files through the
+  shell, and every dispatch restates the rule to the actor.
 - **Model routing.** `conf/model-profiles.conf.yaml` holds canonical slugs only. The harness
   adapter's `models.yaml` maps them to host model ids; the bundle never hardcodes one.
 - **Skills.** The CLI loads only `skills/<name>/SKILL.md` and ignores the flat
