@@ -20,6 +20,9 @@ Rendered by `builds/github-copilot-cli`; it binds the host-agnostic prose above 
   `agent_type` set to the step's `actor` exactly — one of {{AGENT_IDS}} (no `@`). Dispatch
   synchronously: background mode is denied for governed steps. Pass the model the harness resolved
   (`resolve-step-model`) as the `task` `model` argument, verbatim; never pick, omit, or hardcode one.
+  If that model is not one this app offers, do not dispatch: report it at the gate. The app does
+  not refuse an unknown model — it silently runs another one with the named model's tool set, and
+  the actor can then lack the write tool it needs.
 - **Asking the harness (orchestrators only).** Run ONE plain command, alone in its tool call:
   `& <venv python> <harness.py> resolve-step --workflow-slug <workflow-slug>` or
   `& <venv python> <harness.py> resolve-step-model` on Windows (`powershell`), the same without
@@ -33,9 +36,11 @@ Rendered by `builds/github-copilot-cli`; it binds the host-agnostic prose above 
   not an error: act on the report and do not re-issue the command. Only a reason starting with
   `SAFe agentic harness REJECTED` means the request was refused: fix the named problem, using the
   accepted line it gives.
-- **Writing artifacts.** Write every file with `create` / `edit`, never through the shell
-  (`echo >`, `Set-Content`, `Out-File`, heredocs, scripts). The harness authorizes and
-  schema-checks only file-tool writes, and reverts an invalid one.
+- **Writing artifacts.** Write every file with this host's file-edit tools — `create`, `edit` or
+  `apply_patch`, whichever your tool set has (GPT-family models write with `apply_patch`) —
+  never through the shell (`echo >`, `Set-Content`, `Out-File`, heredocs, scripts). The harness
+  authorizes and schema-checks all three, and reverts an invalid write; it cannot see a shell
+  write.
 - **Skills.** Load a skill by name with the `skill` tool. The name is the source file stem
   (`team-verification`, `program-pi-planning`, …). When the harness injects a load directive
   naming a framework file (`<framework root>/skills/<name>.skill.md`), read that file.

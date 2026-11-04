@@ -10,7 +10,7 @@ untouched; both read the same `agents/`, `skills/`, `workflows/`, and `conf/`.
 | --- | --- |
 | `plugin.json` | Legacy-layout manifest: `name`, `version`, `description` (tracked against the VS Code manifest by a test), `agents: agents/`, `skills: skills/`. No `hooks` key. |
 | `tools.yaml` | Per-agent `tools:` as CLI aliases. Orchestrators: `read, edit, search, execute, agent, skill, ask_user`. Bench: `read, edit, search, execute, skill`. Must list exactly the source agents. |
-| `host-binding.md` | Section appended to every rendered agent: dispatch with `task`, the one allowed plain harness command form, artifact writes through `create`/`edit` only, skill loading, framework-path anchoring on the injected harness context, and the trust note. |
+| `host-binding.md` | Section appended to every rendered agent: dispatch with `task`, the one allowed plain harness command form, artifact writes through `create`/`edit`/`apply_patch` only, skill loading, framework-path anchoring on the injected harness context, and the trust note. |
 | `render_bundle.py` | `render_bundle.py <source-root> <bundle-root>`. Wipes and rewrites the bundle and refuses any target that is the source, an ancestor of it, or an existing path that is not an earlier bundle. |
 
 ## Bundle layout
@@ -57,11 +57,20 @@ checks that the frontmatter still parses.
   it and does not re-issue the command. Only `SAFe agentic harness REJECTED` means refused, with
   the accepted line. No permission rule, `setx`, or `$env:` setting is needed. The orchestrator
   skills and the binding state this verbatim, and a test enforces the command form.
-- **Artifact writes.** Only `create` / `edit` writes pass through the harness authorization and
-  artifact checks, so the binding and the orchestrator skills forbid writing files through the
-  shell, and every dispatch restates the rule to the actor.
+- **Artifact writes.** The host's file-edit tools are `create`, `edit` and `apply_patch`. Which
+  ones an actor has depends on its model's tool set: GPT-family models write with `apply_patch`.
+  The harness authorizes (H3) and checks (H5) all three, never a shell write. So the binding and
+  the orchestrator skills name all three, forbid writing files through the shell, and every
+  dispatch restates the rule to the actor.
 - **Model routing.** `conf/model-profiles.conf.yaml` holds canonical slugs only. The harness
   adapter's `models.yaml` maps them to host model ids; the bundle never hardcodes one.
+  `resolve-step-model` ranks the whole catalogue, so the catalogue holds only models this app
+  offers and both adapters bind (a functional test checks the bindings).
+- **Unavailable models.** The app does not refuse a `task` `model` it does not offer. It silently
+  runs the subagent on another model but keeps the tool set of the model that was named. Trial
+  evidence (2026-11-04): `model: gpt-5.5` ran as `claude-sonnet-5.5` with the GPT tool set, so the
+  actor's `create` call failed with "Tool 'create' does not exist" and no Epic was written. The
+  binding tells orchestrators to report such a model at the gate instead of dispatching.
 - **Skills.** The CLI loads only `skills/<name>/SKILL.md` and ignores the flat
   `skills/<name>.skill.md` beside them (verified: `Installed 37 skills`). 20 source skills carry a
   display `name` that differs from the file stem; the bundle sets `name: <stem>`, so the CLI skill

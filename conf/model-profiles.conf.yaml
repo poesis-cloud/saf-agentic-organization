@@ -18,7 +18,15 @@
 # `slug` here is the CANONICAL model slug. It is NOT a host model argument by itself —
 # a host may not understand these slugs directly. Each host adapter maps a canonical `slug` to that host's
 # own model identifier via its own `saf-agentic-harness/adapters/<env>/models.yaml` (e.g. the VS Code
-# Copilot Chat binding maps `gpt-5.5` -> `GPT-5.5 (copilot)`; the GitHub Copilot app / Copilot CLI accepts the slug verbatim).
+# Copilot Chat binding maps `claude-opus-4.8` -> `Claude Opus 4.8 (copilot)`; the GitHub Copilot app /
+# Copilot CLI accepts the slug verbatim as the `task` tool's `model`).
+#
+# SCOPE RULE: `resolve-step-model` ranks EVERY profile below and returns the winner, so every slug
+# here must be offered by every supported host AND bound in each host adapter's `models.yaml`.
+# A slug a host does not offer is not refused: the GitHub Copilot app / Copilot CLI silently runs
+# the subagent on another model but keeps the tool set of the model that was named (observed
+# 2026-11-04: `gpt-5.5` ran as `claude-sonnet-5.5` with the GPT tool set — no `create` tool — so
+# the actor could not write its artifact). Add a model only with all its host bindings.
 #
 # This file only carries identity + capability metadata (what the model IS), never routing policy
 # (tiers, role-default floors, scoring, config profiles) — that policy stays in
@@ -32,7 +40,7 @@
 #   costRank           — relative cost, 1 (cheapest) .. 10 (most expensive). MECHANICALLY derived
 #                        from each model's blended token price (0.25*input + 0.75*output, USD per
 #                        1M tokens, from this host's models.json billing.token_prices), percentile-
-#                        ranked across the 20-model catalog. High confidence, reproducible.
+#                        ranked across the 2026-07-04 20-model catalog. High confidence, reproducible.
 #                        model's position on the Artificial Analysis Intelligence Index v4.1
 #                        leaderboard (artificialanalysis.ai, snapshot 2026-07-04) where the model is
 #                        directly observed there; otherwise interpolated from its family/generation
@@ -76,10 +84,15 @@
 #                           This score (0..10) is essential to separate Tier-1 reasoning models from
 #                           smaller models that fail on SAFe artifact layouts.
 #
-# Catalog snapshot: every `model_picker_enabled: true` chat model from the GitHub Copilot
-# models.json catalog as of 2026-07-04 (20 models). Disabled/legacy/embedding entries in that
-# catalog (old GPT-4 family, text-embedding-*, disabled MAI-Code-1-Flash duplicates,
-# trajectory-compaction) are intentionally excluded — they are not selectable dispatch targets.
+# Catalog scope (2026-11-04): the 6 profiled models that the GitHub Copilot app / Copilot CLI
+# offers (its `task` model catalogue) AND that both harness adapters bind
+# (`vscode-github-copilot-chat` and `github-copilot-cli` `models.yaml`). The 2026-07-04 snapshot
+# held 20 models; the 14 no longer offered by the app (gpt-5.5, gpt-5.4, gpt-5.4-mini, gpt-5-mini,
+# claude-opus-4.7/4.6/4.5, claude-sonnet-4.6/4.5, gemini-3.1-pro-preview, gemini-3.5-flash,
+# gemini-2.5-pro, kimi-k2.7-code, mai-code-1-flash) were removed. Newer app models (e.g.
+# claude-opus-5.5, claude-sonnet-5.5, gpt-5.6-*, gpt-6-*) need sourced capability scores and
+# bindings in both adapters before they are added. `costRank` values are still the percentile
+# ranks computed over the 2026-07-04 20-model snapshot; their relative order is unchanged.
 #
 # CONFIDENCE CAVEAT: Artificial Analysis publishes only its top-N models per chart; not every
 # catalog model surfaced in every list fetched here. Where a model is not directly observed in a
@@ -120,21 +133,6 @@ modelProfiles:
       fast-iteration: 3
       schema-adherence: 9
 
-  - slug: gpt-5.5
-    costRank: 9
-    description: "OpenAI's most capable general-purpose reasoning model."
-    note: "AA #1 on tool-use and long-context reasoning. Matches Opus 4.8 broadly but slightly edges on strict schema compliance."
-    capabilities:
-      deep-reasoning: 9
-      coding: 9
-      tool-use: 10
-      long-context: 9
-      multimodal: 5
-      writing-quality: 8
-      instruction-following: 8
-      fast-iteration: 4
-      schema-adherence: 10
-
   - slug: claude-sonnet-5
     costRank: 4
     description: "Anthropic's mid-tier balanced model."
@@ -165,66 +163,6 @@ modelProfiles:
       fast-iteration: 6
       schema-adherence: 8
 
-  - slug: claude-opus-4.7
-    costRank: 8
-    description: "Anthropic's prior-generation flagship reasoning model."
-    note: "Below Opus 4.8 on coding bounds; one generation behind on reasoning effort but historically stable."
-    capabilities:
-      deep-reasoning: 8
-      coding: 7
-      tool-use: 7
-      long-context: 6
-      multimodal: 6
-      writing-quality: 7
-      instruction-following: 6
-      fast-iteration: 3
-      schema-adherence: 8
-
-  - slug: gpt-5.4
-    costRank: 6
-    description: "OpenAI's high-tier fast reasoning model."
-    note: "The primary 'tier-balanced' workhorse. Strong capabilities with acceptable latency and cost."
-    capabilities:
-      deep-reasoning: 8
-      coding: 7
-      tool-use: 8
-      long-context: 7
-      multimodal: 5
-      writing-quality: 7
-      instruction-following: 7
-      fast-iteration: 5
-      schema-adherence: 9
-
-  - slug: gemini-3.1-pro-preview
-    costRank: 5
-    description: "Google's Pro-tier multimodal reasoning model."
-    note: "Top-tier visual capabilities, AA #2 on coding index. Slightly underperforms on tool-use consistency vs tier peers."
-    capabilities:
-      deep-reasoning: 8
-      coding: 8
-      tool-use: 6
-      long-context: 7
-      multimodal: 10
-      writing-quality: 6
-      instruction-following: 6
-      fast-iteration: 4
-      schema-adherence: 7
-
-  - slug: claude-opus-4.6
-    costRank: 7
-    description: "Anthropic's older reasoning model."
-    note: "Lacks the 'xhigh' reasoning effort introduced in 4.7/4.8. Safely superseded."
-    capabilities:
-      deep-reasoning: 7
-      coding: 6
-      tool-use: 6
-      long-context: 5
-      multimodal: 5
-      writing-quality: 6
-      instruction-following: 6
-      fast-iteration: 3
-      schema-adherence: 7
-
   - slug: gpt-5.3-codex
     costRank: 5
     description: "OpenAI's code-specialized model."
@@ -240,126 +178,6 @@ modelProfiles:
       fast-iteration: 6
       schema-adherence: 9
 
-  - slug: gemini-3.5-flash
-    costRank: 3
-    description: "Google's fast, lightweight multimodal model."
-    note: "Previous 8.0 int_rank was artificially inflated. It's an excellent fast-loop router but struggles with deep nested reasoning."
-    capabilities:
-      deep-reasoning: 6
-      coding: 6
-      tool-use: 6
-      long-context: 6
-      multimodal: 9
-      writing-quality: 5
-      instruction-following: 6
-      fast-iteration: 9
-      schema-adherence: 6
-
-  - slug: claude-sonnet-4.6
-    costRank: 6
-    description: "Anthropic's prior-generation balanced model."
-    note: "Mid-tier coding/reasoning. Superseded by Sonnet 5 for cost-efficiency."
-    capabilities:
-      deep-reasoning: 6
-      coding: 6
-      tool-use: 6
-      long-context: 5
-      multimodal: 5
-      writing-quality: 6
-      instruction-following: 6
-      fast-iteration: 5
-      schema-adherence: 8
-
-  - slug: claude-sonnet-4.5
-    costRank: 7
-    description: "Anthropic's legacy balanced model."
-    note: "Non-reasoning generation (no effort levels). No longer competitive on performance/price."
-    capabilities:
-      deep-reasoning: 5
-      coding: 5
-      tool-use: 5
-      long-context: 4
-      multimodal: 5
-      writing-quality: 5
-      instruction-following: 5
-      fast-iteration: 5
-      schema-adherence: 7
-
-  - slug: claude-opus-4.5
-    costRank: 9
-    description: "Anthropic's legacy flagship model."
-    note: "Oldest Opus generation in catalog. Very expensive relative to current AI performance."
-    capabilities:
-      deep-reasoning: 6
-      coding: 5
-      tool-use: 5
-      long-context: 4
-      multimodal: 5
-      writing-quality: 6
-      instruction-following: 5
-      fast-iteration: 3
-      schema-adherence: 6
-
-  - slug: gemini-2.5-pro
-    costRank: 4
-    description: "Google's prior-generation Pro model."
-    note: "128K context only (vs 1M for 3.x line). Outdated by 3.1 Pro."
-    capabilities:
-      deep-reasoning: 5
-      coding: 5
-      tool-use: 5
-      long-context: 5
-      multimodal: 7
-      writing-quality: 5
-      instruction-following: 5
-      fast-iteration: 5
-      schema-adherence: 6
-
-  - slug: kimi-k2.7-code
-    costRank: 1
-    description: "Moonshot AI's code-focused preview model."
-    note: "Mid-tier coding via K2.6-family AA results. Fast and cheap but unverified on complex generic tasks."
-    capabilities:
-      deep-reasoning: 4
-      coding: 7
-      tool-use: 4
-      long-context: 5
-      multimodal: 5
-      writing-quality: 3
-      instruction-following: 4
-      fast-iteration: 8
-      schema-adherence: 5
-
-  - slug: gpt-5.4-mini
-    costRank: 2
-    description: "OpenAI's compact and very fast model."
-    note: "Punches above its class on AA agentic tool-use. Excellent for pure-routing or format translation."
-    capabilities:
-      deep-reasoning: 4
-      coding: 5
-      tool-use: 6
-      long-context: 4
-      multimodal: 4
-      writing-quality: 4
-      instruction-following: 6
-      fast-iteration: 9
-      schema-adherence: 7
-
-  - slug: mai-code-1-flash
-    costRank: 2
-    description: "Microsoft's in-house fast code-completion model."
-    note: "Strictly code-oriented. Lower reliability for generic natural language reasoning or complex artifact schemas."
-    capabilities:
-      deep-reasoning: 3
-      coding: 6
-      tool-use: 4
-      long-context: 3
-      multimodal: 2
-      writing-quality: 3
-      instruction-following: 4
-      fast-iteration: 9
-      schema-adherence: 4
-
   - slug: claude-haiku-4.5
     costRank: 3
     description: "Anthropic's fastest and most cost-effective older model."
@@ -374,18 +192,3 @@ modelProfiles:
       instruction-following: 6
       fast-iteration: 10
       schema-adherence: 5
-
-  - slug: gpt-5-mini
-    costRank: 1
-    description: "Azure OpenAI's legacy fallback lightweight model."
-    note: "Cheapest and fastest. Used primarily when others fail or for trivial regex-like mapping."
-    capabilities:
-      deep-reasoning: 3
-      coding: 4
-      tool-use: 3
-      long-context: 3
-      multimodal: 5
-      writing-quality: 3
-      instruction-following: 4
-      fast-iteration: 10
-      schema-adherence: 4

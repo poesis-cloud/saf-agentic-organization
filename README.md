@@ -299,8 +299,10 @@ ask the harness with ONE plain command, alone in its tool call:
 with `--session-id`, `$env:`, chaining, or redirection. In the GitHub Copilot app / Copilot CLI
 the shell does not run it: the harness hook runs it for the agent's session and returns the JSON
 report as a hook denial whose reason starts with `SAFe agentic harness RESULT (<function>)` — the
-successful answer. Only `SAFe agentic harness REJECTED` means refused. Agents write artifacts with the host's file tools (`create` / `edit`), never through the shell,
-so the harness can authorize and check every write. Every call is journaled to
+successful answer. Only `SAFe agentic harness REJECTED` means refused. Agents write artifacts
+with the host's file-edit tools (`create`, `edit`, or `apply_patch` in the GitHub Copilot app /
+Copilot CLI), never through the shell, so the harness can authorize and check every write. Every
+call is journaled to
 `<FRAMEWORK_WORKSPACE_DIR>/logs/<sessionId>.log.jsonl`. The harness never writes artifacts — it
 reports; the orchestrator commits.
 

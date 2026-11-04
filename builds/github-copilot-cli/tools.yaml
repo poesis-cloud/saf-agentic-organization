@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # GitHub Copilot app / Copilot CLI tool map — rendered into each agent's `tools:` frontmatter.
-# Names are Copilot CLI tool aliases (case-insensitive): `read` (view), `edit` (create/edit),
+# Names are Copilot CLI tool aliases (case-insensitive): `read` (view), `edit` (create/edit/apply_patch),
 # `search` (grep/glob), `execute` (bash on Linux/macOS, powershell on Windows), `agent` (the
 # `task` subagent-dispatch tool). `skill` and `ask_user` are concrete CLI tool names; the CLI
 # ignores names it does not know. Only the orchestrators get `agent` (dispatch) and `ask_user`

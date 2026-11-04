@@ -34,7 +34,7 @@ The VMO **polices** the portfolio layer: it controls the input/output artifacts 
 - **Portfolio templates** — epic, strategic-themes, portfolio-manifest, product-manifest, kanban-portfolio.
 - **Strategic Portfolio Review** — re-rank by WSJF, revise Themes, pivot/persevere/stop.
 - **Epic cost — once, at Epic close** — write `cost:` once from ecosystem logs + Σ child Feature `tokensRolled`.
-- **Pain points — continuous** — append portfolio friction to the ART `improvement-backlog`.
+- **Pain points — continuous** — hand portfolio friction to `@release-train-engineer`, the only writer of the ART `improvement-backlog`.
 - **Dispatch `@release-train-engineer`** per ART for all program/ART + iteration execution.
 
 **Never writes production code.**

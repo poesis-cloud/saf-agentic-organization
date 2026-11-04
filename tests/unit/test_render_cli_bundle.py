@@ -290,8 +290,8 @@ HOOK_ANSWER_PROSE = (
     "`SAFe agentic harness RESULT (<function>)`",
     "do not re-issue the command",
     "`SAFe agentic harness REJECTED`",
-    "never through the shell",
 )
+WRITE_TOOL_PROSE = ("`create`", "`edit`", "`apply_patch`", "never through the shell")
 RETIRED_HARNESS_SETUP = ("setx", "$env:FRAMEWORK", "permissions-config")
 
 
@@ -309,6 +309,7 @@ def test_live_bundle_states_only_the_adapter_admitted_harness_command(live_bundl
             assert re.search(r"`& " + ALLOWED_HARNESS_COMMAND.pattern[5:] + "`", text), path
             assert "resolve-step-model" in text, path
             assert [phrase for phrase in HOOK_ANSWER_PROSE if phrase not in text] == [], path
+            assert [phrase for phrase in WRITE_TOOL_PROSE if phrase not in text] == [], path
 
 
 def test_live_bundle_skills_are_cli_skill_folders(live_bundle: Path) -> None:
