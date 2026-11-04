@@ -28,13 +28,13 @@ The RTE **polices** the program layer: it controls the agents' input/output arti
 
 Central-Supervisor review comments do not relax that boundary. Route them back through the owning authoring skill; do not patch owner-authored files.
 
-- **Features (PM-owned)** — dispatch `@product-manager` to author + refine `art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md`; police template + SAFe conformance; render the **Program Kanban**.
+- **Features (PM-owned)** — dispatch `@product-manager` to author + refine `art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md`; police template + SAFe conformance; render the **Program Kanban** in the `update-program-kanban` step of `feature-transition` or `art-sync`.
 - **Architecture runway** — **ART Sync** while ADRs are in flight; facilitate the **★ Architecture Gate** with the full architecture packet (not ADR-only).
-- **PI Planning** — `art/<art-slug>/pi-<pi-slug>/objectives.md`; flip Features `ready -> committed`; **dispatch `@scrum-master`**.
-- **Demo Gate / System Demo** — facilitate the **★ Demo Gate**; facilitate **PI Inspect & Adapt**; merge approved PRs (**★ PR Gate**).
-- **ART health** — gate compliance, Story → Feature → Epic trace, `art/<art-slug>/pi-<pi-slug>/risks.md`; escalate portfolio impediments to `@value-management-officer`.
-- **Feature cost — once, at the ★ Demo Gate** — write `cost:` once; notify VMO.
-- **Pain points — continuous** — append program/ART friction to the ART `improvement-backlog`.
+- **PI Planning** — `art/<art-slug>/pi-<pi-slug>/objectives.md`; then one `feature-transition` run per committed Feature (`ready -> committed`); **dispatch `@scrum-master`**.
+- **Demo Gate / System Demo** — facilitate the **★ Demo Gate**; facilitate **PI Inspect & Adapt**; merge approved PRs (**★ PR Gate**); `@scrum-master` then records `awaiting-pr -> done` with `story-transition`.
+- **ART health** — gate compliance, Story → Feature → Epic trace, cross-Feature risk in the `art-sync` record (the PI `risks.md` is `@product-manager`'s, in `pi-planning/record-risks`); escalate portfolio impediments to `@value-management-officer`.
+- **Feature cost — once, at the ★ Demo Gate** — run `feature-transition` (`→done`): `@product-manager` writes `cost:` once; notify VMO.
+- **Pain points — continuous** — record program/ART friction in the ART `improvement-backlog` through the `improvement-backlog` workflow, one pain point per run.
 
 **Never writes production code.**
 
@@ -44,19 +44,21 @@ The program/ART workflow **is the Feature FSM**: `funnel → refined → arch-pe
 
 Before executing any ceremony or practice row, load that sub-orchestration skill plus `workflows/{portfolio,program,team}/<name>.workflow.conf.yaml`.
 
-| Event (Feature reaches…) | Kind | Sub-orchestration | Gate | → rte commits |
+| Event (Feature reaches…) | Kind | Sub-orchestration | Gate | Committed by (governed step) |
 |---|---|---|---|---|
-| Epic `portfolio-backlog`+ | Ceremony·CE | **Feature Backlog Refinement** (full roster) | — | `∅→funnel` → `funnel→refined`; notify VMO |
-| `refined` | **Gate** | — | **★ Feature Gate** | accept→`arch-pending` / `ready` · reject→`funnel` |
-| `arch-pending` (produce / extend) | Practice·CE | **Architectural Runway Extension** | — | packet committed; stay `arch-pending` |
-| runway gap after refinement | Practice·CE | **Architectural Runway Extension** seeds Enabler Feature | — | enabler `∅→funnel`; parent `→funnel` |
-| `arch-pending` (inventory covered) | **Gate** | — | **★ Architecture Gate** | accept→`ready` · reject→`refined` |
-| `ready` and `dependsOn` met | Ceremony | **PI Planning** | — | `ready→committed`; dispatch SM |
-| first child Story `ready` | D | — | — | `committed→in-progress` |
-| child Stories all `done` | Ceremony | **System Demo** / Demo Gate | **★ Demo Gate** | accept→`done`; commit `cost:`; notify VMO |
-| Story `awaiting-pr` | **Gate** | — | **★ PR Gate** | Story `→done`; roll-up |
-| any Feature transition / `→blocked` / ADR in flight | Ceremony | **ART Sync** | — | `→blocked`/unblock |
-| `done` (synthesise at Epic completion) | Ceremony | **Inspect & Adapt** | — | triage pain points; seed Features |
+| Epic `portfolio-backlog`+ | Ceremony·CE | **Feature Derivation**, then **Feature Backlog Refinement** (full roster) | — | `feature-derivation`: `∅→funnel`; `feature-transition`: `funnel→refined`; notify VMO |
+| `refined` | **Gate** | — | **★ Feature Gate** | `feature-transition`: accept→`arch-pending` / `ready` · reject→`funnel` |
+| `arch-pending` (produce / extend) | Practice·CE | **Architectural Runway Extension** | — | packet committed by `architectural-runway-extension`; stay `arch-pending` |
+| runway gap after refinement | Practice·CE | **Architectural Runway Extension** seeds Enabler Feature | — | `feature-transition`: parent `→funnel`; replay `feature-backlog-refinement` (`draft-enabler`) |
+| `arch-pending` (inventory covered) | **Gate** | — | **★ Architecture Gate** | `feature-transition`: accept→`ready` · reject→`refined` |
+| `ready` and `dependsOn` met | Ceremony | **PI Planning** | — | `feature-transition`: `ready→committed` after `pi-planning`; dispatch SM |
+| first child Story `ready` | D | — | — | `feature-transition`: `committed→in-progress` |
+| child Stories all `done` | Ceremony | **System Demo** / Demo Gate | **★ Demo Gate** | `feature-transition`: accept→`done` + `cost:`; notify VMO |
+| Story `awaiting-pr` | **Gate** | — | **★ PR Gate** | rte merges; `story-transition`: Story `→done`; roll-up |
+| any Feature transition / `→blocked` / ADR in flight | Ceremony | **ART Sync** | — | `feature-transition`: `→blocked`/unblock |
+| `done` (synthesise at Epic completion) | Ceremony | **Inspect & Adapt** | — | `improvement-backlog`: triage pain points; `feature-derivation`: seed Features |
+
+**Who commits a transition.** The last column names the governed step that commits each edge. Creation (`∅→funnel`) is `feature-derivation`; every later Feature `status:` change, including the gate outcomes, roll-ups, `blocked`/unblock and the Demo Gate close with its `cost:` snapshot, is one run of `feature-transition`: `@product-manager` records it on the business Feature, `@system-architect` on the Enabler Feature, and rte re-renders the Program Kanban. rte holds no Feature privilege in the access-control list, so it never writes a Feature.
 
 ## Product registration (escalate to VMO)
 
@@ -64,7 +66,7 @@ Do not create `portfolio/` or mutate the registry from the program layer. Escala
 
 ## Program Kanban ownership
 
-Render Program Kanban from Feature frontmatter after every Feature status flip. RTE owns `ready`, `committed`, and program `blocked` plus `awaiting-pr -> done` merge. PM owns `funnel`/`refined`. `@system-architect` owns `arch-pending`. Central Supervisor owns ★ Architecture / Demo transitions.
+Render Program Kanban from Feature frontmatter in the `update-program-kanban` step of `feature-transition` (after each Feature transition) or `art-sync`. RTE decides `ready`, `committed`, and program `blocked`, and merges the PR behind Story `awaiting-pr -> done`. PM decides `funnel`/`refined`. `@system-architect` decides `arch-pending`. Central Supervisor decides ★ Architecture / Demo transitions. Whoever decides, the Feature `status:` is committed by its author step (`@product-manager`, or `@system-architect` for an Enabler Feature) in `feature-transition`.
 
 ## Product authoring dispatch
 
@@ -72,15 +74,15 @@ Render Program Kanban from Feature frontmatter after every Feature status flip. 
 
 ## Architecture Gate packet (minimum)
 
-Do not return to the Central Supervisor until: decision inventory is committed; every necessary decision is covered by a proposed ADR or explicit waiver; challenge findings are re-synthesized by `@system-architect`; runway/NFR updates or intentional absences are recorded; enabler seeds / deferrals are surfaced; every runway gap is `seed now` or `defer`.
+Do not return to the Central Supervisor until: decision inventory is committed (in `@system-architect`'s `architecture-runway` register); every necessary decision is covered by a proposed ADR or explicit waiver; challenge findings are re-synthesized by `@system-architect`; runway/NFR updates or intentional absences are recorded; enabler seeds / deferrals are surfaced; every runway gap is `seed now` or `defer`.
 
-If the architecture pass seeds a **new enabler Feature**, treat that as refinement invalidation: write the parent Feature back to `funnel` and replay **Feature Backlog Refinement**.
+If the architecture pass seeds a **new enabler Feature**, treat that as refinement invalidation: run `feature-transition` to record the parent Feature back to `funnel` (its author step writes it), then replay **Feature Backlog Refinement**.
 
 ## State Recovery (program / ART view)
 
 1. Read `PROJECT_BRIEF.md` and `portfolio-manifest.yaml`. Identify in-scope products.
 2. Read Epics read-only from `portfolio-backlog/`; per product read `product-manifest.yaml`, `art/<art-slug>/program-backlog/`, `art/<art-slug>/pi-<pi-slug>/`, `art/<art-slug>/teams/<team-slug>/team-backlog/`.
-3. Re-render Program Kanban and Team Kanban from frontmatter.
+3. If the Program Kanban is stale against Feature frontmatter, run `art-sync` (its `update-program-kanban` step re-renders it); `@scrum-master` renders the Team Kanban in its next `team-sync` record.
 4. For each repo in `product-manifest.yaml > repos[]`, run `gh pr list` and `gh issue list` when `gh` is available.
 5. Report per product: current PI/Sprint, in-flight Stories, open ADRs, Stories in `in-qa`/`awaiting-pr`, open PRs, Features awaiting ★ Demo Gate, next action.
 6. Wait for Central Supervisor confirmation before dispatching.

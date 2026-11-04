@@ -22,7 +22,7 @@ fund and govern runway work that enables downstream product Features and program
 ---
 id: E-1
 title: <Enabler Epic title>
-status: funnel            # funnel | reviewing | analyzing | portfolio-backlog | implementing | done | blocked
+status: funnel            # funnel | reviewing | analyzing | portfolio-backlog | implementing | done | blocked | not-needed
 type: enabler
 enablerType: architectural   # architectural | infrastructure | compliance
 strategic_theme: <theme-id or name>
@@ -61,6 +61,7 @@ github:
   issueNumber: null
   issueNodeId: null
   projectItemId: null
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # E-1 — <title>

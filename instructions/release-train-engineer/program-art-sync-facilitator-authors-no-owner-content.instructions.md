@@ -16,7 +16,6 @@ description: 'the facilitator reconciles, renders and notes impediments only; it
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Invariant: facilitator_authors_no_owner_content
 
 the facilitator reconciles, renders and notes impediments only; it authors no Feature content, acceptance criteria, ADR, Story or Epic content

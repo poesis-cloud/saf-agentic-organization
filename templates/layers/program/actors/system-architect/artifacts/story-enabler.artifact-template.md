@@ -22,7 +22,7 @@ removing a concrete engineering, infrastructure, exploration, or compliance bloc
 ---
 id: S-101
 title: <Enabler Story title>
-status: backlog          # backlog | ready | in-progress | in-review | in-qa | awaiting-pr | done | blocked
+status: backlog          # backlog | ready | in-progress | in-review | in-qa | awaiting-pr | done | blocked | not-needed
 type: enabler
 enablerType: architectural   # exploration (spike) | architectural | infrastructure | compliance
 parentFeature: F-12
@@ -58,6 +58,7 @@ github:
   issueNumber: null
   issueNodeId: null
   projectItemId: null
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # S-101 — <title>

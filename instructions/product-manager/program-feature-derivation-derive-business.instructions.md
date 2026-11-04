@@ -18,7 +18,7 @@ name: program-feature-derivation-derive-business
 
 # Feature Derivation — derive business Feature
 
-The Product Manager derives a business Feature from an approved Epic.
+The Product Manager derives **one** business Feature from an approved Epic. Another Feature from the same Epic is another Feature Derivation run.
 
 Inputs: the approved Epic / Lean Business Case, Strategic Themes, Product Vision / Roadmap.
 Output: a Feature that names its parent Epic (`parentEpic`). This step **mints identity**, not NFR applicability. Leave `## NFR applicability / trace` empty or "deferred to feature-backlog-refinement".

@@ -178,6 +178,12 @@ roles:
     action: update
   - artifact: system-demo
     action: delete
+  - artifact: inspect-and-adapt
+    action: create
+  - artifact: inspect-and-adapt
+    action: update
+  - artifact: inspect-and-adapt
+    action: delete
   - artifact: program-kanban
     action: create
   - artifact: program-kanban
@@ -235,6 +241,12 @@ roles:
   - artifact: adr
     action: update
   - artifact: adr
+    action: delete
+  - artifact: architecture-review
+    action: create
+  - artifact: architecture-review
+    action: update
+  - artifact: architecture-review
     action: delete
   - artifact: architecture-runway
     action: create

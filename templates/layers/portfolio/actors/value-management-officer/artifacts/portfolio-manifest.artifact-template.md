@@ -20,7 +20,7 @@ poesis-wide singleton, created once. The **Business Owner** + **Enterprise Archi
 
 ## Folder tree (singleton)
 
-```
+```text
 portfolio/
   portfolio-manifest.yaml          # manifest (this template)
   strategic-themes.md     # strategic-themes.artifact-template.md
@@ -63,6 +63,8 @@ arts:
   - sie-definition
 
 github_project: null      # filled by `provision portfolio` (Portfolio Project URL)
+
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
 ```
 
 ## Init checklist (RTE runs this once)

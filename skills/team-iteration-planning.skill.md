@@ -1,7 +1,7 @@
 ---
 name: iteration-planning
 user-invocable: false
-description: '**SAFe CEREMONY SKILL.** The Iteration Planning playbook loaded by `@scrum-master` per Feature (when it reaches `committed`). USE FOR: writing `products/<product-slug>/<plan-slug>.plan.md`; seeding Stories from committed Features; running the ★ Story Gate (Definition of Ready) for `backlog→ready`; assigning Driver/Navigator pairs; verifying `risk`/`complexity`. It seeds Stories and runs the ★ Story Gate (DoR); `@scrum-master` commits Story `∅→backlog` and `backlog→ready`. DO NOT USE FOR: the ★ PR Gate (Central Supervisor); authoring Stories yourself (use `product-owner` for business Stories and `system-architect` for enabler Stories); the retro (use `retrospective`). Loaded by `@scrum-master` before facilitating.'
+description: '**SAFe CEREMONY SKILL.** The Iteration Planning playbook loaded by `@scrum-master` per Feature (when it reaches `committed`). USE FOR: writing `products/<product-slug>/<plan-slug>.plan.md`; consuming the Stories `@product-owner` derived from committed Features in Story Backlog Refinement; running the ★ Story Gate (Definition of Ready) for `backlog→ready`; assigning Driver/Navigator pairs; verifying `risk`/`complexity`. It runs the ★ Story Gate (DoR); `team-backlog-refinement/draft` creates each Story in `backlog`, and `@scrum-master` runs `story-transition` for `backlog→ready`. DO NOT USE FOR: the ★ PR Gate (Central Supervisor); authoring Stories yourself (use `product-owner` for business Stories and `system-architect` for enabler Stories); the retro (use `retrospective`). Loaded by `@scrum-master` before facilitating.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors
@@ -20,7 +20,7 @@ description: '**SAFe CEREMONY SKILL.** The Iteration Planning playbook loaded by
 
 # SAFe Ceremony — Iteration Planning
 
-The **normative spec** is the machine-readable **[workflows/team/iteration-planning.workflow.conf.yaml](../workflows/team/iteration-planning.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+The **normative spec** is the machine-readable **[workflows/team/iteration-planning.workflow.conf.yaml](../workflows/team/iteration-planning.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
-Shared model lives in **[scrum-master orchestration core](scrum-master.skill.md)**. Business Stories are authored via `product-owner`, enabler Stories via `system-architect`; **the ★ Story Gate (DoR) is sm-run here** (never the ★ PR Gate); **only `@scrum-master` writes `status:`** — on the first Story reaching `ready` it notifies `@release-train-engineer` to flip the parent Feature `committed→in-progress`.
+Shared model lives in **[scrum-master orchestration core](scrum-master.skill.md)**. Business Stories are authored via `product-owner`, enabler Stories via `system-architect`; **the ★ Story Gate (DoR) is sm-run here** (never the ★ PR Gate); the Story `status:` is written only by its author step (`@product-owner`, or `@system-architect` for an Enabler Story), in `story-transition` after creation — on the first Story reaching `ready` `@scrum-master` notifies `@release-train-engineer`, who runs `feature-transition` for the parent Feature `committed→in-progress`.
 Plan written + Stories DoR-gated + pairs assigned + `@release-train-engineer` notified on first `ready`; relation discipline stays minimal and actionable.

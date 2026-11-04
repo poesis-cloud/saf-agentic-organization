@@ -27,4 +27,4 @@ Fill `## NFR applicability / trace` from the product register. Do not add or rew
 
 Do not rewrite the business Feature. Do not author ADR, NFR list, or runway — those belong to `architectural-runway-extension`.
 
-Surgical Demand: write or thicken the Enabler only when it is in-scope. If the Demand does not require an Enabler, emit explicit-none (no Enabler needed) rather than inventing one.
+Surgical Demand: write or thicken the Enabler only when it is in-scope. If the Demand does not require an Enabler, do not invent one: commit `<feature-slug>.feature-enabler.md` beside the Feature with `status: not-needed`, an `## Overview` stating why no enabler work is needed, and a `stepOutcomes` entry (`outcome: none`). If an Enabler Feature exists but is out of scope on this run, commit it with only a `no-change` entry.

@@ -16,11 +16,10 @@ description: 'the challenger records findings into the open-item ledger only (ki
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Invariant: challenger_writes_no_owner_content
 
 the challenger records findings into the open-item ledger only (kind: challenge, routed to the owning author); it does not rewrite owner content.
 
-Review the mains that were actually written or thickened on this run. An explicit-none / no-change sibling is not a main to challenge. Never Evaluate this packet.
+Review the mains that were actually written or thickened on this run. A `not-needed` enabler or a sibling whose latest `stepOutcomes` entry is `no-change` is a recorded decision, not a main to challenge — you may raise a challenge open item against that decision itself. Always commit your review packet, with a `stepOutcomes` entry, even when it raises no finding (`verdict: pass`). Never Evaluate this packet.
 
 When the main is a Feature, Feature-enabler, Story, or Story-enabler: check `## NFR applicability / trace` against `products/<product-slug>/nfr-list.md`. Flag omitted applicable NFRs, invented NFRs, or a missing product register (runway handoff). Do not rewrite the register or the owner's work item.

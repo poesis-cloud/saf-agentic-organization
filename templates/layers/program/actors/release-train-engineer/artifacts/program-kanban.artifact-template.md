@@ -19,6 +19,7 @@ Rendered by `@release-train-engineer` from Feature frontmatter.
 ```markdown
 ---
 art: <art-slug>
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # Program Kanban

@@ -1,108 +1,321 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "gsmarc://saf/artifacts/strategic-themes.artifact/v1",
-    "$ref": "gsmarc://saf/harness/contracts/artifact/v1",
-    "title": "strategic-themes artifact schema",
-    "type": "object",
-    "additionalProperties": true,
-    "x-artifact": {
-        "id": "strategic-themes",
-        "kind": "strategic-themes",
-        "template": "templates/layers/portfolio/actors/business-owner/artifacts/strategic-themes.artifact-template.md",
-        "pathPatterns": [
-            "strategic-themes.md"
-        ],
-        "renderOnly": false
-    },
-    "required": [
-        "__path",
-        "__kind",
-        "__artifact_id",
-        "__frontmatter_present"
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gsmarc://saf/artifacts/strategic-themes.artifact/v1",
+  "$ref": "gsmarc://saf/contracts/artifact/v1",
+  "title": "strategic-themes artifact schema",
+  "type": "object",
+  "additionalProperties": true,
+  "x-artifact": {
+    "id": "strategic-themes",
+    "kind": "strategic-themes",
+    "template": "templates/layers/portfolio/actors/business-owner/artifacts/strategic-themes.artifact-template.md",
+    "pathPatterns": [
+      "strategic-themes.md"
     ],
-    "properties": {
-        "__path": {
-            "description": "Workspace-relative path of the artifact file, injected by the orchestration harness (not authored in frontmatter).",
-            "type": "string",
-            "minLength": 1
+    "renderOnly": false
+  },
+  "required": [
+    "__path",
+    "__kind",
+    "__artifact_id",
+    "__frontmatter_present"
+  ],
+  "properties": {
+    "__path": {
+      "description": "Workspace-relative path of the artifact file, injected by the orchestration harness (not authored in frontmatter).",
+      "type": "string",
+      "minLength": 1
+    },
+    "__kind": {
+      "description": "Artifact-kind discriminator injected by the harness; must equal x-artifact.kind.",
+      "const": "strategic-themes"
+    },
+    "__artifact_id": {
+      "description": "Stable artifact id injected by the harness, derived from the file and frontmatter.",
+      "type": "string",
+      "minLength": 1
+    },
+    "__frontmatter_present": {
+      "description": "Harness assertion that YAML frontmatter was found and parsed; always true for a valid artifact.",
+      "type": "boolean"
+    },
+    "__sections": {
+      "description": "Artifact body sections keyed by their `## ` heading \u2014 one property per template section; the value is the raw Markdown under that heading. Authored artifacts may add or omit sections, so this is advisory (additionalProperties is permitted) and no section is individually required.",
+      "type": "object",
+      "properties": {
+        "Themes": {
+          "description": "`Themes` section of the artifact body.",
+          "type": "string"
         },
-        "__kind": {
-            "description": "Artifact-kind discriminator injected by the harness; must equal x-artifact.kind.",
-            "const": "strategic-themes"
-        },
-        "__artifact_id": {
-            "description": "Stable artifact id injected by the harness, derived from the file and frontmatter.",
-            "type": "string",
-            "minLength": 1
-        },
-        "__frontmatter_present": {
-            "description": "Harness assertion that YAML frontmatter was found and parsed; always true for a valid artifact.",
-            "type": "boolean"
-        },
-        "__sections": {
-            "description": "Artifact body sections keyed by their `## ` heading \u2014 one property per template section; the value is the raw Markdown under that heading. Authored artifacts may add or omit sections, so this is advisory (additionalProperties is permitted) and no section is individually required.",
-            "type": "object",
-            "properties": {
-                "Themes": {
-                    "description": "`Themes` section of the artifact body.",
-                    "type": "string"
-                },
-                "Per-theme detail": {
-                    "description": "**Objective:** what enterprise outcome this theme advances.",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": true
-        },
-        "__body": {
-            "description": "Raw Markdown body of the artifact (everything after the frontmatter), injected by the harness.",
-            "type": "string"
-        },
-        "title": {
-            "description": "Human-readable title of the artifact.",
-            "type": "string",
-            "minLength": 1
-        },
-        "workItemRelations": {
-            "description": "Typed work-item relations (dependsOn / enables / relatedTo / supersedes).",
-            "$ref": "gsmarc://saf/artifacts/framework-definitions/v1#/definitions/workItemRelations"
-        },
-        "wsjf": {
-            "description": "Weighted Shortest Job First scoring block.",
-            "$ref": "gsmarc://saf/artifacts/framework-definitions/v1#/definitions/wsjf"
-        },
-        "risk": {
-            "description": "Risk level \u2014 the consequence of being wrong: low | medium | critical.",
-            "enum": [
-                "low",
-                "medium",
-                "critical"
-            ]
-        },
-        "complexity": {
-            "description": "Complexity \u2014 cognitive/structural difficulty: simple | involved | complex.",
-            "enum": [
-                "simple",
-                "involved",
-                "complex"
-            ]
-        },
-        "created": {
-            "description": "Authoring date (YYYY-MM-DD).",
-            "type": "string",
-            "minLength": 1
-        },
-        "openItems": {
-            "description": "Clarification + challenge ledger (a blocking open entry halts the relevant gate).",
-            "$ref": "gsmarc://saf/artifacts/framework-definitions/v1#/definitions/openItems"
-        },
-        "cost": {
-            "description": "Token-cost accounting block (see the cost definition).",
-            "$ref": "gsmarc://saf/artifacts/framework-definitions/v1#/definitions/cost"
-        },
-        "github": {
-            "description": "GitHub Projects sync envelope, filled by portfolio/_sync (null when authoring).",
-            "$ref": "gsmarc://saf/artifacts/framework-definitions/v1#/definitions/githubSync"
+        "Per-theme detail": {
+          "description": "**Objective:** what enterprise outcome this theme advances.",
+          "type": "string"
         }
+      },
+      "additionalProperties": true
+    },
+    "__body": {
+      "description": "Raw Markdown body of the artifact (everything after the frontmatter), injected by the harness.",
+      "type": "string"
+    },
+    "title": {
+      "description": "Human-readable title of the artifact.",
+      "type": "string",
+      "minLength": 1
+    },
+    "workItemRelations": {
+      "description": "Typed work-item relations (dependsOn / enables / relatedTo / supersedes).",
+      "$ref": "#/$defs/workItemRelations"
+    },
+    "wsjf": {
+      "description": "Weighted Shortest Job First scoring block.",
+      "$ref": "#/$defs/wsjf"
+    },
+    "risk": {
+      "description": "Risk level \u2014 the consequence of being wrong: low | medium | critical.",
+      "enum": [
+        "low",
+        "medium",
+        "critical"
+      ]
+    },
+    "complexity": {
+      "description": "Complexity \u2014 cognitive/structural difficulty: simple | involved | complex.",
+      "enum": [
+        "simple",
+        "involved",
+        "complex"
+      ]
+    },
+    "created": {
+      "description": "Authoring date (YYYY-MM-DD).",
+      "type": "string",
+      "minLength": 1
+    },
+    "openItems": {
+      "description": "Clarification + challenge ledger (a blocking open entry halts the relevant gate).",
+      "$ref": "#/$defs/openItems"
+    },
+    "cost": {
+      "description": "Token-cost accounting block (see the cost definition).",
+      "$ref": "#/$defs/cost"
+    },
+    "github": {
+      "description": "GitHub Projects sync envelope, filled by portfolio/_sync (null when authoring).",
+      "$ref": "#/$defs/githubSync"
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record \u2014 one entry per step that committed this artifact (see the stepOutcomes definition).",
+      "$ref": "#/$defs/stepOutcomes"
     }
+  },
+  "$defs": {
+    "cost": {
+      "description": "Token-cost accounting block.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "tokensIn",
+        "tokensOut",
+        "tokensCached",
+        "tokensSelf",
+        "tokensRolled",
+        "dispatches",
+        "source",
+        "committed"
+      ],
+      "properties": {
+        "tokensIn": {
+          "description": "NET-NEW prompt tokens = sum(inputTokens - cachedTokens) of this item's dispatches.",
+          "type": "number"
+        },
+        "tokensOut": {
+          "description": "Sum of outputTokens of those dispatches.",
+          "type": "number"
+        },
+        "tokensCached": {
+          "description": "Sum of cachedTokens (re-sent context); excluded from tokensSelf, kept for billed-cost reconstruction.",
+          "type": "number"
+        },
+        "tokensSelf": {
+          "description": "tokensIn + tokensOut - the item's own net cost.",
+          "type": "number"
+        },
+        "tokensRolled": {
+          "description": "tokensSelf plus the rolled cost of child items - the item's end-to-end cost.",
+          "type": "number"
+        },
+        "dispatches": {
+          "description": "Number of subagent dispatches counted into tokensSelf (not llm_request turns).",
+          "type": "number"
+        },
+        "source": {
+          "description": "Provenance of the cost figures: measured, estimated, or mixed.",
+          "enum": [
+            "measured",
+            "estimated",
+            "mixed"
+          ]
+        },
+        "committed": {
+          "description": "YYYY-MM-DD the one-time cost snapshot was written; immutable after (null until committed).",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "githubSync": {
+      "description": "GitHub Projects sync envelope; filled by portfolio/_sync, null when authoring.",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "issueNumber": {
+          "description": "GitHub issue number; filled by portfolio/_sync, null when authoring.",
+          "type": [
+            "integer",
+            "number",
+            "string",
+            "null"
+          ]
+        },
+        "issueNodeId": {
+          "description": "GitHub issue node id; filled by portfolio/_sync, null when authoring.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "projectItemId": {
+          "description": "GitHub Projects item id; filled by portfolio/_sync, null when authoring.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "openItems": {
+      "description": "Clarification + challenge ledger entries (each an object: id, kind, raised_by, owner, blocking, status, ...).",
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record. Every workflow step that commits this artifact appends exactly one entry, so the artifact itself carries the step's decision \u2014 including `confirmed`, `no-change` and `none` \u2014 and the agent's reply stays indicative.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "step",
+          "outcome",
+          "date",
+          "note"
+        ],
+        "properties": {
+          "step": {
+            "description": "`<workflow-slug>/<step-slug>` of the step that appended this entry.",
+            "type": "string",
+            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+          },
+          "outcome": {
+            "description": "written (created) | revised (content changed) | confirmed (reviewed, still valid) | no-change (out of scope on this run) | none (not needed; the artifact records that decision)",
+            "enum": [
+              "written",
+              "revised",
+              "confirmed",
+              "no-change",
+              "none"
+            ]
+          },
+          "date": {
+            "description": "YYYY-MM-DD of the step.",
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "description": "One line: what the step decided and why.",
+            "type": "string",
+            "minLength": 1
+          },
+          "friction": {
+            "description": "Optional. Workflow friction the step's actor observed (raw input, never a fix). Only `@release-train-engineer` turns it into a pain point, in an `improvement-backlog` workflow step.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "workItemRelations": {
+      "description": "Typed work-item relations between artifacts.",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "dependsOn": {
+          "description": "Hard prerequisite artifact ids that must advance or land before this item.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enables": {
+          "description": "Artifact ids this item intentionally makes possible or materially easier.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "relatedTo": {
+          "description": "Non-gating semantic or strategic links; never use as a hidden dependency list.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "supersedes": {
+          "description": "Artifact ids intentionally replaced by this item.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "wsjf": {
+      "description": "Weighted Shortest Job First scoring block used to rank the backlog.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "userBusinessValue",
+        "timeCriticality",
+        "riskReduction",
+        "jobSize",
+        "score"
+      ],
+      "properties": {
+        "userBusinessValue": {
+          "description": "Relative user/business value of the work item.",
+          "type": "number"
+        },
+        "timeCriticality": {
+          "description": "How time-sensitive the value is (it decays if delayed).",
+          "type": "number"
+        },
+        "riskReduction": {
+          "description": "Risk reduction / opportunity enablement value.",
+          "type": "number"
+        },
+        "jobSize": {
+          "description": "Relative size/effort of the job (the WSJF denominator).",
+          "type": "number"
+        },
+        "score": {
+          "description": "Computed WSJF score = (userBusinessValue + timeCriticality + riskReduction) / jobSize.",
+          "type": "number"
+        }
+      }
+    }
+  }
 }

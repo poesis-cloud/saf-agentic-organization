@@ -21,7 +21,7 @@ description: >
   Same workflow for ADR needed, new or changed product NFR, runway gap,
   structurant architecture. Challenges of that packet: security,
   operability, feasibility (not evaluated). Evaluate: those mains; KO
-  reiterates that main's owner step. Late-seeded Enabler Feature forces
+  reiterates the workflow (new instance; that main's owner step absorbs the KO). Late-seeded Enabler Feature forces
   Feature refinement replay before the Architecture Gate is restaged.
   Refuse Feature AC/WSJF shaping (that is feature-backlog-refinement).
   Refuse portfolio NFR backbone (that is architectural-vision). PI Planning

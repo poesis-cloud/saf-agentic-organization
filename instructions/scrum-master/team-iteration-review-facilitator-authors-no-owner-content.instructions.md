@@ -16,7 +16,6 @@ description: 'the facilitator demos, renders and routes feedback only; it author
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Invariant: facilitator_authors_no_owner_content
 
 the facilitator demos, renders and routes feedback only; it authors no PR/Demo-gate decision, Story, Feature or acceptance-criteria content

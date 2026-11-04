@@ -16,7 +16,6 @@ description: 'the facilitator reconciles, from the committed artifacts, @product
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Invariant: scope_architecture_operator_reconcile_recorded
 
 the facilitator reconciles, from the committed artifacts, @product-manager-owned scope/priority, @system-architect-owned runway/ADR-state and @operator-owned deployment-dependency status; it folds in @developer / @quality-engineer / @security-expert risk when their committed risk changed

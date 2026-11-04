@@ -2,7 +2,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "gsmarc://saf/artifacts/framework-definitions/v1",
     "title": "SAFe methodology reusable definitions",
-    "description": "Reusable JSON Schema definitions used by the SAFe methodology artifact schemas in this framework. These are not part of the generic harness base schema because they encode methodology-specific or host-specific concepts (WSJF, GitHub Projects sync, token-cost accounting).",
+    "description": "Reusable JSON Schema definitions used by the SAFe methodology artifact schemas in this framework. These are not part of the generic harness base schema because they encode methodology-specific or host-specific concepts (WSJF, GitHub Projects sync, token-cost accounting). Canonical source only: the harness registers its own contracts plus the `*.artifact.schema.json` files, so each artifact schema carries a verbatim copy of the definitions it uses under `$defs` (`#/$defs/<name>`); tests/functional/test_artifact_schema_refs.py keeps the copies identical to this file.",
     "type": "object",
     "definitions": {
         "workItemRelations": {
@@ -165,6 +165,51 @@
             "type": "array",
             "items": {
                 "type": "object"
+            }
+        },
+        "stepOutcomes": {
+            "description": "Step outcome record. Every workflow step that commits this artifact appends exactly one entry, so the artifact itself carries the step's decision \u2014 including `confirmed`, `no-change` and `none` \u2014 and the agent's reply stays indicative.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": true,
+                "required": [
+                    "step",
+                    "outcome",
+                    "date",
+                    "note"
+                ],
+                "properties": {
+                    "step": {
+                        "description": "`<workflow-slug>/<step-slug>` of the step that appended this entry.",
+                        "type": "string",
+                        "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+                    },
+                    "outcome": {
+                        "description": "written (created) | revised (content changed) | confirmed (reviewed, still valid) | no-change (out of scope on this run) | none (not needed; the artifact records that decision)",
+                        "enum": [
+                            "written",
+                            "revised",
+                            "confirmed",
+                            "no-change",
+                            "none"
+                        ]
+                    },
+                    "date": {
+                        "description": "YYYY-MM-DD of the step.",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "note": {
+                        "description": "One line: what the step decided and why.",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "friction": {
+                        "description": "Optional. Workflow friction the step's actor observed (raw input, never a fix). Only `@release-train-engineer` turns it into a pain point, in an `improvement-backlog` workflow step.",
+                        "type": "string"
+                    }
+                }
             }
         }
     }

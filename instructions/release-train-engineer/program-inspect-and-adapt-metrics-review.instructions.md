@@ -1,5 +1,5 @@
 ---
-description: 'Inspect & Adapt Step 1 — calculate PI metrics by reading existing artifact content and present them to the facilitator. No dedicated metric fields are required on source artifacts.'
+description: 'Inspect & Adapt Step 1 — calculate PI metrics by reading existing artifact content and create the PI Inspect & Adapt record with them. No dedicated metric fields are required on source artifacts.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors
@@ -15,7 +15,6 @@ description: 'Inspect & Adapt Step 1 — calculate PI metrics by reading existin
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
      limitations under the License. -->
-
 
 # Inspect & Adapt — Step 1: Metrics Review
 
@@ -36,4 +35,16 @@ Calculate the following PI indicators by reading the existing artifact content. 
 
 ## Output
 
-Present the calculated metrics to the facilitator. Call out the top 2–3 deviations and hypothesize systemic causes. This step is user-facing output only; do not write or update any artifact.
+Create the PI's Inspect & Adapt record, `art/<art-slug>/pi-<pi-slug>/inspect-and-adapt.md`
+(`status: metrics-reviewed`), from its template. This step writes **exactly one** artifact,
+that record, and never a pain point.
+
+- **Metrics** — every indicator above with its value, plan and deviation.
+- **Pain-point candidates** — the top 2–3 deviations from plan: `symptom` names the indicator,
+  `impact` gives its value against plan, plus the hypothesized systemic cause and, when one
+  exists, the open pain point with the same cause. When no indicator deviates, write one row
+  "none — PI within plan".
+- A `stepOutcomes` entry (`outcome: written`).
+
+Each candidate becomes one pain point in a later `improvement-backlog` run (one run per
+candidate). The metrics you present are indicative; the record is the evidence.

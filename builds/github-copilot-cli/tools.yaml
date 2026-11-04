@@ -1,0 +1,40 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# GitHub Copilot app / Copilot CLI tool map — rendered into each agent's `tools:` frontmatter.
+# Names are Copilot CLI tool aliases (case-insensitive): `read` (view), `edit` (create/edit/apply_patch),
+# `search` (grep/glob), `execute` (bash on Linux/macOS, powershell on Windows), `agent` (the
+# `task` subagent-dispatch tool). `skill` and `ask_user` are concrete CLI tool names; the CLI
+# ignores names it does not know. Only the orchestrators get `agent` (dispatch) and `ask_user`
+# (the human gate); the bench never dispatches.
+
+commonTools: &commonTools [read, edit, search, execute, skill]
+
+dispatchTools: &dispatchTools [read, edit, search, execute, agent, skill, ask_user]
+
+agents:
+  agents/business-owner.agent.md: *commonTools
+  agents/enterprise-architect.agent.md: *commonTools
+  agents/value-management-officer.agent.md: *dispatchTools
+  agents/product-manager.agent.md: *commonTools
+  agents/release-train-engineer.agent.md: *dispatchTools
+  agents/system-architect.agent.md: *commonTools
+  agents/developer.agent.md: *commonTools
+  agents/operator.agent.md: *commonTools
+  agents/product-owner.agent.md: *commonTools
+  agents/quality-engineer.agent.md: *commonTools
+  agents/scrum-master.agent.md: *dispatchTools
+  agents/security-expert.agent.md: *commonTools
+  agents/tech-writer.agent.md: *commonTools
+  agents/ux-designer.agent.md: *commonTools

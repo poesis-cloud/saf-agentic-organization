@@ -31,7 +31,6 @@ The harness resolves this framework through `FRAMEWORK_DIR` and the workspace th
 `FRAMEWORK_WORKSPACE_DIR` — the three products stay decoupled through environment-anchored paths,
 not through a shared tree.
 
-
 ## Overview
 
 The Poesis SAFe Agentic Organization brings SAFe-shaped multi-agent orchestration into
@@ -87,8 +86,8 @@ orchestrator to invoke. Do not mint a thinner item to absorb a thicker intent.
 ### 2. Workflows are challenge protocols
 
 A workflow is how agents **exchange, collaborate, and challenge** while delivering
-mains. The loop is draft → challenge → owner rewrite, repeated until agreement is
-enough to present mains at the human gate.
+mains. The loop is draft → challenge → owner rewrite; a human KO reiterates the
+workflow as a new instance until agreement is enough to present mains at the gate.
 
 | Class | Role | Challenged? | Human-gated? |
 |---|---|---|---|
@@ -104,13 +103,18 @@ The orchestrator does not require a speech-act label. It:
 1. Reads the concern.
 2. Loads the one workflow whose **purpose** matches, or tells the human to invoke
    another layer's orchestrator.
-3. Lets that workflow loop until challengers agree enough.
+3. Dispatches each step the harness resolves exactly once (1 step = 1 session); a
+   failed step comes back through `resolve-step`, never through an ad-hoc re-dispatch.
 4. Returns the **mains** to the human gate and waits.
 
 Humans need not name the ceremony. Purpose still constrains the usecase. The
-harness `resolve-step` walks catalog order; empty preconditions pass. Out-of-scope
-sibling mains get explicit-none / no-change — never a silent skip, never an
-invented sibling, never a redraft of an untouched item.
+harness `resolve-step` walks catalog order; empty preconditions pass. **No valid
+step without artifact:** every step commits a change to exactly one instance of its
+declared artifact kind, whatever the outcome. An out-of-scope sibling main is committed with only a `no-change`
+`stepOutcomes` entry, and an unneeded enabler as a `status: not-needed` file —
+never a silent skip, never an invented sibling, never a redraft of an untouched
+item. Agent replies and reports are indicative; committed artifacts are the
+only evidence (see [docs/step-artifacts.md](docs/step-artifacts.md)).
 
 ### 4. Per-workflow purpose
 
@@ -121,22 +125,29 @@ invented sibling, never a redraft of an untouched item.
 | `strategic-investment-planning` | Allocate / guardrail ART funding | `budget-allocation` |
 | `strategic-portfolio-review` | Keep / pivot / stop / re-rank | themes, vision, roadmap, `architecture-vision` |
 | `portfolio-sync` | Portfolio snapshot | mediation record only |
+| `epic-transition` | Move ONE Epic (and its enabler) to a new `status:` | `epic`, `epic-enabler` (owner steps), `portfolio-kanban` |
 | `feature-derivation` | Split an approved Epic into ART Features | `feature`, `feature-enabler` |
 | `feature-backlog-refinement` | Write a PI-ready Feature | `feature`, `feature-enabler` |
 | `architectural-runway-extension` | Extend ART runway (product NFR register before ADR) | `nfr-list`, `adr`, `architecture-runway` |
+| `feature-transition` | Move ONE Feature (and its enabler) to a new `status:` | `feature`, `feature-enabler` (owner steps), `program-kanban` |
 | `pi-planning` | ART PI commit | confirm vision/roadmap/feature/runway; write `objectives` |
 | `art-sync` | Mid-PI impediments | mediation record only |
 | `system-demo` | Inspect the increment; demo gate | mediation / gate record |
-| `inspect-and-adapt` | PI improve | `pain-point` (mediation). A later Feature is a later Feature, not I&A |
+| `inspect-and-adapt` | PI improve | `inspect-and-adapt` record (metrics, then triage). Writes no pain point; a later Feature is a later Feature |
+| `improvement-backlog` | Record or update ONE pain point (one run per friction note) | `pain-point` (mediation) |
 | `release-on-demand` | Ship an accepted increment | `release-on-demand` |
 | `team-backlog-refinement` | Write a ready-enough Story (including Feature→Story split) | `story`, `story-enabler` |
+| `story-transition` | Move ONE Story (and its enabler) to a new `status:` | `story`, `story-enabler` (owner steps) |
 | `iteration-planning` | Commit the iteration | `team-manifest`, `plan` |
 | `pair-programming` | Implement an already-OK Story | `code-change` |
 | `verification` | Is this Story done | `qa-signoff` (challenge of Story/code-change) |
 | `team-sync` / `iteration-review` / `iteration-retrospective` | Daily I&A / increment inspect / team improve | mediation records |
 
 An impediment discovered in sync/demo that is really a Feature is a **later
-Feature**, not a new workflow.
+Feature**, not a new workflow. Orchestrators hold no Epic/Feature/Story privilege:
+the unit's author creates it in its authoring workflow, and every later `status:`
+change (gate, PI commit, block, roll-up, close) is one `*-transition` run whose
+owner step commits it ([docs/step-artifacts.md](docs/step-artifacts.md#status-transitions)).
 
 ### 5. NFR model (catalog, not a usage principle)
 
@@ -183,7 +194,7 @@ share `team-backlog-refinement`. Do not invent a Story-derivation workflow.
 ## Layout
 
 The framework is host-agnostic source; each host's manifest lives beside its renderer under
-[`builds/`](builds/) (for GitHub Copilot, `builds/github-copilot/plugin.json`):
+[`builds/`](builds/) (`builds/github-copilot/plugin.json`, `builds/github-copilot-cli/plugin.json`):
 
 - [`agents/`](agents/) — the orchestrators and the specialist bench (`<name>.agent.md`)
 - [`skills/`](skills/) — SAFe ceremony, practice, authoring, and orchestration playbooks (`<name>.skill.md`)
@@ -192,63 +203,137 @@ The framework is host-agnostic source; each host's manifest lives beside its ren
 - [`conf/`](conf/) — remaining harness configuration: `model-profiles`, `access-control-list`, `workspace`
 - [`templates/`](templates/) — artifact Markdown templates, organized per layer and actor
 - [`artifacts/`](artifacts/) — artifact JSON Schemas, grouped by the actor that produces the kind (`<actor>/<kind>.artifact.schema.json`)
-- [`builds/`](builds/) — host bundle renderers (currently `github-copilot/`)
+- [`builds/`](builds/) — host bundle renderers: `github-copilot/` (VS Code Copilot Chat) and `github-copilot-cli/` (GitHub Copilot app / Copilot CLI)
 
 ## Installing
 
-Two steps, in this order — the bundle must exist before the harness can register its hooks into it.
+Each host gets a bundle rendered from this host-agnostic source, then the harness registers its
+hooks into that bundle — always in this order. Everything the harness writes (`hooks.json`, the
+orchestrators' injected `hooks:` blocks, the workspace hook file) carries absolute machine paths:
+it is generated, git-ignored, and rewritten by re-running the installer after every re-render.
+
+Prerequisites, all hosts: Git, Python 3.10+, and the two repositories side by side with a harness
+venv. Linux/macOS (bash):
 
 ```bash
-# 1. Render the host bundle (this repository, host-agnostic source -> installable artifact)
-BUNDLE=/tmp/github-copilot-bundle
-python3 builds/github-copilot/render_bundle.py . "$BUNDLE"
-
-# 2. Register the harness hooks (from the harness repository)
-make install-hooks FRAMEWORK_DIR=/abs/path/to/saf-agentic-organization BUNDLE_DIR="$BUNDLE"
+git clone https://github.com/poesis-cloud/saf-agentic-organization
+git clone https://github.com/poesis-cloud/saf-agentic-harness
+python3 -m venv saf-agentic-harness/.venv
+saf-agentic-harness/.venv/bin/python -m pip install -r saf-agentic-harness/requirements.txt
+PY="$PWD/saf-agentic-harness/.venv/bin/python"; ORG="$PWD/saf-agentic-organization"
 ```
 
-Step 1 injects each agent's `tools:` frontmatter and writes the host manifest. Step 2 renders the
-workspace hook file, the orchestrators' session-started hook, and the VS Code settings that enable
-hooks at all; it refuses rather than guessing if `BUNDLE_DIR` is omitted. Then install `$BUNDLE`
-as the GitHub Copilot customization plugin — or install the published release asset, which is that
-same bundle.
+Windows (PowerShell):
 
-Everything step 2 writes is generated and git-ignored: it carries machine-specific absolute paths
-and must never be committed.
+```powershell
+git clone https://github.com/poesis-cloud/saf-agentic-organization
+git clone https://github.com/poesis-cloud/saf-agentic-harness
+py -3 -m venv saf-agentic-harness\.venv
+saf-agentic-harness\.venv\Scripts\python -m pip install -r saf-agentic-harness\requirements.txt
+$Py = "$PWD\saf-agentic-harness\.venv\Scripts\python.exe"; $Org = "$PWD\saf-agentic-organization"
+```
+
+The workspace — where artifacts and session logs land — is your portfolio repository (a Git
+repo), passed to the installer as `--workspace-dir` (default: `FRAMEWORK_WORKSPACE_DIR` from this
+checkout's [`.env`](.env)). No user-level environment variables (`setx`) are needed: the installer
+writes `FRAMEWORK_DIR` and every `FRAMEWORK_*_DIR` into each hook's `env`, and the hooks hand the
+agents the absolute paths when a session opens.
+
+### GitHub Copilot app / Copilot CLI
+
+The plugin renderer is [`builds/github-copilot-cli/`](builds/github-copilot-cli/); design notes
+are in [`docs/hosts/github-copilot-cli.md`](docs/hosts/github-copilot-cli.md). **Trust the folder
+you open sessions in** (the portfolio repository) in the app, or when `copilot` asks: in an
+untrusted folder the harness hooks silently do not run and unattended file writes are denied.
+
+```powershell
+$Bundle = "$HOME\.saf\github-copilot-cli"
+# 1. Render the plugin bundle
+& $Py "$Org\builds\github-copilot-cli\render_bundle.py" $Org $Bundle
+# 2. Register the harness hooks into it, from the harness checkout, with the venv python
+cd saf-agentic-harness
+.venv\Scripts\python adapters\github-copilot-cli\install.py --framework-dir $Org `
+    --bundle-dir $Bundle --workspace-dir C:\path\to\portfolio
+# 3. Install: a one-plugin local marketplace, loaded live from $Bundle (nothing is copied)
+copilot plugin marketplace add $Bundle
+copilot plugin install poesis-saf-agentic-organization@poesis-saf-agentic-organization-local
+```
+
+```bash
+BUNDLE=~/.saf/github-copilot-cli
+"$PY" "$ORG/builds/github-copilot-cli/render_bundle.py" "$ORG" "$BUNDLE"   # or: make bundle-cli CLI_BUNDLE_DIR=...
+make -C saf-agentic-harness install-hooks-copilot-cli FRAMEWORK_DIR="$ORG" BUNDLE_DIR="$BUNDLE" \
+    WORKSPACE_DIR=/path/to/portfolio HARNESS_PYTHON="$PY"
+copilot plugin marketplace add "$BUNDLE"
+copilot plugin install poesis-saf-agentic-organization@poesis-saf-agentic-organization-local
+```
+
+`--framework-dir` / `FRAMEWORK_DIR` is this **checkout**, not the rendered bundle. The hooks go
+into `<bundle>/hooks.json` by default; `--hooks-target repo --target-repo <portfolio>` writes
+`<portfolio>/.github/hooks/safe-harness-copilot-cli.json` instead, and `--hooks-target user`
+writes them under `~/.copilot/hooks/`. `--hook-style shell` writes `powershell`/`bash` command
+strings instead of `exec` entries. The plugin loads live, so after a re-render re-run steps 1–2
+and open a new session. The orchestrators are `value-management-officer`,
+`release-train-engineer`, and `scrum-master`: pick one in the app's agent picker, or run
+`copilot --agent poesis-saf-agentic-organization:value-management-officer` (plugin agents are
+namespaced by the plugin name). Harness requests need no permission rule: the
+harness hook answers them itself (see below).
+
+### VS Code Copilot Chat
+
+```bash
+BUNDLE=/tmp/github-copilot-bundle
+"$PY" builds/github-copilot/render_bundle.py . "$BUNDLE"    # or: make bundle BUNDLE_DIR=...
+make -C ../saf-agentic-harness install-hooks FRAMEWORK_DIR="$ORG" BUNDLE_DIR="$BUNDLE"
+```
+
+The installer writes the workspace hook file, the orchestrators' session-started hook, and the
+VS Code settings that enable hooks; it refuses rather than guessing if `BUNDLE_DIR` is omitted.
+Then install `$BUNDLE` as the GitHub Copilot customization plugin — or the published release
+asset, which is that same bundle. On Windows run the same commands from PowerShell with `$Py`.
 
 ## Deterministic Harness
 
 The framework's deterministic checks live in the sibling
-[`saf-agentic-harness`](https://github.com/poesis-cloud/saf-agentic-harness) repository and run through its
-stable entrypoint `harness.py`. They are host-neutral: a CI job, shell wrapper, VS Code hook, or
-another agent runtime can call the same CLI. Point the harness at this repository with
-`FRAMEWORK_DIR`.
-
-Four commands (the global options `--portfolio-root`, `--strict`, `--json` come **before** the command):
+[`saf-agentic-harness`](https://github.com/poesis-cloud/saf-agentic-harness) repository behind one
+entrypoint, `harness.py`, with twelve functions (its `def/core/spec.md`): `start-session`,
+`resolve-workflow-instructions`, `resolve-workflow-skills`, `resolve-step`, `resolve-step-model`,
+`check-step-preconditions`, `resolve-step-instructions`, `resolve-step-skills`,
+`check-step-authorization`, `check-step-artifact`, `check-step-postconditions`, `end-session`.
 
 ```bash
-# STATE — validate Epic/Feature/Story artifacts (FSM, linkage, schema, gates, derived fields)
-python3 ../saf-agentic-harness/harness.py --portfolio-root /path/to/portfolio \
-  check-artifact --unit-id sie-observability-foundation
-
-# DRIVE — resolve the next orchestration action (dispatch | halt | done)
-python3 ../saf-agentic-harness/harness.py \
-  orchestrate --workflow value-management-officer --unit sie-observability-foundation
-
-# CONDITIONS — evaluate one step's conditions and append the session ledger line
-python3 ../saf-agentic-harness/harness.py \
-  check-step --orchestration value-management-officer --step capture-epic \
-  --unit-id sie-observability-foundation --session abc123
-
-# HOOK — funnel a host lifecycle event (JSON on stdin) through the harness
-cat event.json | python3 ../saf-agentic-harness/harness.py hook --event preToolUse
+python harness.py <function> --session-id <id> [--parent-session-id <id>] [function flags]
 ```
 
-The harness never writes artifacts — it reports the value/edge; the orchestrator commits.
+The host's hooks call the session, load, and check functions on lifecycle events. Orchestrators
+ask the harness with ONE plain command, alone in its tool call, never with `--session-id`,
+`$env:` or environment prefixes, chaining, redirection or substitution:
+
+- GitHub Copilot app / Copilot CLI:
+  `& <venv python> <harness.py> resolve-step --workflow-slug <workflow-slug>` or
+  `& <venv python> <harness.py> resolve-step-model` (Linux/macOS: without the leading `&`).
+- VS Code Copilot Chat (`run_in_terminal`):
+  `python <harness.py> resolve-step --workflow-slug <workflow-slug>` or
+  `python <harness.py> resolve-step-model --workflow-slug <workflow-slug>`.
+
+In both hosts the shell never runs it: the harness hook runs it for the agent's session and
+returns the JSON report as a hook denial whose reason starts with
+`SAFe agentic harness RESULT (<function>)` — the successful answer, not to be re-issued. Only
+`SAFe agentic harness REJECTED` means refused: fix the named problem, then ask again. Agents
+write artifacts with the host's file-edit tools (`create`, `edit`, or `apply_patch` in the GitHub
+Copilot app / Copilot CLI; the edit tools in VS Code), never through the shell, so the harness can
+authorize and check every write. Every call is journaled to
+`<FRAMEWORK_WORKSPACE_DIR>/logs/<sessionId>.log.jsonl`. The harness never writes artifacts — it
+reports; the actors commit. **No valid step without artifact:** each step's session commits a
+change to exactly one instance of its declared artifact kind, with a `stepOutcomes` entry
+recording its decision, and the harness's built-in postcondition requires it
+([docs/step-artifacts.md](docs/step-artifacts.md)). Workflow friction goes in that entry's
+`friction` note; only the `improvement-backlog` workflow writes pain points. Reports are
+indicative; artifacts are the only evidence.
 
 ### Load contract
 
-Point `FRAMEWORK_DIR` at this checkout. Layout keys live in [`.env`](.env) (`FRAMEWORK_*_DIR`);
+The harness hooks get `FRAMEWORK_DIR` (this checkout) from the installer. Layout keys live in [`.env`](.env) (`FRAMEWORK_*_DIR`);
 process environment overrides the file. Workflows live at [workflows/](workflows/). The sibling
 [`saf-agentic-harness`](https://github.com/poesis-cloud/saf-agentic-harness) `ConfigLoader` must
 load layout, ACL, model-profiles, workspace, and the workflow catalog without
@@ -265,9 +350,9 @@ make verify
 ```
 
 `make verify` runs unit coherence (slug resolve, ceremony pairs, ACL, required-reading,
-plugin 1:1) plus functional live-load (`start-session` / `resolve-step` /
+plugin 1:1, the Copilot CLI bundle contract) plus functional live-load (`start-session` / `resolve-step` /
 `check-step-authorization` on one portfolio, program, and team workflow). Coverage on
-organization Python (`tests/loaders.py` + `render_bundle.py`) must be ≥95%.
+organization Python (`tests/loaders.py` + both `render_bundle.py`) must be ≥95%.
 
 The harness constitution itself is verified separately:
 `make -C ../saf-agentic-harness verify`.

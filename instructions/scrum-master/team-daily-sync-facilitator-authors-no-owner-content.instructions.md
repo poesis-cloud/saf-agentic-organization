@@ -16,7 +16,6 @@ description: 'the facilitator walks the board, renders and notes impediments onl
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Invariant: facilitator_authors_no_owner_content
 
 the facilitator walks the board, renders and notes impediments only; it authors no Story content, acceptance criteria, source, tests or qa-signoff content

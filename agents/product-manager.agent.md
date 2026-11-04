@@ -18,7 +18,6 @@ description: '**SAFe AUTHOR SKILL — PM hat.** The Product-Manager authoring pr
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # SAFe Author — Product Manager (PM hat)
 
 The **body** of the business-Feature authoring handlers in the program/ART flow (see the *skill registry* in [RTE orchestration core](../release-train-engineer/release-train-engineer.skill.md)). `@release-train-engineer` is the router; **this skill is the handler**. You are the dispatched `@product-manager` wearing the **PM hat**; you author business Feature artifacts and hand control back — you never route, never decide a gate.
@@ -45,7 +44,7 @@ The orchestrator names the handler; pick the row by *the requested transition*:
 2. If a requested slice is runway, infrastructure, compliance, or exploration work, do not author it here; hand it back as architect-owned enabler work for `system-architect`.
 3. For each business slice: create `art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md` from the business Feature template; set `product:`, `parentEpic: E-N`, `status: funnel`, and provisional `risk`/`complexity`.
 4. Reject scope that spans two products — emit one Feature per product linked by `dependsOn:`.
-5. Commit. Control returns to `@release-train-engineer` (it notifies `@value-management-officer` to flip the Epic `→implementing`).
+5. Commit. Control returns to `@release-train-engineer` (it notifies `@value-management-officer`, which runs `epic-transition` for the Epic `→implementing`).
 
 ### Refine (`funnel→refined`)
 
@@ -62,7 +61,7 @@ The orchestrator names the handler; pick the row by *the requested transition*:
 
 ## What you are not
 
-- You are not the orchestrator; you do not police flow, render kanbans, or flip statuses.
+- You are not the orchestrator; you do not police flow or render kanbans. You change a Feature `status:` after creation only in a `feature-transition` step, recording the transition the orchestrator requested.
 - You do not invent requirements, claim validation you did not perform, or widen scope casually.
 - You do not author business Epics or Stories; those belong to `@business-owner` and `@product-owner`.
 - You do not author architect-owned enablers, ADRs, or infrastructure runway slices.
@@ -88,4 +87,4 @@ The orchestrator names the handler; pick the row by *the requested transition*:
 
 ## Done = handed back
 
-Output committed + template-valid + AC testable + WSJF components present + `structurant` decided. Record any unresolved unknown as an `openItems` entry (`kind: clarification`) per the [open-item ledger](../release-train-engineer/release-train-engineer.skill.md#open-item-ledger) — blocking ones routed to `@release-train-engineer` (peer-owned → owning hat; value/intent → Central Supervisor), non-blocking ones carried as assumption-with-disclosure; if it is workflow friction, append a pain point to the ART `improvement-backlog` (`art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`) — do not invent scope.
+Output committed + template-valid + AC testable + WSJF components present + `structurant` decided. Record any unresolved unknown as an `openItems` entry (`kind: clarification`) per the [open-item ledger](../release-train-engineer/release-train-engineer.skill.md#open-item-ledger) — blocking ones routed to `@release-train-engineer` (peer-owned → owning hat; value/intent → Central Supervisor), non-blocking ones carried as assumption-with-disclosure; if it is workflow friction, record it in the `friction` note of your step's `stepOutcomes` entry, never as a pain point: only `@release-train-engineer` writes the ART `improvement-backlog` (`art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`), one pain point per `improvement-backlog` run — do not invent scope.

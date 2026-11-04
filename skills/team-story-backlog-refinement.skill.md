@@ -20,8 +20,8 @@ description: '**SAFe CEREMONY SKILL.** The Story Backlog Refinement playbook loa
 
 # SAFe Ceremony — Story Backlog Refinement
 
-The **normative spec** is the machine-readable **[workflows/team/team-backlog-refinement.workflow.conf.yaml](../workflows/team/team-backlog-refinement.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+The **normative spec** is the machine-readable **[workflows/team/team-backlog-refinement.workflow.conf.yaml](../workflows/team/team-backlog-refinement.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
 Mains are `story` and `story-enabler`. System Architect **challenges** those mains with `architecture-review`; ADR/NFR belong to program `architectural-runway-extension`.
 
-Shared model lives in **[scrum-master orchestration core](scrum-master.skill.md)**. Business Stories are authored via `product-owner`, enabler Stories via `system-architect`; the Story stays `backlog` and **only `@scrum-master` writes `status:`** (the ★ Story Gate / DoR runs at Iteration Planning).
+Shared model lives in **[scrum-master orchestration core](scrum-master.skill.md)**. Business Stories are authored via `product-owner`, enabler Stories via `system-architect`; the Story stays `backlog` and the Story `status:` is written only by its author step (`@product-owner`, or `@system-architect` for an Enabler Story), in `story-transition` after creation (the ★ Story Gate / DoR runs at Iteration Planning).

@@ -62,7 +62,7 @@ steps:
     step: confirm-product-vision
   instructions: program-pi-planning-confirm-product-roadmap
 - slug: confirm-intent
-  description: Main artifact confirm — Product Manager restates Feature intent that this PI will commit against.
+  description: Main artifact confirm — Product Manager restates the intent of the one Feature this PI Planning run commits.
   capabilities:
     deep-reasoning: 7
     coding: 0

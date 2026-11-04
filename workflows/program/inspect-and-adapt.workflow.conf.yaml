@@ -15,15 +15,17 @@
 slug: inspect-and-adapt
 description: >
   Purpose: PI quantitative/qualitative improve. Act: Cadence. Orchestrator:
-  Release Train Engineer. Dispatch: pain-point mediation records. Do not
-  Evaluate pain-points. A resulting Feature or Enabler is a later Demand
-  (feature-backlog-refinement), not I&A writing a Feature.
+  Release Train Engineer. Dispatch: the PI's inspect-and-adapt mediation record
+  (metrics, pain-point candidates, triage). Writes no pain point: each candidate
+  or triage row is a later improvement-backlog run. Do not Evaluate the record.
+  A resulting Feature or Enabler is a later Demand (feature-backlog-refinement),
+  not I&A writing a Feature.
 instructions: release-train-engineer-interpret-speech-acts
 orchestrator: release-train-engineer
 skills: program-inspect-and-adapt
 steps:
   - slug: metrics-review
-    description: Mediation record — Release Train Engineer records quantitative/qualitative pain-points. Not itself challenged.
+    description: Mediation record — Release Train Engineer creates the PI's Inspect & Adapt record with the metrics and pain-point candidates. Not itself challenged.
     capabilities:
       deep-reasoning: 7
       coding: 0
@@ -35,11 +37,11 @@ steps:
       fast-iteration: 2
       schema-adherence: 8
     actor: release-train-engineer
-    artifact: pain-point
+    artifact: inspect-and-adapt
     instructions:
       - program-inspect-and-adapt-metrics-review
   - slug: pi-retrospective
-    description: Mediation record — Release Train Engineer records retrospective pain-points. Not itself challenged.
+    description: Mediation record — Release Train Engineer updates the PI's Inspect & Adapt record with the problem-solving workshop triage. Not itself challenged.
     capabilities:
       deep-reasoning: 7
       coding: 0
@@ -51,7 +53,7 @@ steps:
       fast-iteration: 2
       schema-adherence: 8
     actor: release-train-engineer
-    artifact: pain-point
+    artifact: inspect-and-adapt
     instructions:
       - program-inspect-and-adapt-retrospective
     conditions:

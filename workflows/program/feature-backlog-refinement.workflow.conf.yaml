@@ -19,7 +19,7 @@ description: >
   Feature, thicken AC/WSJF, Feature-sized impact of changing X, Feature-sized
   UX/security gap, Enabler Feature sibling. Challenges of those mains:
   feasibility, architecture-review (SA challenge, not an ADR), security, UX.
-  Evaluate: those mains; KO reiterates that main's owner step. Refuse Epic/Story
+  Evaluate: those mains; KO reiterates the workflow (new instance; that main's owner step absorbs the KO). Refuse Epic/Story
   grain. Refuse ADR, NFR list, and runway — those are architectural-runway-extension.
   Do not invent Impact Analysis.
 instructions: release-train-engineer-interpret-speech-acts

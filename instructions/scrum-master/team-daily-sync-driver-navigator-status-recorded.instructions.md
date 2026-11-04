@@ -16,7 +16,6 @@ description: 'the facilitator records the Driver/Navigator status from committed
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Invariant: driver_navigator_status_recorded
 
 the facilitator records the Driver/Navigator status from committed work and notes when @quality-engineer (in-qa), @product-owner (scope), @system-architect (dependency) or @security-expert (trust) must be pulled in on a blocker

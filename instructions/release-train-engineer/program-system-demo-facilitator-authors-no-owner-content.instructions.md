@@ -1,5 +1,5 @@
 ---
-description: 'the facilitator stages and commits the accepted transition only; it authors no demo-gate decision, acceptance criteria, Story, qa-signoff, security or operator verdict content'
+description: 'the facilitator stages the gate and records the human decision in the system-demo record only; the accepted Feature transition is committed by its author step in `feature-transition`. It authors no demo-gate decision, acceptance criteria, Story, qa-signoff, security or operator verdict content'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors
@@ -16,7 +16,6 @@ description: 'the facilitator stages and commits the accepted transition only; i
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Invariant: facilitator_authors_no_owner_content
 
-the facilitator stages and commits the accepted transition only; it authors no demo-gate decision, acceptance criteria, Story, qa-signoff, security or operator verdict content
+the facilitator stages the gate and records the human decision in the system-demo record only; the accepted Feature transition is committed by its author step in `feature-transition`. It authors no demo-gate decision, acceptance criteria, Story, qa-signoff, security or operator verdict content

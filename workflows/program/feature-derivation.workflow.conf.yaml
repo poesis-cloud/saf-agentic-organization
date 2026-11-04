@@ -18,7 +18,8 @@ description: >
   split into Features on the ART backlog). Orchestrator: Release Train
   Engineer. In-scope mains: feature, feature-enabler. Product Manager
   derives the business Feature; System Architect derives the Enabler
-  Feature. No challenge protocol here — derived items then enter
+  Feature. One business Feature per run: split an Epic into N Features with
+  N runs. No challenge protocol here — derived items then enter
   feature-backlog-refinement. Evaluate: those mains. Refuse Feature AC/WSJF
   thickening and NFR traces (that is refinement). Refuse ADR/NFR register
   (that is architectural-runway-extension). There is no Feature-to-Story
@@ -31,7 +32,7 @@ orchestrator: release-train-engineer
 skills: program-feature-derivation
 steps:
 - slug: derive-business
-  description: Main artifact draft — Product Manager derives a business Feature from the approved Epic.
+  description: Main artifact draft — Product Manager derives one business Feature from the approved Epic.
   capabilities:
     deep-reasoning: 7
     coding: 0

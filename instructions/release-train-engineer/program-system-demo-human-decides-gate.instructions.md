@@ -16,7 +16,6 @@ description: 'the ★ Demo Gate verdict is the Central Supervisor''s; the orches
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Invariant: human_decides_gate
 
 the ★ Demo Gate verdict is the Central Supervisor's; the orchestrator stages, never decides

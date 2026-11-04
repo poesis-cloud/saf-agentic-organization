@@ -17,7 +17,8 @@ description: >
   Purpose: establish the portfolio architectural runway and NFR backbone. Act:
   Demand. Orchestrator: Value Management Officer. In-scope mains:
   architecture-vision. Challenges: security (NFR backbone), operability (not
-  evaluated). Evaluate: architecture-vision; KO reiterates the EA owner step.
+  evaluated). Evaluate: architecture-vision; KO reiterates the workflow (new
+  instance; the EA owner step absorbs the KO).
   Use when: portfolio NFR backbone, target ARTs, enabler Epic seeds, Architectural
   Vision itself. Refuse ART ADRs (architectural-runway-extension). Refuse Epic
   hypothesis (epic-lean-business-case). Strategic Portfolio Review may confirm

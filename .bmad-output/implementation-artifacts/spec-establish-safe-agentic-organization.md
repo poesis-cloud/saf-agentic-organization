@@ -115,7 +115,7 @@ Functional tests may import harness `src/` by setting `PYTHONPATH` to the siblin
 
 ## Suggested Review Order
 
-**Load contract**
+### Load contract
 
 - Checkout is a loadable `FRAMEWORK_DIR` via sibling ConfigLoader.
   [`.env:2`](../../../.env#L2)
@@ -126,7 +126,7 @@ Functional tests may import harness `src/` by setting `PYTHONPATH` to the siblin
 - Portfolio / ART / Daily authorization paths are resolvable.
   [`test_live_load.py:50`](../../../tests/functional/test_live_load.py#L50)
 
-**Ceremonies**
+### Ceremonies
 
 - ART Sync is a schema-valid RTE ceremony paired with `program-art-sync`.
   [`art-sync.workflow.conf.yaml:15`](../../../conf/workflows/art-sync.workflow.conf.yaml#L15)
@@ -149,7 +149,7 @@ Functional tests may import harness `src/` by setting `PYTHONPATH` to the siblin
 - VMO required-reading is the distinct LPM procedure, not a self-alias.
   [`value-management-officer.agent.md:32`](../../../agents/value-management-officer.agent.md#L32)
 
-**Plugin + ACL**
+### Plugin + ACL
 
 - Plugin skills are 1:1 with `skills/*.skill.md`; version stays `0.1.0`.
   [`plugin.json:4`](../../../builds/github-copilot/plugin.json#L4)
@@ -160,7 +160,7 @@ Functional tests may import harness `src/` by setting `PYTHONPATH` to the siblin
 - PM skill is Feature-author only; GitHub Project sync is a DO-NOT-USE.
   [`product-manager.skill.md:4`](../../../skills/product-manager.skill.md#L4)
 
-**Tests + Makefile**
+### Tests + Makefile
 
 - Coherence suite asserts slug resolve, ceremony pairs, plugin 1:1.
   [`test_coherence.py:29`](../../../tests/unit/test_coherence.py#L29)

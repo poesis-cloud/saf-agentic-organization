@@ -20,4 +20,4 @@ name: portfolio-epic-lean-business-case-owner-rewrites-case
 
 The Business Owner rewrites the Lean Business Case after discovery, the Enabler Epic, and the feasibility challenge. Produce the lean-business-case artifact. Absorb the review findings and the Enabler Epic constraints; do not author the review packet.
 
-Surgical Demand: rewrite only if the Lean Business Case was in-scope and challenged. If this run's in-scope main was only the Epic or Enabler Epic, emit explicit no-change on the LBC rather than a second rewrite.
+Surgical Demand: rewrite only if the Lean Business Case was in-scope and challenged. If this run's in-scope main was only the Epic or Enabler Epic, do not rewrite the LBC: commit it with only a new `stepOutcomes` entry (`outcome: no-change`, note why).

@@ -18,7 +18,8 @@ description: >
   Inspect. Orchestrator: Value Management Officer. Dispatch: portfolio-sync
   mediation record. Manifests and Kanban are projections, not mains. Evaluate:
   nothing as a bet. An impediment that is Epic-sized is a later Demand, not this
-  workflow writing an Epic. Do not Evaluate the minutes.
+  workflow writing an Epic. Do not Evaluate the minutes. One product manifest
+  per run: another product is another run.
 instructions: value-management-officer-interpret-speech-acts
 orchestrator: value-management-officer
 skills: portfolio-portfolio-sync
@@ -58,7 +59,7 @@ steps:
     step: sync
   instructions: portfolio-portfolio-sync-update-portfolio-manifest
 - slug: update-product-manifest
-  description: Operational projection — Value Management Officer updates product manifests from the sync.
+  description: Operational projection — Value Management Officer updates the named product's manifest from the sync.
   capabilities:
     deep-reasoning: 2
     coding: 3

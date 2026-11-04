@@ -22,7 +22,7 @@ business Features, higher-order enablers, or operational constraints.
 ---
 id: F-12
 title: <Enabler Feature title>
-status: funnel           # funnel | refined | arch-pending | ready | committed | in-progress | done | blocked
+status: funnel           # funnel | refined | arch-pending | ready | committed | in-progress | done | blocked | not-needed
 type: enabler
 enablerType: architectural   # exploration | architectural | infrastructure | compliance
 parentEpic: E-1
@@ -63,6 +63,7 @@ github:
   issueNumber: null
   issueNodeId: null
   projectItemId: null
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # F-12 — <title>

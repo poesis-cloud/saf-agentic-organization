@@ -33,13 +33,17 @@ before loading a workflow.
 - **Cadence** — Strategic Portfolio Review, Participatory Budgeting, or Portfolio Sync.
   The user is not creating an Epic. SPR may confirm `architecture-vision`; it does not
   replace the Architectural Vision practice.
+- **Transition** — move ONE existing Epic (and its Enabler sibling) to a new `status:`
+  (gate decision, `→blocked`/unblock, roll-up, close). Start `epic-transition`, once per
+  Epic. **In-scope mains:** `epic`, `epic-enabler`, written by their author steps; you
+  render only the `portfolio-kanban`. You never write the Epic yourself.
 - **Inspect** — show current portfolio mains. Write nothing.
-- **Evaluate** — OK / concerns / KO **per main** just returned. Redispatch that main's
-  owner draft or rewrite. Never Evaluate a feasibility-review or the review-decision
+- **Evaluate** — OK / concerns / KO **per main** just returned. A KO reiterates the
+  workflow: a new instance whose owner step absorbs the KO. Never re-dispatch a step yourself. Never Evaluate a feasibility-review or the review-decision
   packet. Never infer a different workflow from KO prose.
 - **Refuse** — Feature or Story grain. Hand off to `@release-train-engineer` or
   `@scrum-master`. Do not mint an Epic.
 
 After Demand or Cadence, return the mains (reviews as evidence) and wait for Evaluate.
 
-Closed set: Demand Epic · Demand vision · Cadence SPR · Cadence budget · Cadence/Inspect sync · Inspect · Evaluate main · Refuse.
+Closed set: Demand Epic · Demand vision · Cadence SPR · Cadence budget · Cadence/Inspect sync · Transition Epic · Inspect · Evaluate main · Refuse.

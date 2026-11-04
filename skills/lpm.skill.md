@@ -28,13 +28,13 @@ Layer-specific procedure for **`@value-management-officer`** — the **VMO / Agi
 
 The VMO **polices** the portfolio layer: it controls the input/output artifacts of the agents it dispatches, enforces conformance to its **owned templates** + SAFe practice, and owns the **flow** (gates, kanban, cost rollup). It does **not** author or own the backlog — Epics + Strategic Themes are **authored by `@business-owner`** and **approved by the human Business Owner** at the ★ Epic Gate.
 
-- **Portfolio Init + ART/product registration** — sole writer of `portfolio-manifest.yaml > products[]` (with `arts[]` retained only as a compatibility list where older tooling still expects it).
+- **Portfolio Init + ART/product registration** — in its `portfolio-sync` steps, sole writer of `portfolio-manifest.yaml > products[]` (with `arts[]` retained only as a compatibility list where older tooling still expects it).
 - **Strategic Themes + Epics (flow + conformance)** — dispatch `@business-owner` to author Themes + Epics (hypothesis, WSJF, `funnel -> reviewing`) and `@enterprise-architect` to extend them through `analyzing`; police template + SAFe conformance; facilitate the **★ Epic Gate** and the lifecycle `portfolio-backlog -> implementing -> done` incl. **Epic outcome acceptance** (human BO) on the last child Feature `done`.
-- **Portfolio Kanban** — rendered from Epic frontmatter; portfolio risk + cross-ART impediments (Epic `blocked`).
+- **Portfolio Kanban** — rendered from Epic frontmatter in the `update-portfolio-kanban` step of `epic-transition` or `portfolio-sync`; portfolio risk + cross-ART impediments (Epic `blocked`).
 - **Portfolio templates** — epic, strategic-themes, portfolio-manifest, product-manifest, kanban-portfolio.
 - **Strategic Portfolio Review** — re-rank by WSJF, revise Themes, pivot/persevere/stop.
-- **Epic cost — once, at Epic close** — write `cost:` once from ecosystem logs + Σ child Feature `tokensRolled`.
-- **Pain points — continuous** — append portfolio friction to the ART `improvement-backlog`.
+- **Epic cost — once, at Epic close** — run `epic-transition` (`→done`): `@business-owner` writes `cost:` once from ecosystem logs + Σ child Feature `tokensRolled`.
+- **Pain points — continuous** — propose portfolio friction for an `improvement-backlog` run: only `@release-train-engineer` writes the ART `improvement-backlog`, one pain point per run.
 - **Dispatch `@release-train-engineer`** per ART for all program/ART + iteration execution.
 
 **Never writes production code.**
@@ -43,40 +43,41 @@ The VMO **polices** the portfolio layer: it controls the input/output artifacts 
 
 The portfolio workflow **is the Epic FSM**: `funnel → reviewing → analyzing → portfolio-backlog → implementing → done` (flag `blocked`). **Step 0:** if `portfolio/` or the product is unregistered, run **Portfolio / ART Init** first.
 
-Before executing any ceremony or practice row, load that sub-orchestration skill plus `workflows/{portfolio,program,team}/<name>.workflow.conf.yaml`. The harness `check-step` result is the transition guard.
+Before executing any ceremony or practice row, load that sub-orchestration skill plus `workflows/{portfolio,program,team}/<name>.workflow.conf.yaml`. The harness `check-step-preconditions` / `check-step-postconditions` result is the transition guard.
 
-| Event (Epic reaches…) | Kind | Sub-orchestration | Gate | → vmo commits |
+| Event (Epic reaches…) | Kind | Sub-orchestration | Gate | Committed by (governed step) |
 |---|---|---|---|---|
-| Strategic Theme + idea | Practice·CE | **Epic Lean Business Case** | — | `∅→funnel` |
-| `funnel` valid | Practice·CE | **Epic Lean Business Case** | — | `funnel→reviewing` |
-| `reviewing` valid | Practice·CE | **Architectural Vision** | — | `reviewing→analyzing` |
-| runway gap after shaping | Practice·CE | **Architectural Vision** seeds Enabler Epic | — | enabler `∅→funnel`; parent `→funnel` |
-| `analyzing` (challenge done) | **Gate** | — | **★ Epic Gate** (CS·BO) | accept→`portfolio-backlog` · reject→`funnel` |
-| →`portfolio-backlog` or Epic `→done` | Ceremony | **Participatory Budgeting** | — | budget allocation |
-| Epic enter (`→funnel`) / exit (`→done`) | Ceremony | **Strategic Portfolio Review** | — | WSJF re-order; pivot |
-| first child Feature `funnel` | D | — | — | `portfolio-backlog→implementing` |
-| last child Feature `done` | **Gate** | — | **★ Epic Outcome Gate** | accept→`done`; commit `cost:` |
-| any Epic transition / `→blocked` | Ceremony | **Portfolio Sync** | — | `→blocked`/unblock |
+| Strategic Theme + idea | Practice·CE | **Epic Lean Business Case** | — | `epic-lean-business-case/draft-epic`: `∅→funnel` |
+| `funnel` valid | Practice·CE | **Epic Lean Business Case** | — | `epic-transition`: `funnel→reviewing` |
+| `reviewing` valid | Practice·CE | **Architectural Vision** | — | `epic-transition`: `reviewing→analyzing` |
+| runway gap after shaping | Practice·CE | **Architectural Vision** seeds Enabler Epic | — | `epic-transition`: parent `→funnel`; replay `epic-lean-business-case` (`draft-enabler-epic`) |
+| `analyzing` (challenge done) | **Gate** | — | **★ Epic Gate** (CS·BO) | `epic-transition`: accept→`portfolio-backlog` · reject→`funnel` |
+| →`portfolio-backlog` or Epic `→done` | Ceremony | **Participatory Budgeting** | — | `strategic-investment-planning`: budget allocation |
+| Epic enter (`→funnel`) / exit (`→done`) | Ceremony | **Strategic Portfolio Review** | — | `strategic-portfolio-review`: WSJF re-order; pivot ⇒ `epic-transition` |
+| first child Feature `funnel` | D | — | — | `epic-transition`: `portfolio-backlog→implementing` |
+| last child Feature `done` | **Gate** | — | **★ Epic Outcome Gate** | `epic-transition`: accept→`done` + `cost:` |
+| any Epic transition / `→blocked` | Ceremony | **Portfolio Sync** | — | `epic-transition`: `→blocked`/unblock |
+
+**Who commits a transition.** The last column names the governed step that commits each edge. Creation (`∅→funnel`) is the authoring workflow's first step; every later Epic `status:` change, including the gate outcomes, roll-ups, `blocked`/unblock and the close with its `cost:` snapshot, is one run of `epic-transition`: `@business-owner` records it on the business Epic, `@enterprise-architect` on the Enabler Epic, and the VMO re-renders the Portfolio Kanban. The VMO holds no Epic privilege in the access-control list, so it never writes an Epic.
 
 ## Portfolio Init procedure (step 0, run once)
 
-When `portfolio/` does not exist:
-1. Create the tree (with `.gitkeep` in empty subfolders): `portfolio-manifest.yaml`, `strategic-themes.md`, `portfolio-vision.md`, `portfolio-roadmap.md`, `portfolio-backlog/`, `art/`, `products/`.
-2. Populate `portfolio-manifest.yaml` (Business Owner + Enterprise Architect = `central-supervisor`; `products[]` = authoritative product registry).
-3. Seed `strategic-themes.md` from `strategy/poesis-strategy.md` + the business lines.
-4. `provision` the Portfolio Project when GitHub sync is in use.
+When `portfolio/` does not exist, bootstrap it through governed steps only (never create folders or `.gitkeep` files; the harness denies paths outside the artifact layout):
+1. Ask the Central Supervisor for the first product, then run `portfolio-sync`: `update-portfolio-manifest` writes `portfolio-manifest.yaml` (Business Owner + Enterprise Architect = `central-supervisor`; `products[]` = authoritative product registry) and `update-product-manifest` the first product manifest.
+2. Run `strategic-portfolio-review`: `@business-owner` seeds `strategic-themes.md` from `strategy/poesis-strategy.md` + the business lines, then the portfolio vision and roadmap.
+3. `provision` the Portfolio Project when GitHub sync is in use.
 
 ## ART / Product Init procedure (step 0 fallback)
 
-The VMO is the **only** writer of the product registry. When an Epic targets an ART not present in `portfolio-manifest.yaml > products[]`:
+The VMO is the **only** writer of the product registry, in its `portfolio-sync` steps. When an Epic targets an ART not present in `portfolio-manifest.yaml > products[]`:
 1. Halt and ask the Central Supervisor for: product name, slug, one-line description, business line (`theory` | `commercial` | `infra`), owner repos, deps.
-2. Create `products/<product-slug>/` with `product-manifest.yaml`, `product-vision.md`, `product-roadmap.md`, `architecture-vision.md`, `architecture-runway.md`. ART/program backlog, PI, and team folders are created lazily under `art/<art-slug>/`.
-3. Append the product to `portfolio-manifest.yaml > products[]`.
+2. Run `portfolio-sync`: `update-portfolio-manifest` appends the product to `products[]`; `update-product-manifest` writes `products/<product-slug>/product-manifest.yaml`.
+3. Owners write the product's other artifacts in their workflows: product vision and roadmap (`@product-manager`, `pi-planning`), architecture vision (`@enterprise-architect`, `architectural-vision`), architecture runway (`@system-architect`, `architectural-runway-extension`).
 4. Resume Epic intake.
 
 ## Portfolio Kanban ownership
 
-Render Portfolio Kanban from Epic frontmatter after every Epic status flip. VMO owns `reviewing` and `implementing` and the Epic `blocked` flag; the Business-Owner hat owns `funnel`, `portfolio-backlog` (★ Epic Gate), and `done`; the Enterprise-Architect hat owns `analyzing`.
+Render Portfolio Kanban from Epic frontmatter in the `update-portfolio-kanban` step of `epic-transition` (after each Epic transition) or `portfolio-sync`. VMO decides `reviewing` and `implementing` and the Epic `blocked` flag; the Business-Owner hat decides `funnel`, `portfolio-backlog` (★ Epic Gate), and `done`; the Enterprise-Architect hat decides `analyzing`. Whoever decides, the Epic `status:` is committed by its author step in `epic-transition`.
 
 ## Authoring roles
 
@@ -87,7 +88,7 @@ Dispatch `@business-owner` for Strategic Themes + business Epics and `@enterpris
 When the Central Supervisor says "recover state":
 1. Read `PROJECT_BRIEF.md`, `portfolio-manifest.yaml`, and `strategic-themes.md`.
 2. Read `portfolio-backlog/` (Epic statuses; open Epic-Gate Epics; Epics in `implementing`).
-3. Re-render Portfolio Kanban from Epic frontmatter.
+3. If the Portfolio Kanban is stale against Epic frontmatter, run `portfolio-sync` (its `update-portfolio-kanban` step re-renders it).
 4. For each in-flight Epic, dispatch `@release-train-engineer` (or read the product's Program Kanban) for the program/ART rollup.
 5. Report: open Epic Gates; implementing Epics + child-Feature rollup; outcome-acceptance queue; portfolio risks; next action.
 6. Wait for Central Supervisor confirmation before dispatching.
