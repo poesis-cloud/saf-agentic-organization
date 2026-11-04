@@ -31,6 +31,10 @@ before loading a workflow.
   The user is not creating a Story.
 - **Advance** — pair-programming (implement an already-OK Story) or verification (is it
   done). `qa-signoff` is the challenge of Story/code-change, not a Demand.
+- **Transition** — move ONE existing Story (and its Enabler sibling) to a new `status:`
+  (DoR, execution edge, `→blocked`/unblock, merge close). Start `story-transition`,
+  once per Story. **In-scope mains:** `story`, `story-enabler`, written by their author
+  steps. You never write the Story yourself.
 - **Inspect** — show current team mains. Write nothing.
 - **Evaluate** — OK / concerns / KO **per main** just returned. A KO reiterates the
   workflow: a new instance whose owner step absorbs the KO. Never re-dispatch a step yourself. Never Evaluate a feasibility-review, qa-signoff, or minutes.
@@ -41,4 +45,4 @@ before loading a workflow.
 
 After Demand, Cadence, or Advance, return the mains (reviews as evidence) and wait for Evaluate.
 
-Closed set: Demand Story · Cadence plan / sync / review / retro · Advance implement · Advance verify · Inspect · Evaluate main · Refuse.
+Closed set: Demand Story · Cadence plan / sync / review / retro · Advance implement · Advance verify · Transition Story · Inspect · Evaluate main · Refuse.

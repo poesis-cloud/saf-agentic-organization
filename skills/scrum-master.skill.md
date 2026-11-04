@@ -26,11 +26,11 @@ Layer-specific procedure for **`@scrum-master`**. This skill is **self-contained
 The SM **polices** the iteration layer: it controls the agents' input/output artifacts, enforces conformance to its **owned templates** + SAFe practice, and owns the **flow** (★ Story / PR gates, Team Kanban, WIP). It does **not** author or own the backlog.
 
 - **Iteration Planning** — `products/<product-slug>/<plan-slug>.plan.md`; assign Driver/Navigator per Story.
-- **Stories (PO-owned)** — dispatch `@product-owner`, who **authors** `art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.story.md`; sm polices the **★ Story Gate** (DoR, `backlog -> ready`), template + SAFe conformance, renders the **Team Kanban**, owns the in-iteration transitions, and enforces **WIP limits**. sm owns the iteration-tier templates (sprint-plan, story, qa-signoff, daily, retro, progress, kanban-team).
+- **Stories (PO-owned)** — dispatch `@product-owner`, who **authors** `art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.story.md`; sm runs the **★ Story Gate** (DoR, `backlog -> ready`), polices template + SAFe conformance, renders the **Team Kanban** in its Daily Sync (`team-sync`) record, governs the in-iteration transitions (each committed by the Story's author step in `story-transition`), and enforces **WIP limits**. sm owns the iteration-tier templates (sprint-plan, story, qa-signoff, daily, retro, progress, kanban-team).
 - **Pair-programming micro-cycle** — coach HUDDLE -> DRIVE -> CRITIQUE -> ACCEPT/REJECT -> SWAP (see Pair Programming below).
-- **Events** — Daily Sync (`Daily Sync`), Iteration Review, Retro (`Iteration Retro`); update `products/<product-slug>/<progress-slug>.progress.md`.
-- **QA + ★ PR Gate packet** — dispatch `@quality-engineer`; drive Story -> `awaiting-pr`; hand the packet to the Central Supervisor (`@release-train-engineer` merges).
-- **Story cost — once, at `in-qa -> awaiting-pr`** — fetch dev + QA dispatch tokens from session logs (matched by `S-N`; no intermediary ledger); write `cost:` once ([cost-snapshot invariant + model](../../workflow/workflows/verification/instructions/story-cost-snapshot-measured-once-from-logs.instructions.md)).
+- **Events** — Daily Sync (`Daily Sync`), Iteration Review, Retro (`Iteration Retro`); progress is recorded in the Daily Sync (`team-sync`) records (there is no separate progress artifact).
+- **QA + ★ PR Gate packet** — dispatch `@quality-engineer`; drive Story -> `awaiting-pr` (through `story-transition`); hand the packet to the Central Supervisor (`@release-train-engineer` merges).
+- **Story cost — once, at `in-qa -> awaiting-pr`** — run `story-transition`: its `transition-story` step (`@product-owner`) writes `cost:` once from the session logs (dev + QA dispatch tokens matched by `S-N`; no intermediary ledger) ([cost-snapshot invariant + model](../../workflow/workflows/verification/instructions/story-cost-snapshot-measured-once-from-logs.instructions.md)).
 - **Pain points — continuous** — capture iteration friction in the sprint retro (§2b), where program/ART-scope items are escalated for an `improvement-backlog` run: only `@release-train-engineer` writes the ART `improvement-backlog` (`art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`), one pain point per `improvement-backlog` run; `status: open`, no inline fix.
 - **Impediments** — remove iteration-level; escalate program-level to `@release-train-engineer`.
 
@@ -42,22 +42,24 @@ The iteration workflow **is the Story FSM**: `backlog → ready → in-progress 
 
 Before executing any ceremony or practice row, load that sub-orchestration skill plus its workflow config in `workflows/{portfolio,program,team}/<name>.workflow.conf.yaml` (where `<name>` is the ceremony/practice slug); the harness checks each step's `conditions` (`check-step-preconditions` / `check-step-postconditions`) and logs every function call to the session log (`<FRAMEWORK_WORKSPACE_DIR>/logs/<sessionId>.log.jsonl`) — the transition guard is the harness result, not orchestrator prose. The prose exchange explains how to facilitate; the workflow's `steps[].conditions` are the minimum evidence checklist — structural `after`/`input`/`output` refs the harness resolves + `cel` (pre/post) / `instruction` (invariant) judgments. If a condition fails or an `input`/`output` ref is missing, the row is incomplete and no status flip / gate staging may be claimed.
 
-| Event (Story reaches…) | Kind | Sub-orchestration | Gate | → sm commits |
+| Event (Story reaches…) | Kind | Sub-orchestration | Gate | Committed by (governed step) |
 |---|---|---|---|---|
-| Feature `committed` (← `@release-train-engineer`) | Ceremony | **Iteration Planning** (`@scrum-master` + `@product-owner` derives → Stories + pairs + `plan.md`) | — | `∅→backlog` |
+| Feature `committed` (← `@release-train-engineer`) | Ceremony | **Story Backlog Refinement** (`@product-owner` derives each Story), then **Iteration Planning** (`@scrum-master` → pairs + `plan.md`) | — | `team-backlog-refinement/draft`: `∅→backlog` |
 | `backlog` not DoR-ready | Ceremony·CE | **Story Backlog Refinement** (`@product-owner` grooms) | — | — *(stays `backlog`)* |
-| unknown / spike surfaced after prior grooming | Ceremony·CE | **Story Backlog Refinement** → seeds an **Enabler Story (spike)** from the enabler Story template, authored by `@system-architect`, and invalidates the parent Story's prior grooming packet | — | enabler Story `∅→backlog` (`type: enabler`); parent Story stays `backlog` (replay **Story Backlog Refinement** before DoR) |
-| `backlog` *(DoR holds — checklist below)* | **Gate** | — | **★ Story Gate** (`@scrum-master`-run DoR) | accept→`ready` (assign Driver+Navigator; first `ready` ⇒ **notify `@release-train-engineer`**, Feature `→in-progress`) · reject→stay `backlog` |
-| `ready` + pair free | Practice·CI | **Pair micro-cycle** — Driver · DRIVE (+ tests) | — | `ready→in-progress` |
-| one unit committed | Practice·CI | **Pair micro-cycle** — Navigator · CRITIQUE | — | `in-progress→in-review` |
-| CRITIQUE accept (WIP `in-qa`≤2) | D | — | — | `in-review→in-qa` |
-| CRITIQUE reject | D | — | — | `in-review→in-progress` (log a SWAP) |
-| DoD ok · `@security-expert` verdict | Practice·CI | **Verification & Sign-off** (`@quality-engineer` + `@security-expert`) → `qa-signoff` | — | `in-qa→awaiting-pr`; commit Story `cost:` once; publish board |
-| DoD fail | D | — | — | `in-qa→in-progress` (bug report) |
-| `awaiting-pr` *(board-published · QA + Security attached)* | **Gate** | — | **★ PR Gate** (CS) | *(rte merges `awaiting-pr→done`; roll-up to Feature)* |
-| any Story transition / `→blocked` | Ceremony | **Daily Sync** (blockers + WIP → `daily-DD.md` + `progress.md`) | — | `→blocked`/unblock |
-| `→awaiting-pr` / `done` | Ceremony | **Iteration Review** (increment → CS + stakeholders) | — | — *(feedback ⇒ backlog items)* |
-| `→done` | Ceremony | **Retrospective** (→ `retro.md`; triage sprint pain points) | — | — *(escalate program-scope → Inspect & Adapt)* |
+| unknown / spike surfaced after prior grooming | Ceremony·CE | **Story Backlog Refinement** → seeds an **Enabler Story (spike)** from the enabler Story template, authored by `@system-architect`, and invalidates the parent Story's prior grooming packet | — | `team-backlog-refinement/draft-enabler`: enabler Story `∅→backlog` (`type: enabler`); parent Story stays `backlog` (replay **Story Backlog Refinement** before DoR) |
+| `backlog` *(DoR holds — checklist below)* | **Gate** | — | **★ Story Gate** (`@scrum-master`-run DoR) | `story-transition`: accept→`ready` (Driver+Navigator recorded in the iteration plan; first `ready` ⇒ **notify `@release-train-engineer`**, `feature-transition`: Feature `→in-progress`) · reject→stay `backlog` |
+| `ready` + pair free | Practice·CI | **Pair micro-cycle** — Driver · DRIVE (+ tests) | — | `story-transition`: `ready→in-progress` |
+| one unit committed | Practice·CI | **Pair micro-cycle** — Navigator · CRITIQUE | — | `story-transition`: `in-progress→in-review` |
+| CRITIQUE accept (WIP `in-qa`≤2) | D | — | — | `story-transition`: `in-review→in-qa` |
+| CRITIQUE reject | D | — | — | `story-transition`: `in-review→in-progress` (SWAP noted in the `team-sync` record) |
+| DoD ok · `@security-expert` verdict | Practice·CI | **Verification & Sign-off** (`@quality-engineer` + `@security-expert`) → `qa-signoff` | — | `story-transition`: `in-qa→awaiting-pr` + Story `cost:` once; publish board |
+| DoD fail | D | — | — | `story-transition`: `in-qa→in-progress` (bug report) |
+| `awaiting-pr` *(board-published · QA + Security attached)* | **Gate** | — | **★ PR Gate** (CS) | *(rte merges; then `story-transition`: `awaiting-pr→done`; roll-up to Feature)* |
+| any Story transition / `→blocked` | Ceremony | **Daily Sync** (blockers + WIP + progress → `team-sync` record) | — | `story-transition`: `→blocked`/unblock |
+| `→awaiting-pr` / `done` | Ceremony | **Iteration Review** (increment → CS + stakeholders) | — | `iteration-review` record *(feedback ⇒ backlog items)* |
+| `→done` | Ceremony | **Retrospective** (→ `iteration-retrospective.md`; triage sprint pain points) | — | `iteration-retrospective` record *(escalate program-scope → Inspect & Adapt)* |
+
+**Who commits a transition.** The last column names the governed step that commits each edge. Creation (`∅→backlog`) is `team-backlog-refinement`; every later Story `status:` change, including the Story Gate, the pair and QA outcomes, the merge, `blocked`/unblock and the `awaiting-pr` `cost:` snapshot, is one run of `story-transition`: `@product-owner` records it on the business Story and `@system-architect` on the Enabler Story. sm holds no Story privilege in the access-control list, so it never writes a Story.
 
 **★ Story Gate — Definition of Ready (all must hold):**
 
@@ -68,13 +70,13 @@ Before executing any ceremony or practice row, load that sub-orchestration skill
 | Parent Feature is `committed` or `in-progress` | verified in Feature frontmatter |
 | No unresolved upstream Story blockers | confirmed |
 | Repos in scope identified | from `product-manifest.yaml > repos[]` |
-| Driver/Navigator pair assigned | SM assigns before `ready` |
+| Driver/Navigator pair assigned | recorded in the iteration plan before `ready` |
 
-The **pair micro-cycle** (HUDDLE → DRIVE → CRITIQUE → ACCEPT/REJECT → SWAP) and **Verification & Sign-off** are the iteration's **CI practices** — multi-agent sub-orchestrations, detailed in **Pair Programming** below. All sub-orchestrations are listed in the handling matrix above; sm **facilitates** and authors only **flow/meta** artifacts (plan, daily, progress, retro), Story authoring stays with `@product-owner`, and the ★ gates stay with the Central Supervisor.
+The **pair micro-cycle** (HUDDLE → DRIVE → CRITIQUE → ACCEPT/REJECT → SWAP) and **Verification & Sign-off** are the iteration's **CI practices** — multi-agent sub-orchestrations, detailed in **Pair Programming** below. All sub-orchestrations are listed in the handling matrix above; sm **facilitates**; it writes only the kinds the access-control list grants it (plan, team-manifest, team-sync, iteration-review, iteration-retrospective), each in a resolved step whose actor it is. Story authoring stays with `@product-owner`, and the ★ gates stay with the Central Supervisor.
 
 ## Team Kanban ownership
 
-The scrum-master renders `Team Kanban` from Story frontmatter after every Story status flip. It owns `ready`, `blocked` (iteration), and coaches the `in-progress`/`in-review` pair transitions (Owner = Driver / Navigator respectively). `@quality-engineer` owns `in-qa`; the Central Supervisor owns the ★ PR Gate; release-train-engineer owns the `awaiting-pr -> done` merge. See *Orchestration core* below for the full table.
+The scrum-master renders `Team Kanban` from Story frontmatter in each Daily Sync (`team-sync`) record; there is no separate Team Kanban file. It decides `ready`, `blocked` (iteration), and coaches the `in-progress`/`in-review` pair transitions (decided by the Driver / Navigator respectively). `@quality-engineer` decides `in-qa`; the Central Supervisor decides the ★ PR Gate; release-train-engineer merges the PR behind `awaiting-pr -> done`. Whoever decides, the Story `status:` is committed by its author step (`@product-owner`, or `@system-architect` for an Enabler Story) in `story-transition`. See *Orchestration core* below for the full table.
 
 ## Pair Programming
 
@@ -119,7 +121,7 @@ Example: `feat(S-042): add JWT refresh endpoint (pair: @developer (D) / @securit
 - The Navigator's CRITIQUE is **mandatory** — no commit lands without it.
 - Roles **swap every micro-cycle**, not every Story.
 - Capability follows the **unit**, not the seat: the harness routes Driver and Navigator of the same unit from the unit's risk/complexity, so both seats resolve to the **same tier** (keeps SWAP coherent); differentiation comes from specialty tags, not a weaker model. You do not pick the model — relay each seat's resolved dispatch.
-- Subagent dispatches do **not** share context — commit inputs before dispatching the pair.
+- Subagent dispatches do **not** share context — dispatch the pair only once its inputs are committed by earlier steps.
 
 ## WIP limits (enforced)
 
@@ -151,7 +153,7 @@ Every layer's flow is one **artifact state machine** driven by an **event loop**
 
 **Procedural reading (the step matrix).** A workflow is a sequence of steps; each step is `INPUT (artifact@schema + artifact@template) → AGENT·hat → OUTPUT (artifact@schema + artifact@template)`. The **harness** runs `VALIDATE → ROUTE` between steps (it checks each step's `conditions` and computes the next eligible transition); the orchestrator is the **bus** that relays the harness's dispatch and never authors the artifact itself — it *works the flow, not the artifact*. A **human step** is a ★ Gate whose output is a decision (`accept` / `rework` / `defer`). Every Input/Output satisfies its machine-readable artifact schema and uses the paired Markdown artifact template for rendering; every routing edge respects the **gates**, **WIP limits**, and **owner-only transitions**.
 
-**Reactive dual (the canonical reading).** Each artifact (Epic / Feature / Story) is a **finite state machine** — its states are the kanban columns, its edges are status transitions. A transition is at once the **OUTPUT** of one step and the **EVENT** that triggers the next, so the two readings are one machine. The orchestrator is the **event loop**: observe a transition → run the **guard** → execute the **handler** → commit the new `status:` (which emits the next event).
+**Reactive dual (the canonical reading).** Each artifact (Epic / Feature / Story) is a **finite state machine** — its states are the kanban columns, its edges are status transitions. A transition is at once the **OUTPUT** of one step and the **EVENT** that triggers the next, so the two readings are one machine. The orchestrator is the **event loop**: observe a transition → run the **guard** → execute the **handler** → have the artifact's author step commit the new `status:` (which emits the next event).
 
 - **Event** = a transition `X → Y`, or a **roll-up** (a child's transition fires a parent's): first child Feature `funnel` ⇒ Epic `→implementing`; last child Feature `done` ⇒ Epic `→done`; first child Story `ready` ⇒ Feature `→in-progress`; Story `done` rolls up to its Feature.
 - **Guard** = VALIDATE, folded: `artifact-schema-valid(output) ∧ gate-ok (★) ∧ challenge-done ∧ WIP-ok ∧ owner-correct ∧ no-open-blocking-items`. Fail ⇒ rework or block. A **★ gate guard is a human halt** — never auto-fired (a board move across a gate is a *request*, not the decision). The `no-open-blocking-items` conjunct folds in the open-item ledger: a unit carrying any `openItems` entry with `blocking: true` + `status: open` cannot cross a ★ gate.
@@ -162,14 +164,14 @@ State lives only in `status:` frontmatter; **the git history of those flips is t
 
 ### One event source: a unit's state (the orchestrator streams units)
 
-There is **one event source — a unit's `status:`** (Epic / Feature / Story). The orchestrator is a **per-unit streamer**: it advances **one unit at a time** — pick a unit, evaluate the handlers whose trigger-predicate that unit satisfies, fire one, commit the new status, move to the next unit. Divide & conquer; never "gather a cohort," never wait on a clock (agentic has no wall clock and no fixed capacity, so batch windows are undefinable).
+There is **one event source — a unit's `status:`** (Epic / Feature / Story). The orchestrator is a **per-unit streamer**: it advances **one unit at a time** — pick a unit, evaluate the handlers whose trigger-predicate that unit satisfies, fire one, have the owner step commit the new status, move to the next unit. Divide & conquer; never "gather a cohort," never wait on a clock (agentic has no wall clock and no fixed capacity, so batch windows are undefinable).
 
 A handler's **trigger** is a predicate on a **single unit** — its own state, its own children's states, and its own `dependsOn`. Its **scope** is that unit (reading parent/sibling context read-only where needed). **Owner-actuator invariant: the artifact owner writes `status:`; the orchestrator governs the transition guard and kanban projection** — every other actor produces *output* that routes through the owner-rewrite and guard path before transition commit. Four per-unit **handling** kinds:
 
-- **direct (D)** — the orchestrator commits the transition itself: mechanical edges, roll-ups, loop edges. No agents.
+- **direct (D)** — mechanical edges, roll-ups, loop edges: no ceremony. The orchestrator runs the tier's transition workflow (`epic-transition` / `feature-transition` / `story-transition`) and the artifact's author step commits the edge; the orchestrator never writes the unit.
 - **ceremony** — a **sub-orchestration** that is a SAFe **event** (cadence/milestone): a facilitated multi-participant exchange producing output, returned to the orchestrator.
 - **practice** — a **sub-orchestration** that is a SAFe **practice** (continuous collaboration, *not* a formal event): same shape, multi-participant, peer-challenged. **Practices replace all solo authoring — no task is ever a single agent.**
-- **gate (★)** — a verdict (human, or orchestrator-run for the Story / Feature DoR gates) → the orchestrator commits *proceed* or *re-iterate*.
+- **gate (★)** — a verdict (human, or orchestrator-run for the Story / Feature DoR gates) → *proceed* is committed by the author step of the tier's transition workflow; *re-iterate* replays the authoring workflow.
 
 Ceremony and practice are mechanically identical (facilitated, ≥2 participants, `input → output`, return-to-orchestrator); the label only marks *SAFe event vs SAFe practice*. The **Continuous Delivery Pipeline (CDP)** classifies the practices: **Continuous Exploration (CE)** → **Continuous Integration (CI)** → **Continuous Deployment (CD)** → **Release on Demand (RoD)** — CE groups the definition / architecture / refinement work, CI the build + verify (pair + verification), CD the merge + deploy, RoD is **N/A** (no production release modeled).
 
@@ -219,11 +221,11 @@ steps:
 
 Each condition is one of two dedicated types — `stepCondition` (binds another step by slug: `step` is the predecessor for `kind: precondition`, the successor for `kind: postcondition`) or `stateCondition` (`setSelector.setQuery`, a CEL expression referencing artifacts directly by their schema slug — no alias pre-declaration — feeding `setPredicate`, a CEL boolean over the resulting `selected` set that the harness evaluates against portfolio state) — each carrying `kind` (precondition/postcondition — WHEN it holds) and a `slug` on every condition. Behavioral guidance the agent must follow rides at the step level (`step.instructions`). They make the non-negotiable transition guard visible enough that the orchestrator cannot treat an evidence requirement as optional narrative.
 
-**Ceremonies and practices are facilitated sub-orchestrations.** Neither is solo work: each names its **Participants** (≥2, drawn from **the Bench** below) and an **Exchange** table that sequences their turns in the same `input → agent·hat → output` shape as the handlings: `# | participant·hat | contributes (reads → produces) | hands to`. The orchestrator is the **facilitator**: it opens the sub-orchestration, sequences the turns, and validates each output, but **authors nothing** — and does not directly rewrite owner artifacts; it commits transitions only through guard-approved, owner-authored state changes and flow-owned kanban/gate collation. Every participant authors only its own contribution per its role skill / bench role. The **Central Supervisor** joins only where a ★ gate or a pivot decision applies. Pick the participant roster systematically from the Bench, not just the owning hat.
+**Ceremonies and practices are facilitated sub-orchestrations.** Neither is solo work: each names its **Participants** (≥2, drawn from **the Bench** below) and an **Exchange** table that sequences their turns in the same `input → agent·hat → output` shape as the handlings: `# | participant·hat | contributes (reads → produces) | hands to`. The orchestrator is the **facilitator**: it opens the sub-orchestration, sequences the turns, and validates each output, but **authors nothing** — and does not directly rewrite owner artifacts; it never commits a unit's transition itself (the owner step does), and it writes only the kinds the access-control list grants its role, each in a resolved step whose actor it is. Every participant authors only its own contribution per its role skill / bench role. The **Central Supervisor** joins only where a ★ gate or a pivot decision applies. Pick the participant roster systematically from the Bench, not just the owning hat.
 
-**Challenge-return loop (mandatory).** Whenever an existing artifact is challenged — by a peer hat inside a ceremony/practice, or by the **Central Supervisor at a ★ gate** (reject-with-reason) — the challenge output is never the final author-owned artifact unless the challenger is also the artifact owner. Challenge findings must flow back to the **owning author** for re-synthesis and rewrite of the owner artifact. The orchestrator may collect, classify, and collate challenge findings, but it must not directly patch or rewrite an author-owned artifact from challenger feedback. Its only legitimate post-challenge writes are flow-owned/meta artifacts such as gate collation, kanban, risk ledgers, or gate-decision backlog entries. If a challenge changes content, the next authoring turn belongs to the artifact owner. Each challenge finding is recorded as a `kind: challenge` entry in the unit's open-item ledger — same envelope, routing, and gate rule as a clarification, so challenges are formalized and persisted identically.
+**Challenge-return loop (mandatory).** Whenever an existing artifact is challenged — by a peer hat inside a ceremony/practice, or by the **Central Supervisor at a ★ gate** (reject-with-reason) — the challenge output is never the final author-owned artifact unless the challenger is also the artifact owner. Challenge findings must flow back to the **owning author** for re-synthesis and rewrite of the owner artifact. The orchestrator may collect, classify, and collate challenge findings, but it must not directly patch or rewrite an author-owned artifact from challenger feedback. Its only legitimate writes are the flow artifacts the access-control list grants its role (for example its kanban and sync records), each in a resolved step whose actor it is; gate collation is its indicative reply, and unresolved findings stay in the unit's `openItems` ledger. If a challenge changes content, the next authoring turn belongs to the artifact owner. Each challenge finding is recorded as a `kind: challenge` entry in the unit's open-item ledger — same envelope, routing, and gate rule as a clarification, so challenges are formalized and persisted identically.
 
-**No premature human return.** Orchestrators must not return control to the Central Supervisor at an internal completion point (for example: after a refinement pass, after an ADR draft lands, after a challenge packet returns, after validation passes, or after a meta-artifact is updated) unless one of two conditions holds: (1) a real human-owned ★ gate packet is fully staged in the repo and ready for disposition, or (2) a concrete blocker prevents further autonomous progress. "Fully staged" means every required artifact for that gate exists on disk, is linked from the serving artifact(s), is reflected in the relevant decision backlog, and has passed focused validation. If the next workflow step is still owned by the orchestrator, the orchestrator must keep driving it rather than narrating progress back as if it were a handoff.
+**No premature human return.** Orchestrators must not return control to the Central Supervisor at an internal completion point (for example: after a refinement pass, after an ADR draft lands, after a challenge packet returns, after validation passes, or after a meta-artifact is updated) unless one of two conditions holds: (1) a real human-owned ★ gate packet is fully staged in the repo and ready for disposition, or (2) a concrete blocker prevents further autonomous progress. "Fully staged" means every required artifact for that gate exists on disk, is linked from the serving artifact(s), is reflected in the unit's `openItems` ledger, and has passed focused validation. If the next workflow step is still owned by the orchestrator, the orchestrator must keep driving it rather than narrating progress back as if it were a handoff.
 
 **Owner-rewrite precedence (mandatory).** After any substantive challenge, critique, review, or multi-lens feedback pass, the orchestrator must explicitly determine whether the affected file is owner-authored or flow-authored. If owner-authored, the orchestrator dispatches the owner back onto the artifact with the challenge packet and waits for the owner rewrite before performing validation or gate collation on that slice. It must not compress this loop by "helpfully" applying the rewrite itself.
 
@@ -246,9 +248,9 @@ A unit reaches its gate with its blocking unknowns *resolved or explicitly defer
 
 **Owner resolution (ownership map).** Route each item to the hat that owns the concern — operational test: *whose file/section must change to resolve it*: **value / intent / scope-authority → the Central Supervisor (human)** *(clarification only — never a challenge)*; **business Epic → BO**; **portfolio runway / NFR backbone → EA**; **Feature AC + scope → PM**; **Story AC → PO**; **solution/ART ADR + contract → SA**; **trust boundary / privacy → Security**; **operability / day-2 → DevOps**; **accessibility / inclusivity → Responsible AI**; **testability / DoD → QA**; **UX journey → UX**.
 
-**Central-Supervisor review routing (mandatory).** Direct review comments from the Central Supervisor on a Feature, Story, ADR, decision inventory, runway register, NFR register, or any other owner-authored backlog / architecture artifact are always treated as a **challenge packet**, never as standing permission for the orchestrator to edit the file. The orchestrator may summarize, classify, and persist those comments in flow-owned artifacts, but it must route the content rewrite back to the owning authoring hat: business Epic → `@business-owner`; business Feature → `@product-manager`; business Story → `@product-owner`; enabler Feature / enabler Story / ADR / decision inventory / runway / NFR architecture artifact → `@system-architect`. The only exception is an explicit role change from the Central Supervisor that says the owner hat is being invoked through dispatch; absent that, "change this Feature/ADR" is challenge input, not edit authority for the orchestrator.
+**Central-Supervisor review routing (mandatory).** Direct review comments from the Central Supervisor on a Feature, Story, ADR, decision inventory, runway register, NFR register, or any other owner-authored backlog / architecture artifact are always treated as a **challenge packet**, never as standing permission for the orchestrator to edit the file. The orchestrator may summarize and classify those comments in its reply and pass them as the input of the owner's step, but it must route the content rewrite back to the owning authoring hat: business Epic → `@business-owner`; business Feature → `@product-manager`; business Story → `@product-owner`; enabler Feature / enabler Story / ADR / decision inventory / runway / NFR architecture artifact → `@system-architect`. The only exception is an explicit role change from the Central Supervisor that says the owner hat is being invoked through dispatch; absent that, "change this Feature/ADR" is challenge input, not edit authority for the orchestrator.
 
-When one review packet spans mixed ownership, split the routing by owner rather than collapsing it into one orchestrator rewrite. PM-owned Feature changes return to `@product-manager`; SA-owned ADR or runway changes return to `@system-architect`; orchestrators may edit only the surrounding flow-owned collation, kanban, risk, and gate-decision artifacts.
+When one review packet spans mixed ownership, split the routing by owner rather than collapsing it into one orchestrator rewrite. PM-owned Feature changes return to `@product-manager`; SA-owned ADR or runway changes return to `@system-architect`; orchestrators write only the flow artifacts the access-control list grants them, in their own resolved steps.
 
 **Routing by owner (three lanes).** (1) **Peer-hat-owned** (a clarification owned by another hat, *or* any challenge — whether a peer or the Supervisor at a gate raised it) → the owning hat absorbs it via **owner-rewrite precedence** in the owner-rewrite step the harness resolves (a challenge raised at a gate is a KO that reiterates the workflow), never through an ad-hoc re-dispatch — the item is an input addressed to a *different* author; **no human is needed to resolve it** (a human may have *raised* it). (2) **Human-owned (value / intent)** → necessarily a **clarification**, never a challenge (the framework cannot challenge the Supervisor): the orchestrator **batches** the blocking items into one **clarification packet** surfaced to the Central Supervisor **at a natural halt** (gate staging, or a genuine blocker per *No premature human return*) — never a mid-task interrupt, never one at a time. (3) **Non-blocking** → record the assumption-with-disclosure and **keep driving**; the gate sees it.
 
@@ -385,9 +387,9 @@ prompt names the served artifact id** (`S-N` / `F-N` / `E-N`) — which the rout
 the named blackboard paths already do — so the log self-attributes. Each `cost:` block is then fetched
 from those logs **once**, at the artifact's terminal status, per the [cost-accounting model](../../workflow/workflows/verification/instructions/story-cost-snapshot-measured-once-from-logs.instructions.md):
 
-- **Story** `→ awaiting-pr`: `@scrum-master` sums the Story's dev + QA dispatch tokens from the logs.
-- **Feature** `→ done` (★ Demo Gate): `@release-train-engineer` fetches Feature overhead + Σ child Stories.
-- **Epic** `→ done`: `@value-management-officer` fetches Epic overhead + Σ child Features.
+- **Story** `→ awaiting-pr`: `@product-owner` sums the Story's dev + QA dispatch tokens from the logs, in the `story-transition` run `@scrum-master` starts.
+- **Feature** `→ done` (★ Demo Gate): `@product-manager` fetches Feature overhead + Σ child Stories, in the `feature-transition` run `@release-train-engineer` starts.
+- **Epic** `→ done`: `@business-owner` fetches Epic overhead + Σ child Features, in the `epic-transition` run `@value-management-officer` starts.
 
 The snapshot is `source: measured` when the logs are present, `estimated` only if they are gone; it is
 written once and is immutable thereafter. Never fabricate a precise measured number.
@@ -398,7 +400,7 @@ Escalate only on: QA acceptance failure / contradictory evidence; `@security-exp
 
 ### Feature/Story classification (mandatory)
 
-Every Epic frontmatter carries `risk` + `complexity` before leaving `funnel` (BO/EA own it, PM/EA assist); every Feature before leaving `funnel`; every Story before leaving `backlog`. PM owns initial Feature classification; PO owns initial Story classification; scrum-master verifies Story risk/complexity at Iteration Planning; value-management-officer may raise (never silently lower) Epic classification at Epic intake / Strategic Portfolio Review; release-train-engineer may raise (never silently lower) Feature classification at PI Planning. On execution drift, update frontmatter and note it in `progress.md`.
+Every Epic frontmatter carries `risk` + `complexity` before leaving `funnel` (BO/EA own it, PM/EA assist); every Feature before leaving `funnel`; every Story before leaving `backlog`. PM owns initial Feature classification; PO owns initial Story classification; scrum-master verifies Story risk/complexity at Iteration Planning; value-management-officer may require a higher (never a silently lower) Epic classification at Epic intake / Strategic Portfolio Review, and release-train-engineer a higher Feature classification at PI Planning; the artifact's author records it in its next owner step. On execution drift, the author records the change on the unit in its next owner step.
 
 ## Kanbans & status transitions (normative)
 
@@ -410,7 +412,7 @@ gate is are computed by the harness from the unit's artifacts + workflow config 
 the cursor every turn. The tables below are the **governance semantics** the harness enforces (column →
 owner → processing instance → gate), not a procedure to replay by hand.
 
-**Owner vs Actors:** Owner = single accountable role, one per column, flips the field. Other actors contribute; named in `note`.
+**Owner vs Actors:** Owner = the single accountable role that decides the column, one per column. The `status:` field itself is always committed by the artifact's author step — business Epic → `@business-owner`, Enabler Epic → `@enterprise-architect`, business Feature → `@product-manager`, Enabler Feature / Story → `@system-architect`, business Story → `@product-owner` — in the authoring workflow (creation) or the tier's transition workflow (`epic-transition`, `feature-transition`, `story-transition`). Other actors contribute; named in `note`.
 
 ### Portfolio Kanban — Epics (value-management-officer drives; Business-Owner-owned overall, cross-product)
 `funnel -> reviewing -> analyzing -> portfolio-backlog -> implementing -> done`. Flag: `blocked`.
@@ -497,7 +499,7 @@ Every artifact is **challenged by a different-lens peer before it reaches its ga
 | Feature increment | Central Supervisor + bench feedback | Demo Gate | ★ Demo Gate |
 | The process itself | all roles | Inspect & Adapt / Retro | per PI / sprint |
 
-Material findings are logged to `products/<product-slug>/risks.md` (sprint-scoped artifacts) or surfaced in the gate packet (Epic/ADR); an unresolved challenge is a `risks.md` entry (`accept` / `rework` / `defer`).
+Material findings are recorded by the artifact's owner as `kind: challenge` entries in the unit's `openItems` ledger and listed in the gate packet; an unresolved one carries its disposition options (`accept` / `rework` / `defer`).
 
 For avoidance of drift: a challenge row defines who challenges, not who rewrites. The rewrite always returns to the artifact owner unless the owner and challenger are the same seat for that artifact class.
 
@@ -516,12 +518,12 @@ For avoidance of drift: a challenge row defines who challenges, not who rewrites
 These are the guards the harness checks before it returns a `dispatch` or `halt`; they are listed so a
 gate packet can be audited against them, **not** a procedure to run by hand:
 1. Frontmatter shows the expected source column.
-2. The dispatched actor is the target column's **Owner**.
+2. The dispatched actor is the artifact's author (the column Owner decided the transition).
 3. All **Inputs** exist on disk.
 4. All **Outputs** are committed before `status:` flips.
 5. A column **Gate** surfaces as a `halt` for Central Supervisor approval — the cursor never advances past it.
 6. The target column's WIP limit is not breached.
-7. The rendered kanban is regenerated after the transition.
+7. The transition workflow's kanban step (or the tier's sync workflow) re-renders the kanban after the transition.
 
 ### GitHub Projects mirror (board surface)
 
@@ -536,8 +538,8 @@ truth for content; the board is authoritative for non-gate status moves. Normati
   `<portfolio>-planning` repo. - **Status fields** mirror the kanban columns verbatim (`Portfolio Status` / `Program Status` /
   `Team Status`); the GitHub Project is interactive, unlike the rendered `kanban/*.md` views.
 - **Gates are never automated** — a board move crossing a gate boundary is captured as a request
-  in `products/<product-slug>/risks.md`, never auto-applied (board spec §8, protocol §4).
-- **Reconcile on demand**, not per transition: after a batch of flips run
+  in the tier's next sync record (`portfolio-sync` / `art-sync` / `team-sync`), never auto-applied (board spec §8, protocol §4).
+- **Reconcile on demand**, not per transition: after a batch of transitions run
   `python3 portfolio/_sync/sync.py push <slug>` (local → board) and `… pull <slug>`
   (board → local). `status <slug>` is a safe read-only diff.
 - **Git planning repos** — each product folder (`products/<product-slug>/`) and the portfolio root
@@ -551,8 +553,8 @@ truth for content; the board is authoritative for non-gate status moves. Normati
 - **No Gate skipping**, ever — green CI/QA is never a substitute for Central Supervisor approval.
 - **No return before gate.** Proceed autonomously until the next gate packet is ready; hand back early only on a genuine blocker (missing artifact, failed mandatory validation, unresolved contradiction).
 - **Status transitions are atomic with their gate.**
-- **Owner-only transitions.** Only the Owner flips its column's `status:`.
-- **Cite the table** when flipping a status (column, Owner dispatched, Gate if any).
+- **Owner-only transitions.** Only the artifact's author step commits `status:`; the column Owner decides it.
+- **Cite the table** when requesting a transition (column, author dispatched, Gate if any).
 - **Product-scoped paths only;** every frontmatter has `product: <slug>`.
 - **Template-first authoring.** Every artifact follows its template (catalog below).
 - **Gate decision backlog is mandatory** (next section).
@@ -562,25 +564,25 @@ truth for content; the board is authoritative for non-gate status moves. Normati
 - **Epics are the only cross-product artifact.** Cross-product coordination lives in an Epic; never author a single cross-product Feature — one Feature per product, each linked to the shared Epic.
 - **Authoring vs policing.** The hat-wearing **author agents own the backlog artifacts**: `@business-owner` authors Epics + Strategic Themes, `@product-manager` authors Features, `@product-owner` authors Stories, `@enterprise-architect` authors the EA runway and enabler Epics, and `@system-architect` authors ADRs plus enabler Features and Stories. The **orchestrators never author or own these** — they *police* their layer. The **Central Supervisor approves** at the gates.
 - **QA-before-PR.** No Story reaches the **★ PR Gate** without `qa/S-N-signoff.md`.
-- **Challenge-before-gate.** No artifact reaches its gate without its designated **peer challenge** (Peer-challenge matrix): a different-lens specialist adversarially reviews it first. A challenge sharpens but never approves — the gate still decides; material findings are logged to `products/<product-slug>/risks.md` (sprint-scoped) or the gate packet.
+- **Challenge-before-gate.** No artifact reaches its gate without its designated **peer challenge** (Peer-challenge matrix): a different-lens specialist adversarially reviews it first. A challenge sharpens but never approves — the gate still decides; material findings are recorded as `openItems` challenge entries by the owner and listed in the gate packet.
 - **Observability stories load the instrumentation skill.** Any Story changing telemetry dispatches Driver + QA with the `instrumentation-coverage` skill loaded; the QA sign-off includes that skill's §5b Instrumentation Alignment Audit with the INST-R7/R8 machine checks green. A failing machine check blocks `awaiting-pr`.
 - **Kanban files are rendered, never hand-edited.**
 - **GitHub Projects boards mirror the kanbans** (one Project per product); reconcile via
   portfolio/_sync per the sync protocol. A board move across a gate boundary is a request, never
   approval. **Publish-before-gate (all tiers, mandatory):** every work item is pushed to its GitHub
-  Project board *before* the validation gate that governs it, and its `github:` block is written
-  back — **Epic → ★ Epic Gate** (`@value-management-officer`), **Feature → ★ Architecture Gate**
+  Project board *before* the validation gate that governs it, and its `github:` block is recorded
+  by the item's author in its next owner step — **Epic → ★ Epic Gate** (`@value-management-officer`), **Feature → ★ Architecture Gate**
   (`@release-train-engineer`), **Story → ★ PR Gate** (`@scrum-master`). No item reaches its gate
   without a live board card; the gate-crossing status flip itself is still never auto-applied.
 - **One commit per Story unit of work**, trailer `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>`; pair commits add `(pair: <Driver>/<Navigator>)`.
-- **Filesystem is the shared blackboard** — commit inputs before dispatching.
+- **Filesystem is the shared blackboard** — dispatch a step only once its inputs are committed by earlier steps.
 - **Orchestrators never write production source code.** Dispatch `@developer`.
-- **Flow, not content — route every substantive concern to its hat; never reason *for* a persona.** When the Central Supervisor (or any input) raises a *substantive* concern — architecture, repo/topology, design, scope, requirements, tradeoffs, risk acceptance, a proposed solution — the orchestrator MUST NOT answer it with its own analysis, recommended design, option-set, or decision-fork. Instead **route it into the workflow**: capture it as the *input* to the owning hat's ceremony/practice, dispatch that hat, and **police** the returned artifact. The orchestrator authors only *flow/meta* artifacts (kanban, objectives, risks, gate packets) and reasons only about **flow**.
+- **Flow, not content — route every substantive concern to its hat; never reason *for* a persona.** When the Central Supervisor (or any input) raises a *substantive* concern — architecture, repo/topology, design, scope, requirements, tradeoffs, risk acceptance, a proposed solution — the orchestrator MUST NOT answer it with its own analysis, recommended design, option-set, or decision-fork. Instead **route it into the workflow**: capture it as the *input* to the owning hat's ceremony/practice, dispatch that hat, and **police** the returned artifact. The orchestrator writes only the flow artifacts the access-control list grants its role, in its own resolved steps (gate packets are indicative replies), and reasons only about **flow**.
 
 ## Gate-first return protocol + decision backlog
 
 - Proceed autonomously until the next gate packet is ready.
-- Maintain `products/<product-slug>/products/<product-slug>/risks.md` (append-only) for any agent-made decision/assumption that may need Central Supervisor disposition (PR scope, acceptance interpretation, deferred tradeoffs, risk acceptance).
+- Record every agent-made decision/assumption that may need Central Supervisor disposition (PR scope, acceptance interpretation, deferred tradeoffs, risk acceptance) as an `openItems` entry on the unit, through its owner step; PI-level risks go to `@product-manager`'s `pi-planning/record-risks`.
 - Every gate packet MUST list unresolved entries with options (`accept` / `rework` / `defer`) for fast disposition and re-iteration.
 
 ## Artifact schemas and templates (mandatory)
@@ -643,6 +645,6 @@ Sprint-management discipline (lessons from real multi-agent projects — each ca
 |-------|------------|-----|
 | Batch "fix everything" commits | One commit per unit with issue reference and pair attribution | Batch commits make it impossible to track what was fixed. If one fix causes a regression, you can't revert just that fix. |
 | Keep bugs only in chat | File GitHub Issues | Chat context dies when the conversation ends. Issues persist across all chats and subagent dispatches — they are part of the shared blackboard. |
-| Skip the done.md | Mandatory done.md + PROJECT_BRIEF update at sprint end | Without a handoff doc, the next RTE chat starts blind on `recover state`. It may overwrite work or duplicate effort. |
-| Skip progress.md | Update progress.md after each Story | Without a progress tracker, context overflow recovery is impossible. The new RTE chat doesn't know which Stories are in flight. |
+| Skip the iteration review | Mandatory `iteration-review` record at sprint end | Without a handoff record, the next RTE chat starts blind on `recover state`. It may overwrite work or duplicate effort. |
+| Skip the Daily Sync record | Run `team-sync` after each Story move | Without a progress record, context overflow recovery is impossible. The new RTE chat doesn't know which Stories are in flight. |
 | Rush the AI with time pressure | "Take your time, do it right" | Time pressure makes the LLM skip edge cases, write fewer tests, and produce lower quality code. "No rush" produces better results. |

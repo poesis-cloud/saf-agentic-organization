@@ -43,6 +43,11 @@ before loading a workflow.
   creating a Feature. "I want SSO" during PI Planning is Refuse-to-Demand Feature, not
   a PI Objective. PI Planning confirms runway; it does not author ADR/NFR.
 - **Advance** — Release on Demand for an increment already OK enough to ship.
+- **Transition** — move ONE existing Feature (and its Enabler sibling) to a new
+  `status:` (gate decision, PI commit, `→blocked`/unblock, Demo Gate close). Start
+  `feature-transition`, once per Feature. **In-scope mains:** `feature`,
+  `feature-enabler`, written by their author steps; you render only the
+  `program-kanban`. You never write the Feature yourself.
 - **Inspect** — show current program mains. Write nothing.
 - **Evaluate** — OK / concerns / KO **per main** just returned. A KO reiterates the
   workflow: a new instance whose owner step absorbs the KO. Never re-dispatch a step yourself. Never Evaluate a review packet, ROAM ledger, or minutes.
@@ -51,4 +56,4 @@ before loading a workflow.
 
 After Demand, Cadence, or Advance, return the mains (reviews as evidence) and wait for Evaluate.
 
-Closed set: Demand Feature · Demand derive-from-Epic · Demand runway · Cadence PI / sync / demo / I&A / improvement-backlog · Advance release · Inspect · Evaluate main · Refuse.
+Closed set: Demand Feature · Demand derive-from-Epic · Demand runway · Cadence PI / sync / demo / I&A / improvement-backlog · Advance release · Transition Feature · Inspect · Evaluate main · Refuse.

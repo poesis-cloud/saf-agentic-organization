@@ -242,6 +242,12 @@ roles:
     action: update
   - artifact: adr
     action: delete
+  - artifact: architecture-review
+    action: create
+  - artifact: architecture-review
+    action: update
+  - artifact: architecture-review
+    action: delete
   - artifact: architecture-runway
     action: create
   - artifact: architecture-runway

@@ -1,0 +1,83 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: feature-transition
+description: >
+  Purpose: commit ONE Feature status transition (or cost close) through its
+  author hats. Act: Transition. Orchestrator: Release Train Engineer.
+  Dispatch: the Product Manager records the transition on the business
+  Feature, the System Architect on its sibling Enabler Feature, then the
+  Release Train Engineer renders the Program Kanban. Input: one transition
+  request (Feature, from and to status, trigger: a gate decision, a roll-up, a
+  block or an unblock, or the Demo Gate close with its cost snapshot). One
+  Feature per run. The orchestrator never writes a Feature status itself. Do
+  not Evaluate: the decision was made at the gate or by the roll-up rule.
+instructions: release-train-engineer-interpret-speech-acts
+orchestrator: release-train-engineer
+skills: art
+steps:
+- slug: transition-business
+  description: Owner transition — Product Manager records the requested status change (or no-change) on the business Feature.
+  capabilities:
+    deep-reasoning: 5
+    coding: 0
+    tool-use: 4
+    long-context: 4
+    multimodal: 0
+    writing-quality: 5
+    instruction-following: 9
+    fast-iteration: 4
+    schema-adherence: 9
+  actor: product-manager
+  artifact: feature
+  conditions: []
+  instructions: program-feature-transition-transition-business
+- slug: transition-enabler
+  description: Owner transition — System Architect records the requested status change (or no-change) on the sibling Enabler Feature.
+  capabilities:
+    deep-reasoning: 5
+    coding: 0
+    tool-use: 4
+    long-context: 4
+    multimodal: 0
+    writing-quality: 5
+    instruction-following: 9
+    fast-iteration: 4
+    schema-adherence: 9
+  actor: system-architect
+  artifact: feature-enabler
+  conditions:
+  - slug: after-transition-business
+    kind: precondition
+    step: transition-business
+  instructions: program-feature-transition-transition-enabler
+- slug: update-program-kanban
+  description: Operational projection — Release Train Engineer refreshes the Program Kanban from Feature frontmatter.
+  capabilities:
+    deep-reasoning: 2
+    coding: 3
+    tool-use: 8
+    long-context: 2
+    multimodal: 0
+    writing-quality: 1
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 8
+  actor: release-train-engineer
+  artifact: program-kanban
+  conditions:
+  - slug: after-transition-enabler
+    kind: precondition
+    step: transition-enabler
+  instructions: program-feature-transition-update-program-kanban

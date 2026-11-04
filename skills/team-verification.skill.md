@@ -1,7 +1,7 @@
 ---
 name: verification
 user-invocable: false
-description: '**SAFe PRACTICE SKILL.** The Verification & Sign-off practice (Continuous Integration / Built-In Quality) loaded by `@scrum-master` per Story (when a Story is `in-qa`). USE FOR: `@quality-engineer` verifying the Story against its Definition of Done + `@security-expert` rendering the trust-boundary verdict, producing the `qa-signoff`. DO NOT USE FOR: the ★ PR Gate (Central Supervisor); coding (use `pair-programming`); the iteration demo (use `iteration-review`). Loaded by `@scrum-master` before facilitating; returns the sign-off — the sm commits `in-qa→awaiting-pr` (or `→in-progress` on fail).'
+description: '**SAFe PRACTICE SKILL.** The Verification & Sign-off practice (Continuous Integration / Built-In Quality) loaded by `@scrum-master` per Story (when a Story is `in-qa`). USE FOR: `@quality-engineer` verifying the Story against its Definition of Done + `@security-expert` rendering the trust-boundary verdict, producing the `qa-signoff`. DO NOT USE FOR: the ★ PR Gate (Central Supervisor); coding (use `pair-programming`); the iteration demo (use `iteration-review`). Loaded by `@scrum-master` before facilitating; returns the sign-off — `@scrum-master` then runs `story-transition` for `in-qa→awaiting-pr` (or `→in-progress` on fail).'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors
@@ -22,4 +22,4 @@ description: '**SAFe PRACTICE SKILL.** The Verification & Sign-off practice (Con
 
 A **practice** (Continuous Integration) that produces the QA sign-off. The **normative spec** is the machine-readable **[workflows/team/verification.workflow.conf.yaml](../workflows/team/verification.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
-Shared model lives in **[scrum-master orchestration core](scrum-master.skill.md)**. The sign-off uses the **qa-signoff** template; no Story reaches `awaiting-pr` without it (observability Stories include the instrumentation-coverage audit, INST-R7/R8 green); **only `@scrum-master` writes `status:`** (`in-qa→awaiting-pr` on pass / `in-qa→in-progress` on fail).
+Shared model lives in **[scrum-master orchestration core](scrum-master.skill.md)**. The sign-off uses the **qa-signoff** template; no Story reaches `awaiting-pr` without it (observability Stories include the instrumentation-coverage audit, INST-R7/R8 green); the Story `status:` is written only by its author step (`@product-owner`, or `@system-architect` for an Enabler Story), in `story-transition` after creation (`in-qa→awaiting-pr` on pass / `in-qa→in-progress` on fail).

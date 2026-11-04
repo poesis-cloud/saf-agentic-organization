@@ -125,9 +125,11 @@ only evidence (see [docs/step-artifacts.md](docs/step-artifacts.md)).
 | `strategic-investment-planning` | Allocate / guardrail ART funding | `budget-allocation` |
 | `strategic-portfolio-review` | Keep / pivot / stop / re-rank | themes, vision, roadmap, `architecture-vision` |
 | `portfolio-sync` | Portfolio snapshot | mediation record only |
+| `epic-transition` | Move ONE Epic (and its enabler) to a new `status:` | `epic`, `epic-enabler` (owner steps), `portfolio-kanban` |
 | `feature-derivation` | Split an approved Epic into ART Features | `feature`, `feature-enabler` |
 | `feature-backlog-refinement` | Write a PI-ready Feature | `feature`, `feature-enabler` |
 | `architectural-runway-extension` | Extend ART runway (product NFR register before ADR) | `nfr-list`, `adr`, `architecture-runway` |
+| `feature-transition` | Move ONE Feature (and its enabler) to a new `status:` | `feature`, `feature-enabler` (owner steps), `program-kanban` |
 | `pi-planning` | ART PI commit | confirm vision/roadmap/feature/runway; write `objectives` |
 | `art-sync` | Mid-PI impediments | mediation record only |
 | `system-demo` | Inspect the increment; demo gate | mediation / gate record |
@@ -135,13 +137,17 @@ only evidence (see [docs/step-artifacts.md](docs/step-artifacts.md)).
 | `improvement-backlog` | Record or update ONE pain point (one run per friction note) | `pain-point` (mediation) |
 | `release-on-demand` | Ship an accepted increment | `release-on-demand` |
 | `team-backlog-refinement` | Write a ready-enough Story (including Feature→Story split) | `story`, `story-enabler` |
+| `story-transition` | Move ONE Story (and its enabler) to a new `status:` | `story`, `story-enabler` (owner steps) |
 | `iteration-planning` | Commit the iteration | `team-manifest`, `plan` |
 | `pair-programming` | Implement an already-OK Story | `code-change` |
 | `verification` | Is this Story done | `qa-signoff` (challenge of Story/code-change) |
 | `team-sync` / `iteration-review` / `iteration-retrospective` | Daily I&A / increment inspect / team improve | mediation records |
 
 An impediment discovered in sync/demo that is really a Feature is a **later
-Feature**, not a new workflow.
+Feature**, not a new workflow. Orchestrators hold no Epic/Feature/Story privilege:
+the unit's author creates it in its authoring workflow, and every later `status:`
+change (gate, PI commit, block, roll-up, close) is one `*-transition` run whose
+owner step commits it ([docs/step-artifacts.md](docs/step-artifacts.md#status-transitions)).
 
 ### 5. NFR model (catalog, not a usage principle)
 

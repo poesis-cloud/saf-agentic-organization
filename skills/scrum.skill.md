@@ -27,11 +27,11 @@ Layer-specific procedure for **`@scrum-master`**. Load this file as the second r
 The SM **polices** the iteration layer. It does **not** author or own the backlog.
 
 - **Iteration Planning** — `products/<product-slug>/<plan-slug>.plan.md`; assign Driver/Navigator per Story.
-- **Stories (PO-owned)** — dispatch `@product-owner`; police the **★ Story Gate** (DoR, `backlog -> ready`); render the **Team Kanban**; enforce **WIP limits**.
+- **Stories (PO-owned)** — dispatch `@product-owner`; run the **★ Story Gate** (DoR, `backlog -> ready`); render the **Team Kanban** in the Daily Sync (`team-sync`) record; enforce **WIP limits**. Every Story `status:` is committed by its author step in `story-transition`.
 - **Pair-programming micro-cycle** — HUDDLE -> DRIVE -> CRITIQUE -> ACCEPT/REJECT -> SWAP.
 - **Events** — **Daily Sync**, **Iteration Review**, **Retrospective**.
-- **QA + ★ PR Gate packet** — dispatch `@quality-engineer`; drive Story -> `awaiting-pr`; hand the packet to the Central Supervisor (`@release-train-engineer` merges).
-- **Story cost — once, at `in-qa -> awaiting-pr`**.
+- **QA + ★ PR Gate packet** — dispatch `@quality-engineer`; drive Story -> `awaiting-pr` (through `story-transition`); hand the packet to the Central Supervisor (`@release-train-engineer` merges).
+- **Story cost — once, at `in-qa -> awaiting-pr`** — `@product-owner` writes `cost:` in `story-transition`.
 - **Pain points** — capture iteration friction in the retro; escalate program-scope items for an `improvement-backlog` run (one pain point per run), which feeds Inspect & Adapt.
 
 **Facilitates; never decides scope; never writes production code.**
@@ -40,22 +40,24 @@ The SM **polices** the iteration layer. It does **not** author or own the backlo
 
 The iteration workflow **is the Story FSM**: `backlog → ready → in-progress → in-review → in-qa → awaiting-pr → done` (flag `blocked`).
 
-| Event (Story reaches…) | Kind | Sub-orchestration | Gate | → sm commits |
+| Event (Story reaches…) | Kind | Sub-orchestration | Gate | Committed by (governed step) |
 |---|---|---|---|---|
-| Feature `committed` | Ceremony | **Iteration Planning** | — | `∅→backlog` |
-| `backlog` not DoR-ready | Ceremony·CE | **Story Backlog Refinement** | — | stays `backlog` |
-| spike / unknown after grooming | Ceremony·CE | **Story Backlog Refinement** seeds Enabler Story | — | enabler `∅→backlog`; parent stays `backlog` |
-| `backlog` (DoR holds) | **Gate** | — | **★ Story Gate** | accept→`ready` · reject stay `backlog` |
-| `ready` + pair free | Practice·CI | **Pair micro-cycle** DRIVE | — | `ready→in-progress` |
-| one unit committed | Practice·CI | **Pair micro-cycle** CRITIQUE | — | `in-progress→in-review` |
-| CRITIQUE accept (WIP `in-qa`≤2) | D | — | — | `in-review→in-qa` |
-| CRITIQUE reject | D | — | — | `in-review→in-progress` |
-| DoD ok | Practice·CI | **Verification & Sign-off** | — | `in-qa→awaiting-pr`; commit `cost:` |
-| DoD fail | D | — | — | `in-qa→in-progress` |
-| `awaiting-pr` | **Gate** | — | **★ PR Gate** | rte merges `→done` |
-| any Story transition / `→blocked` | Ceremony | **Daily Sync** | — | `→blocked`/unblock |
-| `→awaiting-pr` / `done` | Ceremony | **Iteration Review** | — | feedback → backlog items |
-| `→done` | Ceremony | **Retrospective** | — | escalate program-scope → I&A |
+| Feature `committed` | Ceremony | **Story Backlog Refinement**, then **Iteration Planning** | — | `team-backlog-refinement/draft`: `∅→backlog` |
+| `backlog` not DoR-ready | Ceremony·CE | **Story Backlog Refinement** | — | — *(stays `backlog`)* |
+| spike / unknown after grooming | Ceremony·CE | **Story Backlog Refinement** seeds Enabler Story | — | `team-backlog-refinement/draft-enabler`: enabler `∅→backlog`; parent stays `backlog` |
+| `backlog` (DoR holds) | **Gate** | — | **★ Story Gate** | `story-transition`: accept→`ready` · reject stay `backlog` |
+| `ready` + pair free | Practice·CI | **Pair micro-cycle** DRIVE | — | `story-transition`: `ready→in-progress` |
+| one unit committed | Practice·CI | **Pair micro-cycle** CRITIQUE | — | `story-transition`: `in-progress→in-review` |
+| CRITIQUE accept (WIP `in-qa`≤2) | D | — | — | `story-transition`: `in-review→in-qa` |
+| CRITIQUE reject | D | — | — | `story-transition`: `in-review→in-progress` |
+| DoD ok | Practice·CI | **Verification & Sign-off** | — | `story-transition`: `in-qa→awaiting-pr` + `cost:` |
+| DoD fail | D | — | — | `story-transition`: `in-qa→in-progress` |
+| `awaiting-pr` | **Gate** | — | **★ PR Gate** | rte merges; `story-transition`: `→done` |
+| any Story transition / `→blocked` | Ceremony | **Daily Sync** | — | `story-transition`: `→blocked`/unblock |
+| `→awaiting-pr` / `done` | Ceremony | **Iteration Review** | — | `iteration-review`: feedback → backlog items |
+| `→done` | Ceremony | **Retrospective** | — | `iteration-retrospective`: escalate program-scope → I&A |
+
+**Who commits a transition.** The last column names the governed step that commits each edge. Creation (`∅→backlog`) is `team-backlog-refinement`; every later Story `status:` change, including the Story Gate, the pair and QA outcomes, the merge, `blocked`/unblock and the `awaiting-pr` `cost:` snapshot, is one run of `story-transition`: `@product-owner` records it on the business Story and `@system-architect` on the Enabler Story. sm holds no Story privilege in the access-control list, so it never writes a Story.
 
 ## ★ Story Gate — Definition of Ready
 
@@ -63,7 +65,7 @@ ID + title + parent Feature present; AC testable; parent Feature `committed` or 
 
 ## Team Kanban + WIP
 
-Render Team Kanban from Story frontmatter after every flip. `in-progress`: 1 per pair. `in-qa`: 2. Reject any pull that breaches a limit.
+Render the Team Kanban from Story frontmatter in each Daily Sync (`team-sync`) record (there is no separate Team Kanban file). `in-progress`: 1 per pair. `in-qa`: 2. Reject any pull that breaches a limit.
 
 ## Pair Programming
 

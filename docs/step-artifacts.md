@@ -73,6 +73,27 @@ Story enabler) and an `outcome: none` entry. A `not-needed` enabler is a recorde
 leaves the kanban flow, is not challenged as a main (a challenger may contest the decision
 itself), and is presented as a decision at the human gate.
 
+## Status transitions
+
+Orchestrators decide and request transitions; they never write an Epic, Feature or Story. The
+access-control list grants them only their flow records (kanbans, sync records, manifests,
+plans, objectives, demo and I&A records, pain points for the RTE). A unit is created, with its initial `status:`,
+by its authoring workflow's first step; every later change is one run of its tier's transition
+workflow, whose owner steps record ONE requested transition (`revised`) or refuse it with the
+reason (`no-change`):
+
+| Workflow | Orchestrator | Steps (actor → artifact) |
+|---|---|---|
+| `epic-transition` | `value-management-officer` | `transition-epic` (business-owner → epic), `transition-enabler` (enterprise-architect → epic-enabler), `update-portfolio-kanban` (VMO → portfolio-kanban) |
+| `feature-transition` | `release-train-engineer` | `transition-business` (product-manager → feature), `transition-enabler` (system-architect → feature-enabler), `update-program-kanban` (RTE → program-kanban) |
+| `story-transition` | `scrum-master` | `transition-story` (product-owner → story), `transition-enabler` (system-architect → story-enabler); the Team Kanban is rendered in the next `team-sync` record |
+
+Cost roll-ups are written by the same owner steps (Epic `done`, Feature `done`, Story
+`awaiting-pr`). Gate decisions and unresolved findings live as `openItems` on the unit, written by
+its author. [`tests/functional/test_orchestrator_writes.py`](../tests/functional/test_orchestrator_writes.py)
+keeps the catalogue, the ACL and the orchestrator prose in line: no orchestrator text describes it
+committing a kind it is not granted.
+
 ## Redesigned steps
 
 | Workflow / step | Before | Now |
@@ -98,6 +119,7 @@ itself), and is presented as a decision at the human gate.
 | `pi-planning/confirm-intent` | Several Features | Confirms the ONE Feature this PI Planning run commits |
 | `portfolio-sync/update-product-manifest` | Several products | One product manifest per run |
 | `feature-derivation/derive-business` | Several Features | One business Feature per run (the workflow runs once per Feature) |
+| `epic-transition`, `feature-transition`, `story-transition` (new workflows) | Orchestrators flipped `status:` on Epics, Features and Stories outside any step | The unit's owner commits each transition in a governed step |
 | Challenge steps (shared challenger rule) | "Not a main to challenge" | Review packet always committed (`verdict: pass` when nothing is found) |
 | `pi-planning/confirm-*`, `iteration-planning/confirm-team-manifest`, `release-on-demand/confirm-deployment` | Implicit confirmation | Artifact committed with a `confirmed` entry |
 
