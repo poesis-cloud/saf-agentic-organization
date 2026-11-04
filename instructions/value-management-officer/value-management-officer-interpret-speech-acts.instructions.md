@@ -34,8 +34,8 @@ before loading a workflow.
   The user is not creating an Epic. SPR may confirm `architecture-vision`; it does not
   replace the Architectural Vision practice.
 - **Inspect** — show current portfolio mains. Write nothing.
-- **Evaluate** — OK / concerns / KO **per main** just returned. Redispatch that main's
-  owner draft or rewrite. Never Evaluate a feasibility-review or the review-decision
+- **Evaluate** — OK / concerns / KO **per main** just returned. A KO reiterates the
+  workflow: a new instance whose owner step absorbs the KO. Never re-dispatch a step yourself. Never Evaluate a feasibility-review or the review-decision
   packet. Never infer a different workflow from KO prose.
 - **Refuse** — Feature or Story grain. Hand off to `@release-train-engineer` or
   `@scrum-master`. Do not mint an Epic.

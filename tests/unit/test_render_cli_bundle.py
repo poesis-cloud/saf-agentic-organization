@@ -128,7 +128,7 @@ def test_render_writes_cli_plugin(source: Path, tmp_path: Path, monkeypatch: pyt
     assert "(../workflows/flow.workflow.conf.yaml#steps)" in vmo
     assert "(https://example.com)" in vmo and "(#here)" in vmo
     assert "## Host binding" in vmo and "<!-- license -->" not in vmo
-    assert "`developer`, `value-management-officer`" in vmo
+    assert f"`{PLUGIN}:developer`, `{PLUGIN}:value-management-officer`" in vmo
     assert parse_frontmatter(bundle / "agents" / "developer.agent.md")["tools"] == ["read", "edit", "search", "execute"]
 
     skill = bundle / "skills" / "lpm" / "SKILL.md"
@@ -315,6 +315,24 @@ def test_live_bundle_states_only_the_adapter_admitted_harness_command(live_bundl
         assert "In both hosts your shell or terminal does NOT run this command" in skill, slug
         assert "`Tool execution denied: SAFe agentic harness RESULT (<function>): …`" in skill, slug
         assert "`<PreToolUse-context>`" in skill, slug
+
+
+def test_live_bundle_dispatches_namespaced_agents_once_per_step(live_bundle: Path) -> None:
+    plugin = json.loads((live_bundle / "plugin.json").read_text(encoding="utf-8"))["name"]
+    namespaced = f'agent_type: "{plugin}:<'
+    for slug in _orchestrators():
+        for path in (live_bundle / "agents" / f"{slug}.agent.md", live_bundle / "skills" / slug / "SKILL.md"):
+            text = path.read_text(encoding="utf-8")
+            assert namespaced in text, path
+            assert re.findall(r'agent_type: "([^"]+)"', text) == [f"{plugin}:<agent-id>"] * len(re.findall(r'agent_type: "', text)), path
+            assert "--bound-model" not in text and "boundModels" not in text, path
+        skill = (live_bundle / "skills" / slug / "SKILL.md").read_text(encoding="utf-8")
+        assert "step-session-bound" in skill, slug
+        assert "Unknown agent_type" in skill, slug
+    binding = (live_bundle / "agents" / "developer.agent.md").read_text(encoding="utf-8")
+    assert f"`agent_type` set to `{plugin}:<actor>`" in binding
+    assert f"`{plugin}:release-train-engineer`" in binding
+    assert "exactly once" in binding and "step-session-bound" in binding
 
 
 def test_live_bundle_skills_are_cli_skill_folders(live_bundle: Path) -> None:

@@ -44,9 +44,17 @@ checks that the frontmatter still parses.
 
 ## Host-specific decisions
 
-- **Dispatch.** Orchestrators dispatch with `task`, `agent_type` = the step's `actor` slug,
-  synchronously, passing the model `resolve-step-model` returned as `model`. The orchestrator
-  skills name the host's dispatch tool generically; the binding pins it for this host.
+- **Dispatch.** Orchestrators dispatch with `task`, synchronously, passing the model
+  `resolve-step-model` returned as `model`. Plugin agents are namespaced by the plugin name, so
+  `agent_type` is `poesis-saf-agentic-organization:<actor>`; a bare actor id is refused as
+  "Unknown agent_type". The same prefix selects an orchestrator
+  (`--agent poesis-saf-agentic-organization:<orchestrator>`), and the harness adapter strips it.
+  The renderer fills the binding's namespaced agent list from `plugin.json` `name`, and a test
+  keeps the orchestrator skills' prefix equal to it.
+- **One step = one session.** The harness binds each resolved step to the one session that runs
+  it and refuses a second (`step-session-bound`). Orchestrators dispatch each resolved step
+  exactly once; after a failure they ask `resolve-step` again and dispatch the new resolution,
+  never re-dispatching on their own. A user KO reiterates the workflow as a new instance.
 - **Harness requests.** An orchestrator asks with ONE plain command, alone in its tool call:
   `& <venv python> <harness.py> resolve-step --workflow-slug <workflow-slug>` or
   `… resolve-step-model` (Linux/macOS: no leading `&`; `python`, `python3`, `py -3` also accepted;
@@ -65,8 +73,11 @@ checks that the frontmatter still parses.
 - **Model routing.** `conf/model-profiles.conf.yaml` holds canonical slugs only. The harness
   adapter's `models.yaml` maps them to host model ids; the bundle never hardcodes one.
   `resolve-step-model` ranks the whole catalogue, so the catalogue holds only models this app
-  offers and both adapters bind (a functional test checks the bindings).
-- **Unavailable models.** The app does not refuse a `task` `model` it does not offer. It silently
+  offers and both adapters bind. Each adapter refuses, at every hook load, a catalogue slug its
+  `models.yaml` does not bind (a bootstrap failure, so `preToolUse` denies); a functional test
+  checks the bindings against the harness checkout.
+- **Unavailable models.** A bound slug can still name a model the app no longer offers (the
+  runtime gives hooks no model list). The app does not refuse a `task` `model` it does not offer. It silently
   runs the subagent on another model but keeps the tool set of the model that was named. Trial
   evidence (2026-11-04): `model: gpt-5.5` ran as `claude-sonnet-5.5` with the GPT tool set, so the
   actor's `create` call failed with "Tool 'create' does not exist" and no Epic was written. The

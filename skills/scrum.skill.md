@@ -32,7 +32,7 @@ The SM **polices** the iteration layer. It does **not** author or own the backlo
 - **Events** — **Daily Sync**, **Iteration Review**, **Retrospective**.
 - **QA + ★ PR Gate packet** — dispatch `@quality-engineer`; drive Story -> `awaiting-pr`; hand the packet to the Central Supervisor (`@release-train-engineer` merges).
 - **Story cost — once, at `in-qa -> awaiting-pr`**.
-- **Pain points** — capture iteration friction in the retro; escalate program-scope items to Inspect & Adapt.
+- **Pain points** — capture iteration friction in the retro; escalate program-scope items for an `improvement-backlog` run (one pain point per run), which feeds Inspect & Adapt.
 
 **Facilitates; never decides scope; never writes production code.**
 

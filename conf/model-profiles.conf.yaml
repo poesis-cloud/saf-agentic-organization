@@ -23,7 +23,9 @@
 #
 # SCOPE RULE: `resolve-step-model` ranks EVERY profile below and returns the winner, so every slug
 # here must be offered by every supported host AND bound in each host adapter's `models.yaml`.
-# A slug a host does not offer is not refused: the GitHub Copilot app / Copilot CLI silently runs
+# Both harness adapters refuse, at every hook load, a catalogue that names a slug their
+# `models.yaml` does not bind (bootstrap failure: every governed tool call is then denied).
+# A bound slug the host no longer offers is not refused: the GitHub Copilot app / Copilot CLI silently runs
 # the subagent on another model but keeps the tool set of the model that was named (observed
 # 2026-11-04: `gpt-5.5` ran as `claude-sonnet-5.5` with the GPT tool set — no `create` tool — so
 # the actor could not write its artifact). Add a model only with all its host bindings.

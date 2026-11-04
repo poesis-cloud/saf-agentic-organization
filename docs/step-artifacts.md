@@ -21,10 +21,16 @@
 ## Rule
 
 - Every workflow step declares one `artifact:` (all steps in [`workflows/`](../workflows/) do).
-- The step's actor commits an instance of that artifact on every run, whatever the outcome. The
-  harness enforces this with a mandatory built-in postcondition: the declared artifact must have
-  an instance committed by that step's session. There is no opt-out and no per-step existence
-  postcondition in this repository.
+- The step's actor commits a change to **exactly one** instance of that artifact kind on every
+  run, by creating or updating it, whatever the outcome. The harness enforces this with a
+  mandatory built-in postcondition (function 10): the step's session must have committed, through
+  the harness, exactly one instance of the declared kind; a write identical to the committed file
+  does not count. There is no opt-out and no per-step existence postcondition in this repository.
+- One step = one session: the orchestrator dispatches each resolved step exactly once. A failed
+  step is resolved again through `resolve-step`, never re-dispatched ad hoc.
+- Every artifact write is governed: written in a registered step session, authorized by the
+  harness (function 8), then checked and committed (function 9). Nothing is written "outside a
+  step" on another agent's behalf.
 - Agent replies, step outcomes, subagent reports and gate summaries are **indicative**. Committed
   artifacts are the only evidence.
 
@@ -41,7 +47,12 @@ stepOutcomes:
     outcome: none        # written | revised | confirmed | no-change | none
     date: 2026-11-05
     note: No enabler needed — the runway already provides tenant-scoped auth (ADR-12).
+    friction: The Epic named no tenant boundary; had to infer it.   # optional
 ```
+
+`friction` records workflow friction the actor observed. Actors never write pain points
+themselves: the `release-train-engineer` turns friction notes into pain points, one per run of
+the `improvement-backlog` workflow (`record-pain-point`).
 
 | Outcome | Meaning | Typical step |
 |---|---|---|
@@ -81,8 +92,12 @@ itself), and is presented as a decision at the human gate.
 | `team-backlog-refinement/draft` | No-change note; "or explicitly none" | Commits the Story with a `no-change` entry; "no open items" in its note |
 | `team-backlog-refinement/draft-enabler` | explicit-none | `not-needed` Enabler Story, `outcome: none` |
 | `team-backlog-refinement/owner-rewrite` | No-change | Commits the Story with a `no-change` entry |
-| `inspect-and-adapt/metrics-review` | User-facing output only | Top deviations committed as `origin: metrics-review` pain points (or one "within plan" record) |
-| `inspect-and-adapt/pi-retrospective` | PI+1 priming as text | Priming is indicative only; decisions stay on the pain points |
+| `inspect-and-adapt/metrics-review` | Several pain points per run | Creates the one `inspect-and-adapt` record (metrics + pain-point candidates) |
+| `inspect-and-adapt/pi-retrospective` | Several pain points per run; priming as text | Updates that record with the triage and PI+1 priming |
+| `improvement-backlog/record-pain-point` (new workflow) | Pain points written by specialists or "outside a step" | The RTE creates or updates exactly one pain point per run (`no-change` entry when it already holds) |
+| `pi-planning/confirm-intent` | Several Features | Confirms the ONE Feature this PI Planning run commits |
+| `portfolio-sync/update-product-manifest` | Several products | One product manifest per run |
+| `feature-derivation/derive-business` | Several Features | One business Feature per run (the workflow runs once per Feature) |
 | Challenge steps (shared challenger rule) | "Not a main to challenge" | Review packet always committed (`verdict: pass` when nothing is found) |
 | `pi-planning/confirm-*`, `iteration-planning/confirm-team-manifest`, `release-on-demand/confirm-deployment` | Implicit confirmation | Artifact committed with a `confirmed` entry |
 

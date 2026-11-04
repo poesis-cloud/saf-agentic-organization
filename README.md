@@ -86,8 +86,8 @@ orchestrator to invoke. Do not mint a thinner item to absorb a thicker intent.
 ### 2. Workflows are challenge protocols
 
 A workflow is how agents **exchange, collaborate, and challenge** while delivering
-mains. The loop is draft → challenge → owner rewrite, repeated until agreement is
-enough to present mains at the human gate.
+mains. The loop is draft → challenge → owner rewrite; a human KO reiterates the
+workflow as a new instance until agreement is enough to present mains at the gate.
 
 | Class | Role | Challenged? | Human-gated? |
 |---|---|---|---|
@@ -103,13 +103,14 @@ The orchestrator does not require a speech-act label. It:
 1. Reads the concern.
 2. Loads the one workflow whose **purpose** matches, or tells the human to invoke
    another layer's orchestrator.
-3. Lets that workflow loop until challengers agree enough.
+3. Dispatches each step the harness resolves exactly once (1 step = 1 session); a
+   failed step comes back through `resolve-step`, never through an ad-hoc re-dispatch.
 4. Returns the **mains** to the human gate and waits.
 
 Humans need not name the ceremony. Purpose still constrains the usecase. The
 harness `resolve-step` walks catalog order; empty preconditions pass. **No valid
-step without artifact:** every step commits its declared artifact, whatever the
-outcome. An out-of-scope sibling main is committed with only a `no-change`
+step without artifact:** every step commits a change to exactly one instance of its
+declared artifact kind, whatever the outcome. An out-of-scope sibling main is committed with only a `no-change`
 `stepOutcomes` entry, and an unneeded enabler as a `status: not-needed` file —
 never a silent skip, never an invented sibling, never a redraft of an untouched
 item. Agent replies and reports are indicative; committed artifacts are the
@@ -130,7 +131,8 @@ only evidence (see [docs/step-artifacts.md](docs/step-artifacts.md)).
 | `pi-planning` | ART PI commit | confirm vision/roadmap/feature/runway; write `objectives` |
 | `art-sync` | Mid-PI impediments | mediation record only |
 | `system-demo` | Inspect the increment; demo gate | mediation / gate record |
-| `inspect-and-adapt` | PI improve | `pain-point` (mediation). A later Feature is a later Feature, not I&A |
+| `inspect-and-adapt` | PI improve | `inspect-and-adapt` record (metrics, then triage). Writes no pain point; a later Feature is a later Feature |
+| `improvement-backlog` | Record or update ONE pain point (one run per friction note) | `pain-point` (mediation) |
 | `release-on-demand` | Ship an accepted increment | `release-on-demand` |
 | `team-backlog-refinement` | Write a ready-enough Story (including Feature→Story split) | `story`, `story-enabler` |
 | `iteration-planning` | Commit the iteration | `team-manifest`, `plan` |
@@ -267,7 +269,8 @@ writes them under `~/.copilot/hooks/`. `--hook-style shell` writes `powershell`/
 strings instead of `exec` entries. The plugin loads live, so after a re-render re-run steps 1–2
 and open a new session. The orchestrators are `value-management-officer`,
 `release-train-engineer`, and `scrum-master`: pick one in the app's agent picker, or run
-`copilot --agent value-management-officer`. Harness requests need no permission rule: the
+`copilot --agent poesis-saf-agentic-organization:value-management-officer` (plugin agents are
+namespaced by the plugin name). Harness requests need no permission rule: the
 harness hook answers them itself (see below).
 
 ### VS Code Copilot Chat
@@ -315,9 +318,11 @@ write artifacts with the host's file-edit tools (`create`, `edit`, or `apply_pat
 Copilot app / Copilot CLI; the edit tools in VS Code), never through the shell, so the harness can
 authorize and check every write. Every call is journaled to
 `<FRAMEWORK_WORKSPACE_DIR>/logs/<sessionId>.log.jsonl`. The harness never writes artifacts — it
-reports; the actors commit. **No valid step without artifact:** every step commits its declared
-artifact with a `stepOutcomes` entry recording its decision, and the harness's built-in
-postcondition requires it ([docs/step-artifacts.md](docs/step-artifacts.md)). Reports are
+reports; the actors commit. **No valid step without artifact:** each step's session commits a
+change to exactly one instance of its declared artifact kind, with a `stepOutcomes` entry
+recording its decision, and the harness's built-in postcondition requires it
+([docs/step-artifacts.md](docs/step-artifacts.md)). Workflow friction goes in that entry's
+`friction` note; only the `improvement-backlog` workflow writes pain points. Reports are
 indicative; artifacts are the only evidence.
 
 ### Load contract

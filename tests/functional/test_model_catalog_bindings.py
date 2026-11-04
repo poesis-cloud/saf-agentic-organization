@@ -1,9 +1,9 @@
 """Every catalog model is one each harness host adapter can dispatch.
 
 `resolve-step-model` ranks every profile in `conf/model-profiles.conf.yaml` and returns the
-winner. A host that does not offer the winner does not refuse it: the GitHub Copilot app /
-Copilot CLI silently runs another model with the named model's tool set. So the catalog may
-only hold slugs that every adapter in the harness checkout binds in its `models.yaml`.
+winner. Each harness adapter refuses, at every hook load, a catalogue naming a slug its
+`models.yaml` does not bind, which denies every governed tool call. So the catalog may only
+hold slugs that every adapter in the harness checkout binds in its `models.yaml`.
 """
 
 from __future__ import annotations

@@ -38,7 +38,7 @@ related_adrs: []              # sibling, cross-product, or predecessor/successor
                               # ADR ids
 dependsOn: []                # prerequisite ADR ids that must be understood
                               # first
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # ADR-1 — <title>

@@ -1,5 +1,5 @@
 ---
-description: 'Inspect & Adapt Step 1 — calculate PI metrics by reading existing artifact content and present them to the facilitator. No dedicated metric fields are required on source artifacts.'
+description: 'Inspect & Adapt Step 1 — calculate PI metrics by reading existing artifact content and create the PI Inspect & Adapt record with them. No dedicated metric fields are required on source artifacts.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors
@@ -35,4 +35,16 @@ Calculate the following PI indicators by reading the existing artifact content. 
 
 ## Output
 
-Record the top 2–3 deviations from plan as pain points (`origin: metrics-review`): `symptom` names the indicator, `impact` gives its value against plan, and the body carries the hypothesized systemic cause. When an open pain point already has the same cause, append a `stepOutcomes` entry (`outcome: revised`) with the new value instead of a duplicate. When no indicator deviates from plan, commit one pain point titled `PI <pi-slug> metrics within plan` with `status: accepted`, `resolution: accepted` and the indicator values in `impact`. Every pain point committed here carries a `stepOutcomes` entry. The metrics you present to the facilitator are indicative; the pain points are the evidence.
+Create the PI's Inspect & Adapt record, `art/<art-slug>/pi-<pi-slug>/inspect-and-adapt.md`
+(`status: metrics-reviewed`), from its template. This step writes **exactly one** artifact,
+that record, and never a pain point.
+
+- **Metrics** — every indicator above with its value, plan and deviation.
+- **Pain-point candidates** — the top 2–3 deviations from plan: `symptom` names the indicator,
+  `impact` gives its value against plan, plus the hypothesized systemic cause and, when one
+  exists, the open pain point with the same cause. When no indicator deviates, write one row
+  "none — PI within plan".
+- A `stepOutcomes` entry (`outcome: written`).
+
+Each candidate becomes one pain point in a later `improvement-backlog` run (one run per
+candidate). The metrics you present are indicative; the record is the evidence.

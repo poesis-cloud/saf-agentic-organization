@@ -20,7 +20,7 @@ description: >
   story, story-enabler. Same workflow for new Story, bug, spike, debt slice,
   thicken AC, split. Challenges of those mains: feasibility, UX,
   architecture-review (SA challenge, not an ADR). Evaluate: those mains; KO
-  reiterates that main's owner step. Refuse Feature/Epic grain. Refuse ADR
+  reiterates the workflow (new instance; that main's owner step absorbs the KO). Refuse Feature/Epic grain. Refuse ADR
   and the product NFR register (hand off to RTE
   architectural-runway-extension). Stories inherit NFR applicability from
   the parent Feature; they do not define NFRs. Do not invent Bug Intake.

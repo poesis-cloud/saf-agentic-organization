@@ -114,10 +114,12 @@ def _load_tools(build_root: Path, source_root: Path) -> dict[str, list[str]]:
     return {rel: list(tools) for rel, tools in tools_map.items()}
 
 
-def _binding(build_root: Path, agent_ids: list[str]) -> str:
+def _binding(build_root: Path, plugin: str, agent_ids: list[str]) -> str:
+    """The host binding, with plugin agents namespaced as the CLI dispatches them (`<plugin>:<agent>`)."""
     text = (build_root / "host-binding.md").read_text(encoding="utf-8")
     text = LEADING_COMMENT_RE.sub("", text, count=1)
-    return text.replace("{{AGENT_IDS}}", ", ".join(f"`{slug}`" for slug in agent_ids))
+    text = text.replace("{{AGENT_IDS}}", ", ".join(f"`{plugin}:{slug}`" for slug in agent_ids))
+    return text.replace("{{PLUGIN_NAME}}", plugin)
 
 
 def _rewrite_links(body: str, source_rel: str, bundle_rel: str, layout: list[str], skills: set[str]) -> str:
@@ -156,7 +158,7 @@ def render(source_root: Path, bundle_root: Path) -> tuple[int, int]:
     skill_paths = sorted((source_root / "skills").glob("*.skill.md"))
     skills = {path.name[: -len(".skill.md")] for path in skill_paths}
     agent_ids = sorted(Path(rel).name[: -len(".agent.md")] for rel in tools)
-    binding = _binding(build_root, agent_ids)
+    binding = _binding(build_root, manifest["name"], agent_ids)
 
     if bundle_root.exists():
         shutil.rmtree(bundle_root)

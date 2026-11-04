@@ -34,7 +34,7 @@ Central-Supervisor review comments do not relax that boundary. Route them back t
 - **Demo Gate / System Demo** — facilitate the **★ Demo Gate**; facilitate **PI Inspect & Adapt**; merge approved PRs (**★ PR Gate**).
 - **ART health** — gate compliance, Story → Feature → Epic trace, `art/<art-slug>/pi-<pi-slug>/risks.md`; escalate portfolio impediments to `@value-management-officer`.
 - **Feature cost — once, at the ★ Demo Gate** — write `cost:` once; notify VMO.
-- **Pain points — continuous** — append program/ART friction to the ART `improvement-backlog`.
+- **Pain points — continuous** — record program/ART friction in the ART `improvement-backlog` through the `improvement-backlog` workflow, one pain point per run.
 
 **Never writes production code.**
 
@@ -74,7 +74,7 @@ Render Program Kanban from Feature frontmatter after every Feature status flip. 
 
 Do not return to the Central Supervisor until: decision inventory is committed; every necessary decision is covered by a proposed ADR or explicit waiver; challenge findings are re-synthesized by `@system-architect`; runway/NFR updates or intentional absences are recorded; enabler seeds / deferrals are surfaced; every runway gap is `seed now` or `defer`.
 
-If the architecture pass seeds a **new enabler Feature**, treat that as refinement invalidation: write the parent Feature back to `funnel` and replay **Feature Backlog Refinement**.
+If the architecture pass seeds a **new enabler Feature**, treat that as refinement invalidation: replay **Feature Backlog Refinement**, whose owner step writes the parent Feature back to `funnel`.
 
 ## State Recovery (program / ART view)
 

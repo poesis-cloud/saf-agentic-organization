@@ -1,7 +1,7 @@
 ---
 name: inspect-and-adapt
 user-invocable: false
-description: '**SAFe CEREMONY SKILL.** The Inspect & Adapt playbook loaded by `@release-train-engineer` at PI end. USE FOR: the PI quantitative metrics review + the problem-solving workshop; root-causing program-scope pain points from the ART improvement-backlog; dispatching owning actors to create derived Features/Stories/enablers. DO NOT USE FOR: the ★ Demo Gate (use `demo-gate` in the ART workflow); portfolio re-ranking (use `strategic-portfolio-review`); iteration retrospectives. Loaded by `@release-train-engineer` before facilitating.'
+description: '**SAFe CEREMONY SKILL.** The Inspect & Adapt playbook loaded by `@release-train-engineer` at PI end. USE FOR: the PI quantitative metrics review + the problem-solving workshop (both recorded in the PI Inspect & Adapt record); root-causing program-scope pain points from the ART improvement-backlog; recording one pain point per `improvement-backlog` run. DO NOT USE FOR: the ★ Demo Gate (use `demo-gate` in the ART workflow); portfolio re-ranking (use `strategic-portfolio-review`); iteration retrospectives. Loaded by `@release-train-engineer` before facilitating.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors
@@ -29,4 +29,8 @@ Shared model lives in **[RTE orchestration core](release-train-engineer.skill.md
 - **Step 1 — Metrics review**: [instructions/metrics-review.instructions.md](instructions/metrics-review.instructions.md)
 - **Step 2 — Retrospective**: [instructions/retrospective.instructions.md](instructions/retrospective.instructions.md)
 
-**Only `@release-train-engineer` facilitates I&A and updates pain-point `status`. Derived Features, Stories, and enablers are authored by their owning actors.**
+- **Improvement Backlog — record one pain point** (the `improvement-backlog` workflow): [program-improvement-backlog-record-pain-point](../instructions/release-train-engineer/program-improvement-backlog-record-pain-point.instructions.md)
+
+Each I&A step writes **exactly one** artifact, the PI's Inspect & Adapt record (`art/<art-slug>/pi-<pi-slug>/inspect-and-adapt.md`): `metrics-review` creates it with the metrics and pain-point candidates, `pi-retrospective` adds the triage. Neither writes a pain point.
+
+**Only `@release-train-engineer` writes pain points, one per `improvement-backlog` run**, in its `record-pain-point` step: each candidate, each Triage row and each `friction` note from a step's `stepOutcomes` entry is its own run. Derived Features, Stories, and enablers are later Demands for their owning actors.

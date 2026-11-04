@@ -18,7 +18,7 @@ name: portfolio-portfolio-sync-update-product-manifest
 
 # Portfolio Sync — update Product Manifest
 
-The Value Management Officer refreshes the product registry entry for the products in this portfolio.
+The Value Management Officer refreshes the product registry entry of the **one** product this sync names (`products/<product-slug>/product-manifest.yaml`). Another product is another Portfolio Sync run.
 
-Inputs: the Portfolio Manifest just updated, and the current product set.
+Inputs: the Portfolio Manifest just updated, and that product's current state.
 Output: the product-manifest artifact. Do not rewrite Product Vision or Features.

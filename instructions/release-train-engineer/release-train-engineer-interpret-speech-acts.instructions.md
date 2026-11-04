@@ -29,23 +29,26 @@ before loading a workflow.
   `feature-enabler`. SA architecture-review is a challenge of those mains, not an ADR.
   Do not author ADR, NFR list, or runway here.
 - **Demand derive-from-Epic** — split an approved Epic into ART Features. Start
-  `feature-derivation`. Derived items then enter Feature refinement. Do not thicken
+  `feature-derivation`, once per Feature (one business Feature per run). Derived items
+  then enter Feature refinement. Do not thicken
   AC/WSJF here.
 - **Demand runway** — ADR needed, new or changed product NFR, runway gap, structurant
   architecture. Start `architectural-runway-extension`. **In-scope mains:** `nfr-list`,
   `adr`, `architecture-runway`. `nfr-list` is the product singleton
   (`products/<product-slug>/nfr-list.md`) and a precondition for ADR. Do not reshape
   Feature AC here (Refuse-to-Demand Feature).
-- **Cadence** — PI Planning, ART Sync, System Demo, Inspect and Adapt. The user is not
+- **Cadence** — PI Planning, ART Sync, System Demo, Inspect and Adapt, Improvement
+  Backlog (`improvement-backlog`: record or update ONE pain point from one friction note;
+  one run per pain point). The user is not
   creating a Feature. "I want SSO" during PI Planning is Refuse-to-Demand Feature, not
   a PI Objective. PI Planning confirms runway; it does not author ADR/NFR.
 - **Advance** — Release on Demand for an increment already OK enough to ship.
 - **Inspect** — show current program mains. Write nothing.
-- **Evaluate** — OK / concerns / KO **per main** just returned. Redispatch that main's
-  owner draft or rewrite. Never Evaluate a review packet, ROAM ledger, or minutes.
+- **Evaluate** — OK / concerns / KO **per main** just returned. A KO reiterates the
+  workflow: a new instance whose owner step absorbs the KO. Never re-dispatch a step yourself. Never Evaluate a review packet, ROAM ledger, or minutes.
 - **Refuse** — Epic grain → `@value-management-officer`. Story grain (bug, spike, thin
   slice) → `@scrum-master`. Do not mint a Feature.
 
 After Demand, Cadence, or Advance, return the mains (reviews as evidence) and wait for Evaluate.
 
-Closed set: Demand Feature · Demand derive-from-Epic · Demand runway · Cadence PI / sync / demo / I&A · Advance release · Inspect · Evaluate main · Refuse.
+Closed set: Demand Feature · Demand derive-from-Epic · Demand runway · Cadence PI / sync / demo / I&A / improvement-backlog · Advance release · Inspect · Evaluate main · Refuse.

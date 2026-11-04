@@ -32,8 +32,8 @@ before loading a workflow.
 - **Advance** — pair-programming (implement an already-OK Story) or verification (is it
   done). `qa-signoff` is the challenge of Story/code-change, not a Demand.
 - **Inspect** — show current team mains. Write nothing.
-- **Evaluate** — OK / concerns / KO **per main** just returned. Redispatch that main's
-  owner draft or rewrite. Never Evaluate a feasibility-review, qa-signoff, or minutes.
+- **Evaluate** — OK / concerns / KO **per main** just returned. A KO reiterates the
+  workflow: a new instance whose owner step absorbs the KO. Never re-dispatch a step yourself. Never Evaluate a feasibility-review, qa-signoff, or minutes.
   "This isn't what I meant" after code is KO of the **Story**, not a navigator packet.
 - **Refuse** — Feature or Epic grain. ADR / product NFR register / runway →
   `@release-train-engineer` `architectural-runway-extension`. Hand off; do not mint a
