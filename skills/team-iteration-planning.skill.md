@@ -20,7 +20,7 @@ description: '**SAFe CEREMONY SKILL.** The Iteration Planning playbook loaded by
 
 # SAFe Ceremony — Iteration Planning
 
-The **normative spec** is the machine-readable **[workflows/team/iteration-planning.workflow.conf.yaml](../workflows/team/iteration-planning.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+The **normative spec** is the machine-readable **[workflows/team/iteration-planning.workflow.conf.yaml](../workflows/team/iteration-planning.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
 Shared model lives in **[scrum-master orchestration core](scrum-master.skill.md)**. Business Stories are authored via `product-owner`, enabler Stories via `system-architect`; **the ★ Story Gate (DoR) is sm-run here** (never the ★ PR Gate); **only `@scrum-master` writes `status:`** — on the first Story reaching `ready` it notifies `@release-train-engineer` to flip the parent Feature `committed→in-progress`.
 Plan written + Stories DoR-gated + pairs assigned + `@release-train-engineer` notified on first `ready`; relation discipline stays minimal and actionable.

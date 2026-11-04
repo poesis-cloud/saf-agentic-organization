@@ -20,6 +20,6 @@ description: '**SAFe PRACTICE SKILL.** The Epic Lean Business Case practice (Con
 
 # SAFe Practice — Epic Lean Business Case (Continuous Exploration)
 
-The **normative spec** is the machine-readable **[workflows/portfolio/epic-lean-business-case.workflow.conf.yaml](../workflows/portfolio/epic-lean-business-case.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@value-management-officer` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+The **normative spec** is the machine-readable **[workflows/portfolio/epic-lean-business-case.workflow.conf.yaml](../workflows/portfolio/epic-lean-business-case.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@value-management-officer` and the harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
 Shared model lives in **[VMO orchestration core](value-management-officer.skill.md)**. The Epic is authored via `business-owner` and **only `@value-management-officer` writes `status:`** (`∅→funnel` / `funnel→reviewing`).

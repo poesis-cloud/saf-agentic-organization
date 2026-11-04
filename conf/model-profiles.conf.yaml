@@ -15,10 +15,10 @@
 # ============================================================
 # Host-agnostic model profile catalog — canonical model identity, independent of any host.
 # ============================================================
-# `slug` here is the CANONICAL model slug. It is NOT a valid `runSubagent` model argument by itself —
-# no host understands these slugs directly. Each host adapter maps a canonical `slug` to that host's
-# own model identifier via its own `saf-agentic-harness/adapters/<env>/models.yaml` (see
-# `saf-agentic-harness/adapters/vscode-github-copilot-chat/models.yaml` for the GitHub Copilot binding).
+# `slug` here is the CANONICAL model slug. It is NOT a host model argument by itself —
+# a host may not understand these slugs directly. Each host adapter maps a canonical `slug` to that host's
+# own model identifier via its own `saf-agentic-harness/adapters/<env>/models.yaml` (e.g. the VS Code
+# Copilot Chat binding maps `gpt-5.5` -> `GPT-5.5 (copilot)`; the GitHub Copilot app / Copilot CLI accepts the slug verbatim).
 #
 # This file only carries identity + capability metadata (what the model IS), never routing policy
 # (tiers, role-default floors, scoring, config profiles) — that policy stays in
@@ -27,7 +27,7 @@
 # Fields:
 #   slug               — internal canonical model slug (stable across hosts; hosts resolve it via
 #                        their own adapters/<env>/models.yaml). Reuses the GitHub Copilot catalog
-#                        model `id` as the slug verbatim where available (see saf-agentic-harness/adapters/vscode-github-copilot-chat/models.yaml)
+#                        model `id` as the slug verbatim where available (see saf-agentic-harness/adapters/<env>/models.yaml)
 #                        so cross-referencing against that host's models.json stays trivial.
 #   costRank           — relative cost, 1 (cheapest) .. 10 (most expensive). MECHANICALLY derived
 #                        from each model's blended token price (0.25*input + 0.75*output, USD per

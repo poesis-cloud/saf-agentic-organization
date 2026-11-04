@@ -20,7 +20,7 @@ description: 'SAFe ART ceremony — Feature Backlog Refinement (suborchestration
 
 # SAFe Ceremony — Feature Backlog Refinement
 
-The **normative spec** is the machine-readable **[workflows/program/feature-backlog-refinement.workflow.conf.yaml](../workflows/program/feature-backlog-refinement.workflow.conf.yaml)** — the step sequence and every step's `conditions`, consumed by both `@release-train-engineer` and the deterministic harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+The **normative spec** is the machine-readable **[workflows/program/feature-backlog-refinement.workflow.conf.yaml](../workflows/program/feature-backlog-refinement.workflow.conf.yaml)** — the step sequence and every step's `conditions`, consumed by both `@release-train-engineer` and the deterministic harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
 Mains are `feature` and `feature-enabler`. System Architect **challenges** those mains with `architecture-review`; ADR, NFR list, and Architecture Runway belong to `architectural-runway-extension`.
 

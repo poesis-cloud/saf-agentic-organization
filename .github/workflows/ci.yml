@@ -129,3 +129,12 @@ jobs:
 
             - name: make verify
               run: make verify SAF_HARNESS_SRC=.harness/src
+
+            - name: Render both host bundles
+              # The live-tree contract is asserted by tests/unit/test_render_cli_bundle.py;
+              # this proves the documented `make` entry points render outside the source.
+              run: |
+                  make bundle BUNDLE_DIR="$RUNNER_TEMP/bundle/github-copilot"
+                  make bundle-cli CLI_BUNDLE_DIR="$RUNNER_TEMP/bundle/github-copilot-cli"
+                  test -f "$RUNNER_TEMP/bundle/github-copilot-cli/.github/plugin/marketplace.json"
+                  test ! -e "$RUNNER_TEMP/bundle/github-copilot-cli/hooks.json"

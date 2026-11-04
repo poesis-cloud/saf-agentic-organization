@@ -20,6 +20,6 @@ description: '**SAFe PRACTICE SKILL.** The Release on Demand playbook loaded by 
 
 # SAFe Practice — Release on Demand
 
-The ART **Continuous Delivery Pipeline** close: deployability first, then the business release decision. The **normative spec** is the machine-readable **[workflows/release-on-demand.workflow.conf.yaml](../workflows/release-on-demand.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@release-train-engineer` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+The ART **Continuous Delivery Pipeline** close: deployability first, then the business release decision. The **normative spec** is the machine-readable **[workflows/release-on-demand.workflow.conf.yaml](../workflows/release-on-demand.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@release-train-engineer` and the harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
 Shared model lives in **[RTE orchestration core](release-train-engineer.skill.md)**. `@operator` records Continuous Deployment readiness. `@product-manager` authors whether value is held, dark-launched, canaried, or released. The facilitator authors neither verdict.

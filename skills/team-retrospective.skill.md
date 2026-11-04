@@ -20,6 +20,6 @@ description: '**SAFe CEREMONY SKILL.** The Iteration Retrospective playbook load
 
 # SAFe Ceremony — Iteration Retrospective
 
-The **sprint-scope** review point of the workflow-improvement ledger. The **normative spec** is the machine-readable **[workflows/team/iteration-retrospective.workflow.conf.yaml](../workflows/team/iteration-retrospective.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+The **sprint-scope** review point of the workflow-improvement ledger. The **normative spec** is the machine-readable **[workflows/team/iteration-retrospective.workflow.conf.yaml](../workflows/team/iteration-retrospective.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
 Shared model lives in **[scrum-master orchestration core](scrum-master.skill.md)**. The Central Supervisor fills a mandatory input section; an iteration-local improvement is a meta-artifact change while program-scope items escalate **up** to Inspect & Adapt; **only `@scrum-master` writes `status:`**.

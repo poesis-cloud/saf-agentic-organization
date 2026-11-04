@@ -20,7 +20,7 @@ description: '**SAFe CEREMONY SKILL.** The Daily Sync playbook loaded by `@scrum
 
 # SAFe Ceremony — Daily Sync
 
-A **reconcile** ceremony (no authoring, no gate). The **normative spec** is the machine-readable **[workflows/team/team-sync.workflow.conf.yaml](../workflows/team/team-sync.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+A **reconcile** ceremony (no authoring, no gate). The **normative spec** is the machine-readable **[workflows/team/team-sync.workflow.conf.yaml](../workflows/team/team-sync.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
 Shared model lives in **[scrum-master orchestration core](scrum-master.skill.md)**. The facilitator walks WIP + blockers, enforces the WIP limits (`in-progress` = 1/pair, `in-qa` ≤ 2), and flips `→blocked`/unblock only — no flow edge, no authoring, no gate; **only `@scrum-master` writes `status:`**.
 Every pair synced + blockers actioned + WIP within limits + sprint artifacts written.

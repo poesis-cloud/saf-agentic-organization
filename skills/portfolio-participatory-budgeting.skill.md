@@ -20,6 +20,6 @@ description: '**SAFe CEREMONY SKILL.** The Participatory Budgeting playbook load
 
 # SAFe Ceremony — Participatory Budgeting
 
-The standard SAFe LPM event that allocates **Lean Budgets** (delivery-capacity guardrails) across ARTs / value streams and commits Epic funding. The **normative spec** is the machine-readable **[workflows/portfolio/strategic-investment-planning.workflow.conf.yaml](../workflows/portfolio/strategic-investment-planning.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@value-management-officer` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+The standard SAFe LPM event that allocates **Lean Budgets** (delivery-capacity guardrails) across ARTs / value streams and commits Epic funding. The **normative spec** is the machine-readable **[workflows/portfolio/strategic-investment-planning.workflow.conf.yaml](../workflows/portfolio/strategic-investment-planning.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@value-management-officer` and the harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
 Shared model lives in **[VMO orchestration core](value-management-officer.skill.md)**. Arguments come from the bench; **the Central Supervisor commits** the allocation (Business-Owner authority); the funded set honours the business/enabler guardrail split without over-committing capacity; and **only `@value-management-officer` writes `status:`**.

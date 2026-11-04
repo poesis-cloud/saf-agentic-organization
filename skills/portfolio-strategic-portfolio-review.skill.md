@@ -20,6 +20,6 @@ description: '**SAFe CEREMONY SKILL.** The Strategic Portfolio Review playbook l
 
 # SAFe Ceremony — Strategic Portfolio Review
 
-The **normative spec** is the machine-readable **[workflows/portfolio/strategic-portfolio-review.workflow.conf.yaml](../workflows/portfolio/strategic-portfolio-review.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@value-management-officer` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+The **normative spec** is the machine-readable **[workflows/portfolio/strategic-portfolio-review.workflow.conf.yaml](../workflows/portfolio/strategic-portfolio-review.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@value-management-officer` and the harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
 Shared model lives in **[VMO orchestration core](value-management-officer.skill.md)**. The WSJF re-rank + Strategic-Theme revisions are authored via `business-owner`; **the Central Supervisor decides** pivot/persevere/stop and **only `@value-management-officer` writes `status:`**. A workflow-improvement is a meta-artifact change, never a product Epic.

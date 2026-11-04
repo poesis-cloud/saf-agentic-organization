@@ -20,7 +20,7 @@ description: '**SAFe CEREMONY SKILL.** The PI Planning playbook loaded by `@rele
 
 # SAFe Ceremony — PI Planning
 
-The **normative spec** is the machine-readable **[workflows/program/pi-planning.workflow.conf.yaml](../workflows/program/pi-planning.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@release-train-engineer` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+The **normative spec** is the machine-readable **[workflows/program/pi-planning.workflow.conf.yaml](../workflows/program/pi-planning.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@release-train-engineer` and the harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
 Shared model lives in **[RTE orchestration core](release-train-engineer.skill.md)**. Features stay `product-manager`-authored; **only `@release-train-engineer` writes `status:`** — committing Feature `ready→committed` on a passing confidence vote and dispatching `@scrum-master`. The facilitator may raise (never silently lower) a Feature's risk/complexity here.
 Objectives committed + dependencies mapped + risks ROAMed + confidence ≥ threshold + `@scrum-master` running.

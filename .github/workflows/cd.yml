@@ -5,7 +5,9 @@
 # from builds/github-copilot/plugin.json + builds/github-copilot/tools.yaml, injects the
 # target `tools:` frontmatter into agent manifests, runs the packaging gate on that staged bundle,
 # then zips it into a single top-level install folder named after the plugin and publishes it as
-# the installable GitHub Copilot artifact.
+# the installable GitHub Copilot artifact. A second asset, `<name>-copilot-cli-<version>.zip`, is
+# the GitHub Copilot app / Copilot CLI plugin rendered by builds/github-copilot-cli/ (it keeps
+# `.github/plugin/marketplace.json`, the local-marketplace manifest the app installs from).
 #
 # Triggers:
 #   - push a tag v*      → packaging gate, then publish a GitHub Release asset
@@ -121,6 +123,12 @@ jobs:
                   python3 builds/github-copilot/render_bundle.py . "$BUNDLE"
                   echo "BUNDLE=$BUNDLE" >> "$GITHUB_ENV"
 
+            - name: Render GitHub Copilot app / CLI bundle
+              run: |
+                  CLI_BUNDLE="$RUNNER_TEMP/github-copilot-cli-bundle"
+                  python3 builds/github-copilot-cli/render_bundle.py . "$CLI_BUNDLE"
+                  echo "CLI_BUNDLE=$CLI_BUNDLE" >> "$GITHUB_ENV"
+
             - name: Read plugin metadata
               id: meta
               run: |
@@ -129,6 +137,7 @@ jobs:
                   echo "version=$VERSION" >> "$GITHUB_OUTPUT"
                   echo "name=$NAME" >> "$GITHUB_OUTPUT"
                   echo "artifact=$NAME-$VERSION" >> "$GITHUB_OUTPUT"
+                  echo "cli_artifact=$NAME-copilot-cli-$VERSION" >> "$GITHUB_OUTPUT"
 
             - name: Tag / version coherence check
               if: startsWith(github.ref, 'refs/tags/')
@@ -146,8 +155,9 @@ jobs:
               # The repository root is packaged into a single top-level install folder
               # named after the plugin (plugin.json `name`). Exclude VCS/CI/build cruft.
               # Built with Python's zipfile (no apt `zip` dependency; deterministic, testable).
+              # The CLI zip keeps `.github/` (its local-marketplace manifest lives there).
               run: |
-                  python3 - "$BUNDLE" "dist/${{ steps.meta.outputs.artifact }}.zip" "${{ steps.meta.outputs.name }}" <<'PY'
+                  cat > "$RUNNER_TEMP/zip_bundle.py" <<'PY'
                   import os
                   import sys
                   import zipfile
@@ -155,7 +165,10 @@ jobs:
                   src = sys.argv[1].rstrip("/") or "."
                   out = sys.argv[2]
                   top = sys.argv[3]
-                  skip_dirs = {".pytest_cache", "__pycache__", "target", ".git", ".github", "dist"}
+                  keep_github = len(sys.argv) > 4 and sys.argv[4] == "--keep-github"
+                  skip_dirs = {".pytest_cache", "__pycache__", "target", ".git", "dist"}
+                  if not keep_github:
+                      skip_dirs.add(".github")
                   os.makedirs(os.path.dirname(out), exist_ok=True)
 
                   count = 0
@@ -173,18 +186,24 @@ jobs:
                               count += 1
                   print(f"built: {out} ({count} files, root {top}/)")
                   PY
+                  python3 "$RUNNER_TEMP/zip_bundle.py" "$BUNDLE" "dist/${{ steps.meta.outputs.artifact }}.zip" "${{ steps.meta.outputs.name }}"
+                  python3 "$RUNNER_TEMP/zip_bundle.py" "$CLI_BUNDLE" "dist/${{ steps.meta.outputs.cli_artifact }}.zip" "${{ steps.meta.outputs.name }}" --keep-github
 
             - name: Upload build artifact
               uses: actions/upload-artifact@v4
               with:
                   name: ${{ steps.meta.outputs.artifact }}
-                  path: dist/${{ steps.meta.outputs.artifact }}.zip
+                  path: |
+                      dist/${{ steps.meta.outputs.artifact }}.zip
+                      dist/${{ steps.meta.outputs.cli_artifact }}.zip
                   if-no-files-found: error
 
             - name: Publish GitHub Release
               if: startsWith(github.ref, 'refs/tags/')
               uses: softprops/action-gh-release@v2
               with:
-                  files: dist/${{ steps.meta.outputs.artifact }}.zip
+                  files: |
+                      dist/${{ steps.meta.outputs.artifact }}.zip
+                      dist/${{ steps.meta.outputs.cli_artifact }}.zip
                   generate_release_notes: true
                   fail_on_unmatched_files: true

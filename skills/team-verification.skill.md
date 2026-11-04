@@ -20,6 +20,6 @@ description: '**SAFe PRACTICE SKILL.** The Verification & Sign-off practice (Con
 
 # SAFe Practice — Verification & Sign-off (Built-In Quality)
 
-A **practice** (Continuous Integration) that produces the QA sign-off. The **normative spec** is the machine-readable **[workflows/team/verification.workflow.conf.yaml](../workflows/team/verification.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+A **practice** (Continuous Integration) that produces the QA sign-off. The **normative spec** is the machine-readable **[workflows/team/verification.workflow.conf.yaml](../workflows/team/verification.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
 Shared model lives in **[scrum-master orchestration core](scrum-master.skill.md)**. The sign-off uses the **qa-signoff** template; no Story reaches `awaiting-pr` without it (observability Stories include the instrumentation-coverage audit, INST-R7/R8 green); **only `@scrum-master` writes `status:`** (`in-qa→awaiting-pr` on pass / `in-qa→in-progress` on fail).

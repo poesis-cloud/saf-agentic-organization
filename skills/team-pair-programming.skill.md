@@ -20,6 +20,6 @@ description: '**SAFe PRACTICE SKILL.** The Pair-Programming micro-cycle (Continu
 
 # SAFe Practice — Pair-Programming micro-cycle (Continuous Integration)
 
-A multi-agent micro-cycle (Continuous Integration), Driver ⇄ Navigator — **not** solo work. The **normative spec** is the machine-readable **[workflows/team/pair-programming.workflow.conf.yaml](../workflows/team/pair-programming.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step` / `check-artifact`). Load and follow it; do not restate it here.
+A multi-agent micro-cycle (Continuous Integration), Driver ⇄ Navigator — **not** solo work. The **normative spec** is the machine-readable **[workflows/team/pair-programming.workflow.conf.yaml](../workflows/team/pair-programming.workflow.conf.yaml)** — every step + its `conditions`, consumed by `@scrum-master` and the harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
 Shared model lives in **[scrum-master orchestration core](scrum-master.skill.md)**. The mandatory Navigator CRITIQUE precedes `in-qa`; one commit per unit (trailer + pair attribution); the orchestrator writes no code and **only `@scrum-master` writes `status:`** — committing each execution edge (`ready→in-progress`, `in-progress→in-review`, `in-review→in-qa` on accept / `→in-progress` on reject).
