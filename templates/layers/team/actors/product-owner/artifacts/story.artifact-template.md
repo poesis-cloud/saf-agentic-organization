@@ -12,13 +12,14 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Story Template — `art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.story.md`
+# Story Template — `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.story.md`
 
 Authored by `@product-owner` from a `committed` Feature. Trace runs
-Story → Feature → Epic (there is no PRD tier). Lives at `art/<art-slug>/teams/<team-slug>/team-backlog/<story>/`.
+Story → Feature → Epic (there is no PRD tier). Lives at `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/`.
 
 ```markdown
 ---
+slug: <story-slug>-story
 id: S-101
 title: <Story title>
 status: backlog          # backlog | ready | in-progress | in-review | in-qa | awaiting-pr | done | blocked
@@ -32,14 +33,14 @@ workItemRelations:
 sprint: N
 pi: M
 adrs: []                 # ADR ids the Story depends on
-driver: @developer      # assigned at Iteration Planning
-navigator: @developer   # assigned at Iteration Planning
+driver: '@developer'      # assigned at Iteration Planning
+navigator: '@developer'   # assigned at Iteration Planning
 pairSwaps: []           # log of HUDDLE→SWAP cycles
 estimatePoints: 0
 risk: medium             # low | medium | critical; set by PO before leaving backlog
 complexity: involved     # simple | involved | complex; set by PO before leaving backlog
 owner: SE-Product-Manager
-created: YYYY-MM-DD
+created: "YYYY-MM-DD"
 openItems: []           # clarification + challenge ledger — see orchestrator "Open-item ledger".
                          # Each entry: { id, kind, raised_by, owner, blocking, status, … }; kind: clarification | challenge.
                          # status: open | resolved | withdrawn. A blocking+open entry HALTS the ★ Story Gate (DoR).
@@ -56,7 +57,7 @@ github:                  # filled by portfolio/_sync (GitHub Projects board sync
   issueNumber: null
   issueNodeId: null
   projectItemId: null
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # S-101 — <title>
@@ -85,7 +86,7 @@ Use exactly one sentence in this form:
 - AC2. ...
 
 ## NFR applicability / trace
-Inherit the parent Feature's applicable NFRs from `products/<product-slug>/nfr-list.md`. Record
+Inherit the parent Feature's applicable NFRs from `portfolio/products/<product-slug>/nfr-list.md`. Record
 verification notes for this slice. Do not redefine the product's canonical NFR set. A missing NFR
 is a runway concern (hand off to `@release-train-engineer`); do not invent one here.
 
@@ -132,7 +133,7 @@ One bullet per item, mirroring a frontmatter entry:
 - [ ] Code merged behind Central Supervisor approval (★ PR Gate)
 - [ ] Tests pass (unit + integration)
 - [ ] Coverage maintained
-- [ ] `@quality-engineer` sign-off file exists: `<qa-signoff-slug>.qa-signoff.md`
+- [ ] `@quality-engineer` sign-off file exists: `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.qa-signoff.md`
 - [ ] PO confirms AC met
 - [ ] Docs updated where applicable
 

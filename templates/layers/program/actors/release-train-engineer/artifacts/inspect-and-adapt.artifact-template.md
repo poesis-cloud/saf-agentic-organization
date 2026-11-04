@@ -12,7 +12,7 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Inspect & Adapt Template — `art/<art-slug>/pi-<pi-slug>/inspect-and-adapt.md`
+# Inspect & Adapt Template — `portfolio/art/<art-slug>/pi-<pi-slug>/inspect-and-adapt.md`
 
 Authored by `@release-train-engineer`. One record per ART and PI: `metrics-review` creates it,
 `pi-retrospective` updates it. It never writes pain points: each candidate and each triage
@@ -20,10 +20,11 @@ decision below is applied to one pain point by one `improvement-backlog` workflo
 
 ```markdown
 ---
+slug: <pi-slug>-inspect-and-adapt
 art: <art-slug>
 pi: <pi-slug>
 status: metrics-reviewed  # metrics-reviewed | triaged
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # Inspect & Adapt — <art-slug> PI <pi-slug>

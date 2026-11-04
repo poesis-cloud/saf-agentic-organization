@@ -19,65 +19,15 @@
     "kind": "operability-review",
     "template": "templates/layers/team/actors/operator/artifacts/operability-review.artifact-template.md",
     "pathPatterns": [
-      "art/*/program-backlog/*/*.operability-review.md",
-      "art/*/releases/*/*.operability-review.md",
-      "products/*/architecture-runway.operability-review.md",
-      "products/*/architecture-vision.operability-review.md"
+      "portfolio/art/*/releases/*/*.operability-review.md",
+      "portfolio/art/*/program-backlog/*/*.operability-review.md",
+      "portfolio/products/*/architecture-vision.operability-review.md",
+      "portfolio/products/*/architecture-runway.operability-review.md"
     ],
     "renderOnly": false
   },
-  "required": [
-    "__path",
-    "__kind",
-    "__artifact_id",
-    "__frontmatter_present"
-  ],
+  "required": [],
   "properties": {
-    "__path": {
-      "description": "Workspace-relative path of the artifact file, injected by the harness.",
-      "type": "string",
-      "minLength": 1
-    },
-    "__kind": {
-      "description": "Artifact-kind discriminator injected by the harness; must equal x-artifact.kind.",
-      "const": "operability-review"
-    },
-    "__artifact_id": {
-      "description": "Stable artifact id injected by the harness.",
-      "type": "string",
-      "minLength": 1
-    },
-    "__frontmatter_present": {
-      "description": "Harness assertion that YAML frontmatter was found and parsed.",
-      "type": "boolean"
-    },
-    "__sections": {
-      "description": "Artifact body sections keyed by their `## ` heading (advisory; additionalProperties permitted).",
-      "type": "object",
-      "properties": {
-        "Subject under review": {
-          "description": "Link / id of what is reviewed; restate the scope.",
-          "type": "string"
-        },
-        "Findings": {
-          "description": "Severity-graded findings table.",
-          "type": "string"
-        },
-        "Verdict": {
-          "description": "PASS | CONCERNS | FAIL.",
-          "type": "string"
-        },
-        "Recommendations": {
-          "description": "Remediation guidance for the owner.",
-          "type": "string"
-        }
-      },
-      "additionalProperties": true
-    },
-    "__body": {
-      "description": "Raw Markdown body, injected by the harness.",
-      "type": "string"
-    },
     "title": {
       "description": "Human-readable title.",
       "type": "string",

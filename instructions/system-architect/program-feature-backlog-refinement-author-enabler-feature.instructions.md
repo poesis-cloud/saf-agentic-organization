@@ -20,11 +20,11 @@ name: program-feature-backlog-refinement-author-enabler-feature
 
 The System Architect authors or thickens the Enabler Feature that unblocks the business Feature.
 
-Inputs: the business Feature (just drafted or already existing), Architectural Vision, Architectural Runway, the product NFR register `products/<product-slug>/nfr-list.md`, and the parent Enabler Epic (if any).
+Inputs: the business Feature (just drafted or already existing), Architectural Vision, Architectural Runway, the product NFR register `portfolio/products/<product-slug>/nfr-list.md`, and the parent Enabler Epic (if any).
 Output: the feature-enabler artifact. Name the consuming Feature, the unblocked capability, the validation evidence, and **NFR applicability / trace**.
 
 Fill `## NFR applicability / trace` from the product register. Do not add or rewrite canonical NFRs. A missing NFR is a runway concern, not Enabler AC.
 
 Do not rewrite the business Feature. Do not author ADR, NFR list, or runway — those belong to `architectural-runway-extension`.
 
-Surgical Demand: write or thicken the Enabler only when it is in-scope. If the Demand does not require an Enabler, do not invent one: commit `<feature-slug>.feature-enabler.md` beside the Feature with `status: not-needed`, an `## Overview` stating why no enabler work is needed, and a `stepOutcomes` entry (`outcome: none`). If an Enabler Feature exists but is out of scope on this run, commit it with only a `no-change` entry.
+Surgical Demand: write or thicken the Enabler only when it is in-scope. If the Demand does not require an Enabler, do not invent one: commit `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature-enabler.md` beside the Feature with `status: not-needed`, an `## Enabler intent` section stating why no enabler work is needed, and a `stepOutcomes` entry (`outcome: none`). If an Enabler Feature exists but is out of scope on this run, commit it with only a `no-change` entry.

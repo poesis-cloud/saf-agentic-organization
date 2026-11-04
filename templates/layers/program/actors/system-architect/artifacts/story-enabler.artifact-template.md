@@ -12,7 +12,7 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Enabler Story Template — `art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.story.md`
+# Enabler Story Template — `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.story-enabler.md`
 
 Iteration-scoped backlog contract for **enabler Stories**. Use this template when `type: enabler`.
 An enabler Story is a thin technical slice that advances a parent enabler or business Feature by
@@ -20,6 +20,7 @@ removing a concrete engineering, infrastructure, exploration, or compliance bloc
 
 ```markdown
 ---
+slug: <story-slug>-story-enabler
 id: S-101
 title: <Enabler Story title>
 status: backlog          # backlog | ready | in-progress | in-review | in-qa | awaiting-pr | done | blocked | not-needed
@@ -34,14 +35,14 @@ workItemRelations:
 sprint: N
 pi: M
 adrs: []
-driver: @developer
-navigator: @developer
+driver: '@developer'
+navigator: '@developer'
 pairSwaps: []
 estimatePoints: 0
 risk: medium
 complexity: involved
 owner: SE-Architect
-created: YYYY-MM-DD
+created: "YYYY-MM-DD"
 openItems: []           # clarification + challenge ledger — see orchestrator "Open-item ledger".
                          # Each entry: { id, kind, raised_by, owner, blocking, status, … }; kind: clarification | challenge.
                          # status: open | resolved | withdrawn. A blocking+open entry HALTS the ★ Story Gate (DoR).
@@ -58,7 +59,7 @@ github:
   issueNumber: null
   issueNodeId: null
   projectItemId: null
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # S-101 — <title>
@@ -89,7 +90,7 @@ Use exactly one sentence in this form:
 - AC2. ...
 
 ## NFR applicability / trace
-Inherit the parent Feature's applicable NFRs from `products/<product-slug>/nfr-list.md`. Record
+Inherit the parent Feature's applicable NFRs from `portfolio/products/<product-slug>/nfr-list.md`. Record
 verification notes for this slice. Do not redefine the product's canonical NFR set. A missing NFR
 is a runway concern (hand off to `@release-train-engineer`); do not invent one here.
 
@@ -145,7 +146,7 @@ One bullet per item, mirroring a frontmatter entry:
 - [ ] Code merged behind Central Supervisor approval (★ PR Gate)
 - [ ] Tests pass (unit + integration)
 - [ ] Coverage maintained
-- [ ] `@quality-engineer` sign-off file exists: `<qa-signoff-slug>.qa-signoff.md`
+- [ ] `@quality-engineer` sign-off file exists: `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.qa-signoff.md`
 - [ ] PO confirms AC met
 - [ ] Docs updated where applicable
 

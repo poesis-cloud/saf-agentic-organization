@@ -18,8 +18,9 @@ Authored by `@business-owner` at Strategic Portfolio Review.
 
 ```markdown
 ---
+slug: <review-slug>-portfolio-review
 decision: persevere
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # Portfolio Review Decision

@@ -10,16 +10,22 @@
     "kind": "feature",
     "template": "templates/layers/program/actors/product-manager/artifacts/feature.artifact-template.md",
     "pathPatterns": [
-      "art/*/program-backlog/*/*.feature.md"
+      "portfolio/art/*/program-backlog/*/*.feature.md"
     ],
     "sections": {
       "required": [
-        "Overview"
+        "Description"
       ],
       "optional": [
-        "User Stories",
-        "Acceptance Criteria",
-        "Open Items"
+        "Acceptance criteria",
+        "Benefit hypothesis",
+        "NFR applicability / trace",
+        "Routing classification",
+        "Dependencies",
+        "Work-item relations",
+        "Architecture decision inventory",
+        "Open items",
+        "Story breakdown (filled in step 6 by PO)"
       ],
       "maxDepth": 2,
       "allowUnknown": false
@@ -27,10 +33,6 @@
     "type": "business"
   },
   "required": [
-    "__path",
-    "__kind",
-    "__artifact_id",
-    "__frontmatter_present",
     "status",
     "type",
     "title",
@@ -48,75 +50,6 @@
     "github"
   ],
   "properties": {
-    "__path": {
-      "description": "Workspace-relative path of the artifact file, injected by the orchestration harness (not authored in frontmatter).",
-      "type": "string",
-      "minLength": 1
-    },
-    "__kind": {
-      "description": "Artifact-kind discriminator injected by the harness; must equal x-artifact.kind.",
-      "const": "feature"
-    },
-    "__artifact_id": {
-      "description": "Stable artifact id injected by the harness, derived from the file and frontmatter.",
-      "type": "string",
-      "minLength": 1
-    },
-    "__frontmatter_present": {
-      "description": "Harness assertion that YAML frontmatter was found and parsed; always true for a valid artifact.",
-      "const": true
-    },
-    "__sections": {
-      "description": "Artifact body sections keyed by their `## ` heading \u2014 one property per template section; the value is the raw Markdown under that heading. Authored artifacts may add or omit sections, so this is advisory (additionalProperties is permitted) and no section is individually required.",
-      "type": "object",
-      "properties": {
-        "Description": {
-          "description": "What is this Feature, in one paragraph.",
-          "type": "string"
-        },
-        "Acceptance criteria": {
-          "description": "Use one flat bullet per criterion, labeled `AC1`, `AC2`, `AC3`",
-          "type": "string"
-        },
-        "Benefit hypothesis": {
-          "description": "Why this Feature delivers value (a slice of the parent Epic's outcome hypothesis, or the Feature's own rationale when standalone).",
-          "type": "string"
-        },
-        "NFR applicability / trace": {
-          "description": "List the canonical product NFRs from `products/<product-slug>/nfr-list.md` that apply to this Feature, plus any Feature-specific tightening or derived verification notes. Do not redefine the product's canonical NFR set here. A missing NFR is a runway concern, not Feature AC.",
-          "type": "string"
-        },
-        "Routing classification": {
-          "description": "Risk: low | medium | critical \u2014 consequence of being wrong.",
-          "type": "string"
-        },
-        "Dependencies": {
-          "description": "Other Features, ADRs, external systems. Cross-product coordination is expressed via the shared parent Epic (one Feature per product), never a single cross-product Feature.",
-          "type": "string"
-        },
-        "Work-item relations": {
-          "description": "Use typed work-item relations only when they affect flow, decomposition, or governance.",
-          "type": "string"
-        },
-        "Architecture decision inventory": {
-          "description": "If `structurant: true`, point to the committed architecture inventory artifact that tracks the Feature's decision units, their coverage state, linked ADRs, waivers, and enabler follow-up. If `structurant: false`, set `architectureInventory: null` and omit this section.",
-          "type": "string"
-        },
-        "Open items": {
-          "description": "The human-readable companion to the `openItems:` frontmatter ledger (the [open-item ledger](../../orchestrator/SKILL.md#open-item-ledger)) \u2014 this Feature's **clarifications** (proactive unknowns surfaced by the CE Discovery turn) and **challenges** (reactive findings from peer review), for...",
-          "type": "string"
-        },
-        "Story breakdown (filled in step 6 by PO)": {
-          "description": "`Story breakdown (filled in step 6 by PO)` section of the artifact body.",
-          "type": "string"
-        }
-      },
-      "additionalProperties": true
-    },
-    "__body": {
-      "description": "Raw Markdown body of the artifact (everything after the frontmatter), injected by the harness.",
-      "type": "string"
-    },
     "status": {
       "description": "funnel | refined | arch-pending | ready | committed | in-progress | done | blocked",
       "enum": [

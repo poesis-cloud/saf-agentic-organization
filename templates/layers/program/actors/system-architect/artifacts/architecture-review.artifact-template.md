@@ -12,20 +12,26 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Architecture Review Template — `products/<product-slug>/.../reviews/<subject>-architecture-review.md`
+# Architecture Review Template
 
-Authored by `@system-architect` (or `@enterprise-architect` at the portfolio layer). A pure architecture verdict on a subject that does **not** itself produce an ADR (an ADR-producing review records its decision in the ADR attachments instead). One review per subject per attempt; a `fail` records blocking `openItems`.
+The review sits beside its subject, at one of the paths `conf/workspace.conf.yaml` binds for this kind:
+
+- `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.architecture-review.md`
+- `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.architecture-review.md`
+
+Authored by `@system-architect` (or `@enterprise-architect` at the portfolio layer). A pure architecture verdict on a subject that does **not** itself produce an ADR (an ADR-producing review records its decision in the ADR attachments instead). One review file per subject; a `fail` records blocking `openItems`.
 
 ```markdown
 ---
+slug: <subject-slug>-architecture-review
 id: <subject>-architecture-review
 subject: <artifact-id-or-path under review>
 reviewer: '@system-architect'
 verdict: pass            # pass | concerns | fail
-created: YYYY-MM-DD
+created: "YYYY-MM-DD"
 findings: []
 openItems: []
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # Architecture Review — <subject>
@@ -35,7 +41,7 @@ Link / id. Restate the design, NFR, or runway item under review.
 
 ## NFR applicability
 When the subject is a Feature, Feature-enabler, Story, or Story-enabler: does
-`## NFR applicability / trace` match `products/<product-slug>/nfr-list.md`?
+`## NFR applicability / trace` match `portfolio/products/<product-slug>/nfr-list.md`?
 Record omitted applicable NFRs, invented NFRs, or a missing product register
 (runway, not Feature/Story AC). Do not author the register in this packet.
 
@@ -54,4 +60,4 @@ Remediation guidance, owner, and target.
 ```
 
 ## Lifecycle
-One review per subject per attempt. A `fail` lists blocking `openItems`; the next attempt produces `<subject>-architecture-review-2.md`.
+One review file per subject. A `fail` lists blocking `openItems`; a later review pass updates the same file and appends its own `stepOutcomes` entry.

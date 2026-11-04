@@ -24,8 +24,8 @@ The **body** of the business-Feature authoring handlers in the program/ART flow 
 
 ## Contract
 
-- **Input (read from the blackboard):** the approved Epic `portfolio-backlog/<epic-slug>/<epic-slug>.epic.md` (`status: portfolio-backlog`+) *or* a standalone-Feature mandate; the target product's `products/<product-slug>/product-manifest.yaml`; the business Feature template.
-- **Output (commit to the blackboard):** `art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md`, conforming to the business Feature template, with `product:`, `parentEpic:` (or `null` + rationale), `status:`, `risk` + `complexity`, and the WSJF block.
+- **Input (read from the blackboard):** the approved Epic `portfolio/portfolio-backlog/<epic-slug>/<epic-slug>.epic.md` (`status: portfolio-backlog`+) *or* a standalone-Feature mandate; the target product's `portfolio/products/<product-slug>/product-manifest.yaml`; the business Feature template.
+- **Output (commit to the blackboard):** `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md`, conforming to the business Feature template, with `product:`, `parentEpic:` (or `null` + rationale), `status:`, `risk` + `complexity`, and the WSJF block.
 - **Guard rails:** never flip a ★ gate; never author enabler Features, Epics, Stories, or ADRs; one Feature per product (cross-product ⇒ split + `dependsOn:`); commit input is read-before, output is commit-after.
 - **Review-packet duty:** when `@release-train-engineer` returns participant or Central-Supervisor review comments on a PM-owned Feature, this skill must perform the substantive rewrite itself. Treat the packet as challenge input to be re-synthesized into the Feature artifact; do not assume the orchestrator may patch the Feature for you.
 
@@ -42,7 +42,7 @@ The orchestrator names the handler; pick the row by *the requested transition*:
 
 1. Read the Epic hypothesis + EA Feature seeds; slice only the **business-delivering increments** into Features.
 2. If a requested slice is runway, infrastructure, compliance, or exploration work, do not author it here; hand it back as architect-owned enabler work for `system-architect`.
-3. For each business slice: create `art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md` from the business Feature template; set `product:`, `parentEpic: E-N`, `status: funnel`, and provisional `risk`/`complexity`.
+3. For each business slice: create `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md` from the business Feature template; set `product:`, `parentEpic: E-N`, `status: funnel`, and provisional `risk`/`complexity`.
 4. Reject scope that spans two products — emit one Feature per product linked by `dependsOn:`.
 5. Commit. Control returns to `@release-train-engineer` (it notifies `@value-management-officer`, which runs `epic-transition` for the Epic `→implementing`).
 
@@ -88,4 +88,4 @@ The orchestrator names the handler; pick the row by *the requested transition*:
 
 ## Done = handed back
 
-Output committed + template-valid + AC testable + WSJF components present + `structurant` decided. Record any unresolved unknown as an `openItems` entry (`kind: clarification`) per the [open-item ledger](release-train-engineer.skill.md#open-item-ledger) — blocking ones routed to `@release-train-engineer` (peer-owned → owning hat; value/intent → Central Supervisor), non-blocking ones carried as assumption-with-disclosure; if it is workflow friction, record it in the `friction` note of your step's `stepOutcomes` entry, never as a pain point: only `@release-train-engineer` writes the ART `improvement-backlog` (`art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`), one pain point per `improvement-backlog` run — do not invent scope. **No valid step without artifact:** commit the step's declared artifact whatever the outcome, with one new `stepOutcomes` entry recording the decision (`written`, `revised`, `confirmed`, `no-change` or `none`). Your step outcome is indicative; the committed artifact is the only evidence.
+Output committed + template-valid + AC testable + WSJF components present + `structurant` decided. Record any unresolved unknown as an `openItems` entry (`kind: clarification`) per the [open-item ledger](release-train-engineer.skill.md#open-item-ledger) — blocking ones routed to `@release-train-engineer` (peer-owned → owning hat; value/intent → Central Supervisor), non-blocking ones carried as assumption-with-disclosure; if it is workflow friction, record it in the `friction` note of your step's `stepOutcomes` entry, never as a pain point: only `@release-train-engineer` writes the ART `improvement-backlog` (`portfolio/art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`), one pain point per `improvement-backlog` run — do not invent scope. **No valid step without artifact:** commit the step's declared artifact whatever the outcome, with one new `stepOutcomes` entry recording the decision (`written`, `revised`, `confirmed`, `no-change` or `none`). Your step outcome is indicative; the committed artifact is the only evidence.

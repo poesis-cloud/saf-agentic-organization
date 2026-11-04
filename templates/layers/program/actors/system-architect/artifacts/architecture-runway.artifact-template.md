@@ -12,7 +12,7 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Architectural Runway Register Template — `products/<product-slug>/architecture-runway.md`
+# Architectural Runway Register Template — `portfolio/products/<product-slug>/architecture-runway.md`
 
 The product's **Architectural Runway** register (SAFe) — the runway capabilities, references, and
 enabler work that build technical foundation ahead of business Features. Seeded by the
@@ -27,21 +27,22 @@ enabler work that build technical foundation ahead of business Features. Seeded 
 
 This register tracks both the reference artifact and the backlog realization so PI Planning can
 budget enabler capacity without confusing architecture documentation with enabler backlog units. It
-is a **product singleton** at `products/<product-slug>/architecture-runway.md`, beside the product
-`nfr-list.md`. It is not a Feature-folder artifact.
+is a **product singleton** at `portfolio/products/<product-slug>/architecture-runway.md`, beside the product
+`portfolio/products/<product-slug>/nfr-list.md`. It is not a Feature-folder artifact.
 
 ```markdown
 ---
+slug: <product-slug>-architecture-runway
 product: <slug>
-revised: YYYY-MM-DD
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+revised: "YYYY-MM-DD"
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # <Product> — Architectural Runway
 
 | Runway item | Architecture reference | Realized by enabler Features | enablerType | Consumed by (Features) | Readiness |
 |---|---|---|---|---|---|
-| <capability> | ADR-N; `products/<product-slug>/nfr-list.md` | F-N (`type: enabler`) | architectural | F-AA, F-BB | building |
+| <capability> | ADR-N; `portfolio/products/<product-slug>/nfr-list.md` | F-N (`type: enabler`) | architectural | F-AA, F-BB | building |
 
 enablerType: exploration · architectural · infrastructure · compliance.
 Readiness: building · ready · depleting.

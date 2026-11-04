@@ -12,16 +12,18 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Objectives Template — `art/<art-slug>/pi-<pi-slug>/objectives.md`
+# Objectives Template — `portfolio/art/<art-slug>/pi-<pi-slug>/objectives.md`
 
 Authored by RTE at PI Planning. One file per product per PI.
 
 ```markdown
 ---
+slug: <pi-slug>-objectives
 pi: M
+level: art               # portfolio | art | team
 product: <product-slug>
-start_date: YYYY-MM-DD
-end_date: YYYY-MM-DD
+start_date: "YYYY-MM-DD"
+end_date: "YYYY-MM-DD"
 capacity_points: 0
 committedFeatures:
   - id: F-12
@@ -34,7 +36,7 @@ stretchFeatures:
     title: ...
     plannedBv: 5
     status: refined            # refined | in-progress | done | blocked | cancelled
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # PI-M Objectives — <product>

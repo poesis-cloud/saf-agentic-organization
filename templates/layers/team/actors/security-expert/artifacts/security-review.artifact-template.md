@@ -12,20 +12,26 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Security Review Template — `products/<product-slug>/.../reviews/<subject>-security-review.md`
+# Security Review Template
 
-Authored by `@security-expert`. The security verdict on a subject (a Story, Feature, ADR, runway item, or PR). One review per subject per attempt; a `fail` records blocking `openItems` the owning step must clear.
+The review sits beside its subject, at one of the paths `conf/workspace.conf.yaml` binds for this kind:
+
+- `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.security-review.md`
+- `portfolio/products/<product-slug>/architecture-vision.security-review.md`
+
+Authored by `@security-expert`. The security verdict on a subject (a Story, Feature, ADR, runway item, or PR). One review file per subject; a `fail` records blocking `openItems` the owning step must clear.
 
 ```markdown
 ---
+slug: <subject-slug>-security-review
 id: <subject>-security-review
 subject: <artifact-id-or-path under review>
 reviewer: '@security-expert'
 verdict: pass            # pass | concerns | fail
-created: YYYY-MM-DD
+created: "YYYY-MM-DD"
 findings: []
 openItems: []
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # Security Review — <subject>
@@ -48,4 +54,4 @@ Remediation guidance, owner, and target.
 ```
 
 ## Lifecycle
-One sign-off per subject per attempt. A `fail` lists blocking `openItems`; the next attempt produces `<subject>-security-review-2.md`.
+One review file per subject. A `fail` lists blocking `openItems`; a later review pass updates the same file and appends its own `stepOutcomes` entry.

@@ -20,14 +20,14 @@ description: 'Improvement Backlog — create or update exactly one ART pain poin
 # Improvement Backlog — record one pain point
 
 The Release Train Engineer records **exactly one** pain point per run in
-`art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`.
+`portfolio/art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`.
 
 ## Input
 
 One friction note, named in the dispatch:
 
 - the `friction` note of a step's `stepOutcomes` entry (any artifact, any actor);
-- one row of the PI's Inspect & Adapt record (`art/<art-slug>/pi-<pi-slug>/inspect-and-adapt.md`):
+- one row of the PI's Inspect & Adapt record (`portfolio/art/<art-slug>/pi-<pi-slug>/inspect-and-adapt.md`):
   a **Pain-point candidate** or a **Triage** decision;
 - a program-scope escalation in a team's Iteration Retrospective;
 - friction the Central Supervisor reports.

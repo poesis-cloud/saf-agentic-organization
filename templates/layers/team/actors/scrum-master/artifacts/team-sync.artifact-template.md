@@ -12,15 +12,16 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Team Sync Template — `art/<art-slug>/teams/<team-slug>/daily/<daily-slug>.team-sync.md`
+# Team Sync Template — `portfolio/art/<art-slug>/teams/<team-slug>/daily/<daily-slug>.team-sync.md`
 
 Authored by `@scrum-master`. WIP + blockers only.
 
 ```markdown
 ---
+slug: <daily-slug>-team-sync
 team: <team-slug>
-date: YYYY-MM-DD
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+date: "YYYY-MM-DD"
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # Team Sync

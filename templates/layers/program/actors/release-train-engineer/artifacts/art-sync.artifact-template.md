@@ -12,16 +12,17 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# ART Sync Template — `art/<art-slug>/pi-<pi-slug>/art-sync.md`
+# ART Sync Template — `portfolio/art/<art-slug>/pi-<pi-slug>/art-sync.md`
 
 Authored by `@release-train-engineer`. Reconcile record only.
 
 ```markdown
 ---
+slug: <pi-slug>-art-sync
 art: <art-slug>
 pi: <pi-slug>
 status: open
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # ART Sync

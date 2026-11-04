@@ -20,7 +20,7 @@ name: program-architectural-runway-extension-author-adr
 
 The System Architect records one architectural decision unit. The NFR list from the previous step is a precondition; do not author an ADR against an empty or unstated NFR set.
 
-Inputs: the product nfr-list just written or confirmed (`products/<product-slug>/nfr-list.md`), the existing Feature / Enabler Feature, Architectural Vision, current Architecture Runway, existing ADRs on the Feature folder.
+Inputs: the product nfr-list just written or confirmed (`portfolio/products/<product-slug>/nfr-list.md`), the existing Feature / Enabler Feature, Architectural Vision, current Architecture Runway, existing ADRs on the Feature folder.
 Output: one ADR (one decision).
 
 If the Demand is an ADR on an existing Feature, write that ADR; do not redraft the Feature. If no new decision is required, do not invent one, a review packet or a sibling Feature: commit an ADR whose decision is "no new decision", citing the ADRs that already cover the concern, with `status: accepted` and a `stepOutcomes` entry (`outcome: none`).

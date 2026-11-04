@@ -94,7 +94,10 @@ workflow as a new instance until agreement is enough to present mains at the gat
 | **Main** | The work item or decision the activity exists to produce | Yes, before owner commit | **Yes** |
 | **Challenge / mediation** | Required because 1 step = 1 artifact (reviews, minutes, risks, kanban/manifests) | **No** | **No** |
 
-Owner rewrite absorbs challenge findings. Challengers write no owner content.
+Owner rewrite absorbs challenge findings. Challengers write no owner content. After the
+challenge, every drafted main gets an owner step (one artifact each), so no main is left
+contradicting the rewritten one: in `epic-lean-business-case`, `update-epic` and
+`update-enabler-epic` align the Epic and the Enabler Epic with the rewritten Lean Business Case.
 
 ### 3. Map or hand off
 
@@ -124,7 +127,7 @@ only evidence (see [docs/step-artifacts.md](docs/step-artifacts.md)).
 | `architectural-vision` | Portfolio runway + NFR backbone | `architecture-vision` |
 | `strategic-investment-planning` | Allocate / guardrail ART funding | `budget-allocation` |
 | `strategic-portfolio-review` | Keep / pivot / stop / re-rank | themes, vision, roadmap, `architecture-vision` |
-| `portfolio-sync` | Portfolio snapshot | mediation record only |
+| `portfolio-sync` | Portfolio snapshot; registers ONE product per run | `portfolio-sync`, `portfolio-manifest`, `product-manifest`, `portfolio-kanban` |
 | `epic-transition` | Move ONE Epic (and its enabler) to a new `status:` | `epic`, `epic-enabler` (owner steps), `portfolio-kanban` |
 | `feature-derivation` | Split an approved Epic into ART Features | `feature`, `feature-enabler` |
 | `feature-backlog-refinement` | Write a PI-ready Feature | `feature`, `feature-enabler` |
@@ -158,10 +161,10 @@ no separate relation artifact: the bind lives on existing mains.
 | Artifact | Owns | Operated in | Does not own |
 |---|---|---|---|
 | `architecture-vision` | Cross-product NFR **backbone** | `architectural-vision` draft | Measurable product NFRs |
-| `products/<product-slug>/nfr-list.md` | Canonical product NFRs | `architectural-runway-extension` / `author-nfrs` | Feature AC, Stories, ADRs |
+| `portfolio/products/<product-slug>/nfr-list.md` | Canonical product NFRs | `architectural-runway-extension` / `author-nfrs`, `update-nfrs` | Feature AC, Stories, ADRs |
 | Feature / Feature-enabler | Which NFRs **apply** (optional tightening) | `feature-backlog-refinement` draft + owner rewrite | The canonical set |
 | Story / Story-enabler | Inherit parent Feature applicability; **verify** | `team-backlog-refinement` draft + owner rewrite | The canonical set |
-| ADR | Design that realizes NFRs | `architectural-runway-extension` / `author-adr` | The NFR register |
+| ADR | Design that realizes NFRs | `architectural-runway-extension` / `author-adr`, `update-adr` | The NFR register |
 | `architecture-runway` | Enabler work that paves NFRs / ADRs | `architectural-runway-extension` rewrite | The NFR text |
 | `architecture-review` / `security-review` | Missed or invented applicability | Feature and Story refinement challenges | The register or the work item |
 
@@ -277,7 +280,8 @@ and open a new session. The orchestrators are `value-management-officer`,
 `release-train-engineer`, and `scrum-master`: pick one in the app's agent picker, or run
 `copilot --agent poesis-saf-agentic-organization:value-management-officer` (plugin agents are
 namespaced by the plugin name). Harness requests need no permission rule: the
-harness hook answers them itself (see below).
+harness hook answers them itself (see below). One orchestrator session drives one workflow
+instance: after `no-next-step`, start a new session for the next run (e.g. the next product).
 
 ### VS Code Copilot Chat
 

@@ -12,12 +12,13 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Pain Point Template — `art/<art-slug>/improvement-backlog/<pp-slug>/<pain-point-slug>.pain-point.md`
+# Pain Point Template — `portfolio/art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`
 
 Authored by `@release-train-engineer` (or any agent observing systemic friction). A pain point is a raw, append-only input to the Inspect & Adapt problem-solving workshop. It is triaged there and either resolved as a workflow improvement or converted into a product improvement (Feature / Story).
 
 ```markdown
 ---
+slug: <pain-point-slug>-pain-point
 id: PP-YYYYMMDD-NN
 title: <short symptom statement>
 status: open                 # open | triaged | resolved | converted | accepted | duplicate
@@ -31,9 +32,9 @@ targetArtifact: null        # file/artifact for workflow improvements
 derivedFeatures: []         # filled when resolution = product-improvement
 derivedStories: []          # filled when resolution = product-improvement
 relatedPainPoints: []
-owner: @release-train-engineer
-created: YYYY-MM-DD
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+owner: '@release-train-engineer'
+created: "YYYY-MM-DD"
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # PP-YYYYMMDD-NN — <title>

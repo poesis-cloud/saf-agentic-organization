@@ -12,7 +12,7 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Roadmap Template — `products/<product-slug>/product-roadmap.md`
+# Roadmap Template — `portfolio/products/<product-slug>/product-roadmap.md`
 
 The product **Roadmap** (SAFe) — committed + forecast Features across PIs / milestones. Authored by
 `@product-manager`·PM during Continuous Exploration; refined at PI Planning. Product-scoped; a
@@ -20,9 +20,10 @@ forecast, not a contract.
 
 ```markdown
 ---
+slug: <product-slug>-product-roadmap
 product: <slug>
-revised: YYYY-MM-DD
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+revised: "YYYY-MM-DD"
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # <Product> — Roadmap
@@ -41,5 +42,5 @@ stepOutcomes: []          # every step that commits this file appends one entry:
 Themes / capabilities not yet broken into Features.
 
 ## Milestones / dependencies
-Fixed dates, external deps, enabler-readiness gates (→ `architecture-runway.md`).
+Fixed dates, external deps, enabler-readiness gates (→ `portfolio/products/<product-slug>/architecture-runway.md`).
 ```

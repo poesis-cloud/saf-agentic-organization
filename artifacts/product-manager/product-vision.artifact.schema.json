@@ -10,66 +10,12 @@
     "kind": "product-vision",
     "template": "templates/layers/program/actors/product-manager/artifacts/product-vision.artifact-template.md",
     "pathPatterns": [
-      "products/*/product-vision.md"
+      "portfolio/products/*/product-vision.md"
     ],
     "renderOnly": false
   },
-  "required": [
-    "__path",
-    "__kind",
-    "__artifact_id",
-    "__frontmatter_present"
-  ],
+  "required": [],
   "properties": {
-    "__path": {
-      "description": "Workspace-relative path of the artifact file, injected by the orchestration harness (not authored in frontmatter).",
-      "type": "string",
-      "minLength": 1
-    },
-    "__kind": {
-      "description": "Artifact-kind discriminator injected by the harness; must equal x-artifact.kind.",
-      "const": "product-vision"
-    },
-    "__artifact_id": {
-      "description": "Stable artifact id injected by the harness, derived from the file and frontmatter.",
-      "type": "string",
-      "minLength": 1
-    },
-    "__frontmatter_present": {
-      "description": "Harness assertion that YAML frontmatter was found and parsed; always true for a valid artifact.",
-      "type": "boolean"
-    },
-    "__sections": {
-      "description": "Artifact body sections keyed by their `## ` heading \u2014 one property per template section; the value is the raw Markdown under that heading. Authored artifacts may add or omit sections, so this is advisory (additionalProperties is permitted) and no section is individually required.",
-      "type": "object",
-      "properties": {
-        "Vision statement": {
-          "description": "For <customers> who <need>, <product> is a <category> that <value>; unlike <alt>, <differentiator>.",
-          "type": "string"
-        },
-        "Target customers & jobs-to-be-done": {
-          "description": "...",
-          "type": "string"
-        },
-        "Key differentiators": {
-          "description": "...",
-          "type": "string"
-        },
-        "Strategic themes served": {
-          "description": "Links to `portfolio/strategic-themes.md`.",
-          "type": "string"
-        },
-        "NFR + runway anchors": {
-          "description": "Pointers to `products/<product-slug>/nfr-list.md` and `products/<product-slug>/architecture-runway.md` that constrain the Vision.",
-          "type": "string"
-        }
-      },
-      "additionalProperties": true
-    },
-    "__body": {
-      "description": "Raw Markdown body of the artifact (everything after the frontmatter), injected by the harness.",
-      "type": "string"
-    },
     "title": {
       "description": "Human-readable title of the artifact.",
       "type": "string",

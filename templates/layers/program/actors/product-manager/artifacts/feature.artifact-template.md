@@ -12,15 +12,16 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Feature Template — `art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md`
+# Feature Template — `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md`
 
 Authored by `@product-manager` (PM hat). A Feature optionally rolls up to a portfolio **Epic**
 (`parentEpic: E-N`); there is **no PRD tier** — the defining intent lives in the Epic (or, for
 standalone engineering/operability Features, in the Feature itself). Lives at
-`art/<art-slug>/program-backlog/<feature>/`.
+`portfolio/art/<art-slug>/program-backlog/<feature-slug>/`.
 
 ```markdown
 ---
+slug: <feature-slug>-feature
 id: F-12
 title: <Feature title>
 status: funnel           # funnel | refined | arch-pending | ready | committed | in-progress | done | blocked
@@ -46,7 +47,7 @@ architectureInventory: null   # required when structurant=true;
 adrs: []                 # ADR ids referenced; may contain multiple decisions for one structurant Feature
 pi: M                    # set on transition to `committed`
 owner: SE-Product-Manager
-created: YYYY-MM-DD
+created: "YYYY-MM-DD"
 openItems: []           # clarification + challenge ledger — see orchestrator "Open-item ledger".
                          # Each entry: { id, kind, raised_by, owner, blocking, status, … }; kind: clarification | challenge.
                          # status: open | resolved | withdrawn. A blocking+open entry HALTS the ★ Feature/Architecture Gate.
@@ -63,7 +64,7 @@ github:                  # filled by portfolio/_sync (GitHub Projects board sync
   issueNumber: null
   issueNodeId: null
   projectItemId: null
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # F-12 — <title>
@@ -94,7 +95,7 @@ Use a short paragraph or 2-3 bullets in this form:
 - Evidence: <how the value will be observed>
 
 ## NFR applicability / trace
-List the canonical product NFRs from `products/<product-slug>/nfr-list.md` that apply to this Feature,
+List the canonical product NFRs from `portfolio/products/<product-slug>/nfr-list.md` that apply to this Feature,
 plus any Feature-specific tightening or derived verification notes. Do not redefine the product's
 canonical NFR set here. A missing NFR is a runway concern, not Feature AC.
 

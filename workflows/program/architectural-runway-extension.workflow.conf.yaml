@@ -16,11 +16,13 @@ slug: architectural-runway-extension
 description: >
   Purpose: extend ART architectural runway. Orchestrator: Release
   Train Engineer. In-scope mains: nfr-list, adr, architecture-runway.
-  nfr-list is the product singleton at products/<product-slug>/nfr-list.md,
+  nfr-list is the product singleton at portfolio/products/<product-slug>/nfr-list.md,
   not a Feature-folder file. It is a precondition for ADR production.
   Same workflow for ADR needed, new or changed product NFR, runway gap,
   structurant architecture. Challenges of that packet: security,
-  operability, feasibility (not evaluated). Evaluate: those mains; KO
+  operability, feasibility (not evaluated). Owner updates: the System
+  Architect then updates the NFR list and the ADR, and rewrites the runway
+  register. Evaluate: those mains; KO
   reiterates the workflow (new instance; that main's owner step absorbs the KO). Late-seeded Enabler Feature forces
   Feature refinement replay before the Architecture Gate is restaged.
   Refuse Feature AC/WSJF shaping (that is feature-backlog-refinement).
@@ -124,8 +126,58 @@ steps:
     kind: precondition
     step: author-adr
   instructions: program-feature-backlog-refinement-challenger-writes-no-owner-content
+- slug: update-nfrs
+  description: Owner update — System Architect absorbs the challenge findings into the product NFR list.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: system-architect
+  artifact: nfr-list
+  conditions:
+  - slug: after-challenge-security
+    kind: precondition
+    step: challenge-security
+  - slug: after-challenge-operability
+    kind: precondition
+    step: challenge-operability
+  - slug: after-challenge-feasibility
+    kind: precondition
+    step: challenge-feasibility
+  instructions: program-architectural-runway-extension-update-nfrs
+- slug: update-adr
+  description: Owner update — System Architect absorbs the challenge findings into the ADR this run authored.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: system-architect
+  artifact: adr
+  conditions:
+  - slug: after-challenge-security
+    kind: precondition
+    step: challenge-security
+  - slug: after-challenge-operability
+    kind: precondition
+    step: challenge-operability
+  - slug: after-challenge-feasibility
+    kind: precondition
+    step: challenge-feasibility
+  instructions: program-architectural-runway-extension-update-adr
 - slug: owner-rewrite
-  description: Owner rewrite — System Architect commits Architecture Runway after the three challenge packets.
+  description: Owner rewrite — System Architect commits Architecture Runway after the three challenge packets and the NFR / ADR updates.
   capabilities:
     deep-reasoning: 9
     coding: 0
@@ -139,13 +191,10 @@ steps:
   actor: system-architect
   artifact: architecture-runway
   conditions:
-  - slug: after-challenge-security
+  - slug: after-update-nfrs
     kind: precondition
-    step: challenge-security
-  - slug: after-challenge-operability
+    step: update-nfrs
+  - slug: after-update-adr
     kind: precondition
-    step: challenge-operability
-  - slug: after-challenge-feasibility
-    kind: precondition
-    step: challenge-feasibility
+    step: update-adr
   instructions: program-architectural-runway-extension-rewrite-architecture-runway

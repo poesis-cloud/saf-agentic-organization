@@ -25,7 +25,7 @@ An **advisory + implementation body** on the bench (see the *bench* in [scrum-ma
 ## Contract
 
 - **Input (read):** the controlling Story / Feature / enabler and the narrow code path that actually implements the behavior; the [feasibility-review template](artifacts/feasibility-review.artifact-template.md) when authoring a review.
-- **Output (commit):** for refinement — `<subject>-feasibility-review.md` (template-valid) recording verdict + findings + `openItems`; for execution — the minimal implementation diff plus focused validation evidence (tests / builds).
+- **Output (commit):** for refinement — the subject's feasibility review beside it (template-valid; e.g. `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feasibility-review.md`) recording verdict + findings + `openItems`; for execution — the minimal implementation diff plus focused validation evidence (tests / builds).
 - **Guard rails:** start from the smallest code path controlling the behavior; keep changes minimal and testable; never widen scope for adjacent cleanup; never self-advance Story / Feature / gate status; hand architecture or backlog problems back instead of burying them in code.
 
 ## Procedure
@@ -38,7 +38,7 @@ Restate the subject scope, proposed approach, and dependencies. Record technical
 - As `Navigator`: critique the diff against the Story, challenge correctness and scope, accept or reject with reasons. Expect security challenge when trust boundaries are touched.
 
 ## Done = handed back
-Output committed + template-valid (for a review) or integrated + validated (for a diff); every unresolved unknown recorded as an `openItems` entry per the [open-item ledger](../scrum-master/scrum-master.skill.md#open-item-ledger) and routed to the dispatching orchestrator; workflow friction recorded in the `friction` note of your step's `stepOutcomes` entry, never as a pain point: only `@release-train-engineer` writes the ART `improvement-backlog` (`art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`), one pain point per `improvement-backlog` run. **No valid step without artifact:** commit the step's declared artifact whatever the outcome, with one new `stepOutcomes` entry recording the decision (`written`, `revised`, `confirmed`, `no-change` or `none`). Your step outcome is indicative; the committed artifact is the only evidence.
+Output committed + template-valid (for a review) or integrated + validated (for a diff); every unresolved unknown recorded as an `openItems` entry per the [open-item ledger](../scrum-master/scrum-master.skill.md#open-item-ledger) and routed to the dispatching orchestrator; workflow friction recorded in the `friction` note of your step's `stepOutcomes` entry, never as a pain point: only `@release-train-engineer` writes the ART `improvement-backlog` (`portfolio/art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`), one pain point per `improvement-backlog` run. **No valid step without artifact:** commit the step's declared artifact whatever the outcome, with one new `stepOutcomes` entry recording the decision (`written`, `revised`, `confirmed`, `no-change` or `none`). Your step outcome is indicative; the committed artifact is the only evidence.
 
 ## Anti-patterns
 

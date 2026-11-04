@@ -8,45 +8,14 @@
   "x-artifact": {
     "id": "portfolio-roadmap",
     "kind": "portfolio-roadmap",
-    "template": "templates/layers/portfolio/actors/value-management-officer/artifacts/portfolio-roadmap.artifact-template.md",
+    "template": "templates/layers/portfolio/actors/business-owner/artifacts/portfolio-roadmap.artifact-template.md",
     "pathPatterns": [
-      "portfolio-roadmap.md"
+      "portfolio/portfolio-roadmap.md"
     ],
     "renderOnly": false
   },
-  "required": [
-    "__path",
-    "__kind",
-    "__artifact_id",
-    "__frontmatter_present"
-  ],
+  "required": [],
   "properties": {
-    "__path": {
-      "description": "Workspace-relative path",
-      "type": "string",
-      "minLength": 1
-    },
-    "__kind": {
-      "description": "Artifact-kind discriminator",
-      "const": "portfolio-roadmap"
-    },
-    "__artifact_id": {
-      "description": "Stable artifact id",
-      "type": "string",
-      "minLength": 1
-    },
-    "__frontmatter_present": {
-      "description": "Harness assertion",
-      "type": "boolean"
-    },
-    "__sections": {
-      "type": "object",
-      "additionalProperties": true
-    },
-    "__body": {
-      "description": "Raw Markdown body",
-      "type": "string"
-    },
     "title": {
       "description": "Human-readable title",
       "type": "string",

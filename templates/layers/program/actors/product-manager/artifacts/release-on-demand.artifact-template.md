@@ -12,16 +12,17 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Release on Demand Template — `art/<art-slug>/releases/<release-slug>/<release-slug>.release-on-demand.md`
+# Release on Demand Template — `portfolio/art/<art-slug>/releases/<release-slug>/<release-slug>.release-on-demand.md`
 
 Authored by `@product-manager`. Business release decision, decoupled from the PI and iteration cadences.
 
 ```markdown
 ---
+slug: <release-slug>-release-on-demand
 art: <art-slug>
 release: <release-slug>
 status: staged
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # Release on Demand

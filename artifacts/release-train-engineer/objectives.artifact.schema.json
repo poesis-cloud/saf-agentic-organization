@@ -10,38 +10,14 @@
     "kind": "objectives",
     "template": "templates/layers/program/actors/release-train-engineer/artifacts/objectives.artifact-template.md",
     "pathPatterns": [
-      "portfolio-backlog/pi-*/objectives.md",
-      "art/*/pi-*/objectives.md",
-      "art/*/teams/*/pi-*/objectives.md"
+      "portfolio/art/*/pi-*/objectives.md"
     ],
     "renderOnly": false
   },
   "required": [
-    "__path",
-    "__kind",
-    "__artifact_id",
-    "__frontmatter_present",
     "level"
   ],
   "properties": {
-    "__path": {
-      "description": "Workspace-relative path of the artifact file, injected by the orchestration harness (not authored in frontmatter).",
-      "type": "string",
-      "minLength": 1
-    },
-    "__kind": {
-      "description": "Artifact-kind discriminator injected by the harness; must equal x-artifact.kind.",
-      "const": "objectives"
-    },
-    "__artifact_id": {
-      "description": "Stable artifact id injected by the harness, derived from the file and frontmatter.",
-      "type": "string",
-      "minLength": 1
-    },
-    "__frontmatter_present": {
-      "description": "Harness assertion that YAML frontmatter was found and parsed; always true for a valid artifact.",
-      "type": "boolean"
-    },
     "level": {
       "description": "PI Objectives exist at three SAFe levels for the same PI cadence: portfolio (Portfolio PI Objectives), art (ART/Program PI Objectives), team (Team PI Objectives). A 'precede' artifact: it frames a Program Increment, not a specific epic/feature/story.",
       "enum": [
@@ -49,37 +25,6 @@
         "art",
         "team"
       ]
-    },
-    "__sections": {
-      "description": "Artifact body sections keyed by their `## ` heading \u2014 one property per template section; the value is the raw Markdown under that heading. Authored artifacts may add or omit sections, so this is advisory (additionalProperties is permitted) and no section is individually required.",
-      "type": "object",
-      "properties": {
-        "PI theme": {
-          "description": "One sentence framing what this PI delivers.",
-          "type": "string"
-        },
-        "Committed Features (with business value 1\u201310, set by Central Supervisor)": {
-          "description": "`Committed Features (with business value 1\u201310, set by Central Supervisor)` section of the artifact body.",
-          "type": "string"
-        },
-        "Stretch Features": {
-          "description": "`Stretch Features` section of the artifact body.",
-          "type": "string"
-        },
-        "Cross-product dependencies": {
-          "description": "List Features in other products that this PI depends on (`<other-slug>/F-N`).",
-          "type": "string"
-        },
-        "Milestones": {
-          "description": "M+0 weeks",
-          "type": "string"
-        }
-      },
-      "additionalProperties": true
-    },
-    "__body": {
-      "description": "Raw Markdown body of the artifact (everything after the frontmatter), injected by the harness.",
-      "type": "string"
     },
     "title": {
       "description": "Human-readable title of the artifact.",

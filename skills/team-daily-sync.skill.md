@@ -1,7 +1,7 @@
 ---
 name: daily-sync
 user-invocable: false
-description: '**SAFe CEREMONY SKILL.** The Daily Sync playbook loaded by `@scrum-master` per Story (after each Story transition). USE FOR: walking the Team Kanban; surfacing + removing blockers (Story `blocked`/unblock); coaching the Driver/Navigator pair; enforcing WIP limits; writing `daily-DD.md` + updating `progress.md`. DO NOT USE FOR: status changes across a ★ gate; authoring artifacts; the retro (use `retrospective`). Loaded by `@scrum-master` before facilitating.'
+description: '**SAFe CEREMONY SKILL.** The Daily Sync playbook loaded by `@scrum-master` per Story (after each Story transition). USE FOR: walking the Team Kanban; surfacing + removing blockers (Story `blocked`/unblock); coaching the Driver/Navigator pair; enforcing WIP limits; writing the daily sync record `portfolio/art/<art-slug>/teams/<team-slug>/daily/<daily-slug>.team-sync.md`. DO NOT USE FOR: status changes across a ★ gate; authoring artifacts; the retro (use `retrospective`). Loaded by `@scrum-master` before facilitating.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors

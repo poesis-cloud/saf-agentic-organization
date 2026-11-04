@@ -12,7 +12,7 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# NFR Register Template — `products/<product-slug>/nfr-list.md`
+# NFR Register Template — `portfolio/products/<product-slug>/nfr-list.md`
 
 The product **Nonfunctional Requirements** register (SAFe NFRs / quality attributes). Seeded from
 the **Architectural Vision** NFR backbone (`architecture-vision`), maintained by
@@ -20,7 +20,7 @@ the **Architectural Vision** NFR backbone (`architecture-vision`), maintained by
 on Features and Stories, **verified** at Story DoD, Verification & Sign-off, and the Demo Gate.
 Compliance or architecture gaps may spawn **enabler** work.
 
-This file is a **product singleton**, same grain as `architecture-runway.md`. It is not a
+This file is a **product singleton**, same grain as `portfolio/products/<product-slug>/architecture-runway.md`. It is not a
 Feature-folder artifact. Features and Stories **trace** which NFRs apply; they never redefine the
 canonical set.
 
@@ -35,9 +35,10 @@ canonical set.
 
 ```markdown
 ---
+slug: <product-slug>-nfr-list
 product: <slug>
-revised: YYYY-MM-DD
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+revised: "YYYY-MM-DD"
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # <Product> — NFR Register

@@ -12,7 +12,7 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Epic Template — `portfolio-backlog/<epic-slug>/<epic-slug>.epic.md`
+# Epic Template — `portfolio/portfolio-backlog/<epic-slug>/<epic-slug>.epic.md`
 
 The portfolio-level artifact. Authored by the **Business Owner** hat (you) with the
 **Enterprise Architect** hat for the architectural runway, and refined with `@business-owner`
@@ -25,14 +25,15 @@ hypothesis, leading indicators) that a PRD used to hold, and it cascades to Feat
 
 ```markdown
 ---
+slug: <epic-slug>-epic
 id: E-1
 title: <Epic title — a large outcome spanning products/capabilities>
 status: funnel            # funnel | reviewing | analyzing | portfolio-backlog | implementing | done | blocked
 type: business
-strategic_theme: <theme-id or name>   # see strategic-themes.artifact-template.md
+strategicTheme: <theme-id or name>   # see strategic-themes.artifact-template.md
 businessOwner: central-supervisor    # the BO-hat approver (you)
 enterpriseArchitect: central-supervisor  # the EA-hat owner of the runway (you)
-products: []             # product slugs this Epic spans (>=1); cross-product is allowed HERE only
+products: [<product-slug>]             # product slugs this Epic spans (>=1); cross-product is allowed HERE only
 workItemRelations:
   dependsOn: []         # hard prerequisite Epics that must advance/land before this Epic can realize its MVP
   enables: []            # Epic/Feature ids this Epic intentionally makes possible or materially easier
@@ -47,7 +48,7 @@ wsjf:
 mvpFeatures: []         # Feature ids that constitute the MVP (the pivot/persevere test)
 risk: medium             # low | medium | critical
 complexity: complex      # simple | involved | complex
-created: YYYY-MM-DD
+created: "YYYY-MM-DD"
 approved: null           # set to YYYY-MM-DD on ★ Epic Gate (portfolio-backlog)
 openItems: []           # clarification + challenge ledger — see orchestrator "Open-item ledger".
                          # Each entry: { id, kind, raised_by, owner, blocking, status, … }; kind: clarification | challenge.
@@ -65,7 +66,7 @@ github:                  # filled by portfolio/_sync (Portfolio Project); null w
   issueNumber: null
   issueNodeId: null
   projectItemId: null
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # E-1 — <title>

@@ -10,45 +10,14 @@
     "kind": "art-manifest",
     "template": "templates/layers/program/actors/release-train-engineer/artifacts/art-manifest.artifact-template.md",
     "pathPatterns": [
-      "art/*/art-manifest.yaml"
+      "portfolio/art/*/art-manifest.yaml"
     ],
     "renderOnly": false
   },
   "required": [
-    "__path",
-    "__kind",
-    "__artifact_id",
-    "__frontmatter_present",
     "title"
   ],
   "properties": {
-    "__path": {
-      "description": "Workspace-relative path of the artifact file, injected by the orchestration harness.",
-      "type": "string",
-      "minLength": 1
-    },
-    "__kind": {
-      "description": "Artifact-kind discriminator injected by the harness; must equal x-artifact.kind.",
-      "const": "art-manifest"
-    },
-    "__artifact_id": {
-      "description": "Stable artifact id injected by the harness, derived from the file and frontmatter.",
-      "type": "string",
-      "minLength": 1
-    },
-    "__frontmatter_present": {
-      "description": "Harness assertion that YAML frontmatter was found and parsed.",
-      "type": "boolean"
-    },
-    "__sections": {
-      "description": "Artifact body sections keyed by their `## ` heading.",
-      "type": "object",
-      "additionalProperties": true
-    },
-    "__body": {
-      "description": "Raw Markdown body of the artifact, injected by the harness.",
-      "type": "string"
-    },
     "title": {
       "description": "Human-readable title of the ART.",
       "type": "string",

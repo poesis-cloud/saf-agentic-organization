@@ -19,7 +19,7 @@ name: program-architectural-runway-extension-author-nfrs
 # Architectural Runway Extension — author NFR list
 
 The System Architect records or thickens the **product** Nonfunctional Requirements register
-(`products/<product-slug>/nfr-list.md`) **before** any ADR is written. NFRs are enduring product
+(`portfolio/products/<product-slug>/nfr-list.md`) **before** any ADR is written. NFRs are enduring product
 constraints and a precondition for ADR production. This step does not write a Feature-folder list.
 
 Inputs: Architectural Vision NFR backbone, existing product `nfr-list` (if any), current Architecture

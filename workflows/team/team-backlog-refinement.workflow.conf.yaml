@@ -19,7 +19,9 @@ description: >
   Story-derivation ceremony). Orchestrator: Scrum Master. In-scope mains:
   story, story-enabler. Same workflow for new Story, bug, spike, debt slice,
   thicken AC, split. Challenges of those mains: feasibility, UX,
-  architecture-review (SA challenge, not an ADR). Evaluate: those mains; KO
+  architecture-review (SA challenge, not an ADR). Owner rewrites: the
+  Product Owner rewrites the Story and the System Architect the Enabler
+  Story. Evaluate: those mains; KO
   reiterates the workflow (new instance; that main's owner step absorbs the KO). Refuse Feature/Epic grain. Refuse ADR
   and the product NFR register (hand off to RTE
   architectural-runway-extension). Stories inherit NFR applicability from
@@ -153,3 +155,28 @@ steps:
     kind: precondition
     step: challenge-architecture
   instructions: team-backlog-refinement-owner-rewrites-story
+- slug: owner-rewrite-enabler
+  description: Owner rewrite — System Architect commits the Enabler Story after the challenge packets.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: system-architect
+  artifact: story-enabler
+  conditions:
+  - slug: after-challenge-feasibility
+    kind: precondition
+    step: challenge-feasibility
+  - slug: after-challenge-ux
+    kind: precondition
+    step: challenge-ux
+  - slug: after-challenge-architecture
+    kind: precondition
+    step: challenge-architecture
+  instructions: team-backlog-refinement-owner-rewrites-story-enabler

@@ -12,20 +12,26 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# UX Review Template — `products/<product-slug>/.../reviews/<subject>-ux-review.md`
+# UX Review Template
 
-Authored by `@ux-designer`. The UX/accessibility verdict on a subject (a Feature, Story, or user-facing flow) — user journeys, interaction affordances, and WCAG 2.1 AA accessibility. One review per subject per attempt; a `fail` records blocking `openItems`.
+The review sits beside its subject, at one of the paths `conf/workspace.conf.yaml` binds for this kind:
+
+- `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.ux-review.md`
+- `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.ux-review.md`
+
+Authored by `@ux-designer`. The UX/accessibility verdict on a subject (a Feature, Story, or user-facing flow) — user journeys, interaction affordances, and WCAG 2.1 AA accessibility. One review file per subject; a `fail` records blocking `openItems`.
 
 ```markdown
 ---
+slug: <subject-slug>-ux-review
 id: <subject>-ux-review
 subject: <artifact-id-or-path under review>
 reviewer: '@ux-designer'
 verdict: pass            # pass | concerns | fail
-created: YYYY-MM-DD
+created: "YYYY-MM-DD"
 findings: []
 openItems: []
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # UX Review — <subject>
@@ -48,4 +54,4 @@ Remediation guidance, owner, and target.
 ```
 
 ## Lifecycle
-One review per subject per attempt. A `fail` lists blocking `openItems`; the next attempt produces `<subject>-ux-review-2.md`.
+One review file per subject. A `fail` lists blocking `openItems`; a later review pass updates the same file and appends its own `stepOutcomes` entry.
