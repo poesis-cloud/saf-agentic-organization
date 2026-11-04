@@ -20,14 +20,19 @@ Rendered by `builds/github-copilot-cli`; it binds the host-agnostic prose above 
   `agent_type` set to the step's `actor` exactly — one of {{AGENT_IDS}} (no `@`). Dispatch
   synchronously: background mode is denied for governed steps. Pass the model the harness resolved
   (`resolve-step-model`) as the `task` `model` argument, verbatim; never pick, omit, or hardcode one.
-- **Harness commands (orchestrators only).** Run exactly one plain command through the shell tool
-  (`bash` on Linux/macOS, `powershell` on Windows), synchronously:
-  `[&] <python | py -3 | interpreter full path> <installed harness.py> resolve-step --workflow-slug <slug>`
-  or the same with `resolve-step-model`. Take the interpreter and `harness.py` path from the
-  harness context injected when the session opened. Nothing else is allowed: no chaining (`;`,
-  `&&`, `||`, `|`), no redirection, no `cd` or environment prefix, no other harness function, and
-  never `--session-id` / `--parent-session-id`. The hooks stamp the session and deny any other
-  form.
+- **Asking the harness (orchestrators only).** Run ONE plain command, alone in its tool call:
+  `& <venv python> <harness.py> resolve-step --workflow-slug <workflow-slug>` or
+  `& <venv python> <harness.py> resolve-step-model` on Windows (`powershell`), the same without
+  the leading `&` on Linux/macOS (`bash`). `python`, `python3` or `py -3` are also accepted as the
+  interpreter; take the paths from the harness context injected at session open, unquoted. Never
+  add `--session-id` / `--parent-session-id`, `$env:` or other variable assignments, `;` / `&&` /
+  `|`, or redirection.
+- **Reading the harness answer.** Your shell does NOT run this command. The harness hook runs it
+  for your session and returns its JSON report as the tool response, shown as a hook denial whose
+  reason starts with `SAFe agentic harness RESULT (<function>)`. That is the successful answer,
+  not an error: act on the report and do not re-issue the command. Only a reason starting with
+  `SAFe agentic harness REJECTED` means the request was refused: fix the named problem, using the
+  accepted line it gives.
 - **Writing artifacts.** Write every file with `create` / `edit`, never through the shell
   (`echo >`, `Set-Content`, `Out-File`, heredocs, scripts). The harness authorizes and
   schema-checks only file-tool writes, and reverts an invalid one.

@@ -47,10 +47,16 @@ checks that the frontmatter still parses.
 - **Dispatch.** Orchestrators dispatch with `task`, `agent_type` = the step's `actor` slug,
   synchronously, passing the model `resolve-step-model` returned as `model`. The orchestrator
   skills name the host's dispatch tool generically; the binding pins it for this host.
-- **Harness commands.** The adapter admits exactly one plain command,
-  `[&] <python | py -3 | full interpreter path> <installed harness.py> resolve-step|resolve-step-model [--flags]`,
-  with no chaining and no `--session-id`, and rewrites it into the attributed call. The
-  orchestrator skills and the binding state that form verbatim.
+- **Harness requests.** An orchestrator asks with ONE plain command, alone in its tool call:
+  `& <venv python> <harness.py> resolve-step --workflow-slug <workflow-slug>` or
+  `… resolve-step-model` (Linux/macOS: no leading `&`; `python`, `python3`, `py -3` also accepted;
+  paths unquoted; never `--session-id`, `$env:`, `;`/`&&`/`|`, or redirection). The adapter never
+  edits the command and the shell never runs it: the `preToolUse` hook runs the function for the
+  host-observed session and returns the JSON report as a hook denial whose reason starts with
+  `SAFe agentic harness RESULT (<function>)`. That is the successful answer, so the agent acts on
+  it and does not re-issue the command. Only `SAFe agentic harness REJECTED` means refused, with
+  the accepted line. No permission rule, `setx`, or `$env:` setting is needed. The orchestrator
+  skills and the binding state this verbatim, and a test enforces the command form.
 - **Artifact writes.** Only `create` / `edit` writes pass through the harness authorization and
   artifact checks, so the binding and the orchestrator skills forbid writing files through the
   shell, and every dispatch restates the rule to the actor.

@@ -263,7 +263,8 @@ writes them under `~/.copilot/hooks/`. `--hook-style shell` writes `powershell`/
 strings instead of `exec` entries. The plugin loads live, so after a re-render re-run steps 1–2
 and open a new session. The orchestrators are `value-management-officer`,
 `release-train-engineer`, and `scrum-master`: pick one in the app's agent picker, or run
-`copilot --agent value-management-officer`.
+`copilot --agent value-management-officer`. Harness requests need no permission rule: the
+harness hook answers them itself (see below).
 
 ### VS Code Copilot Chat
 
@@ -292,10 +293,13 @@ python harness.py <function> --session-id <id> [--parent-session-id <id>] [funct
 ```
 
 The host's hooks call the session, load, and check functions on lifecycle events. Orchestrators
-run only one plain shell command,
-`[&] <python | py -3 | full interpreter path> <installed harness.py> resolve-step --workflow-slug <slug>`
-(or `resolve-step-model`): no chaining and no `--session-id`, because the hooks stamp the session.
-Agents write artifacts with the host's file tools (`create` / `edit`), never through the shell,
+ask the harness with ONE plain command, alone in its tool call:
+`& <venv python> <harness.py> resolve-step --workflow-slug <workflow-slug>` or
+`& <venv python> <harness.py> resolve-step-model` (Linux/macOS: without the leading `&`), never
+with `--session-id`, `$env:`, chaining, or redirection. In the GitHub Copilot app / Copilot CLI
+the shell does not run it: the harness hook runs it for the agent's session and returns the JSON
+report as a hook denial whose reason starts with `SAFe agentic harness RESULT (<function>)` — the
+successful answer. Only `SAFe agentic harness REJECTED` means refused. Agents write artifacts with the host's file tools (`create` / `edit`), never through the shell,
 so the harness can authorize and check every write. Every call is journaled to
 `<FRAMEWORK_WORKSPACE_DIR>/logs/<sessionId>.log.jsonl`. The harness never writes artifacts — it
 reports; the orchestrator commits.

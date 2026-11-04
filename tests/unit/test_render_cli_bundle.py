@@ -283,9 +283,16 @@ def test_live_bundle_matches_harness_contract(live_bundle: Path) -> None:
 
 
 ALLOWED_HARNESS_COMMAND = re.compile(
-    r"\[&\] <python \| py -3 \| interpreter full path> <installed harness\.py> "
-    r"(resolve-step --workflow-slug <[a-z-]+>|resolve-step-model)"
+    r"(& )?<venv python> <harness\.py> (resolve-step --workflow-slug <[a-z-]+>|resolve-step-model)"
 )
+HOOK_ANSWER_PROSE = (
+    "does NOT run this command",
+    "`SAFe agentic harness RESULT (<function>)`",
+    "do not re-issue the command",
+    "`SAFe agentic harness REJECTED`",
+    "never through the shell",
+)
+RETIRED_HARNESS_SETUP = ("setx", "$env:FRAMEWORK", "permissions-config")
 
 
 def test_live_bundle_states_only_the_adapter_admitted_harness_command(live_bundle: Path) -> None:
@@ -293,11 +300,15 @@ def test_live_bundle_states_only_the_adapter_admitted_harness_command(live_bundl
     commands = [span for path in files for span in re.findall(r"`([^`]*harness\.py>? [^`]*)`", path.read_text(encoding="utf-8"))]
     assert commands
     assert [span for span in commands if not ALLOWED_HARNESS_COMMAND.fullmatch(span)] == []
+    for path in files:
+        text = path.read_text(encoding="utf-8")
+        assert not [word for word in RETIRED_HARNESS_SETUP if word in text], path
     for slug in _orchestrators():
         for path in (live_bundle / "agents" / f"{slug}.agent.md", live_bundle / "skills" / slug / "SKILL.md"):
             text = path.read_text(encoding="utf-8")
-            assert ALLOWED_HARNESS_COMMAND.search(text), path
-            assert "resolve-step-model" in text and "never through the shell" in text, path
+            assert re.search(r"`& " + ALLOWED_HARNESS_COMMAND.pattern[5:] + "`", text), path
+            assert "resolve-step-model" in text, path
+            assert [phrase for phrase in HOOK_ANSWER_PROSE if phrase not in text] == [], path
 
 
 def test_live_bundle_skills_are_cli_skill_folders(live_bundle: Path) -> None:
