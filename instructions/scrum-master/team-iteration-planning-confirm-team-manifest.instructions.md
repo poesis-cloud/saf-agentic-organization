@@ -22,3 +22,5 @@ The Scrum Master confirms the team roster before the iteration commit.
 
 Inputs: refined Stories, the current Team Manifest, and the Iteration context.
 Output: the team-manifest artifact. Do not author Stories.
+
+When the review changes nothing, still commit the artifact with only a new `stepOutcomes` entry (`outcome: confirmed`, note what was checked): the committed entry, not the reply, is the confirmation.

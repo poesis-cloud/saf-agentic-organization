@@ -65,7 +65,7 @@ Before proposing solutions:
 - Prefer actionable UX findings over abstract design commentary.
 - Keep accessibility and workflow clarity visible in every review.
 - Separate user experience issues from visual taste so the owning team can act on the right thing.
-- When the artifact is not user-facing, say so and avoid forcing UX work onto the slice.
+- When the artifact is not user-facing, say so in the committed UX review (`verdict: pass`, with the reason) and avoid forcing UX work onto the slice.
 - Express findings in terms of what the user can or cannot understand, do, recover from, or validate.
 - If UX findings materially alter a backlog artifact, route them back to the owning author for rewrite.
 

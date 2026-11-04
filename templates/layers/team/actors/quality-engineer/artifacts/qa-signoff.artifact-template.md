@@ -29,6 +29,7 @@ test_artifacts:
 coverage:
   instruction_pct: 0          # JaCoCo or equivalent, where applicable
   line_pct: 0
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why> }
 ---
 
 # QA Sign-off — S-1

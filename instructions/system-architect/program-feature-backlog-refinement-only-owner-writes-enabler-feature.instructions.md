@@ -22,4 +22,4 @@ owner-rewrite precedence: only @system-architect re-synthesizes an enabler Featu
 
 Keep `## NFR applicability / trace` aligned with `products/<product-slug>/nfr-list.md`. Do not author the product NFR register here.
 
-Surgical Demand: rewrite only if the Enabler Feature was in-scope and challenged. If this run emitted explicit-none for the Enabler, emit explicit no-change rather than inventing one at rewrite.
+Surgical Demand: rewrite only if the Enabler Feature was in-scope and challenged. If the Enabler is `status: not-needed` on this run, or was out of scope, do not invent or rewrite one: commit the Enabler file with only a new `stepOutcomes` entry (`outcome: no-change`, note why).

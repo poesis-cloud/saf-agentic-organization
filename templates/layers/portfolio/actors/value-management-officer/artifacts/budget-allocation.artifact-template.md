@@ -19,6 +19,7 @@ Authored by `@business-owner` after participatory budgeting.
 ```markdown
 ---
 status: staged
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why> }
 ---
 
 # Budget Allocation

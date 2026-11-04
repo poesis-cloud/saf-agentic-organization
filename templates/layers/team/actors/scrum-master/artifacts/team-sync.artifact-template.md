@@ -20,6 +20,7 @@ Authored by `@scrum-master`. WIP + blockers only.
 ---
 team: <team-slug>
 date: YYYY-MM-DD
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why> }
 ---
 
 # Team Sync

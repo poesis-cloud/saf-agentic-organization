@@ -29,5 +29,6 @@ Output: the product `nfr-list` artifact. Security, operability, and feasibility 
 this list; they do not rewrite it.
 
 If the concern is a new or changed product NFR, write or thicken this register; do not mint a new
-Feature and do not skip ahead to an ADR. If no NFR change is required, emit explicit-none (no NFR
-change) rather than inventing a list. Feature and Story files only trace which NFRs apply.
+Feature and do not skip ahead to an ADR. If no NFR change is required, do not invent NFRs: commit the register with only a new
+`stepOutcomes` entry (`outcome: no-change`, note why); if no register exists yet, create it with
+an empty register and `outcome: none`. Feature and Story files only trace which NFRs apply.

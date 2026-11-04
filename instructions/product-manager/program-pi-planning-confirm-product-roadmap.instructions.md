@@ -22,3 +22,5 @@ The Product Manager confirms the Product Roadmap that frames this PI.
 
 Inputs: Product Vision just confirmed, refined Features, and the current Product Roadmap.
 Output: the product-roadmap artifact. Do not rewrite Features or PI Objectives.
+
+When the review changes nothing, still commit the artifact with only a new `stepOutcomes` entry (`outcome: confirmed`, note what was checked): the committed entry, not the reply, is the confirmation.

@@ -19,3 +19,5 @@ name: program-pi-planning-confirm-feature-intent
 # PI Planning — confirm Feature intent
 
 The Product Manager confirms Feature intent for the PI. Update the Feature artifact. Do not emit feasibility/security/UX review packets; those concerns belong on the Feature or as Enabler Features.
+
+When the review changes nothing, still commit the artifact with only a new `stepOutcomes` entry (`outcome: confirmed`, note what was checked): the committed entry, not the reply, is the confirmation.

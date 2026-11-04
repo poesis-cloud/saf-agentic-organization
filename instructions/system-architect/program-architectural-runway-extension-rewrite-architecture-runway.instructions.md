@@ -20,4 +20,4 @@ name: program-architectural-runway-extension-rewrite-architecture-runway
 
 Only `@system-architect` re-synthesizes Architecture Runway after the security, operability, and feasibility challenge packets.
 
-Absorb challenge findings into the runway register (`products/<product-slug>/architecture-runway.md`). Record NFR updates already committed on the product nfr-list, or an explicit waiver. Do not rewrite the business Feature. If a late-seeded Enabler Feature is required, name it and return replay-required so Feature Backlog Refinement runs before the Architecture Gate is restaged.
+Absorb challenge findings into the runway register (`products/<product-slug>/architecture-runway.md`). Record NFR updates already committed on the product nfr-list, or an explicit waiver. Do not rewrite the business Feature. If a late-seeded Enabler Feature is required, record it in the runway register (and the `stepOutcomes` note) and return replay-required so Feature Backlog Refinement runs before the Architecture Gate is restaged. Always commit the register; when no finding changes it, append a `stepOutcomes` entry (`outcome: no-change`).

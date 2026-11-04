@@ -35,4 +35,4 @@ Calculate the following PI indicators by reading the existing artifact content. 
 
 ## Output
 
-Present the calculated metrics to the facilitator. Call out the top 2–3 deviations and hypothesize systemic causes. This step is user-facing output only; do not write or update any artifact.
+Record the top 2–3 deviations from plan as pain points (`origin: metrics-review`): `symptom` names the indicator, `impact` gives its value against plan, and the body carries the hypothesized systemic cause. When an open pain point already has the same cause, append a `stepOutcomes` entry (`outcome: revised`) with the new value instead of a duplicate. When no indicator deviates from plan, commit one pain point titled `PI <pi-slug> metrics within plan` with `status: accepted`, `resolution: accepted` and the indicator values in `impact`. Every pain point committed here carries a `stepOutcomes` entry. The metrics you present to the facilitator are indicative; the pain points are the evidence.

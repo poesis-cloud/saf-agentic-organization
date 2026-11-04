@@ -34,6 +34,7 @@ stretchFeatures:
     title: ...
     plannedBv: 5
     status: refined            # refined | in-progress | done | blocked | cancelled
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why> }
 ---
 
 # PI-M Objectives — <product>

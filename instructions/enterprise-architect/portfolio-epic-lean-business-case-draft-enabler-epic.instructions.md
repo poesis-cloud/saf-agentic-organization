@@ -23,4 +23,4 @@ The Enterprise Architect authors the Enabler Epic that carries portfolio runway,
 Inputs: the business Epic (just drafted or already existing), the Lean Business Case if written, Architectural Vision, and Strategic Themes.
 Output: the epic-enabler artifact. Do not rewrite the business Epic or Lean Business Case.
 
-Surgical Demand: write or thicken the Enabler Epic only when it is in-scope. If the Demand does not require an Enabler, emit explicit-none rather than inventing one.
+Surgical Demand: write or thicken the Enabler Epic only when it is in-scope. If the Demand does not require an Enabler, do not invent one: commit `<epic-slug>.epic-enabler.md` beside the Epic with `status: not-needed`, an `## Overview` stating why no portfolio runway, infrastructure or compliance work is needed, and a `stepOutcomes` entry (`outcome: none`). If an Enabler Epic exists but is out of scope on this run, commit it with only a `no-change` entry.

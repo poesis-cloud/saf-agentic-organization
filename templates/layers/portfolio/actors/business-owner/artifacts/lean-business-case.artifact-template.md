@@ -28,6 +28,7 @@ title: E-1 — Lean Business Case
 epic: E-1
 status: draft            # draft | challenged | gate-ready
 fundingState: proposed  # proposed | funded | not-funded   (set by Participatory Budgeting)
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why> }
 ---
 
 # E-1 — Lean Business Case

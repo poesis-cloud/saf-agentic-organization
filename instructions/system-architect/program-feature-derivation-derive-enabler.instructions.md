@@ -21,6 +21,6 @@ name: program-feature-derivation-derive-enabler
 The System Architect derives the sibling Enabler Feature from the approved Epic after the business Feature exists.
 
 Inputs: the approved Epic, the just-derived business Feature, Architectural Vision.
-Output: `feature-enabler` naming the consuming Feature. This step **mints identity**, not NFR applicability. Leave `## NFR applicability / trace` empty or "deferred to feature-backlog-refinement". If no Enabler is required, emit explicit-none rather than inventing one.
+Output: `feature-enabler` naming the consuming Feature. This step **mints identity**, not NFR applicability. Leave `## NFR applicability / trace` empty or "deferred to feature-backlog-refinement". If no Enabler is required, do not invent one: commit the feature-enabler with `status: not-needed`, an `## Overview` stating why, and a `stepOutcomes` entry (`outcome: none`).
 
 Do not author an ADR or NFR list here.

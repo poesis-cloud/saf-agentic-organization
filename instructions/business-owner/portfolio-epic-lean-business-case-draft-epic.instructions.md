@@ -23,4 +23,4 @@ The Business Owner authors the business Epic.
 Inputs: Strategic Themes, Portfolio Vision, Portfolio Roadmap, and the raw idea or hypothesis.
 Output: the epic artifact (hypothesis, MVP intent, WSJF, theme traceability). Do not write the Lean Business Case or Enabler Epic.
 
-Surgical Demand: if this run's in-scope mains include the Epic, write or thicken it. If the Demand is only an Enabler or LBC thicken on an **existing** Epic, do not invent a new Epic and do not redraft the existing one — emit an explicit no-change note naming the existing Epic.
+Surgical Demand: if this run's in-scope mains include the Epic, write or thicken it. If the Demand is only an Enabler or LBC thicken on an **existing** Epic, do not invent a new Epic and do not redraft the existing one — commit the existing Epic with only a new `stepOutcomes` entry (`outcome: no-change`, note naming this run's in-scope mains). The Epic file is this step's evidence; your reply is indicative.

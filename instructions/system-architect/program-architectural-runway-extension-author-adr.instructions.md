@@ -23,4 +23,4 @@ The System Architect records one architectural decision unit. The NFR list from 
 Inputs: the product nfr-list just written or confirmed (`products/<product-slug>/nfr-list.md`), the existing Feature / Enabler Feature, Architectural Vision, current Architecture Runway, existing ADRs on the Feature folder.
 Output: one ADR (one decision).
 
-If the Demand is an ADR on an existing Feature, write that ADR; do not redraft the Feature. If no new decision is required, write an explicit "no new decision" ADR note rather than inventing a review packet or a sibling Feature.
+If the Demand is an ADR on an existing Feature, write that ADR; do not redraft the Feature. If no new decision is required, do not invent one, a review packet or a sibling Feature: commit an ADR whose decision is "no new decision", citing the ADRs that already cover the concern, with `status: accepted` and a `stepOutcomes` entry (`outcome: none`).

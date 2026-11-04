@@ -22,3 +22,5 @@ The Product Manager confirms the Product Vision used as PI Planning business con
 
 Inputs: refined Features / Enablers, Portfolio Vision, and the current Product Vision.
 Output: the product-vision artifact. Do not rewrite Features or PI Objectives.
+
+When the review changes nothing, still commit the artifact with only a new `stepOutcomes` entry (`outcome: confirmed`, note what was checked): the committed entry, not the reply, is the confirmation.

@@ -43,10 +43,10 @@ Run the PI problem-solving workshop. This step updates pain-point artifacts but 
    - Proposed title and rationale in the pain point body
    Do **not** create the artifact yourself. The owning actor creates it in the next workflow step.
 6. **Dispatch workflow improvements** — for each `workflow-improvement` pain point, record the target meta-artifact and owning actor. The owning actor implements the change in its own workflow.
-7. **PI+1 priming** — list carry-over Features (committed but not done) and top candidates for the next PI funnel. Output this as user-facing text only.
+7. **PI+1 priming** — list carry-over Features (committed but not done) and top candidates for the next PI funnel. This list is indicative input to the next PI Planning and decides nothing: carry-over is already evidenced by the Features' `status` and the PI objectives, and a new candidate enters only as a derived item on a pain point (step 5) or a later Demand.
 
 ## Output
 
-Update each reviewed pain point's frontmatter and body with root cause, resolution, target artifact, derived item placeholders, and final `status` (`converted`, `resolved`, `accepted`, or `duplicate`).
+Update each reviewed pain point's frontmatter and body with root cause, resolution, target artifact, derived item placeholders, final `status` (`converted`, `resolved`, `accepted`, or `duplicate`), and a `stepOutcomes` entry.
 
 **Only `@release-train-engineer` updates pain-point artifacts in this workflow.**

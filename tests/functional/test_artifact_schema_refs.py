@@ -73,3 +73,12 @@ def test_schema_validation_traverses_without_unresolvable(validator: SchemaValid
     for path in SCHEMAS:
         schema_id = json.loads(path.read_text(encoding="utf-8"))["$id"]
         validator.validate_instance(schema_id, {})
+
+
+def test_step_outcomes_validate_through_the_harness_registry(validator: SchemaValidator) -> None:
+    entry = {"step": "epic-lean-business-case/draft-epic", "outcome": "no-change", "date": "2026-11-05", "note": "Out of scope."}
+    for path in SCHEMAS:
+        schema_id = json.loads(path.read_text(encoding="utf-8"))["$id"]
+        assert not [e for e in validator.validate_instance(schema_id, {"stepOutcomes": [entry]}) if e.path.startswith("/stepOutcomes")]
+        bad = validator.validate_instance(schema_id, {"stepOutcomes": [{**entry, "outcome": "skipped"}]})
+        assert [e for e in bad if e.path.startswith("/stepOutcomes")], path.name

@@ -212,6 +212,10 @@
         "type": "string",
         "pattern": "(^|/)([a-z0-9-]+\\.)?(epic|epic-enabler|feature|feature-enabler)\\.md$"
       }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record \u2014 one entry per step that committed this artifact (see the stepOutcomes definition).",
+      "$ref": "#/$defs/stepOutcomes"
     }
   },
   "$defs": {
@@ -306,6 +310,47 @@
       "type": "array",
       "items": {
         "type": "object"
+      }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record. Every workflow step that commits this artifact appends exactly one entry, so the artifact itself carries the step's decision \u2014 including `confirmed`, `no-change` and `none` \u2014 and the agent's reply stays indicative.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "step",
+          "outcome",
+          "date",
+          "note"
+        ],
+        "properties": {
+          "step": {
+            "description": "`<workflow-slug>/<step-slug>` of the step that appended this entry.",
+            "type": "string",
+            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+          },
+          "outcome": {
+            "description": "written (created) | revised (content changed) | confirmed (reviewed, still valid) | no-change (out of scope on this run) | none (not needed; the artifact records that decision)",
+            "enum": [
+              "written",
+              "revised",
+              "confirmed",
+              "no-change",
+              "none"
+            ]
+          },
+          "date": {
+            "description": "YYYY-MM-DD of the step.",
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "description": "One line: what the step decided and why.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
       }
     },
     "workItemRelations": {

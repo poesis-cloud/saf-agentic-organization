@@ -282,9 +282,9 @@ def test_live_bundle_matches_harness_contract(live_bundle: Path) -> None:
         assert not [line for line in commands if re.search(r"harness\.py>? \S+[^`]*--(parent-)?session-id", line)], slug
 
 
-ALLOWED_HARNESS_COMMAND = re.compile(
-    r"(& )?<venv python> <harness\.py> (resolve-step --workflow-slug <[a-z-]+>|resolve-step-model)"
-)
+CLI_HARNESS_COMMAND = r"<venv python> <harness\.py> (resolve-step --workflow-slug <[a-z-]+>|resolve-step-model)"
+VSCODE_HARNESS_COMMAND = r"python <harness\.py> (resolve-step|resolve-step-model) --workflow-slug <[a-z-]+>"
+ALLOWED_HARNESS_COMMAND = re.compile(rf"(& )?{CLI_HARNESS_COMMAND}|{VSCODE_HARNESS_COMMAND}")
 HOOK_ANSWER_PROSE = (
     "does NOT run this command",
     "`SAFe agentic harness RESULT (<function>)`",
@@ -306,10 +306,15 @@ def test_live_bundle_states_only_the_adapter_admitted_harness_command(live_bundl
     for slug in _orchestrators():
         for path in (live_bundle / "agents" / f"{slug}.agent.md", live_bundle / "skills" / slug / "SKILL.md"):
             text = path.read_text(encoding="utf-8")
-            assert re.search(r"`& " + ALLOWED_HARNESS_COMMAND.pattern[5:] + "`", text), path
+            assert re.search(rf"`& {CLI_HARNESS_COMMAND}`", text), path
             assert "resolve-step-model" in text, path
             assert [phrase for phrase in HOOK_ANSWER_PROSE if phrase not in text] == [], path
             assert [phrase for phrase in WRITE_TOOL_PROSE if phrase not in text] == [], path
+        skill = (live_bundle / "skills" / slug / "SKILL.md").read_text(encoding="utf-8")
+        assert re.search(rf"`{VSCODE_HARNESS_COMMAND}`", skill), slug
+        assert "In both hosts your shell or terminal does NOT run this command" in skill, slug
+        assert "`Tool execution denied: SAFe agentic harness RESULT (<function>): …`" in skill, slug
+        assert "`<PreToolUse-context>`" in skill, slug
 
 
 def test_live_bundle_skills_are_cli_skill_folders(live_bundle: Path) -> None:

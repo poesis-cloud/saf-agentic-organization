@@ -107,9 +107,13 @@ The orchestrator does not require a speech-act label. It:
 4. Returns the **mains** to the human gate and waits.
 
 Humans need not name the ceremony. Purpose still constrains the usecase. The
-harness `resolve-step` walks catalog order; empty preconditions pass. Out-of-scope
-sibling mains get explicit-none / no-change — never a silent skip, never an
-invented sibling, never a redraft of an untouched item.
+harness `resolve-step` walks catalog order; empty preconditions pass. **No valid
+step without artifact:** every step commits its declared artifact, whatever the
+outcome. An out-of-scope sibling main is committed with only a `no-change`
+`stepOutcomes` entry, and an unneeded enabler as a `status: not-needed` file —
+never a silent skip, never an invented sibling, never a redraft of an untouched
+item. Agent replies and reports are indicative; committed artifacts are the
+only evidence (see [docs/step-artifacts.md](docs/step-artifacts.md)).
 
 ### 4. Per-workflow purpose
 
@@ -293,18 +297,28 @@ python harness.py <function> --session-id <id> [--parent-session-id <id>] [funct
 ```
 
 The host's hooks call the session, load, and check functions on lifecycle events. Orchestrators
-ask the harness with ONE plain command, alone in its tool call:
-`& <venv python> <harness.py> resolve-step --workflow-slug <workflow-slug>` or
-`& <venv python> <harness.py> resolve-step-model` (Linux/macOS: without the leading `&`), never
-with `--session-id`, `$env:`, chaining, or redirection. In the GitHub Copilot app / Copilot CLI
-the shell does not run it: the harness hook runs it for the agent's session and returns the JSON
-report as a hook denial whose reason starts with `SAFe agentic harness RESULT (<function>)` — the
-successful answer. Only `SAFe agentic harness REJECTED` means refused. Agents write artifacts
-with the host's file-edit tools (`create`, `edit`, or `apply_patch` in the GitHub Copilot app /
-Copilot CLI), never through the shell, so the harness can authorize and check every write. Every
-call is journaled to
+ask the harness with ONE plain command, alone in its tool call, never with `--session-id`,
+`$env:` or environment prefixes, chaining, redirection or substitution:
+
+- GitHub Copilot app / Copilot CLI:
+  `& <venv python> <harness.py> resolve-step --workflow-slug <workflow-slug>` or
+  `& <venv python> <harness.py> resolve-step-model` (Linux/macOS: without the leading `&`).
+- VS Code Copilot Chat (`run_in_terminal`):
+  `python <harness.py> resolve-step --workflow-slug <workflow-slug>` or
+  `python <harness.py> resolve-step-model --workflow-slug <workflow-slug>`.
+
+In both hosts the shell never runs it: the harness hook runs it for the agent's session and
+returns the JSON report as a hook denial whose reason starts with
+`SAFe agentic harness RESULT (<function>)` — the successful answer, not to be re-issued. Only
+`SAFe agentic harness REJECTED` means refused: fix the named problem, then ask again. Agents
+write artifacts with the host's file-edit tools (`create`, `edit`, or `apply_patch` in the GitHub
+Copilot app / Copilot CLI; the edit tools in VS Code), never through the shell, so the harness can
+authorize and check every write. Every call is journaled to
 `<FRAMEWORK_WORKSPACE_DIR>/logs/<sessionId>.log.jsonl`. The harness never writes artifacts — it
-reports; the orchestrator commits.
+reports; the actors commit. **No valid step without artifact:** every step commits its declared
+artifact with a `stepOutcomes` entry recording its decision, and the harness's built-in
+postcondition requires it ([docs/step-artifacts.md](docs/step-artifacts.md)). Reports are
+indicative; artifacts are the only evidence.
 
 ### Load contract
 

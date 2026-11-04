@@ -41,6 +41,10 @@ Rendered by `builds/github-copilot-cli`; it binds the host-agnostic prose above 
   never through the shell (`echo >`, `Set-Content`, `Out-File`, heredocs, scripts). The harness
   authorizes and schema-checks all three, and reverts an invalid write; it cannot see a shell
   write.
+- **Step evidence.** A step is valid only with its declared artifact committed by that step's
+  session. Commit it whatever the outcome, with one new `stepOutcomes` entry recording the
+  decision (`written`, `revised`, `confirmed`, `no-change` or `none`). Your reply is indicative;
+  the artifact is the only evidence.
 - **Skills.** Load a skill by name with the `skill` tool. The name is the source file stem
   (`team-verification`, `program-pi-planning`, …). When the harness injects a load directive
   naming a framework file (`<framework root>/skills/<name>.skill.md`), read that file.

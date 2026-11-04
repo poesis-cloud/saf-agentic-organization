@@ -63,6 +63,8 @@ arts:
   - sie-definition
 
 github_project: null      # filled by `provision portfolio` (Portfolio Project URL)
+
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why> }
 ```
 
 ## Init checklist (RTE runs this once)

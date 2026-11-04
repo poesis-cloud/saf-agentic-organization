@@ -22,3 +22,5 @@ The System Architect confirms Architectural Runway capacity for the PI.
 
 Inputs: refined Features and Enabler Features, ADRs, NFR lists, and the current architecture-runway register.
 Output: an updated architecture-runway artifact. Do not invent a runway-extension ceremony. If a gap needs work, that work is an Enabler Feature already refined — record the consumption here.
+
+When the review changes nothing, still commit the artifact with only a new `stepOutcomes` entry (`outcome: confirmed`, note what was checked): the committed entry, not the reply, is the confirmation.
