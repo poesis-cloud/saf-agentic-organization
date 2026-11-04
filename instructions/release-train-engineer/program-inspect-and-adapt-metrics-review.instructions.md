@@ -16,7 +16,6 @@ description: 'Inspect & Adapt Step 1 — calculate PI metrics by reading existin
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Inspect & Adapt — Step 1: Metrics Review
 
 Calculate the following PI indicators by reading the existing artifact content. Do not require or add dedicated metric fields to source artifacts.

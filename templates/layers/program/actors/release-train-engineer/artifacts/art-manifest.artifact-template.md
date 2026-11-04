@@ -14,10 +14,12 @@
 
 # ART Init Template — `art/<art-slug>/art-manifest.yaml`
 
+```yaml
 ---
 id: <art-slug>
 title: <ART title>
 ---
+```
 
 ## Overview
 

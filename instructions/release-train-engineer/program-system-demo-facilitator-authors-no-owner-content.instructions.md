@@ -16,7 +16,6 @@ description: 'the facilitator stages and commits the accepted transition only; i
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Invariant: facilitator_authors_no_owner_content
 
 the facilitator stages and commits the accepted transition only; it authors no demo-gate decision, acceptance criteria, Story, qa-signoff, security or operator verdict content

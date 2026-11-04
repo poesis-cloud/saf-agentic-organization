@@ -16,7 +16,6 @@ description: 'owner-rewrite precedence: only @product-manager re-synthesizes a b
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Invariant: only_owner_writes_business_feature
 
 owner-rewrite precedence: only @product-manager re-synthesizes a business Feature from the routed challenge findings.

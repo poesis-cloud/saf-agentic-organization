@@ -31,7 +31,6 @@ The harness resolves this framework through `FRAMEWORK_DIR` and the workspace th
 `FRAMEWORK_WORKSPACE_DIR` — the three products stay decoupled through environment-anchored paths,
 not through a shared tree.
 
-
 ## Overview
 
 The Poesis SAFe Agentic Organization brings SAFe-shaped multi-agent orchestration into

@@ -14,10 +14,12 @@
 
 # Team Init Template — `art/<art-slug>/teams/<team-slug>/team-manifest.yaml`
 
+```yaml
 ---
 id: <team-slug>
 title: <Team title>
 ---
+```
 
 ## Overview
 

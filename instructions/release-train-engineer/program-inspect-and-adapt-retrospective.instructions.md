@@ -16,10 +16,9 @@ description: 'Inspect & Adapt Step 2 — run the problem-solving workshop using 
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Inspect & Adapt — Step 2: Retrospective
 
-Run the PI problem-solving workshop. This step updates pain-point artifacts but does **not** author derived Features, Stories, or enablers — those are created by their owning actors in subsequent workflow steps. 
+Run the PI problem-solving workshop. This step updates pain-point artifacts but does **not** author derived Features, Stories, or enablers — those are created by their owning actors in subsequent workflow steps.
 
 ## Inputs
 

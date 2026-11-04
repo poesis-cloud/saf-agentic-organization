@@ -18,7 +18,6 @@ description: '**SAFe AUTHOR SKILL — PM hat.** The Product-Manager authoring pr
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # SAFe Author — Product Manager (PM hat)
 
 The **body** of the business-Feature authoring handlers in the program/ART flow (see the *skill registry* in [RTE orchestration core](../release-train-engineer/release-train-engineer.skill.md)). `@release-train-engineer` is the router; **this skill is the handler**. You are the dispatched `@product-manager` wearing the **PM hat**; you author business Feature artifacts and hand control back — you never route, never decide a gate.

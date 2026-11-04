@@ -16,7 +16,6 @@ description: 'pivot/persevere/stop decisions for in-flight Epics are the Central
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Invariant: human_decides_pivots
 
 pivot/persevere/stop decisions for in-flight Epics are the Central Supervisor's; the orchestrator stages, never decides

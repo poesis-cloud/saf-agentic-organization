@@ -1,7 +1,7 @@
 ---
 # CI baseline for saf-agentic-organization
 # Runs on every push and PR to main.
-# Jobs: markdown lint, YAML lint, license-header check (stub — enforces once SHIP content lands).
+# Jobs: markdown lint, YAML lint, license-header check, WITHHOLD scrub, verify (tests + both host bundles).
 
 name: ci
 
@@ -70,12 +70,19 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Scan shipped content for WITHHOLD keywords
-              # Fail-closed: any keyword hit from WITHHOLD-keywords.txt in shipped content fails the build.
-              # See WITHHOLD-keywords.txt for the corpus and SHIP manifest.
+              # Any keyword hit in shipped content fails the build. The corpus is private (moved out of
+              # this public repository in 9f16e85): it is read from the WITHHOLD_KEYWORDS secret, or from
+              # a local WITHHOLD-keywords.txt. Without either (e.g. fork PRs), the scan is skipped with a
+              # notice and IP safety rests on authorship discipline.
+              env:
+                  WITHHOLD_KEYWORDS: ${{ secrets.WITHHOLD_KEYWORDS }}
               run: |
                   if [ ! -f WITHHOLD-keywords.txt ]; then
-                    echo "ERROR: WITHHOLD-keywords.txt not found — fail-closed"
-                    exit 1
+                    if [ -z "$WITHHOLD_KEYWORDS" ]; then
+                      echo "::notice::WITHHOLD corpus not available (no WITHHOLD_KEYWORDS secret) — scan skipped"
+                      exit 0
+                    fi
+                    printf '%s\n' "$WITHHOLD_KEYWORDS" > WITHHOLD-keywords.txt
                   fi
                   SCAN_DIRS=""
                   for d in agents skills instructions conf workflows templates artifacts; do

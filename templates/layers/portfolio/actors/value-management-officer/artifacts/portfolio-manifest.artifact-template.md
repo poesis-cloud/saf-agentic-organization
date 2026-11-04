@@ -20,7 +20,7 @@ poesis-wide singleton, created once. The **Business Owner** + **Enterprise Archi
 
 ## Folder tree (singleton)
 
-```
+```text
 portfolio/
   portfolio-manifest.yaml          # manifest (this template)
   strategic-themes.md     # strategic-themes.artifact-template.md

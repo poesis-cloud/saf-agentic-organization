@@ -16,7 +16,6 @@ description: 'owner-rewrite precedence: only @system-architect re-synthesizes an
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-
 # Invariant: only_owner_writes_enabler_feature
 
 owner-rewrite precedence: only @system-architect re-synthesizes an enabler Feature from the routed challenge findings.
