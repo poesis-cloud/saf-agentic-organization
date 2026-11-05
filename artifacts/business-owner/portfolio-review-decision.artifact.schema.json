@@ -14,31 +14,8 @@
     ],
     "renderOnly": false
   },
-  "required": [
-    "__path",
-    "__kind",
-    "__artifact_id",
-    "__frontmatter_present"
-  ],
+  "required": [],
   "properties": {
-    "__path": {
-      "description": "Workspace-relative path of the artifact file, injected by the orchestration harness (not authored in frontmatter).",
-      "type": "string",
-      "minLength": 1
-    },
-    "__kind": {
-      "description": "Artifact-kind discriminator injected by the harness; must equal x-artifact.kind.",
-      "const": "portfolio-review-decision"
-    },
-    "__artifact_id": {
-      "description": "Stable artifact id injected by the harness, derived from the file and frontmatter.",
-      "type": "string",
-      "minLength": 1
-    },
-    "__frontmatter_present": {
-      "description": "Harness assertion that YAML frontmatter was found and parsed; always true for a valid artifact.",
-      "type": "boolean"
-    },
     "stepOutcomes": {
       "description": "Step outcome record \u2014 one entry per step that committed this artifact (see the stepOutcomes definition).",
       "$ref": "#/$defs/stepOutcomes"

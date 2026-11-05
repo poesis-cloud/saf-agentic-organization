@@ -12,14 +12,15 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Code Change Template — `art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.code-change.md`
+# Code Change Template — `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.code-change.md`
 
 Authored by the Driver during pair programming.
 
 ```markdown
 ---
+slug: <story-slug>-code-change
 story: S-1
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # Code Change

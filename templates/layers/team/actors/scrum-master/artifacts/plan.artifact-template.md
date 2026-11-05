@@ -16,14 +16,15 @@
 
 ## Plan File
 
-Save as `products/<product-slug>/<plan-slug>.plan.md`:
+Save as `portfolio/art/<art-slug>/pi-<pi-slug>/iterations/<iteration-slug>/plan.md`:
 
 ```markdown
 ---
+slug: <iteration-slug>-plan
 sprint: N
 pi: M
 product: <product-slug>
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # Sprint N — [Name]
@@ -64,7 +65,7 @@ Roles swap each pair-programming micro-cycle (see the scrum-master skill § Pair
 - [ ] Every commit carries pair attribution + Copilot trailer
 - [ ] All dependent ADRs are `accepted`
 - [ ] CI green
-- [ ] Per-Story QA sign-off files exist in `art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<qa-signoff-slug>.qa-signoff.md`
+- [ ] Per-Story QA sign-off files exist in `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.qa-signoff.md`
 
 ## What's NOT in This Sprint
 
@@ -74,7 +75,7 @@ Roles swap each pair-programming micro-cycle (see the scrum-master skill § Pair
 
 ## RTE Dispatch Prompt
 
-> @release-train-engineer — Read PROJECT_BRIEF.md and products/<product-slug>/<plan-slug>.plan.md. Execute Sprint N.
+> @release-train-engineer — Read PROJECT_BRIEF.md and portfolio/art/<art-slug>/pi-<pi-slug>/iterations/<iteration-slug>/plan.md. Execute Sprint N.
 >
 > First: git pull origin main && git checkout -b feature/sprint-N
 >
@@ -142,7 +143,7 @@ Appended at sprint end, in this same plan.md.
 
 ## QA Sign-off Roll-up
 
-Per-Story QA sign-off is captured in `art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<qa-signoff-slug>.qa-signoff.md`. The sprint-level roll-up is appended here, in this same plan.md:
+Per-Story QA sign-off is captured in `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.qa-signoff.md`. The sprint-level roll-up is appended here, in this same plan.md:
 
 ### Stories Accepted
 

@@ -12,67 +12,65 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Portfolio Init Template — `portfolio/`
+# Portfolio manifest template — `portfolio/portfolio-manifest.yaml`
 
 The portfolio is the **meta-governance** tier above the ARTs (one ART per product). It is a
-poesis-wide singleton, created once. The **Business Owner** + **Enterprise Architect** hats
-(both you) own it; the RTE renders and maintains it.
+singleton, created once. The **Business Owner** and **Enterprise Architect** hats own its content;
+`@value-management-officer` is the only writer of the manifest, in `portfolio-sync`.
 
-## Folder tree (singleton)
+## Portfolio tree (singleton)
+
+The paths are bound by `conf/workspace.conf.yaml`; the workspace root is
+`FRAMEWORK_WORKSPACE_DIR`.
 
 ```text
 portfolio/
-  portfolio-manifest.yaml          # manifest (this template)
-  strategic-themes.md     # strategic-themes.artifact-template.md
-  epics/                  # E-N-<slug>.md (epic.artifact-template.md)
-  github-sync.yaml        # Portfolio Project sync config (github-sync-config-template)
-  .gitkeep in empty dirs
+  portfolio-manifest.yaml                      # this manifest
+  strategic-themes.md
+  portfolio-vision.md
+  portfolio-roadmap.md
+  budget-allocation.md
+  portfolio-kanban.md
+  portfolio/portfolio-backlog/<epic-slug>/<epic-slug>.epic.md
+  portfolio/products/<product-slug>/product-manifest.yaml
+  portfolio/art/<art-slug>/art-manifest.yaml
 ```
 
-## Manifest — `portfolio-manifest.yaml`
+## Manifest — `portfolio/portfolio-manifest.yaml`
 
-```yaml
-# portfolio-manifest.yaml
-scope: portfolio
-name: Poesis Portfolio
-businessOwner: central-supervisor       # BO hat (Go/No-Go, value authority)
-enterpriseArchitect: central-supervisor # EA hat (cross-product runway, NFR backbone)
-created: YYYY-MM-DD
+The harness validates this manifest by parsing the whole file as JSON (function 9 parses every
+non-Markdown artifact as JSON), so write it as JSON — JSON is also valid YAML — with quoted
+`"YYYY-MM-DD"` dates and no comments.
 
-# Canonical global portfolio configuration and product registry.
-# `products:` is authoritative; `arts:` may be retained as a derived compatibility list.
-products:
-  - slug: oip-web
-    path: portfolio/oip-web
-    topology: submodule
-  - slug: sis-code-sourcer
-    path: portfolio/sis-code-sourcer
-    topology: submodule
-  - slug: sis-blackboard-manager
-    path: portfolio/sis-blackboard-manager
-    topology: submodule
-  - slug: sie-definition
-    path: portfolio/sie-definition
-    topology: submodule
-
-# Epics may span any subset of these via their `products:` list.
-arts:
-  - oip-web
-  - sis-code-sourcer
-  - sis-blackboard-manager
-  - sie-definition
-
-github_project: null      # filled by `provision portfolio` (Portfolio Project URL)
-
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+```json
+{
+  "slug": "portfolio-manifest",
+  "title": "<Portfolio title>",
+  "scope": "portfolio",
+  "businessOwner": "central-supervisor",
+  "enterpriseArchitect": "central-supervisor",
+  "created": "YYYY-MM-DD",
+  "products": [
+    {
+      "slug": "<product-slug>",
+      "path": "portfolio/products/<product-slug>"
+    }
+  ],
+  "arts": [
+    "<art-slug>"
+  ],
+  "github_project": null,
+  "stepOutcomes": []
+}
 ```
 
-## Init checklist (RTE runs this once)
-
-- [ ] Create `portfolio/` tree with `.gitkeep` in `portfolio-backlog/`.
-- [ ] Write `portfolio-manifest.yaml` with `products[]` as the authoritative registry and `arts[]` as the compatibility list where older tooling still expects it.
-- [ ] Seed `strategic-themes.md` from `strategy/poesis-strategy.md` + business lines.
-- [ ] Generate `github-sync.yaml` (portfolio variant) and `provision` the Portfolio Project.
+- `products` is the authoritative product registry. Each entry's `path` is the product folder
+  `portfolio/products/<product-slug>` of the workspace layout.
+- `arts` may be kept as a derived compatibility list. Epics may span any subset of the products via
+  their `products` list.
+- `github_project` is the Portfolio Project URL, or `null`.
+- `stepOutcomes`: every step that commits this file appends one entry
+  `{ "step": "<workflow-slug>/<step-slug>", "outcome": "written | revised | confirmed | no-change | none", "date": "YYYY-MM-DD", "note": "<what was decided and why>", "friction": "<optional workflow friction observed>" }`.
 
 ## Relationship to products
 

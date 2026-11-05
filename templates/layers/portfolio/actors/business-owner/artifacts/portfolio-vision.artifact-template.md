@@ -14,7 +14,8 @@
 
 ```markdown
 ---
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+slug: portfolio-vision
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # Portfolio Vision
@@ -25,7 +26,7 @@ For <customers> who <need>, the portfolio is a <category> that <value>; unlike <
 
 ## Strategic themes served
 
-Links to `strategic-themes.md`.
+Links to `portfolio/strategic-themes.md`.
 
 ## Target products & outcomes
 

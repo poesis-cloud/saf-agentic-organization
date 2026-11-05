@@ -12,12 +12,13 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# ADR Template — `art/<art-slug>/program-backlog/<feature-slug>/<adr-slug>.adr.md`
+# ADR Template — `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<adr-slug>.adr.md`
 
 Authored by `@system-architect` for any Feature flagged `structurant: true`.
 
 ```markdown
 ---
+slug: <adr-slug>-adr
 id: ADR-1
 title: <short decision title>
 status: proposed              # proposed | accepted | rejected | superseded
@@ -30,7 +31,7 @@ deciders:
 consulted:
   - SE-Security
   - SE-DevOps-CI
-created: YYYY-MM-DD
+created: "YYYY-MM-DD"
 decided: null                 # set on ★ Architecture Gate accept/reject
 supersedes: null              # ADR id, if applicable
 superseded_by: null
@@ -38,7 +39,7 @@ related_adrs: []              # sibling, cross-product, or predecessor/successor
                               # ADR ids
 dependsOn: []                # prerequisite ADR ids that must be understood
                               # first
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # ADR-1 — <title>

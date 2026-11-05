@@ -84,9 +84,9 @@ def test_every_schema_records_step_outcomes(path: Path) -> None:
 
 @pytest.mark.parametrize("path", TEMPLATES, ids=lambda path: path.name)
 def test_every_template_frontmatter_starts_an_empty_step_outcome_record(path: Path) -> None:
-    fences = re.findall(r"^```(markdown|yaml)\n(.*?)^```", path.read_text(encoding="utf-8"), re.S | re.M)
+    fences = re.findall(r"^```(markdown|json)\n(.*?)^```", path.read_text(encoding="utf-8"), re.S | re.M)
     assert fences, "template body must be fenced"
-    assert re.search(r"^stepOutcomes: \[\]", fences[0][1], re.M)
+    assert re.search(r'^\s*"?stepOutcomes"?: \[\]', fences[0][1], re.M)
 
 
 def test_step_outcome_definition_accepts_each_outcome_and_rejects_reply_only_shapes() -> None:

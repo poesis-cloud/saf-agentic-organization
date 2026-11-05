@@ -10,7 +10,7 @@ untouched; both read the same `agents/`, `skills/`, `workflows/`, and `conf/`.
 | --- | --- |
 | `plugin.json` | Legacy-layout manifest: `name`, `version`, `description` (tracked against the VS Code manifest by a test), `agents: agents/`, `skills: skills/`. No `hooks` key. |
 | `tools.yaml` | Per-agent `tools:` as CLI aliases. Orchestrators: `read, edit, search, execute, agent, skill, ask_user`. Bench: `read, edit, search, execute, skill`. Must list exactly the source agents. |
-| `host-binding.md` | Section appended to every rendered agent: dispatch with `task`, the one allowed plain harness command form, artifact writes through `create`/`edit`/`apply_patch` only, skill loading, framework-path anchoring on the injected harness context, and the trust note. |
+| `host-binding.md` | Section appended to every rendered agent: dispatch with `task`, actors never asking the harness (`not-facilitator`) or reading its source, one workflow instance per orchestrator session, the one allowed plain harness command form, artifact writes through `create`/`edit`/`apply_patch` only, skill loading, framework-path anchoring on the injected harness context, and the trust note. |
 | `render_bundle.py` | `render_bundle.py <source-root> <bundle-root>`. Wipes and rewrites the bundle and refuses any target that is the source, an ancestor of it, or an existing path that is not an earlier bundle. |
 
 ## Bundle layout

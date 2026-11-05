@@ -10,15 +10,11 @@
     "kind": "pain-point",
     "template": "templates/layers/program/actors/release-train-engineer/artifacts/pain-point.artifact-template.md",
     "pathPatterns": [
-      "art/*/improvement-backlog/*/*.pain-point.md"
+      "portfolio/art/*/improvement-backlog/*/*.pain-point.md"
     ],
     "renderOnly": false
   },
   "required": [
-    "__path",
-    "__kind",
-    "__artifact_id",
-    "__frontmatter_present",
     "title",
     "status",
     "origin",
@@ -29,63 +25,6 @@
     "created"
   ],
   "properties": {
-    "__path": {
-      "description": "Workspace-relative path of the artifact file, injected by the orchestration harness (not authored in frontmatter).",
-      "type": "string",
-      "minLength": 1
-    },
-    "__kind": {
-      "description": "Artifact-kind discriminator injected by the harness; must equal x-artifact.kind.",
-      "const": "pain-point"
-    },
-    "__artifact_id": {
-      "description": "Stable artifact id injected by the harness, derived from the file and frontmatter.",
-      "type": "string",
-      "minLength": 1
-    },
-    "__frontmatter_present": {
-      "description": "Harness assertion that YAML frontmatter was found and parsed; always true for a valid artifact.",
-      "type": "boolean"
-    },
-    "__sections": {
-      "description": "Artifact body sections keyed by their `## ` heading \u2014 one property per template section; the value is the raw Markdown under that heading. Authored artifacts may add or omit sections, so this is advisory (additionalProperties is permitted) and no section is individually required.",
-      "type": "object",
-      "properties": {
-        "Symptom": {
-          "description": "Observable friction or failure pattern.",
-          "type": "string"
-        },
-        "Impact": {
-          "description": "Who is affected and how severely (quantified where possible).",
-          "type": "string"
-        },
-        "Root cause": {
-          "description": "Five-whys / fishbone result from the problem-solving workshop.",
-          "type": "string"
-        },
-        "Resolution": {
-          "description": "workflow-improvement | product-improvement | accepted | duplicate.",
-          "type": "string"
-        },
-        "Target artifact": {
-          "description": "For workflow improvements: the skill / instruction / prompt / orchestrator file to change.",
-          "type": "string"
-        },
-        "Derived backlog items": {
-          "description": "Features or Stories created from this pain point (product improvements).",
-          "type": "string"
-        },
-        "Related pain points": {
-          "description": "Cross-references to other pain points that share a systemic cause.",
-          "type": "string"
-        }
-      },
-      "additionalProperties": true
-    },
-    "__body": {
-      "description": "Raw Markdown body of the artifact (everything after the frontmatter), injected by the harness.",
-      "type": "string"
-    },
     "title": {
       "description": "Human-readable title of the pain point.",
       "type": "string",

@@ -10,18 +10,23 @@
     "kind": "story",
     "template": "templates/layers/team/actors/product-owner/artifacts/story.artifact-template.md",
     "pathPatterns": [
-      "art/*/teams/*/team-backlog/*/*.story.md"
+      "portfolio/art/*/teams/*/team-backlog/*/*.story.md"
     ],
     "renderOnly": false,
     "type": "user",
     "sections": {
       "required": [
-        "Acceptance Criteria"
+        "Acceptance criteria (Given/When/Then)"
       ],
       "optional": [
-        "Preconditions",
-        "Implementation Notes",
-        "Open Items"
+        "User-facing intent",
+        "Definition of Ready (DoR)",
+        "NFR applicability / trace",
+        "Routing classification",
+        "Work-item relations",
+        "Open items",
+        "Definition of Done (DoD)",
+        "Notes / decisions during pair work"
       ],
       "maxDepth": 2,
       "allowUnknown": false,
@@ -31,10 +36,6 @@
     }
   },
   "required": [
-    "__path",
-    "__kind",
-    "__artifact_id",
-    "__frontmatter_present",
     "status",
     "type",
     "title",
@@ -54,71 +55,6 @@
     "github"
   ],
   "properties": {
-    "__path": {
-      "description": "Workspace-relative path of the artifact file, injected by the orchestration harness (not authored in frontmatter).",
-      "type": "string",
-      "minLength": 1
-    },
-    "__kind": {
-      "description": "Artifact-kind discriminator injected by the harness; must equal x-artifact.kind.",
-      "const": "story"
-    },
-    "__artifact_id": {
-      "description": "Stable artifact id injected by the harness, derived from the file and frontmatter.",
-      "type": "string",
-      "minLength": 1
-    },
-    "__frontmatter_present": {
-      "description": "Harness assertion that YAML frontmatter was found and parsed; always true for a valid artifact.",
-      "const": true
-    },
-    "__sections": {
-      "description": "Artifact body sections keyed by their `## ` heading \u2014 one property per template section; the value is the raw Markdown under that heading. Authored artifacts may add or omit sections, so this is advisory (additionalProperties is permitted) and no section is individually required.",
-      "type": "object",
-      "properties": {
-        "User-facing intent": {
-          "description": "As a <persona>, I want <thin slice>, so that <benefit>.",
-          "type": "string"
-        },
-        "Definition of Ready (DoR)": {
-          "description": "[ ] AC complete and testable",
-          "type": "string"
-        },
-        "Acceptance criteria (Given/When/Then)": {
-          "description": "Use one flat bullet per criterion, labeled `AC1`, `AC2`, `AC3`",
-          "type": "string"
-        },
-        "NFR applicability / trace": {
-          "description": "Inherit the parent Feature's applicable NFRs from `products/<product-slug>/nfr-list.md`. Record verification notes for this slice. Do not redefine the product's canonical NFR set. A missing NFR is a runway concern.",
-          "type": "string"
-        },
-        "Routing classification": {
-          "description": "Risk: low | medium | critical \u2014 consequence of being wrong.",
-          "type": "string"
-        },
-        "Work-item relations": {
-          "description": "Use only relations that help the team decide DoR, execution order, or slice boundaries.",
-          "type": "string"
-        },
-        "Open items": {
-          "description": "The human-readable companion to the `openItems:` frontmatter ledger (the [open-item ledger](../../orchestrator/SKILL.md#open-item-ledger)) \u2014 this Story's **clarifications** (proactive unknowns surfaced by the CE Discovery turn) and **challenges** (reactive findings from peer review), forma...",
-          "type": "string"
-        },
-        "Definition of Done (DoD)": {
-          "description": "[ ] Code merged behind Central Supervisor approval (\u2605 PR Gate)",
-          "type": "string"
-        },
-        "Notes / decisions during pair work": {
-          "description": "(appended by pair during DRIVE/CRITIQUE)",
-          "type": "string"
-        }
-      },
-      "additionalProperties": true
-    },
-    "__body": {
-      "description": "Raw Markdown body of the artifact (everything after the frontmatter), injected by the harness.",
-      "type": "string"
-    },
     "status": {
       "description": "backlog | ready | in-progress | in-review | in-qa | awaiting-pr | done | blocked",
       "enum": [

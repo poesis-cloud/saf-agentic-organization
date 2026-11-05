@@ -12,7 +12,7 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Enabler Feature Template — `art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md`
+# Enabler Feature Template — `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature-enabler.md`
 
 Product-scoped backlog contract for **enabler Features**. Use this template when `type: enabler`.
 An enabler Feature is a first-class program backlog unit that realizes runway work needed by named
@@ -20,6 +20,7 @@ business Features, higher-order enablers, or operational constraints.
 
 ```markdown
 ---
+slug: <feature-slug>-feature-enabler
 id: F-12
 title: <Enabler Feature title>
 status: funnel           # funnel | refined | arch-pending | ready | committed | in-progress | done | blocked | not-needed
@@ -46,7 +47,7 @@ architectureInventory: null   # required when structurant=true;
 adrs: []
 pi: M
 owner: SE-Architect
-created: YYYY-MM-DD
+created: "YYYY-MM-DD"
 openItems: []           # clarification + challenge ledger — see orchestrator "Open-item ledger".
                          # Each entry: { id, kind, raised_by, owner, blocking, status, … }; kind: clarification | challenge.
                          # status: open | resolved | withdrawn. A blocking+open entry HALTS the ★ Feature/Architecture Gate.
@@ -63,7 +64,7 @@ github:
   issueNumber: null
   issueNodeId: null
   projectItemId: null
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # F-12 — <title>
@@ -109,7 +110,7 @@ Use 2-3 bullets in this form:
 - `Validation evidence expected before closure: <test, report, review, or artifact>`
 
 ## NFR applicability / trace
-List the canonical product NFRs from `products/<product-slug>/nfr-list.md` that apply to this Feature,
+List the canonical product NFRs from `portfolio/products/<product-slug>/nfr-list.md` that apply to this Feature,
 plus any Feature-specific tightening or derived verification notes. Do not redefine the product's
 canonical NFR set here. A missing NFR is a runway concern, not Feature AC.
 

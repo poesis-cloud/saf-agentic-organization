@@ -20,6 +20,6 @@ description: 'owner-rewrite precedence: only @product-manager re-synthesizes a b
 
 owner-rewrite precedence: only @product-manager re-synthesizes a business Feature from the routed challenge findings.
 
-Keep `## NFR applicability / trace` aligned with `products/<product-slug>/nfr-list.md`. Absorb architecture/security findings that say a listed NFR does not apply, or that an applicable NFR was omitted. Do not author or thicken the product NFR register here.
+Keep `## NFR applicability / trace` aligned with `portfolio/products/<product-slug>/nfr-list.md`. Absorb architecture/security findings that say a listed NFR does not apply, or that an applicable NFR was omitted. Do not author or thicken the product NFR register here.
 
 Surgical Demand: rewrite only if the Feature itself was in-scope and challenged. If this run's in-scope mains were only the Enabler Feature, do not rewrite the business Feature: commit it with only a new `stepOutcomes` entry (`outcome: no-change`, note why). Do not absorb ADR or NFR-register findings here.

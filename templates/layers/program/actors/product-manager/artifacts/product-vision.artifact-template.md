@@ -12,7 +12,7 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Product Vision Template — `products/<product-slug>/product-vision.md`
+# Product Vision Template — `portfolio/products/<product-slug>/product-vision.md`
 
 The product's **Vision** (SAFe) — where the product is headed and why. Authored by
 `@product-manager`·PM during **Continuous Exploration**; consumed by Feature Backlog Refinement
@@ -20,10 +20,11 @@ and PI Planning. Product-scoped.
 
 ```markdown
 ---
+slug: <product-slug>-product-vision
 product: <slug>
-revised: YYYY-MM-DD
+revised: "YYYY-MM-DD"
 horizon: <e.g. next 2–3 PIs>
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # <Product> — Vision
@@ -38,9 +39,9 @@ For <customers> who <need>, <product> is a <category> that <value>; unlike <alt>
 ...
 
 ## Strategic themes served
-Links to `strategic-themes.md`.
+Links to `portfolio/strategic-themes.md`.
 
 ## NFR + runway anchors
-Pointers to `products/<product-slug>/nfr-list.md` and `products/<product-slug>/architecture-runway.md`
+Pointers to `portfolio/products/<product-slug>/nfr-list.md` and `portfolio/products/<product-slug>/architecture-runway.md`
 that constrain the Vision.
 ```

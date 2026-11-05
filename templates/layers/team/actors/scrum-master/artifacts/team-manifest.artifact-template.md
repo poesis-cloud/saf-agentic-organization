@@ -12,16 +12,20 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Team Init Template — `art/<art-slug>/teams/<team-slug>/team-manifest.yaml`
+# Team manifest template — `portfolio/art/<art-slug>/teams/<team-slug>/team-manifest.yaml`
 
-```yaml
----
-id: <team-slug>
-title: <Team title>
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
----
+The harness validates this manifest by parsing the whole file as JSON (function 9 parses every
+non-Markdown artifact as JSON), so write it as JSON — JSON is also valid YAML — with quoted
+`"YYYY-MM-DD"` dates and no comments.
+
+```json
+{
+  "slug": "<team-slug>",
+  "title": "<Team title>",
+  "description": "<Short description of the team>",
+  "stepOutcomes": []
+}
 ```
 
-## Overview
-
-Short description of the team.
+`stepOutcomes`: every step that commits this file appends one entry
+`{ "step": "<workflow-slug>/<step-slug>", "outcome": "written | revised | confirmed | no-change | none", "date": "YYYY-MM-DD", "note": "<what was decided and why>", "friction": "<optional workflow friction observed>" }`.

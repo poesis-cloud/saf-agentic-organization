@@ -28,11 +28,11 @@ The RTE **polices** the program layer: it controls the agents' input/output arti
 
 Central-Supervisor review comments do not relax that boundary. Route them back through the owning authoring skill; do not patch owner-authored files.
 
-- **Features (PM-owned)** — dispatch `@product-manager` to author + refine `art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md`; police template + SAFe conformance; render the **Program Kanban** in the `update-program-kanban` step of `feature-transition` or `art-sync`.
+- **Features (PM-owned)** — dispatch `@product-manager` to author + refine `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md`; police template + SAFe conformance; render the **Program Kanban** in the `update-program-kanban` step of `feature-transition` or `art-sync`.
 - **Architecture runway** — **ART Sync** while ADRs are in flight; facilitate the **★ Architecture Gate** with the full architecture packet (not ADR-only).
-- **PI Planning** — `art/<art-slug>/pi-<pi-slug>/objectives.md`; then one `feature-transition` run per committed Feature (`ready -> committed`); **dispatch `@scrum-master`**.
+- **PI Planning** — `portfolio/art/<art-slug>/pi-<pi-slug>/objectives.md`; then one `feature-transition` run per committed Feature (`ready -> committed`); **dispatch `@scrum-master`**.
 - **Demo Gate / System Demo** — facilitate the **★ Demo Gate**; facilitate **PI Inspect & Adapt**; merge approved PRs (**★ PR Gate**); `@scrum-master` then records `awaiting-pr -> done` with `story-transition`.
-- **ART health** — gate compliance, Story → Feature → Epic trace, cross-Feature risk in the `art-sync` record (the PI `risks.md` is `@product-manager`'s, in `pi-planning/record-risks`); escalate portfolio impediments to `@value-management-officer`.
+- **ART health** — gate compliance, Story → Feature → Epic trace, cross-Feature risk in the `art-sync` record (the PI `portfolio/art/<art-slug>/pi-<pi-slug>/risks.md` is `@product-manager`'s, in `pi-planning/record-risks`); escalate portfolio impediments to `@value-management-officer`.
 - **Feature cost — once, at the ★ Demo Gate** — run `feature-transition` (`→done`): `@product-manager` writes `cost:` once; notify VMO.
 - **Pain points — continuous** — record program/ART friction in the ART `improvement-backlog` through the `improvement-backlog` workflow, one pain point per run.
 
@@ -80,9 +80,9 @@ If the architecture pass seeds a **new enabler Feature**, treat that as refineme
 
 ## State Recovery (program / ART view)
 
-1. Read `PROJECT_BRIEF.md` and `portfolio-manifest.yaml`. Identify in-scope products.
-2. Read Epics read-only from `portfolio-backlog/`; per product read `product-manifest.yaml`, `art/<art-slug>/program-backlog/`, `art/<art-slug>/pi-<pi-slug>/`, `art/<art-slug>/teams/<team-slug>/team-backlog/`.
+1. Read `PROJECT_BRIEF.md` and `portfolio/portfolio-manifest.yaml`. Identify in-scope products.
+2. Read Epics read-only from `portfolio/portfolio-backlog/`; per product read `portfolio/products/<product-slug>/product-manifest.yaml`, `portfolio/art/<art-slug>/program-backlog/`, `portfolio/art/<art-slug>/pi-<pi-slug>/`, `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/`.
 3. If the Program Kanban is stale against Feature frontmatter, run `art-sync` (its `update-program-kanban` step re-renders it); `@scrum-master` renders the Team Kanban in its next `team-sync` record.
-4. For each repo in `product-manifest.yaml > repos[]`, run `gh pr list` and `gh issue list` when `gh` is available.
+4. For each repo in `portfolio/products/<product-slug>/product-manifest.yaml > repos[]`, run `gh pr list` and `gh issue list` when `gh` is available.
 5. Report per product: current PI/Sprint, in-flight Stories, open ADRs, Stories in `in-qa`/`awaiting-pr`, open PRs, Features awaiting ★ Demo Gate, next action.
 6. Wait for Central Supervisor confirmation before dispatching.

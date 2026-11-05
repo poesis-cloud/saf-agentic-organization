@@ -19,12 +19,12 @@ description: 'Inspect & Adapt Step 2 — run the problem-solving workshop using 
 # Inspect & Adapt — Step 2: Retrospective
 
 Run the PI problem-solving workshop. This step updates **exactly one** artifact, the PI's
-Inspect & Adapt record (`art/<art-slug>/pi-<pi-slug>/inspect-and-adapt.md`). It writes no
+Inspect & Adapt record (`portfolio/art/<art-slug>/pi-<pi-slug>/inspect-and-adapt.md`). It writes no
 pain point and authors no derived Feature, Story or enabler.
 
 ## Inputs
 
-- All `art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`
+- All `portfolio/art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`
   artifacts with `status: open` (read only).
 - The record's **Metrics** and **Pain-point candidates** from Step 1.
 

@@ -20,7 +20,7 @@ name: program-feature-backlog-refinement-draft-business-feature
 
 The Product Manager drafts or thickens the business Feature so the ART can construct it together.
 
-Inputs: the parent Epic / Lean Business Case / Enabler Epic (if any), Strategic Themes, Product Vision / Roadmap, and the product NFR register `products/<product-slug>/nfr-list.md`.
+Inputs: the parent Epic / Lean Business Case / Enabler Epic (if any), Strategic Themes, Product Vision / Roadmap, and the product NFR register `portfolio/products/<product-slug>/nfr-list.md`.
 Output: the Feature artifact (benefit hypothesis, AC, WSJF, sizing, **NFR applicability / trace**).
 
 Fill `## NFR applicability / trace` from the product register: which NFRs apply, plus any Feature-specific tightening. Do not add, rewrite, or omit the canonical NFR set. If a needed NFR is missing from the register, record that as an open item and refuse-to-runway (`architectural-runway-extension`); do not invent an NFR here.

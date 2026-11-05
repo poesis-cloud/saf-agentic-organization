@@ -12,7 +12,7 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Architectural Vision Template — `portfolio/architecture-vision.md` (singleton)
+# Architectural Vision Template — `portfolio/products/<product-slug>/architecture-vision.md`
 
 The cross-product **Architectural Vision** (SAFe) — the future-state architecture, the NFR
 backbone, and the architectural-runway direction. Authored by `@enterprise-architect` in the
@@ -22,10 +22,11 @@ NFR register + runway register. Portfolio-scoped singleton.
 
 ```markdown
 ---
+slug: <product-slug>-architecture-vision
 id: architecture-vision
 owner: central-supervisor   # EA hat
-revised: YYYY-MM-DD
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+revised: "YYYY-MM-DD"
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # Architectural Vision
@@ -37,7 +38,7 @@ Target architecture across the portfolio's products; key components and boundari
 The standing decisions + constraints (security, data, integration, observability, set-based options).
 
 ## NFR backbone
-Cross-product nonfunctional requirements (→ each product's `products/<product-slug>/nfr-list.md`).
+Cross-product nonfunctional requirements (→ each product's `portfolio/products/<product-slug>/nfr-list.md`).
 
 ## Runway direction & enabler Epics
 The runway the portfolio must build ahead of demand; seeds **enabler Epics** (`type: enabler`,

@@ -12,16 +12,17 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# System Demo Template — `art/<art-slug>/pi-<pi-slug>/system-demo.md`
+# System Demo Template — `portfolio/art/<art-slug>/pi-<pi-slug>/system-demo.md`
 
 Authored by `@release-train-engineer`. Demo Gate packet, not iteration review.
 
 ```markdown
 ---
+slug: <pi-slug>-system-demo
 art: <art-slug>
 pi: <pi-slug>
 status: staged
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # System Demo

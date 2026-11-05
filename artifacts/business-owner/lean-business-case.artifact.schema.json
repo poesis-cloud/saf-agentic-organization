@@ -11,7 +11,7 @@
     "kind": "lean-business-case",
     "template": "templates/layers/portfolio/actors/business-owner/artifacts/lean-business-case.artifact-template.md",
     "pathPatterns": [
-      "portfolio-backlog/*/*.lean-business-case.md"
+      "portfolio/portfolio-backlog/*/*.lean-business-case.md"
     ],
     "sections": {
       "required": [
@@ -31,77 +31,12 @@
     "renderOnly": false
   },
   "required": [
-    "__path",
-    "__kind",
-    "__artifact_id",
-    "__frontmatter_present",
     "epic",
     "status",
     "slug",
     "title"
   ],
   "properties": {
-    "__path": {
-      "description": "Workspace-relative path of the artifact file, injected by the orchestration harness (not authored in frontmatter).",
-      "type": "string",
-      "minLength": 1
-    },
-    "__kind": {
-      "description": "Artifact-kind discriminator injected by the harness; must equal x-artifact.kind.",
-      "const": "lean-business-case"
-    },
-    "__artifact_id": {
-      "description": "Stable artifact id injected by the harness, derived from the file and frontmatter.",
-      "type": "string",
-      "minLength": 1
-    },
-    "__frontmatter_present": {
-      "description": "Harness assertion that YAML frontmatter was found and parsed; always true for a valid artifact.",
-      "const": true
-    },
-    "__sections": {
-      "description": "Artifact body sections keyed by their `## ` heading \u2014 one property per template section; the value is the raw Markdown under that heading.",
-      "type": "object",
-      "properties": {
-        "Problem & opportunity": {
-          "description": "The systemic problem, who has it, why now.",
-          "type": "string"
-        },
-        "Solution hypothesis (MVP)": {
-          "description": "The smallest Feature set that tests the hypothesis.",
-          "type": "string"
-        },
-        "WSJF": {
-          "description": "Weighted Shortest Job First scoring block.",
-          "type": "string"
-        },
-        "Leading & lagging indicators": {
-          "description": "Early measurable signals and outcome metrics.",
-          "type": "string"
-        },
-        "Cost / effort estimate": {
-          "description": "Rough order of magnitude; informs Participatory Budgeting.",
-          "type": "string"
-        },
-        "Enabler / runway dependency": {
-          "description": "Architectural-runway items this Epic consumes or requires.",
-          "type": "string"
-        },
-        "Pivot / persevere / stop criteria": {
-          "description": "Evidence that would change the decision.",
-          "type": "string"
-        },
-        "Challenge findings": {
-          "description": "EA / Security adversarial notes, folded in before the \u2605 Epic Gate.",
-          "type": "string"
-        }
-      },
-      "additionalProperties": true
-    },
-    "__body": {
-      "description": "Raw Markdown body of the artifact (everything after the frontmatter), injected by the harness.",
-      "type": "string"
-    },
     "epic": {
       "description": "Id of the Epic this lean business case shapes (e.g. E-1).",
       "type": "string",

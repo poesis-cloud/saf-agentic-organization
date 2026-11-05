@@ -31,6 +31,6 @@ Shared model lives in **[RTE orchestration core](release-train-engineer.skill.md
 
 - **Improvement Backlog — record one pain point** (the `improvement-backlog` workflow): [program-improvement-backlog-record-pain-point](../instructions/release-train-engineer/program-improvement-backlog-record-pain-point.instructions.md)
 
-Each I&A step writes **exactly one** artifact, the PI's Inspect & Adapt record (`art/<art-slug>/pi-<pi-slug>/inspect-and-adapt.md`): `metrics-review` creates it with the metrics and pain-point candidates, `pi-retrospective` adds the triage. Neither writes a pain point.
+Each I&A step writes **exactly one** artifact, the PI's Inspect & Adapt record (`portfolio/art/<art-slug>/pi-<pi-slug>/inspect-and-adapt.md`): `metrics-review` creates it with the metrics and pain-point candidates, `pi-retrospective` adds the triage. Neither writes a pain point.
 
 **Only `@release-train-engineer` writes pain points, one per `improvement-backlog` run**, in its `record-pain-point` step: each candidate, each Triage row and each `friction` note from a step's `stepOutcomes` entry is its own run. Derived Features, Stories, and enablers are later Demands for their owning actors.

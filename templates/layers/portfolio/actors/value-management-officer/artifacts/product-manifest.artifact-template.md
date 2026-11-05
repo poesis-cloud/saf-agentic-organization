@@ -12,41 +12,50 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Product manifest template — `products/<product-slug>/product-manifest.yaml`
+# Product manifest template — `portfolio/products/<product-slug>/product-manifest.yaml`
 
-```yaml
-# products/<product-slug>/product-manifest.yaml
-slug: <slug>                          # kebab-case; matches folder name
-name: <Human readable name>
-description: <one-line>
-business_line: commercial             # theory | commercial | infra
-status: active                        # active | paused | sunset | exploration
-owner: central-supervisor                       # always 'central-supervisor' in single-user mode
-created: YYYY-MM-DD
+The harness validates this manifest by parsing the whole file as JSON (function 9 parses every
+non-Markdown artifact as JSON), so write it as JSON — JSON is also valid YAML — with quoted
+`"YYYY-MM-DD"` dates and no comments.
 
-# Repos attached to this product (workspace-relative paths).
-# Only these repos may receive commits from Stories of this product.
-repos:
-  - <relative/path/to/repo>
-
-# Cross-product relationships (referenced by `dependsOn:` in Feature/Story frontmatter).
-upstream: []                          # products this one consumes
-downstream: []                        # products that consume this one
-
-# Optional pointers.
-project_brief: <path/to/PROJECT_BRIEF.md or null>
-github_project: <url or null>
-
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+```json
+{
+  "slug": "<product-slug>",
+  "title": "<Human readable name>",
+  "description": "<one-line>",
+  "business_line": "commercial",
+  "status": "active",
+  "owner": "central-supervisor",
+  "created": "YYYY-MM-DD",
+  "repos": [
+    "<relative/path/to/repo>"
+  ],
+  "upstream": [],
+  "downstream": [],
+  "project_brief": null,
+  "github_project": null,
+  "stepOutcomes": []
+}
 ```
+
+- `slug` is kebab-case and equals the `<product-slug>` folder name.
+- `business_line`: `theory | commercial | infra`. `status`: `active | paused | sunset | exploration`.
+- `owner` is always `central-supervisor` in single-user mode.
+- `repos` lists the repos attached to this product (workspace-relative paths). Only these repos may
+  receive commits from Stories of this product.
+- `upstream` / `downstream` list the products this one consumes / that consume this one (referenced
+  by `dependsOn` in Feature/Story frontmatter).
+- `project_brief` (path to `PROJECT_BRIEF.md`) and `github_project` (URL) are optional, or `null`.
+- `stepOutcomes`: every step that commits this file appends one entry
+  `{ "step": "<workflow-slug>/<step-slug>", "outcome": "written | revised | confirmed | no-change | none", "date": "YYYY-MM-DD", "note": "<what was decided and why>", "friction": "<optional workflow friction observed>" }`.
 
 ## Status lifecycle
 
 `exploration → active → paused → sunset` (one-way after sunset).
 
-## Init checklist (RTE runs this in Product Init step 0)
+## Checklist (`portfolio-sync` `update-product-manifest`)
 
-- [ ] Slug is kebab-case and unique in `portfolio-manifest.yaml > products[]`.
-- [ ] All paths in `repos[]` exist in the workspace.
+- [ ] Slug is kebab-case and unique in `portfolio/portfolio-manifest.yaml` `products`.
+- [ ] All paths in `repos` exist in the workspace.
 - [ ] `business_line` is one of `theory | commercial | infra`.
-- [ ] Entry appended to `portfolio-manifest.yaml > products[].
+- [ ] The product is listed in `portfolio/portfolio-manifest.yaml` `products`.

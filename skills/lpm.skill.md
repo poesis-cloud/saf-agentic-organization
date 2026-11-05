@@ -28,7 +28,7 @@ Layer-specific procedure for **`@value-management-officer`** — the **VMO / Agi
 
 The VMO **polices** the portfolio layer: it controls the input/output artifacts of the agents it dispatches, enforces conformance to its **owned templates** + SAFe practice, and owns the **flow** (gates, kanban, cost rollup). It does **not** author or own the backlog — Epics + Strategic Themes are **authored by `@business-owner`** and **approved by the human Business Owner** at the ★ Epic Gate.
 
-- **Portfolio Init + ART/product registration** — in its `portfolio-sync` steps, sole writer of `portfolio-manifest.yaml > products[]` (with `arts[]` retained only as a compatibility list where older tooling still expects it).
+- **Portfolio Init + ART/product registration** — in its `portfolio-sync` steps, sole writer of `portfolio/portfolio-manifest.yaml > products[]` (with `arts[]` retained only as a compatibility list where older tooling still expects it).
 - **Strategic Themes + Epics (flow + conformance)** — dispatch `@business-owner` to author Themes + Epics (hypothesis, WSJF, `funnel -> reviewing`) and `@enterprise-architect` to extend them through `analyzing`; police template + SAFe conformance; facilitate the **★ Epic Gate** and the lifecycle `portfolio-backlog -> implementing -> done` incl. **Epic outcome acceptance** (human BO) on the last child Feature `done`.
 - **Portfolio Kanban** — rendered from Epic frontmatter in the `update-portfolio-kanban` step of `epic-transition` or `portfolio-sync`; portfolio risk + cross-ART impediments (Epic `blocked`).
 - **Portfolio templates** — epic, strategic-themes, portfolio-manifest, product-manifest, kanban-portfolio.
@@ -63,15 +63,15 @@ Before executing any ceremony or practice row, load that sub-orchestration skill
 ## Portfolio Init procedure (step 0, run once)
 
 When `portfolio/` does not exist, bootstrap it through governed steps only (never create folders or `.gitkeep` files; the harness denies paths outside the artifact layout):
-1. Ask the Central Supervisor for the first product, then run `portfolio-sync`: `update-portfolio-manifest` writes `portfolio-manifest.yaml` (Business Owner + Enterprise Architect = `central-supervisor`; `products[]` = authoritative product registry) and `update-product-manifest` the first product manifest.
-2. Run `strategic-portfolio-review`: `@business-owner` seeds `strategic-themes.md` from `strategy/poesis-strategy.md` + the business lines, then the portfolio vision and roadmap.
+1. Ask the Central Supervisor for the first product, then run `portfolio-sync`: `update-portfolio-manifest` writes `portfolio/portfolio-manifest.yaml` (Business Owner + Enterprise Architect = `central-supervisor`; `products[]` = authoritative product registry) and `update-product-manifest` the first product manifest.
+2. Run `strategic-portfolio-review`: `@business-owner` seeds `portfolio/strategic-themes.md` from `strategy/poesis-strategy.md` + the business lines, then the portfolio vision and roadmap.
 3. `provision` the Portfolio Project when GitHub sync is in use.
 
 ## ART / Product Init procedure (step 0 fallback)
 
-The VMO is the **only** writer of the product registry, in its `portfolio-sync` steps. When an Epic targets an ART not present in `portfolio-manifest.yaml > products[]`:
+The VMO is the **only** writer of the product registry, in its `portfolio-sync` steps. When an Epic targets an ART not present in `portfolio/portfolio-manifest.yaml > products[]`:
 1. Halt and ask the Central Supervisor for: product name, slug, one-line description, business line (`theory` | `commercial` | `infra`), owner repos, deps.
-2. Run `portfolio-sync`: `update-portfolio-manifest` appends the product to `products[]`; `update-product-manifest` writes `products/<product-slug>/product-manifest.yaml`.
+2. Run `portfolio-sync`: `update-portfolio-manifest` appends the product to `products[]`; `update-product-manifest` writes `portfolio/products/<product-slug>/product-manifest.yaml`.
 3. Owners write the product's other artifacts in their workflows: product vision and roadmap (`@product-manager`, `pi-planning`), architecture vision (`@enterprise-architect`, `architectural-vision`), architecture runway (`@system-architect`, `architectural-runway-extension`).
 4. Resume Epic intake.
 
@@ -86,8 +86,8 @@ Dispatch `@business-owner` for Strategic Themes + business Epics and `@enterpris
 ## State Recovery (portfolio view)
 
 When the Central Supervisor says "recover state":
-1. Read `PROJECT_BRIEF.md`, `portfolio-manifest.yaml`, and `strategic-themes.md`.
-2. Read `portfolio-backlog/` (Epic statuses; open Epic-Gate Epics; Epics in `implementing`).
+1. Read `PROJECT_BRIEF.md`, `portfolio/portfolio-manifest.yaml`, and `portfolio/strategic-themes.md`.
+2. Read `portfolio/portfolio-backlog/` (Epic statuses; open Epic-Gate Epics; Epics in `implementing`).
 3. If the Portfolio Kanban is stale against Epic frontmatter, run `portfolio-sync` (its `update-portfolio-kanban` step re-renders it).
 4. For each in-flight Epic, dispatch `@release-train-engineer` (or read the product's Program Kanban) for the program/ART rollup.
 5. Report: open Epic Gates; implementing Epics + child-Feature rollup; outcome-acceptance queue; portfolio risks; next action.

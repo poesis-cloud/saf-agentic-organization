@@ -29,6 +29,13 @@ Rendered by `builds/github-copilot-cli`; it binds the host-agnostic prose above 
   (`step-session-bound`). After a failed step, ask `resolve-step` again: it resolves the failed
   step again, and you dispatch that new resolution once, relaying the failure messages. Never
   re-dispatch, retry or re-run a step on your own.
+- **Actors never ask the harness.** Only the orchestrator runs `resolve-step` /
+  `resolve-step-model`; the harness refuses an actor with `not-facilitator`. Every step dispatch
+  says so, and that the actor never reads the harness source code or tests.
+- **One session, one workflow instance (orchestrators only).** After `no-next-step` this session
+  can run no other instance. Tell the user the next run (for example `portfolio-sync` for the next
+  product) needs a new session: `copilot --agent {{PLUGIN_NAME}}:<orchestrator>` or the agent
+  picker.
 - **Asking the harness (orchestrators only).** Run ONE plain command, alone in its tool call:
   `& <venv python> <harness.py> resolve-step --workflow-slug <workflow-slug>` or
   `& <venv python> <harness.py> resolve-step-model` on Windows (`powershell`), the same without

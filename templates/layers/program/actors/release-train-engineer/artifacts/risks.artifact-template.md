@@ -12,16 +12,17 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# PI Risks Template — `art/<art-slug>/pi-<pi-slug>/risks.md`
+# PI Risks Template — `portfolio/art/<art-slug>/pi-<pi-slug>/risks.md`
 
 RTE-owned register of program-level risks for the PI. Append-only entries.
 
 ```markdown
 ---
+slug: <pi-slug>-risks
 pi: M
 product: <product-slug>
-updated: YYYY-MM-DD
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+updated: "YYYY-MM-DD"
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # PI-M Risks — <product>
@@ -35,13 +36,13 @@ stepOutcomes: []          # every step that commits this file appends one entry:
 ## New entries
 
 ### R-01 — <short title>
-- Detected: YYYY-MM-DD
+- Detected: "YYYY-MM-DD"
 - Source: <Feature id / sprint / external>
 - Description: ...
 - Mitigation plan: ...
 - ROAM decision: Resolved | Owned | Accepted | Mitigated
 - Decided by: Central Supervisor / RTE
-- Decision date: YYYY-MM-DD
+- Decision date: "YYYY-MM-DD"
 ```
 
 ## Lifecycle

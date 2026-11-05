@@ -35,7 +35,7 @@ before loading a workflow.
 - **Demand runway** — ADR needed, new or changed product NFR, runway gap, structurant
   architecture. Start `architectural-runway-extension`. **In-scope mains:** `nfr-list`,
   `adr`, `architecture-runway`. `nfr-list` is the product singleton
-  (`products/<product-slug>/nfr-list.md`) and a precondition for ADR. Do not reshape
+  (`portfolio/products/<product-slug>/nfr-list.md`) and a precondition for ADR. Do not reshape
   Feature AC here (Refuse-to-Demand Feature).
 - **Cadence** — PI Planning, ART Sync, System Demo, Inspect and Adapt, Improvement
   Backlog (`improvement-backlog`: record or update ONE pain point from one friction note;

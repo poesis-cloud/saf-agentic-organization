@@ -85,7 +85,7 @@ def test_catalog_split_keeps_architecture_out_of_feature_refinement() -> None:
     from tests.loaders import load_json
 
     nfr_schema = load_json(ORG / "artifacts" / "system-architect" / "nfr-list.artifact.schema.json")
-    assert nfr_schema["x-artifact"]["pathPatterns"] == ["products/*/nfr-list.md"]
+    assert nfr_schema["x-artifact"]["pathPatterns"] == ["portfolio/products/*/nfr-list.md"]
 
 
 def test_every_schema_is_a_workflow_step_artifact() -> None:

@@ -10,66 +10,12 @@
     "kind": "architecture-vision",
     "template": "templates/layers/portfolio/actors/enterprise-architect/artifacts/architecture-vision.artifact-template.md",
     "pathPatterns": [
-      "products/*/architecture-vision.md"
+      "portfolio/products/*/architecture-vision.md"
     ],
     "renderOnly": false
   },
-  "required": [
-    "__path",
-    "__kind",
-    "__artifact_id",
-    "__frontmatter_present"
-  ],
+  "required": [],
   "properties": {
-    "__path": {
-      "description": "Workspace-relative path of the artifact file, injected by the orchestration harness (not authored in frontmatter).",
-      "type": "string",
-      "minLength": 1
-    },
-    "__kind": {
-      "description": "Artifact-kind discriminator injected by the harness; must equal x-artifact.kind.",
-      "const": "architecture-vision"
-    },
-    "__artifact_id": {
-      "description": "Stable artifact id injected by the harness, derived from the file and frontmatter.",
-      "type": "string",
-      "minLength": 1
-    },
-    "__frontmatter_present": {
-      "description": "Harness assertion that YAML frontmatter was found and parsed; always true for a valid artifact.",
-      "type": "boolean"
-    },
-    "__sections": {
-      "description": "Artifact body sections keyed by their `## ` heading \u2014 one property per template section; the value is the raw Markdown under that heading. Authored artifacts may add or omit sections, so this is advisory (additionalProperties is permitted) and no section is individually required.",
-      "type": "object",
-      "properties": {
-        "Future-state architecture": {
-          "description": "Target architecture across the portfolio's products; key components and boundaries.",
-          "type": "string"
-        },
-        "Architectural principles (intentional architecture)": {
-          "description": "The standing decisions + constraints (security, data, integration, observability, set-based options).",
-          "type": "string"
-        },
-        "NFR backbone": {
-          "description": "Cross-product nonfunctional requirements (\u2192 each product's `products/<product-slug>/nfr-list.md`).",
-          "type": "string"
-        },
-        "Runway direction & enabler Epics": {
-          "description": "The runway the portfolio must build ahead of demand; seeds **enabler Epics** (`type: enabler`, `enablerType: architectural | infrastructure | compliance`).",
-          "type": "string"
-        },
-        "Target ARTs / products": {
-          "description": "Which products realise which parts of the Vision.",
-          "type": "string"
-        }
-      },
-      "additionalProperties": true
-    },
-    "__body": {
-      "description": "Raw Markdown body of the artifact (everything after the frontmatter), injected by the harness.",
-      "type": "string"
-    },
     "title": {
       "description": "Human-readable title of the artifact.",
       "type": "string",

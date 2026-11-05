@@ -19,7 +19,9 @@ description: >
   epic-enabler (sibling, not a review; catalog still walks; every step
   commits its artifact: out-of-scope siblings get a no-change entry, an
   unneeded enabler a not-needed file). Challenge: Developer feasibility-review (not
-  evaluated). Evaluate: those mains; KO reiterates the workflow (new instance; that main's owner step absorbs the KO). Use
+  evaluated). Owner updates: after the LBC rewrite, the Business Owner
+  updates the Epic and the Enterprise Architect the Enabler Epic so both match
+  it. Evaluate: those mains; KO reiterates the workflow (new instance; that main's owner step absorbs the KO). Use
   when: new bet, thicken Epic/LBC, portfolio-sized impact, kill/pivot as a
   rewrite of that Epic. Do not use for Feature/Story grain (Refuse).
 instructions: value-management-officer-interpret-speech-acts
@@ -127,3 +129,41 @@ steps:
     kind: precondition
     step: challenge-feasibility
   instructions: portfolio-epic-lean-business-case-owner-rewrites-case
+- slug: update-epic
+  description: Owner update — Business Owner aligns the Epic with the rewritten Lean Business Case (scope, dependsOn, MVP / first-release scope).
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: business-owner
+  artifact: epic
+  conditions:
+  - slug: after-owner-rewrite
+    kind: precondition
+    step: owner-rewrite
+  instructions: portfolio-epic-lean-business-case-update-epic
+- slug: update-enabler-epic
+  description: Owner update — Enterprise Architect aligns the Enabler Epic with the rewritten Lean Business Case (scope, dependsOn, MVP / first-release scope).
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: enterprise-architect
+  artifact: epic-enabler
+  conditions:
+  - slug: after-owner-rewrite
+    kind: precondition
+    step: owner-rewrite
+  instructions: portfolio-epic-lean-business-case-update-enabler-epic

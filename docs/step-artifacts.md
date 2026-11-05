@@ -45,7 +45,7 @@ entry:
 stepOutcomes:
   - step: feature-backlog-refinement/draft-enabler   # <workflow-slug>/<step-slug>
     outcome: none        # written | revised | confirmed | no-change | none
-    date: 2026-11-05
+    date: "2026-11-05"
     note: No enabler needed — the runway already provides tenant-scoped auth (ADR-12).
     friction: The Epic named no tenant boundary; had to infer it.   # optional
 ```
@@ -66,10 +66,10 @@ The appended entry also guarantees a diff, so `confirmed` and `no-change` steps 
 
 ## Not-needed enablers
 
-When a Demand needs no enabler, the architect still commits the sibling file
-(`<slug>.epic-enabler.md`, `<slug>.feature-enabler.md`, `<slug>.story-enabler.md`) with
-`status: not-needed`, the rationale (`## Overview`, or one `## Acceptance Criteria` bullet for a
-Story enabler) and an `outcome: none` entry. A `not-needed` enabler is a recorded decision: it
+When a Demand needs no enabler, the architect still commits the sibling enabler file beside the Demand (for example
+`portfolio/portfolio-backlog/<epic-slug>/<epic-slug>.epic-enabler.md`) with
+`status: not-needed`, the rationale (in `## Enablement rationale`, `## Enabler intent` or
+`## Enabler story intent`) and an `outcome: none` entry. A `not-needed` enabler is a recorded decision: it
 leaves the kanban flow, is not challenged as a main (a challenger may contest the decision
 itself), and is presented as a decision at the human gate.
 
@@ -105,7 +105,7 @@ committing a kind it is not granted.
 | `feature-derivation/derive-enabler` | explicit-none | `not-needed` Enabler Feature, `outcome: none` |
 | `feature-backlog-refinement/draft-business` | No-change note | Commits the Feature with a `no-change` entry |
 | `feature-backlog-refinement/draft-enabler` | explicit-none | `not-needed` Enabler Feature, `outcome: none` |
-| `feature-backlog-refinement/owner-rewrite-business` | No-change | Commits the Feature with a `no-change` entry |
+| `feature-backlog-refinement/owner-rewrite-business` | No-change; did not wait for the feasibility review | Commits the Feature with a `no-change` entry, after all four challenges |
 | `feature-backlog-refinement/owner-rewrite-enabler` | No-change | Commits the Enabler Feature with a `no-change` entry |
 | `architectural-runway-extension/author-nfrs` | explicit-none | Commits the register with `no-change` (or creates it empty with `none`) |
 | `architectural-runway-extension/author-adr` | "No new decision" note | Commits an ADR whose decision is "no new decision", `outcome: none` |
@@ -113,6 +113,9 @@ committing a kind it is not granted.
 | `team-backlog-refinement/draft` | No-change note; "or explicitly none" | Commits the Story with a `no-change` entry; "no open items" in its note |
 | `team-backlog-refinement/draft-enabler` | explicit-none | `not-needed` Enabler Story, `outcome: none` |
 | `team-backlog-refinement/owner-rewrite` | No-change | Commits the Story with a `no-change` entry |
+| `team-backlog-refinement/owner-rewrite-enabler` (new) | The Enabler Story was never revisited after the challenge | The System Architect rewrites it (`no-change` when not-needed or out of scope) |
+| `epic-lean-business-case/update-epic`, `update-enabler-epic` (new) | The Epic and Enabler Epic could contradict the rewritten LBC (scope, `dependsOn`, first-release scope) | Their owners align each one with the LBC, one artifact per step (`no-change` when already consistent) |
+| `architectural-runway-extension/update-nfrs`, `update-adr` (new) | The NFR list and the ADR were never revisited after the challenge | The System Architect updates each one before rewriting the runway register (`no-change` when no finding applies) |
 | `inspect-and-adapt/metrics-review` | Several pain points per run | Creates the one `inspect-and-adapt` record (metrics + pain-point candidates) |
 | `inspect-and-adapt/pi-retrospective` | Several pain points per run; priming as text | Updates that record with the triage and PI+1 priming |
 | `improvement-backlog/record-pain-point` (new workflow) | Pain points written by specialists or "outside a step" | The RTE creates or updates exactly one pain point per run (`no-change` entry when it already holds) |

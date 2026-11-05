@@ -12,7 +12,7 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Strategic Themes Template — `strategic-themes.md`
+# Strategic Themes Template — `portfolio/strategic-themes.md`
 
 Portfolio-scoped singleton. The **Business Owner** hat (you) owns it; it is the top of the
 backlog spine (`Strategic Themes → Epic → Feature → Story`). Strategic Themes are the
@@ -22,10 +22,11 @@ toward. Sourced from `strategy/poesis-strategy.md` (business model).
 
 ```markdown
 ---
+slug: strategic-themes
 owner: central-supervisor      # Business-Owner hat
-updated: YYYY-MM-DD
+updated: "YYYY-MM-DD"
 source: strategy/poesis-strategy.md
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # Poesis Strategic Themes

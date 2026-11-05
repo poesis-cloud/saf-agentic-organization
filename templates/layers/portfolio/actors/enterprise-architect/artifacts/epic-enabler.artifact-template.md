@@ -12,7 +12,7 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Enabler Epic Template — `portfolio-backlog/<epic-slug>/<epic-slug>.epic.md`
+# Enabler Epic Template — `portfolio/portfolio-backlog/<epic-slug>/<epic-slug>.epic-enabler.md`
 
 Portfolio-scoped backlog contract for **enabler Epics**. Use this template when `type: enabler`.
 An enabler Epic is a first-class portfolio backlog unit, not an architecture note: it exists to
@@ -20,15 +20,16 @@ fund and govern runway work that enables downstream product Features and program
 
 ```markdown
 ---
+slug: <epic-slug>-epic-enabler
 id: E-1
 title: <Enabler Epic title>
 status: funnel            # funnel | reviewing | analyzing | portfolio-backlog | implementing | done | blocked | not-needed
 type: enabler
 enablerType: architectural   # architectural | infrastructure | compliance
-strategic_theme: <theme-id or name>
+strategicTheme: <theme-id or name>
 businessOwner: central-supervisor
 enterpriseArchitect: central-supervisor
-products: []
+products: [<product-slug>]
 workItemRelations:
   dependsOn: []         # hard prerequisite Epics that must land before this enabler is actionable
   enables: []            # downstream Epic/Feature ids this enabler unblocks
@@ -43,7 +44,7 @@ wsjf:
 mvpFeatures: []
 risk: medium
 complexity: complex
-created: YYYY-MM-DD
+created: "YYYY-MM-DD"
 approved: null
 openItems: []           # clarification + challenge ledger — see orchestrator "Open-item ledger".
                          # Each entry: { id, kind, raised_by, owner, blocking, status, … }; kind: clarification | challenge.
@@ -61,7 +62,7 @@ github:
   issueNumber: null
   issueNodeId: null
   projectItemId: null
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # E-1 — <title>

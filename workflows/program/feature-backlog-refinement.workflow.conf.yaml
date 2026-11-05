@@ -158,6 +158,9 @@ steps:
   actor: product-manager
   artifact: feature
   conditions:
+  - slug: after-challenge-feasibility
+    kind: precondition
+    step: challenge-feasibility
   - slug: after-challenge-architecture
     kind: precondition
     step: challenge-architecture

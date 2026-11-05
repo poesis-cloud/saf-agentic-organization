@@ -12,24 +12,25 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# QA Sign-off Template — `art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<qa-signoff-slug>.qa-signoff.md`
+# QA Sign-off Template — `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.qa-signoff.md`
 
 Authored by `@quality-engineer` (Ivy). Mandatory artifact for any Story transition `in-qa → awaiting-pr`.
 
 ```markdown
 ---
+slug: <story-slug>-qa-signoff
 story: S-1
 product: <product-slug>
 sprint: N
-qa_engineer: @quality-engineer
+qa_engineer: '@quality-engineer'
 verdict: pass                 # pass | fail
-date: YYYY-MM-DD
+date: "YYYY-MM-DD"
 test_artifacts:
   - <relative/path/to/test-run-log>
 coverage:
   instruction_pct: 0          # JaCoCo or equivalent, where applicable
   line_pct: 0
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # QA Sign-off — S-1
@@ -50,7 +51,7 @@ Link / id. Restate the AC verified.
 
 ## PO confirmation
 - Confirmed by: `@product-owner`
-- Date: YYYY-MM-DD
+- Date: "YYYY-MM-DD"
 - Notes: ...
 
 ## Verdict
@@ -66,4 +67,4 @@ Link / id. Restate the AC verified.
 
 ## Lifecycle
 
-One sign-off per Story per attempt. If FAIL, a new sign-off file `S-N-signoff-2.md` (and so on) is created on the next QA pass.
+One sign-off file per Story. If FAIL, the next QA pass updates the same file and appends its own `stepOutcomes` entry.

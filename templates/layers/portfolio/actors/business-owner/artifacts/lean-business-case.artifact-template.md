@@ -12,7 +12,7 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Lean Business Case Template — `portfolio-backlog/<epic-slug>/<epic-slug>.lean-business-case.md`
+# Lean Business Case Template — `portfolio/portfolio-backlog/<epic-slug>/<epic-slug>.lean-business-case.md`
 
 The Epic's **Lean Business Case** (SAFe). Authored in the **Epic Lean Business Case** practice
 (`epic-lean-business-case`) — `@business-owner` drafts; `@enterprise-architect`,
@@ -23,12 +23,12 @@ companion to its Epic `E-N`.
 ```markdown
 ---
 id: E-1-lbc
-slug: e-1-lbc
+slug: <epic-slug>-lean-business-case
 title: E-1 — Lean Business Case
 epic: E-1
 status: draft            # draft | challenged | gate-ready
 fundingState: proposed  # proposed | funded | not-funded   (set by Participatory Budgeting)
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # E-1 — Lean Business Case

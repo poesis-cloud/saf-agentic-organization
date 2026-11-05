@@ -20,7 +20,7 @@ name: team-backlog-refinement-author-story-enabler
 
 The System Architect authors the Enabler Story that unblocks the business Story.
 
-Inputs: the Story (just drafted or already existing), the parent Feature / Enabler Feature, ADRs, and `products/<product-slug>/nfr-list.md`.
+Inputs: the Story (just drafted or already existing), the parent Feature / Enabler Feature, ADRs, and `portfolio/products/<product-slug>/nfr-list.md`.
 Output: the story-enabler artifact, including `## NFR applicability / trace` inherited from the parent Feature. Do not rewrite the business Story. Do not author the product NFR register.
 
-Surgical Demand: write or thicken the Enabler Story only when it is in-scope. If the Demand does not require an Enabler, do not invent one: commit `<story-slug>.story-enabler.md` beside the Story with `status: not-needed`, a single `## Acceptance Criteria` bullet stating why no enabler work is needed, and a `stepOutcomes` entry (`outcome: none`). If an Enabler Story exists but is out of scope on this run, commit it with only a `no-change` entry.
+Surgical Demand: write or thicken the Enabler Story only when it is in-scope. If the Demand does not require an Enabler, do not invent one: commit `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.story-enabler.md` beside the Story with `status: not-needed`, an `## Enabler story intent` section stating why no enabler work is needed, and a `stepOutcomes` entry (`outcome: none`). If an Enabler Story exists but is out of scope on this run, commit it with only a `no-change` entry.

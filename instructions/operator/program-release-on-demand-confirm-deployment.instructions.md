@@ -21,6 +21,6 @@ name: program-release-on-demand-confirm-deployment
 The Operator records Continuous Deployment readiness for this release subject.
 
 Inputs: the System Demo increment, pipeline / Helm / environment surface, rollback path.
-Output: the operability-review for `art/<art-slug>/releases/<release-slug>/`. Do not author the business release decision. Do not flip Feature or Story status.
+Output: the operability-review for `portfolio/art/<art-slug>/releases/<release-slug>/`. Do not author the business release decision. Do not flip Feature or Story status.
 
 When the review changes nothing, still commit the artifact with only a new `stepOutcomes` entry (`outcome: confirmed`, note what was checked): the committed entry, not the reply, is the confirmation.

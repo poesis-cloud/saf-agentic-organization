@@ -12,16 +12,20 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# ART Init Template — `art/<art-slug>/art-manifest.yaml`
+# ART manifest template — `portfolio/art/<art-slug>/art-manifest.yaml`
 
-```yaml
----
-id: <art-slug>
-title: <ART title>
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
----
+The harness validates this manifest by parsing the whole file as JSON (function 9 parses every
+non-Markdown artifact as JSON), so write it as JSON — JSON is also valid YAML — with quoted
+`"YYYY-MM-DD"` dates and no comments.
+
+```json
+{
+  "slug": "<art-slug>",
+  "title": "<ART title>",
+  "description": "<Short description of the Agile Release Train>",
+  "stepOutcomes": []
+}
 ```
 
-## Overview
-
-Short description of the Agile Release Train.
+`stepOutcomes`: every step that commits this file appends one entry
+`{ "step": "<workflow-slug>/<step-slug>", "outcome": "written | revised | confirmed | no-change | none", "date": "YYYY-MM-DD", "note": "<what was decided and why>", "friction": "<optional workflow friction observed>" }`.

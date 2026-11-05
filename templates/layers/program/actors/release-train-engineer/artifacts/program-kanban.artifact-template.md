@@ -12,14 +12,15 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-# Program Kanban Template — `art/<art-slug>/program-kanban.md`
+# Program Kanban Template — `portfolio/art/<art-slug>/program-kanban.md`
 
 Rendered by `@release-train-engineer` from Feature frontmatter.
 
 ```markdown
 ---
+slug: <art-slug>-program-kanban
 art: <art-slug>
-stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: YYYY-MM-DD, note: <what was decided and why>, friction: <optional workflow friction observed> }
+stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
 # Program Kanban

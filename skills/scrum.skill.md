@@ -26,7 +26,7 @@ Layer-specific procedure for **`@scrum-master`**. Load this file as the second r
 
 The SM **polices** the iteration layer. It does **not** author or own the backlog.
 
-- **Iteration Planning** — `products/<product-slug>/<plan-slug>.plan.md`; assign Driver/Navigator per Story.
+- **Iteration Planning** — `portfolio/art/<art-slug>/pi-<pi-slug>/iterations/<iteration-slug>/plan.md`; assign Driver/Navigator per Story.
 - **Stories (PO-owned)** — dispatch `@product-owner`; run the **★ Story Gate** (DoR, `backlog -> ready`); render the **Team Kanban** in the Daily Sync (`team-sync`) record; enforce **WIP limits**. Every Story `status:` is committed by its author step in `story-transition`.
 - **Pair-programming micro-cycle** — HUDDLE -> DRIVE -> CRITIQUE -> ACCEPT/REJECT -> SWAP.
 - **Events** — **Daily Sync**, **Iteration Review**, **Retrospective**.
