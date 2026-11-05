@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import shutil
 import sys
+import uuid
 from pathlib import Path
 
 import yaml
@@ -52,9 +53,9 @@ def main() -> int:
     manifest_path = build_root / "plugin.json"
     tools_map_path = build_root / "tools.yaml"
 
-    if bundle_root.exists():
-        shutil.rmtree(bundle_root)
-    shutil.copytree(source_root, bundle_root, ignore=_ignore)
+    if _unsafe_target(source_root, bundle_root):
+        print(f"refusing to replace {bundle_root}: not an earlier rendered bundle", file=sys.stderr)
+        return 2
 
     manifest = json.loads(manifest_path.read_text())
     tools_map = yaml.safe_load(tools_map_path.read_text()) or {}
@@ -73,12 +74,54 @@ def main() -> int:
                 print(f"  - {rel}", file=sys.stderr)
         return 1
 
-    for rel in manifest.get("agents", []):
-        _inject_tools(bundle_root / rel, list(agent_tools[rel]))
-
-    (bundle_root / "plugin.json").write_text(manifest_path.read_text())
+    staging = bundle_root.parent / f".{bundle_root.name}.render-{uuid.uuid4().hex}"
+    try:
+        staging.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(source_root, staging, ignore=_ignore_except(staging))
+        for rel in manifest.get("agents", []):
+            _inject_tools(staging / rel, list(agent_tools[rel]))
+        (staging / "plugin.json").write_text(manifest_path.read_text())
+    except (OSError, ValueError) as error:
+        shutil.rmtree(staging, ignore_errors=True)
+        print(f"render failed: {error}", file=sys.stderr)
+        return 1
+    _replace(staging, bundle_root)
     print(f"rendered GitHub Copilot bundle: {bundle_root}")
     return 0
+
+
+def _ignore_except(staging: Path):
+    """`_ignore`, plus the staging directory itself when it sits inside the source."""
+
+    def ignore(root: str, names: list[str]) -> set[str]:
+        return _ignore(root, names) | {name for name in names if Path(root, name) == staging}
+
+    return ignore
+
+
+def _replace(staging: Path, bundle_root: Path) -> None:
+    """Swap a complete render in for the bundle root; the earlier bundle is removed only after."""
+    if not bundle_root.exists():
+        staging.rename(bundle_root)
+        return
+    retired = bundle_root.parent / f".{bundle_root.name}.retired-{uuid.uuid4().hex}"
+    bundle_root.rename(retired)
+    staging.rename(bundle_root)
+    shutil.rmtree(retired)
+
+
+def _unsafe_target(source_root: Path, bundle_root: Path) -> bool:
+    """The bundle root is replaced: refuse the source, its ancestors, any path inside the source
+    that the copy would include (its `builds` subtree among them; generated directories such as
+    `dist` are skipped and stay allowed), and any existing path that is not an earlier rendered
+    bundle (a directory with `plugin.json` at its root)."""
+    if bundle_root == source_root or bundle_root in source_root.parents:
+        return True
+    if source_root in bundle_root.parents and bundle_root.relative_to(source_root).parts[0] not in SKIP_DIRS:
+        return True
+    if not bundle_root.exists():
+        return False
+    return not (bundle_root.is_dir() and (bundle_root / "plugin.json").is_file())
 
 
 if __name__ == "__main__":

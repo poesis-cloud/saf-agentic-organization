@@ -246,6 +246,35 @@ def test_render_refuses_foreign_directory(tmp_path: Path, source: Path, monkeypa
     assert _run(monkeypatch, source, source / "dist") == 0
 
 
+@pytest.mark.parametrize("target", ["builds/github-copilot-cli", "builds/github-copilot", "builds/github-copilot/out"])
+def test_render_refuses_build_inputs(source: Path, monkeypatch: pytest.MonkeyPatch, target: str) -> None:
+    (source / "builds" / "github-copilot").mkdir(exist_ok=True)
+    (source / "builds" / "github-copilot" / "plugin.json").write_text("{}", encoding="utf-8")
+    build_inputs = sorted(p.relative_to(source) for p in (source / "builds").rglob("*"))
+    assert _run(monkeypatch, source, source / target) == 2
+    assert sorted(p.relative_to(source) for p in (source / "builds").rglob("*")) == build_inputs
+
+
+def test_failed_render_keeps_earlier_bundle(
+    source: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    bundle = tmp_path / "bundle"
+    assert _run(monkeypatch, source, bundle) == 0
+    (bundle / "hooks.json").write_text("{}", encoding="utf-8")
+    earlier = {p.relative_to(bundle): p.read_bytes() for p in bundle.rglob("*") if p.is_file()}
+    skill = source / "skills" / "lpm.skill.md"
+    good = skill.read_text(encoding="utf-8")
+    skill.write_text("---\nname: lpm\ndescription: ''\n---\n", encoding="utf-8")
+    assert _run(monkeypatch, source, bundle) == 1
+    assert "1..1024" in capsys.readouterr().err
+    assert {p.relative_to(bundle): p.read_bytes() for p in bundle.rglob("*") if p.is_file()} == earlier
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["bundle", "source"]
+    skill.write_text(good, encoding="utf-8")
+    assert _run(monkeypatch, source, bundle) == 0
+    assert not (bundle / "hooks.json").exists()
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["bundle", "source"]
+
+
 def test_render_usage(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("sys.argv", ["render_bundle.py"])
     assert render_cli_bundle.main() == 2

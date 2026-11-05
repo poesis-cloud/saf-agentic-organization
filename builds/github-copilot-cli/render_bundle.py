@@ -28,6 +28,7 @@ import posixpath
 import re
 import shutil
 import sys
+import uuid
 from pathlib import Path
 
 import yaml
@@ -160,9 +161,27 @@ def render(source_root: Path, bundle_root: Path) -> tuple[int, int]:
     agent_ids = sorted(Path(rel).name[: -len(".agent.md")] for rel in tools)
     binding = _binding(build_root, manifest["name"], agent_ids)
 
-    if bundle_root.exists():
-        shutil.rmtree(bundle_root)
-    bundle_root.mkdir(parents=True)
+    staging = _staging_path(bundle_root)
+    staging.mkdir(parents=True)
+    try:
+        _write_bundle(source_root, staging, manifest, tools, layout, skill_paths, skills, binding)
+    except BaseException:
+        shutil.rmtree(staging, ignore_errors=True)
+        raise
+    _replace(staging, bundle_root)
+    return len(tools), len(skill_paths)
+
+
+def _write_bundle(
+    source_root: Path,
+    bundle_root: Path,
+    manifest: dict,
+    tools: dict[str, list[str]],
+    layout: list[str],
+    skill_paths: list[Path],
+    skills: set[str],
+    binding: str,
+) -> None:
     ignore = shutil.ignore_patterns("__pycache__", "*.pyc", ".pytest_cache")
     for name in layout:
         if (source_root / name).is_dir():
@@ -201,7 +220,22 @@ def render(source_root: Path, bundle_root: Path) -> tuple[int, int]:
 
     _write_json(bundle_root / "plugin.json", manifest)
     _write_json(bundle_root / MARKETPLACE, _marketplace(manifest))
-    return len(tools), len(skill_paths)
+
+
+def _staging_path(bundle_root: Path) -> Path:
+    """A sibling of the bundle root, so the finished render replaces it with a rename."""
+    return bundle_root.parent / f".{bundle_root.name}.render-{uuid.uuid4().hex}"
+
+
+def _replace(staging: Path, bundle_root: Path) -> None:
+    """Swap a complete render in for the bundle root; the earlier bundle is removed only after."""
+    if not bundle_root.exists():
+        staging.rename(bundle_root)
+        return
+    retired = bundle_root.parent / f".{bundle_root.name}.retired-{uuid.uuid4().hex}"
+    bundle_root.rename(retired)
+    staging.rename(bundle_root)
+    shutil.rmtree(retired)
 
 
 def _marketplace(manifest: dict) -> dict:
@@ -245,9 +279,13 @@ def main() -> int:
 
 
 def _unsafe_target(source_root: Path, bundle_root: Path) -> bool:
-    """The bundle root is wiped first: refuse the source, its ancestors, and any existing path
-    that is not an earlier rendered bundle (a directory with `plugin.json` at its root)."""
+    """The bundle root is replaced: refuse the source, its ancestors, its `builds` subtree (the
+    checked-in build inputs carry a `plugin.json` too), and any existing path that is not an
+    earlier rendered bundle (a directory with `plugin.json` at its root)."""
     if bundle_root == source_root or bundle_root in source_root.parents:
+        return True
+    builds = source_root / BUILD.parts[0]
+    if bundle_root == builds or builds in bundle_root.parents:
         return True
     if not bundle_root.exists():
         return False

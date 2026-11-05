@@ -39,8 +39,8 @@ test: verify
 
 ## bundle: render the VS Code Copilot Chat bundle into BUNDLE_DIR.
 bundle:
-	python3 builds/github-copilot/render_bundle.py . $(BUNDLE_DIR)
+	python3 builds/github-copilot/render_bundle.py . "$(BUNDLE_DIR)"
 
 ## bundle-cli: render the GitHub Copilot app / Copilot CLI plugin into CLI_BUNDLE_DIR.
 bundle-cli:
-	python3 builds/github-copilot-cli/render_bundle.py . $(CLI_BUNDLE_DIR)
+	python3 builds/github-copilot-cli/render_bundle.py . "$(CLI_BUNDLE_DIR)"
