@@ -22,4 +22,4 @@ description: 'SAFe ART ceremony — Feature Derivation (suborchestration of @rel
 
 The **normative spec** is the machine-readable **[workflows/program/feature-derivation.workflow.conf.yaml](../workflows/program/feature-derivation.workflow.conf.yaml)** — the step sequence and every step's `conditions`, consumed by both `@release-train-engineer` and the deterministic harness (`check-step-preconditions` / `check-step-postconditions` / `check-step-artifact`). Load and follow it; do not restate it here.
 
-Shared model lives in **[RTE orchestration core](release-train-engineer.skill.md)**. Business Feature derivation loads `product-manager`; enabler Feature derivation loads `system-architect`. Derived items then enter `feature-backlog-refinement`.
+Shared model lives in **[RTE orchestration core](release-train-engineer.skill.md)**. The business Feature step declares the `product-manager` skill and the enabler Feature step `system-architect`; the harness injects each into its step. Derived items then enter `feature-backlog-refinement`.

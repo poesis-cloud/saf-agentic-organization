@@ -40,6 +40,7 @@ steps:
     fast-iteration: 4
     schema-adherence: 9
   actor: product-owner
+  skills: product-owner
   artifact: story
   conditions: []
   instructions: team-story-transition-transition-story
@@ -56,6 +57,7 @@ steps:
     fast-iteration: 4
     schema-adherence: 9
   actor: system-architect
+  skills: system-architect
   artifact: story-enabler
   conditions:
   - slug: after-transition-story

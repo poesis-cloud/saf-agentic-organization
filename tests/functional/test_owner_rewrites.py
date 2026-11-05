@@ -67,3 +67,31 @@ def test_epic_lean_business_case_aligns_epic_and_enabler_with_the_rewritten_case
     ):
         assert (steps[slug]["actor"], steps[slug]["artifact"]) == (actor, artifact)
         assert "owner-rewrite" in _ancestors(steps, slug)
+
+
+@pytest.mark.parametrize(
+    ("workflow", "folder", "updates"),
+    [
+        (
+            "architectural-vision",
+            "portfolio",
+            (("update-enabler-epic", "enterprise-architect", "epic-enabler"), ("update-epic", "business-owner", "epic")),
+        ),
+        (
+            "architectural-runway-extension",
+            "program",
+            (("update-feature", "product-manager", "feature"), ("update-feature-enabler", "system-architect", "feature-enabler")),
+        ),
+    ],
+)
+def test_decisions_on_another_owners_artifact_are_written_back_by_that_owner(
+    workflow: str, folder: str, updates: tuple[tuple[str, str, str], ...]
+) -> None:
+    """A workflow whose main decides about another owner's artifact (the Vision closing Epic items and
+    seeding MVP Features; the architecture packet linking ADRs and gate entries on the Feature) ends
+    with that owner's update step, one artifact per step, after the main's owner rewrite."""
+    steps = {step["slug"]: step for step in _load(ORG_ROOT / "workflows" / folder / f"{workflow}.workflow.conf.yaml")["steps"]}
+    for slug, actor, artifact in updates:
+        assert (steps[slug]["actor"], steps[slug]["artifact"]) == (actor, artifact)
+        assert "owner-rewrite" in _ancestors(steps, slug)
+    assert list(steps)[-len(updates):] == [slug for slug, _, _ in updates]

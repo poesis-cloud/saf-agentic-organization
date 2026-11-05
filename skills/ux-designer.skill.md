@@ -1,7 +1,7 @@
 ---
 name: ux-designer
 user-invocable: false
-description: '**SAFe BENCH SKILL — ux-designer hat.** The UX authoring procedure loaded by the SE agent that an orchestrator dispatches as `@ux-designer`. USE FOR: producing a **UX review** on a user-facing subject during Feature Backlog Refinement or Story grooming — jobs-to-be-done framing, user journeys, affordances, information hierarchy, usability and accessibility risk. DO NOT USE FOR: deciding product scope, architecture, or gate outcomes (Central Supervisor / orchestrator); inventing screens the artifact does not justify; replacing acceptance criteria with subjective design commentary. Loaded by dispatch prompt: `Acting as ux-designer — load skills/ux-designer, produce "<subject>-ux-review"`.'
+description: '**SAFe BENCH SKILL — ux-designer hat.** The UX authoring procedure loaded by the SE agent that an orchestrator dispatches as `@ux-designer`. USE FOR: producing a **UX review** on a user-facing subject during Feature Backlog Refinement or Story grooming — jobs-to-be-done framing, user journeys, affordances, information hierarchy, usability and accessibility risk. DO NOT USE FOR: deciding product scope, architecture, or gate outcomes (Central Supervisor / orchestrator); inventing screens the artifact does not justify; replacing acceptance criteria with subjective design commentary. Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `produce "<subject>-ux-review"`.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors

@@ -1,7 +1,7 @@
 ---
 name: developer
 user-invocable: false
-description: '**SAFe BENCH SKILL — developer hat.** The implementation + feasibility authoring procedure loaded by the SE agent that an orchestrator dispatches as `@developer`. USE FOR: producing a **feasibility review** on a subject (Feature, Story, or enabler) during Feature Backlog Refinement; acting as `Driver` or `Navigator` inside the pair-programming micro-cycle; proving or disproving a technical slice. DO NOT USE FOR: deciding any ★ gate or the PR/Demo outcome (Central Supervisor / orchestrator); authoring backlog artifacts (use `product-manager` / `product-owner`); architecture packets (use `system-architect`). Loaded by dispatch prompt: `Acting as developer — load skills/developer, produce "<subject>-feasibility-review"` (or a pair-programming Driver/Navigator turn).'
+description: '**SAFe BENCH SKILL — developer hat.** The implementation + feasibility authoring procedure loaded by the SE agent that an orchestrator dispatches as `@developer`. USE FOR: producing a **feasibility review** on a subject (Feature, Story, or enabler) during Feature Backlog Refinement; acting as `Driver` or `Navigator` inside the pair-programming micro-cycle; proving or disproving a technical slice. DO NOT USE FOR: deciding any ★ gate or the PR/Demo outcome (Central Supervisor / orchestrator); authoring backlog artifacts (use `product-manager` / `product-owner`); architecture packets (use `system-architect`). Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `produce "<subject>-feasibility-review"` (or a pair-programming Driver/Navigator turn).'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors

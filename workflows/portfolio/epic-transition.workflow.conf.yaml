@@ -21,8 +21,12 @@ description: >
   Officer renders the Portfolio Kanban. Input: one transition request (Epic,
   from and to status, trigger: a human gate decision, a roll-up, a block or an
   unblock, or the close with its cost snapshot). One Epic per run. The
-  orchestrator never writes an Epic status itself. Do not Evaluate: the
-  decision was made at the gate or by the roll-up rule.
+  orchestrator never writes an Epic status itself. Guard: the harness refuses
+  to start the run while an open item that the Architectural Vision closes
+  is still open on an Epic or Enabler Epic (finish architectural-vision's
+  owner updates first); each owner step refuses an inconsistent advance
+  with a recorded no-change. Do not Evaluate: the decision was made at the
+  gate or by the roll-up rule.
 instructions: value-management-officer-interpret-speech-acts
 orchestrator: value-management-officer
 skills: lpm
@@ -40,8 +44,19 @@ steps:
     fast-iteration: 4
     schema-adherence: 9
   actor: business-owner
+  skills: business-owner
   artifact: epic
-  conditions: []
+  conditions:
+  - slug: no-epic-item-open-that-the-vision-closes
+    kind: precondition
+    setSelector:
+      setQuery: "artifacts['epic'].filter(e, has(e.id) && e.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open' && artifacts['architecture-vision'].exists(v, has(v.closedItems) && v.closedItems.exists(c, c.artifact == 'epic' && c.unit == e.id && c.item == i.id))))"
+    setPredicate: selected.size() == 0
+  - slug: no-enabler-epic-item-open-that-the-vision-closes
+    kind: precondition
+    setSelector:
+      setQuery: "artifacts['epic-enabler'].filter(e, has(e.id) && e.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open' && artifacts['architecture-vision'].exists(v, has(v.closedItems) && v.closedItems.exists(c, c.artifact == 'epic-enabler' && c.unit == e.id && c.item == i.id))))"
+    setPredicate: selected.size() == 0
   instructions: portfolio-epic-transition-transition-epic
 - slug: transition-enabler
   description: Owner transition — Enterprise Architect records the requested status change (or no-change) on the sibling Enabler Epic.
@@ -56,6 +71,7 @@ steps:
     fast-iteration: 4
     schema-adherence: 9
   actor: enterprise-architect
+  skills: enterprise-architect
   artifact: epic-enabler
   conditions:
   - slug: after-transition-epic

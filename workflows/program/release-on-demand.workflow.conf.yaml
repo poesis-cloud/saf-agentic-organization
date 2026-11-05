@@ -37,6 +37,7 @@ steps:
     fast-iteration: 4
     schema-adherence: 8
   actor: operator
+  skills: operator
   artifact: operability-review
   conditions: []
   instructions: program-release-on-demand-confirm-deployment
@@ -53,6 +54,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: product-manager
+  skills: product-manager
   artifact: release-on-demand
   conditions:
   - slug: after-confirm-deployment

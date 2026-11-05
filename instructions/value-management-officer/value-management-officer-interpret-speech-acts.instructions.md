@@ -28,7 +28,8 @@ before loading a workflow.
   new ceremony. Do not redraft an untouched Epic.
 - **Demand vision** — portfolio Architectural Vision, NFR backbone, target ARTs,
   enabler-Epic seeds. Start `architectural-vision`. **In-scope mains:**
-  `architecture-vision`. Refuse ART ADRs (hand off to RTE
+  `architecture-vision`, plus `epic-enabler` and `epic`, which its owner-update
+  steps align with the Vision's decisions. Refuse ART ADRs (hand off to RTE
   `architectural-runway-extension`).
 - **Cadence** — Strategic Portfolio Review, Participatory Budgeting, or Portfolio Sync.
   The user is not creating an Epic. SPR may confirm `architecture-vision`; it does not
@@ -45,5 +46,7 @@ before loading a workflow.
   `@scrum-master`. Do not mint an Epic.
 
 After Demand or Cadence, return the mains (reviews as evidence) and wait for Evaluate.
+
+**Return, and the next run.** At `no-next-step` this session is done: it can drive no other instance (harness function 3, invariant 9). Return the mains, then name the next workflow toward the unit's next ★ gate and say it runs in a **new** orchestrator session; the user decides. **Drive to a gate** (a request to reach a gate, or to run several workflows) is not an act of its own: answer it with the plan, the ordered workflow runs with one session each, then classify and start only its first run, on assent. Never improvise across instances. From a new Epic to the ★ Epic Gate: `epic-lean-business-case` (Epic at `funnel`) → `epic-transition` `funnel→reviewing` → `architectural-vision` (the Vision, then its decisions written into the Enabler Epic and the Epic) → `epic-transition` `reviewing→analyzing` → the ★ Epic Gate packet, decided by the Central Supervisor → `epic-transition` (accept `→portfolio-backlog`, reject `→funnel`). Six runs, six sessions. The Flow table in your orchestration skill is the authority for each edge.
 
 Closed set: Demand Epic · Demand vision · Cadence SPR · Cadence budget · Cadence/Inspect sync · Transition Epic · Inspect · Evaluate main · Refuse.

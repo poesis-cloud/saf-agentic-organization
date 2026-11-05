@@ -37,6 +37,7 @@ steps:
     fast-iteration: 8
     schema-adherence: 8
   actor: business-owner
+  skills: business-owner
   artifact: budget-allocation
   instructions: strategic-investment-planning-draft-allocation
 - slug: challenge-feasibility
@@ -52,6 +53,7 @@ steps:
     fast-iteration: 3
     schema-adherence: 6
   actor: developer
+  skills: developer
   artifact: feasibility-review
   conditions:
   - slug: after-draft
@@ -71,6 +73,7 @@ steps:
     fast-iteration: 8
     schema-adherence: 8
   actor: business-owner
+  skills: business-owner
   artifact: budget-allocation
   conditions:
   - slug: after-challenge-feasibility

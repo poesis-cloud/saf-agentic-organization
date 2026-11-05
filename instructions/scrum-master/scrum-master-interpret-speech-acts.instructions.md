@@ -45,4 +45,6 @@ before loading a workflow.
 
 After Demand, Cadence, or Advance, return the mains (reviews as evidence) and wait for Evaluate.
 
+**Return, and the next run.** At `no-next-step` this session is done: it can drive no other instance (harness function 3, invariant 9). Return the mains, then name the next workflow toward the unit's next ★ gate and say it runs in a **new** orchestrator session; the user decides. **Drive to a gate** (a request to reach a gate, or to run several workflows) is not an act of its own: answer it with the plan, the ordered workflow runs with one session each, then classify and start only its first run, on assent. Never improvise across instances. From a committed Feature to the ★ PR Gate: `team-backlog-refinement` → `iteration-planning` → `story-transition` `backlog→ready` (★ Story Gate) → `pair-programming` with its `story-transition` runs → `verification` → `story-transition` `in-qa→awaiting-pr` → the ★ PR Gate. One session per run. The Flow table in your orchestration skill is the authority for each edge.
+
 Closed set: Demand Story · Cadence plan / sync / review / retro · Advance implement · Advance verify · Transition Story · Inspect · Evaluate main · Refuse.

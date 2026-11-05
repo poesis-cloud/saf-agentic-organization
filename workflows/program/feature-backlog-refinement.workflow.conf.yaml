@@ -42,6 +42,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: product-manager
+  skills: product-manager
   artifact: feature
   conditions: []
   instructions: program-feature-backlog-refinement-draft-business-feature
@@ -58,6 +59,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: system-architect
+  skills: system-architect
   artifact: feature-enabler
   conditions:
   - slug: after-draft-business
@@ -77,6 +79,7 @@ steps:
     fast-iteration: 3
     schema-adherence: 6
   actor: developer
+  skills: developer
   artifact: feasibility-review
   conditions:
   - slug: after-draft-business
@@ -96,6 +99,7 @@ steps:
     fast-iteration: 3
     schema-adherence: 6
   actor: system-architect
+  skills: system-architect
   artifact: architecture-review
   conditions:
   - slug: after-draft-business
@@ -118,6 +122,7 @@ steps:
     fast-iteration: 3
     schema-adherence: 6
   actor: security-expert
+  skills: security-expert
   artifact: security-review
   conditions:
   - slug: after-draft-business
@@ -137,6 +142,7 @@ steps:
     fast-iteration: 3
     schema-adherence: 6
   actor: ux-designer
+  skills: ux-designer
   artifact: ux-review
   conditions:
   - slug: after-draft-business
@@ -156,6 +162,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: product-manager
+  skills: product-manager
   artifact: feature
   conditions:
   - slug: after-challenge-feasibility
@@ -184,6 +191,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: system-architect
+  skills: system-architect
   artifact: feature-enabler
   conditions:
   - slug: after-challenge-feasibility

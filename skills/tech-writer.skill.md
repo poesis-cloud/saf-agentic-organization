@@ -1,7 +1,7 @@
 ---
 name: tech-writer
 user-invocable: false
-description: '**SAFe BENCH SKILL — tech-writer hat.** The documentation-polish procedure loaded by the SE agent that an orchestrator dispatches as `@tech-writer`. USE FOR: tightening the prose, structure, and navigation of framework artifacts — ADRs, Epic / Feature / Story text, gate packets, README sections, workflow docs — while preserving technical meaning and the artifact''s governing contract. DO NOT USE FOR: inventing behavior, roadmap, rationale, or scope the repo does not support; rewriting owner intent into a different decision; deciding gates or status transitions. This bench skill authors NO artifact of its own — it edits owner-authored artifacts in place under owner control. Loaded by dispatch prompt: `Acting as tech-writer — load skills/tech-writer, polish "<artifact>"`.'
+description: '**SAFe BENCH SKILL — tech-writer hat.** The documentation-polish procedure loaded by the SE agent that an orchestrator dispatches as `@tech-writer`. USE FOR: tightening the prose, structure, and navigation of framework artifacts — ADRs, Epic / Feature / Story text, gate packets, README sections, workflow docs — while preserving technical meaning and the artifact''s governing contract. DO NOT USE FOR: inventing behavior, roadmap, rationale, or scope the repo does not support; rewriting owner intent into a different decision; deciding gates or status transitions. This bench skill authors NO artifact of its own — it edits owner-authored artifacts in place under owner control. Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `polish "<artifact>"`.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors

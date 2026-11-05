@@ -1,7 +1,7 @@
 ---
 name: operator
 user-invocable: false
-description: '**SAFe BENCH SKILL — operator hat.** The platform / operability authoring procedure loaded by the SE agent that an orchestrator dispatches as `@operator`. USE FOR: producing an **operability review** on a runway extension or a deployable subject during Architectural Runway Extension — CI/CD correctness, Helm / topology structure, environment configuration, rollout / rollback safety, observability implications. DO NOT USE FOR: deciding the ★ Architecture or Demo gate (Central Supervisor / orchestrator); authoring architecture packets (use `system-architect`); backlog artifacts. Loaded by dispatch prompt: `Acting as operator — load skills/operator, produce "<subject>-operability-review"`.'
+description: '**SAFe BENCH SKILL — operator hat.** The platform / operability authoring procedure loaded by the SE agent that an orchestrator dispatches as `@operator`. USE FOR: producing an **operability review** on a runway extension or a deployable subject during Architectural Runway Extension — CI/CD correctness, Helm / topology structure, environment configuration, rollout / rollback safety, observability implications. DO NOT USE FOR: deciding the ★ Architecture or Demo gate (Central Supervisor / orchestrator); authoring architecture packets (use `system-architect`); backlog artifacts. Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `produce "<subject>-operability-review"`.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors

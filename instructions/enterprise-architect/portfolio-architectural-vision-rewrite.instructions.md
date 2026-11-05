@@ -20,4 +20,4 @@ name: portfolio-architectural-vision-rewrite
 
 Only `@enterprise-architect` re-synthesizes Architectural Vision after the security-NFR and operability challenge packets.
 
-Absorb challenge findings into the Vision and NFR backbone. If late enabler-Epic seeding invalidates the parent Epic's shaping, return replay-required so Epic Lean Business Case runs again. Do not author ART ADRs here.
+Absorb challenge findings into the Vision and NFR backbone. Keep `## Decisions on Epics` and `closedItems` complete and exact (see the draft instruction): the `update-enabler-epic` and `update-epic` steps that follow write them into the Enabler Epic and the business Epic, and read nothing else. If late enabler-Epic seeding invalidates the parent Epic's shaping (its hypothesis, not just its runway, scope or size), say so under `## Decisions on Epics`: the Business Owner records it as a blocking open item and Epic Lean Business Case runs again. Do not author ART ADRs here and do not write the Epics.

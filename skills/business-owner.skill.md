@@ -1,7 +1,7 @@
 ---
 name: business-owner
 user-invocable: false
-description: '**SAFe AUTHOR SKILL — BO hat.** The Business-Owner authoring procedure loaded by the SE agent that `@value-management-officer` dispatches to execute an Epic transition handler (and the backlog re-rank inside Strategic Portfolio Review). USE FOR: capturing an Epic from a Strategic Theme (`Epic ∅→funnel`); shaping its hypothesis + WSJF + leading indicators (`funnel→reviewing`); maintaining `portfolio/strategic-themes.md`; WSJF re-ranking the portfolio backlog. DO NOT USE FOR: deciding the ★ Epic Gate or accepting Epic outcomes (Central Supervisor); the architecture runway (use `enterprise-architect`); Features (use `product-manager`). Loaded by dispatch prompt: `Acting as BO — load skills/business-owner, execute handler "<Epic@state>"`.'
+description: '**SAFe AUTHOR SKILL — BO hat.** The Business-Owner authoring procedure loaded by the SE agent that `@value-management-officer` dispatches to execute an Epic transition handler (and the backlog re-rank inside Strategic Portfolio Review). USE FOR: capturing an Epic from a Strategic Theme (`Epic ∅→funnel`); shaping its hypothesis + WSJF + leading indicators (`funnel→reviewing`); maintaining `portfolio/strategic-themes.md`; WSJF re-ranking the portfolio backlog. DO NOT USE FOR: deciding the ★ Epic Gate or accepting Epic outcomes (Central Supervisor); the architecture runway (use `enterprise-architect`); Features (use `product-manager`). Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `execute handler "<Epic@state>"`.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors

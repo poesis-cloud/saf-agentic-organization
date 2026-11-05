@@ -40,6 +40,7 @@ steps:
     fast-iteration: 4
     schema-adherence: 9
   actor: product-manager
+  skills: product-manager
   artifact: feature
   conditions: []
   instructions: program-feature-transition-transition-business
@@ -56,6 +57,7 @@ steps:
     fast-iteration: 4
     schema-adherence: 9
   actor: system-architect
+  skills: system-architect
   artifact: feature-enabler
   conditions:
   - slug: after-transition-business

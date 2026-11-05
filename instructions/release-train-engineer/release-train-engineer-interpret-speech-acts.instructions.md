@@ -34,9 +34,10 @@ before loading a workflow.
   AC/WSJF here.
 - **Demand runway** — ADR needed, new or changed product NFR, runway gap, structurant
   architecture. Start `architectural-runway-extension`. **In-scope mains:** `nfr-list`,
-  `adr`, `architecture-runway`. `nfr-list` is the product singleton
-  (`portfolio/products/<product-slug>/nfr-list.md`) and a precondition for ADR. Do not reshape
-  Feature AC here (Refuse-to-Demand Feature).
+  `adr`, `architecture-runway`, plus `feature` and `feature-enabler`, whose owner-update steps
+  write the packet's ADR links, decision inventory, NFR trace and gate items into them. `nfr-list`
+  is the product singleton (`portfolio/products/<product-slug>/nfr-list.md`) and a precondition
+  for ADR. Do not reshape Feature AC here (Refuse-to-Demand Feature).
 - **Cadence** — PI Planning, ART Sync, System Demo, Inspect and Adapt, Improvement
   Backlog (`improvement-backlog`: record or update ONE pain point from one friction note;
   one run per pain point). The user is not
@@ -55,5 +56,7 @@ before loading a workflow.
   slice) → `@scrum-master`. Do not mint a Feature.
 
 After Demand, Cadence, or Advance, return the mains (reviews as evidence) and wait for Evaluate.
+
+**Return, and the next run.** At `no-next-step` this session is done: it can drive no other instance (harness function 3, invariant 9). Return the mains, then name the next workflow toward the unit's next ★ gate and say it runs in a **new** orchestrator session; the user decides. **Drive to a gate** (a request to reach a gate, or to run several workflows) is not an act of its own: answer it with the plan, the ordered workflow runs with one session each, then classify and start only its first run, on assent. Never improvise across instances. From an approved Epic to the ★ Architecture Gate, for a structurant Feature: `feature-derivation` → `feature-backlog-refinement` → `feature-transition` `funnel→refined` → the ★ Feature Gate → `feature-transition` `refined→arch-pending` → `architectural-runway-extension` → the ★ Architecture Gate → `feature-transition` (accept `→ready`). Then `pi-planning` and `feature-transition` `ready→committed`. One session per run. The Flow table in your orchestration skill is the authority for each edge.
 
 Closed set: Demand Feature · Demand derive-from-Epic · Demand runway · Cadence PI / sync / demo / I&A / improvement-backlog · Advance release · Transition Feature · Inspect · Evaluate main · Refuse.
