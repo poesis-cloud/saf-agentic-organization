@@ -59,11 +59,15 @@ def main() -> int:
 
     manifest = json.loads(manifest_path.read_text())
     tools_map = yaml.safe_load(tools_map_path.read_text()) or {}
-    agent_tools = tools_map.get("agents", {})
+    agent_tools = tools_map.get("agents") or {}
+    if not isinstance(agent_tools, dict):
+        print("tools map `agents` must be a mapping of agent path to tool list", file=sys.stderr)
+        return 1
 
     missing = [rel for rel in manifest.get("agents", []) if rel not in agent_tools]
     extra = sorted(set(agent_tools) - set(manifest.get("agents", [])))
-    if missing or extra:
+    invalid = _invalid_tools(agent_tools)
+    if missing or extra or invalid:
         if missing:
             print("missing tools map entries:", file=sys.stderr)
             for rel in missing:
@@ -71,6 +75,10 @@ def main() -> int:
         if extra:
             print("tools map contains non-manifest agents:", file=sys.stderr)
             for rel in extra:
+                print(f"  - {rel}", file=sys.stderr)
+        if invalid:
+            print("tools map entries must be lists of tool names:", file=sys.stderr)
+            for rel in invalid:
                 print(f"  - {rel}", file=sys.stderr)
         return 1
 
@@ -81,13 +89,21 @@ def main() -> int:
         for rel in manifest.get("agents", []):
             _inject_tools(staging / rel, list(agent_tools[rel]))
         (staging / "plugin.json").write_text(manifest_path.read_text())
+        _replace(staging, bundle_root)
     except (OSError, ValueError) as error:
-        shutil.rmtree(staging, ignore_errors=True)
         print(f"render failed: {error}", file=sys.stderr)
         return 1
-    _replace(staging, bundle_root)
+    finally:
+        shutil.rmtree(staging, ignore_errors=True)
     print(f"rendered GitHub Copilot bundle: {bundle_root}")
     return 0
+
+
+def _invalid_tools(agent_tools: dict) -> list[str]:
+    """Tools-map entries that are not a list of tool names (a blank entry parses as None)."""
+    return sorted(
+        rel for rel, tools in agent_tools.items() if not isinstance(tools, list) or not all(isinstance(t, str) and t for t in tools)
+    )
 
 
 def _ignore_except(staging: Path):
@@ -106,7 +122,11 @@ def _replace(staging: Path, bundle_root: Path) -> None:
         return
     retired = bundle_root.parent / f".{bundle_root.name}.retired-{uuid.uuid4().hex}"
     bundle_root.rename(retired)
-    staging.rename(bundle_root)
+    try:
+        staging.rename(bundle_root)
+    except BaseException:
+        retired.rename(bundle_root)
+        raise
     shutil.rmtree(retired)
 
 

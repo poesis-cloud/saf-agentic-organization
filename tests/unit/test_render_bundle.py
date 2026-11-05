@@ -171,3 +171,57 @@ def test_inject_tools_rejects_missing_frontmatter(tmp_path: Path) -> None:
 def test_ignore_skips_generated_dirs() -> None:
     ignored = render_bundle._ignore("/tmp", [".git", "agents", "__pycache__"])
     assert ignored == {".git", "__pycache__"}
+
+
+def _tree(root: Path) -> dict[Path, bytes]:
+    return {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+
+
+@pytest.mark.parametrize(
+    ("tools", "message"),
+    [
+        ("agents:\n  agents/value-management-officer.agent.md:\n", "must be lists of tool names"),
+        ("agents:\n  agents/value-management-officer.agent.md: [read/readFile, '']\n", "must be lists of tool names"),
+        ("agents: [agents/value-management-officer.agent.md]\n", "must be a mapping"),
+    ],
+)
+def test_render_refuses_malformed_tools_entries(
+    source: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], tools: str, message: str
+) -> None:
+    assert _run(monkeypatch, source, source / "dist") == 0
+    earlier = _tree(source / "dist")
+    (source / "builds" / "github-copilot" / "tools.yaml").write_text(tools, encoding="utf-8")
+    assert _run(monkeypatch, source, source / "dist") == 1
+    assert message in capsys.readouterr().err
+    assert _tree(source / "dist") == earlier
+    assert sorted(p.name for p in source.iterdir()) == ["agents", "builds", "dist"]
+
+
+def test_unexpected_error_cleans_staging(source: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def boom(_path: Path, _tools: list[str]) -> None:
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(render_bundle, "_inject_tools", boom)
+    with pytest.raises(RuntimeError):
+        _run(monkeypatch, source, source / "dist")
+    assert sorted(p.name for p in source.iterdir()) == ["agents", "builds"]
+
+
+def test_failed_promotion_restores_earlier_bundle(
+    source: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    bundle = tmp_path / "bundle"
+    assert _run(monkeypatch, source, bundle) == 0
+    earlier = _tree(bundle)
+    rename = Path.rename
+
+    def failing_rename(self: Path, target: Path) -> Path:
+        if self.name.startswith(".bundle.render-"):
+            raise OSError("promotion failed")
+        return rename(self, target)
+
+    monkeypatch.setattr(Path, "rename", failing_rename)
+    assert _run(monkeypatch, source, bundle) == 1
+    assert "promotion failed" in capsys.readouterr().err
+    assert _tree(bundle) == earlier
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["bundle", "source"]

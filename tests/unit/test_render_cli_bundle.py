@@ -275,6 +275,65 @@ def test_failed_render_keeps_earlier_bundle(
     assert sorted(p.name for p in tmp_path.iterdir()) == ["bundle", "source"]
 
 
+def _tree(root: Path) -> dict[Path, bytes]:
+    return {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+
+
+@pytest.mark.parametrize(
+    ("entry", "message"),
+    [
+        ({"agents/value-management-officer.agent.md": None}, "must be lists of tool names"),
+        ({"agents/value-management-officer.agent.md": ["read", 3]}, "must be lists of tool names"),
+        (None, "must be a mapping"),
+    ],
+)
+def test_render_refuses_malformed_tools_entries(
+    source: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], entry, message: str
+) -> None:
+    bundle = tmp_path / "bundle"
+    assert _run(monkeypatch, source, bundle) == 0
+    earlier = _tree(bundle)
+    path = source / "builds" / "github-copilot-cli" / "tools.yaml"
+    agents = yaml.safe_load(path.read_text(encoding="utf-8"))["agents"]
+    tools = ["agents/value-management-officer.agent.md"] if entry is None else {**agents, **entry}
+    path.write_text(yaml.safe_dump({"agents": tools}), encoding="utf-8")
+    assert _run(monkeypatch, source, bundle) == 1
+    assert message in capsys.readouterr().err
+    assert _tree(bundle) == earlier
+
+
+def test_unexpected_error_cleans_staging(source: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def boom(*_args) -> None:
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(render_cli_bundle, "_rewrite_links", boom)
+    with pytest.raises(RuntimeError):
+        _run(monkeypatch, source, source / "dist")
+    assert not [p.name for p in source.iterdir() if p.name.startswith(".") and p.name != ".env"]
+    assert not (source / "dist").exists()
+
+
+def test_failed_promotion_restores_earlier_bundle(
+    source: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    bundle = tmp_path / "bundle"
+    assert _run(monkeypatch, source, bundle) == 0
+    (bundle / "hooks.json").write_text("{}", encoding="utf-8")
+    earlier = _tree(bundle)
+    rename = Path.rename
+
+    def failing_rename(self: Path, target: Path) -> Path:
+        if self.name.startswith(".bundle.render-"):
+            raise OSError("promotion failed")
+        return rename(self, target)
+
+    monkeypatch.setattr(Path, "rename", failing_rename)
+    assert _run(monkeypatch, source, bundle) == 1
+    assert "promotion failed" in capsys.readouterr().err
+    assert _tree(bundle) == earlier
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["bundle", "source"]
+
+
 def test_render_usage(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("sys.argv", ["render_bundle.py"])
     assert render_cli_bundle.main() == 2

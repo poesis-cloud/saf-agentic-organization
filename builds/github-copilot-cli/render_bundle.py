@@ -104,7 +104,9 @@ def _load_manifest(build_root: Path) -> dict:
 
 
 def _load_tools(build_root: Path, source_root: Path) -> dict[str, list[str]]:
-    tools_map = (yaml.safe_load((build_root / "tools.yaml").read_text(encoding="utf-8")) or {}).get("agents", {})
+    tools_map = (yaml.safe_load((build_root / "tools.yaml").read_text(encoding="utf-8")) or {}).get("agents") or {}
+    if not isinstance(tools_map, dict):
+        raise RenderError("tools.yaml `agents` must be a mapping of agent path to tool list")
     sources = {f"agents/{path.name}" for path in (source_root / "agents").glob("*.agent.md")}
     missing = sorted(sources - set(tools_map))
     extra = sorted(set(tools_map) - sources)
@@ -112,7 +114,17 @@ def _load_tools(build_root: Path, source_root: Path) -> dict[str, list[str]]:
         details = [f"  - missing tools map entry: {rel}" for rel in missing]
         details += [f"  - tools map names no source agent: {rel}" for rel in extra]
         raise RenderError("tools.yaml does not match agents/:\n" + "\n".join(details))
+    invalid = _invalid_tools(tools_map)
+    if invalid:
+        raise RenderError("tools.yaml entries must be lists of tool names:\n" + "\n".join(f"  - {rel}" for rel in invalid))
     return {rel: list(tools) for rel, tools in tools_map.items()}
+
+
+def _invalid_tools(agent_tools: dict) -> list[str]:
+    """Tools-map entries that are not a list of tool names (a blank entry parses as None)."""
+    return sorted(
+        rel for rel, tools in agent_tools.items() if not isinstance(tools, list) or not all(isinstance(t, str) and t for t in tools)
+    )
 
 
 def _binding(build_root: Path, plugin: str, agent_ids: list[str]) -> str:
@@ -165,10 +177,9 @@ def render(source_root: Path, bundle_root: Path) -> tuple[int, int]:
     staging.mkdir(parents=True)
     try:
         _write_bundle(source_root, staging, manifest, tools, layout, skill_paths, skills, binding)
-    except BaseException:
+        _replace(staging, bundle_root)
+    finally:
         shutil.rmtree(staging, ignore_errors=True)
-        raise
-    _replace(staging, bundle_root)
     return len(tools), len(skill_paths)
 
 
@@ -234,7 +245,11 @@ def _replace(staging: Path, bundle_root: Path) -> None:
         return
     retired = bundle_root.parent / f".{bundle_root.name}.retired-{uuid.uuid4().hex}"
     bundle_root.rename(retired)
-    staging.rename(bundle_root)
+    try:
+        staging.rename(bundle_root)
+    except BaseException:
+        retired.rename(bundle_root)
+        raise
     shutil.rmtree(retired)
 
 
