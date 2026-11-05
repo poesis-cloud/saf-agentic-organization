@@ -28,6 +28,7 @@ import posixpath
 import re
 import shutil
 import sys
+import uuid
 from pathlib import Path
 
 import yaml
@@ -103,7 +104,9 @@ def _load_manifest(build_root: Path) -> dict:
 
 
 def _load_tools(build_root: Path, source_root: Path) -> dict[str, list[str]]:
-    tools_map = (yaml.safe_load((build_root / "tools.yaml").read_text(encoding="utf-8")) or {}).get("agents", {})
+    tools_map = (yaml.safe_load((build_root / "tools.yaml").read_text(encoding="utf-8")) or {}).get("agents") or {}
+    if not isinstance(tools_map, dict):
+        raise RenderError("tools.yaml `agents` must be a mapping of agent path to tool list")
     sources = {f"agents/{path.name}" for path in (source_root / "agents").glob("*.agent.md")}
     missing = sorted(sources - set(tools_map))
     extra = sorted(set(tools_map) - sources)
@@ -111,7 +114,17 @@ def _load_tools(build_root: Path, source_root: Path) -> dict[str, list[str]]:
         details = [f"  - missing tools map entry: {rel}" for rel in missing]
         details += [f"  - tools map names no source agent: {rel}" for rel in extra]
         raise RenderError("tools.yaml does not match agents/:\n" + "\n".join(details))
+    invalid = _invalid_tools(tools_map)
+    if invalid:
+        raise RenderError("tools.yaml entries must be lists of tool names:\n" + "\n".join(f"  - {rel}" for rel in invalid))
     return {rel: list(tools) for rel, tools in tools_map.items()}
+
+
+def _invalid_tools(agent_tools: dict) -> list[str]:
+    """Tools-map entries that are not a list of tool names (a blank entry parses as None)."""
+    return sorted(
+        rel for rel, tools in agent_tools.items() if not isinstance(tools, list) or not all(isinstance(t, str) and t for t in tools)
+    )
 
 
 def _binding(build_root: Path, plugin: str, agent_ids: list[str]) -> str:
@@ -160,9 +173,26 @@ def render(source_root: Path, bundle_root: Path) -> tuple[int, int]:
     agent_ids = sorted(Path(rel).name[: -len(".agent.md")] for rel in tools)
     binding = _binding(build_root, manifest["name"], agent_ids)
 
-    if bundle_root.exists():
-        shutil.rmtree(bundle_root)
-    bundle_root.mkdir(parents=True)
+    staging = _staging_path(bundle_root)
+    staging.mkdir(parents=True)
+    try:
+        _write_bundle(source_root, staging, manifest, tools, layout, skill_paths, skills, binding)
+        _replace(staging, bundle_root)
+    finally:
+        shutil.rmtree(staging, ignore_errors=True)
+    return len(tools), len(skill_paths)
+
+
+def _write_bundle(
+    source_root: Path,
+    bundle_root: Path,
+    manifest: dict,
+    tools: dict[str, list[str]],
+    layout: list[str],
+    skill_paths: list[Path],
+    skills: set[str],
+    binding: str,
+) -> None:
     ignore = shutil.ignore_patterns("__pycache__", "*.pyc", ".pytest_cache")
     for name in layout:
         if (source_root / name).is_dir():
@@ -201,7 +231,26 @@ def render(source_root: Path, bundle_root: Path) -> tuple[int, int]:
 
     _write_json(bundle_root / "plugin.json", manifest)
     _write_json(bundle_root / MARKETPLACE, _marketplace(manifest))
-    return len(tools), len(skill_paths)
+
+
+def _staging_path(bundle_root: Path) -> Path:
+    """A sibling of the bundle root, so the finished render replaces it with a rename."""
+    return bundle_root.parent / f".{bundle_root.name}.render-{uuid.uuid4().hex}"
+
+
+def _replace(staging: Path, bundle_root: Path) -> None:
+    """Swap a complete render in for the bundle root; the earlier bundle is removed only after."""
+    if not bundle_root.exists():
+        staging.rename(bundle_root)
+        return
+    retired = bundle_root.parent / f".{bundle_root.name}.retired-{uuid.uuid4().hex}"
+    bundle_root.rename(retired)
+    try:
+        staging.rename(bundle_root)
+    except BaseException:
+        retired.rename(bundle_root)
+        raise
+    shutil.rmtree(retired)
 
 
 def _marketplace(manifest: dict) -> dict:
@@ -245,9 +294,13 @@ def main() -> int:
 
 
 def _unsafe_target(source_root: Path, bundle_root: Path) -> bool:
-    """The bundle root is wiped first: refuse the source, its ancestors, and any existing path
-    that is not an earlier rendered bundle (a directory with `plugin.json` at its root)."""
+    """The bundle root is replaced: refuse the source, its ancestors, its `builds` subtree (the
+    checked-in build inputs carry a `plugin.json` too), and any existing path that is not an
+    earlier rendered bundle (a directory with `plugin.json` at its root)."""
     if bundle_root == source_root or bundle_root in source_root.parents:
+        return True
+    builds = source_root / BUILD.parts[0]
+    if bundle_root == builds or builds in bundle_root.parents:
         return True
     if not bundle_root.exists():
         return False

@@ -264,7 +264,7 @@ copilot plugin install poesis-saf-agentic-organization@poesis-saf-agentic-organi
 
 ```bash
 BUNDLE=~/.saf/github-copilot-cli
-"$PY" "$ORG/builds/github-copilot-cli/render_bundle.py" "$ORG" "$BUNDLE"   # or: make bundle-cli CLI_BUNDLE_DIR=...
+"$PY" "$ORG/builds/github-copilot-cli/render_bundle.py" "$ORG" "$BUNDLE"   # or: make -C "$ORG" bundle-cli CLI_BUNDLE_DIR=...
 make -C saf-agentic-harness install-hooks-copilot-cli FRAMEWORK_DIR="$ORG" BUNDLE_DIR="$BUNDLE" \
     WORKSPACE_DIR=/path/to/portfolio HARNESS_PYTHON="$PY"
 copilot plugin marketplace add "$BUNDLE"
@@ -287,8 +287,8 @@ instance: after `no-next-step`, start a new session for the next run (e.g. the n
 
 ```bash
 BUNDLE=/tmp/github-copilot-bundle
-"$PY" builds/github-copilot/render_bundle.py . "$BUNDLE"    # or: make bundle BUNDLE_DIR=...
-make -C ../saf-agentic-harness install-hooks FRAMEWORK_DIR="$ORG" BUNDLE_DIR="$BUNDLE"
+"$PY" "$ORG/builds/github-copilot/render_bundle.py" "$ORG" "$BUNDLE"   # or: make -C "$ORG" bundle BUNDLE_DIR=...
+make -C "$ORG/../saf-agentic-harness" install-hooks FRAMEWORK_DIR="$ORG" BUNDLE_DIR="$BUNDLE"
 ```
 
 The installer writes the workspace hook file, the orchestrators' session-started hook, and the
