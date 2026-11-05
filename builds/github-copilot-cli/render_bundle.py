@@ -22,6 +22,7 @@ The harness installer runs second and writes `<bundle>/hooks.json` plus an agent
 
 from __future__ import annotations
 
+import filecmp
 import json
 import os
 import posixpath
@@ -177,7 +178,7 @@ def render(source_root: Path, bundle_root: Path) -> tuple[int, int]:
     staging.mkdir(parents=True)
     try:
         _write_bundle(source_root, staging, manifest, tools, layout, skill_paths, skills, binding)
-        _replace(staging, bundle_root)
+        _promote(staging, bundle_root)
     finally:
         shutil.rmtree(staging, ignore_errors=True)
     return len(tools), len(skill_paths)
@@ -238,19 +239,40 @@ def _staging_path(bundle_root: Path) -> Path:
     return bundle_root.parent / f".{bundle_root.name}.render-{uuid.uuid4().hex}"
 
 
-def _replace(staging: Path, bundle_root: Path) -> None:
-    """Swap a complete render in for the bundle root; the earlier bundle is removed only after."""
+def _promote(staging: Path, bundle_root: Path) -> None:
+    """Move a complete render into place. A new bundle root is the renamed staging directory; an
+    existing one is updated in place and never renamed, because a host that loads the bundle live
+    (the Copilot CLI local marketplace) keeps it open and Windows refuses to rename an open
+    directory: changed files are replaced, new ones added, and stale ones removed."""
     if not bundle_root.exists():
         staging.rename(bundle_root)
         return
-    retired = bundle_root.parent / f".{bundle_root.name}.retired-{uuid.uuid4().hex}"
-    bundle_root.rename(retired)
-    try:
-        staging.rename(bundle_root)
-    except BaseException:
-        retired.rename(bundle_root)
-        raise
-    shutil.rmtree(retired)
+    rendered: set[Path] = set()
+    for root, dirs, files in os.walk(staging):
+        rel_root = Path(root).relative_to(staging)
+        for name in dirs:
+            rendered.add(rel_root / name)
+            target = bundle_root / rel_root / name
+            if target.is_symlink() or target.is_file():
+                target.unlink()
+            target.mkdir(exist_ok=True)
+        for name in files:
+            rendered.add(rel_root / name)
+            source, target = Path(root, name), bundle_root / rel_root / name
+            if target.is_dir() and not target.is_symlink():
+                shutil.rmtree(target)
+            elif target.is_file() and filecmp.cmp(source, target, shallow=False):
+                continue
+            os.replace(source, target)
+    for root, dirs, files in os.walk(bundle_root, topdown=False):
+        rel_root = Path(root).relative_to(bundle_root)
+        for name in files:
+            if rel_root / name not in rendered:
+                Path(root, name).unlink()
+        for name in dirs:
+            path = Path(root, name)
+            if rel_root / name not in rendered:
+                path.unlink() if path.is_symlink() else shutil.rmtree(path)
 
 
 def _marketplace(manifest: dict) -> dict:
