@@ -3,7 +3,9 @@
 
 from __future__ import annotations
 
+import filecmp
 import json
+import os
 import shutil
 import sys
 import uuid
@@ -89,7 +91,7 @@ def main() -> int:
         for rel in manifest.get("agents", []):
             _inject_tools(staging / rel, list(agent_tools[rel]))
         (staging / "plugin.json").write_text(manifest_path.read_text())
-        _replace(staging, bundle_root)
+        _promote(staging, bundle_root)
     except (OSError, ValueError) as error:
         print(f"render failed: {error}", file=sys.stderr)
         return 1
@@ -115,19 +117,40 @@ def _ignore_except(staging: Path):
     return ignore
 
 
-def _replace(staging: Path, bundle_root: Path) -> None:
-    """Swap a complete render in for the bundle root; the earlier bundle is removed only after."""
+def _promote(staging: Path, bundle_root: Path) -> None:
+    """Move a complete render into place. A new bundle root is the renamed staging directory; an
+    existing one is updated in place and never renamed, because a host that loads the bundle live
+    (the Copilot CLI local marketplace) keeps it open and Windows refuses to rename an open
+    directory: changed files are replaced, new ones added, and stale ones removed."""
     if not bundle_root.exists():
         staging.rename(bundle_root)
         return
-    retired = bundle_root.parent / f".{bundle_root.name}.retired-{uuid.uuid4().hex}"
-    bundle_root.rename(retired)
-    try:
-        staging.rename(bundle_root)
-    except BaseException:
-        retired.rename(bundle_root)
-        raise
-    shutil.rmtree(retired)
+    rendered: set[Path] = set()
+    for root, dirs, files in os.walk(staging):
+        rel_root = Path(root).relative_to(staging)
+        for name in dirs:
+            rendered.add(rel_root / name)
+            target = bundle_root / rel_root / name
+            if target.is_symlink() or target.is_file():
+                target.unlink()
+            target.mkdir(exist_ok=True)
+        for name in files:
+            rendered.add(rel_root / name)
+            source, target = Path(root, name), bundle_root / rel_root / name
+            if target.is_dir() and not target.is_symlink():
+                shutil.rmtree(target)
+            elif target.is_file() and filecmp.cmp(source, target, shallow=False):
+                continue
+            os.replace(source, target)
+    for root, dirs, files in os.walk(bundle_root, topdown=False):
+        rel_root = Path(root).relative_to(bundle_root)
+        for name in files:
+            if rel_root / name not in rendered:
+                Path(root, name).unlink()
+        for name in dirs:
+            path = Path(root, name)
+            if rel_root / name not in rendered:
+                path.unlink() if path.is_symlink() else shutil.rmtree(path)
 
 
 def _unsafe_target(source_root: Path, bundle_root: Path) -> bool:

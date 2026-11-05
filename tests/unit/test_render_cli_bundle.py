@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import re
 import shutil
 import sys
@@ -313,25 +314,73 @@ def test_unexpected_error_cleans_staging(source: Path, monkeypatch: pytest.Monke
     assert not (source / "dist").exists()
 
 
-def test_failed_promotion_restores_earlier_bundle(
+def _lock_directory(monkeypatch: pytest.MonkeyPatch, locked: Path) -> None:
+    """Simulate Windows with the bundle loaded live: the open directory cannot be renamed."""
+    for name in ("rename", "replace"):
+        original = getattr(os, name)
+
+        def refuse(src, dst, *args, _original=original, **kwargs):
+            if Path(src) == locked:
+                raise PermissionError(5, "Access is denied", str(src))
+            return _original(src, dst, *args, **kwargs)
+
+        monkeypatch.setattr(os, name, refuse)
+
+
+def test_rerender_updates_live_bundle_in_place(source: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    fresh = tmp_path / "fresh"
+    assert _run(monkeypatch, source, fresh) == 0
+    bundle = tmp_path / "bundle"
+    assert _run(monkeypatch, source, bundle) == 0
+    inode = bundle.stat().st_ino
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (outside / "keep.txt").write_text("keep", encoding="utf-8")
+    (bundle / "hooks.json").write_text("{}", encoding="utf-8")
+    (bundle / "stale" / "deep").mkdir(parents=True)
+    (bundle / "stale" / "deep" / "old.md").write_text("old", encoding="utf-8")
+    (bundle / "link").symlink_to(outside, target_is_directory=True)
+    (bundle / "file-link").symlink_to(outside / "keep.txt")
+    agent = bundle / "agents/value-management-officer.agent.md"
+    agent.unlink()
+    (agent / "nested").mkdir(parents=True)
+    shutil.rmtree(bundle / "conf")
+    (bundle / "conf").write_text("not a directory", encoding="utf-8")
+    _lock_directory(monkeypatch, bundle)
+    assert _run(monkeypatch, source, bundle) == 0
+    assert bundle.stat().st_ino == inode
+    assert _tree(bundle) == _tree(fresh)
+    assert not (bundle / "link").exists() and not (bundle / "link").is_symlink()
+    assert not (bundle / "file-link").is_symlink()
+    assert (outside / "keep.txt").read_text(encoding="utf-8") == "keep"
+    assert sorted(p.name for p in tmp_path.iterdir()) == sorted(["bundle", "fresh", "outside", "source"])
+    assert not (bundle / "hooks.json").exists()
+
+
+def test_failed_in_place_update_can_be_retried(
     source: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     bundle = tmp_path / "bundle"
     assert _run(monkeypatch, source, bundle) == 0
-    (bundle / "hooks.json").write_text("{}", encoding="utf-8")
-    earlier = _tree(bundle)
-    rename = Path.rename
+    (source / "agents/value-management-officer.agent.md").write_text(
+        (source / "agents/value-management-officer.agent.md").read_text(encoding="utf-8") + "\nv2\n", encoding="utf-8"
+    )
+    with monkeypatch.context() as patch:
+        _lock_directory(patch, bundle)
+        replace = os.replace
 
-    def failing_rename(self: Path, target: Path) -> Path:
-        if self.name.startswith(".bundle.render-"):
-            raise OSError("promotion failed")
-        return rename(self, target)
+        def failing_replace(src, dst, *args, **kwargs):
+            if Path(dst).name.endswith(".agent.md"):
+                raise PermissionError(5, "Access is denied", str(dst))
+            return replace(src, dst, *args, **kwargs)
 
-    monkeypatch.setattr(Path, "rename", failing_rename)
-    assert _run(monkeypatch, source, bundle) == 1
-    assert "promotion failed" in capsys.readouterr().err
-    assert _tree(bundle) == earlier
+        patch.setattr(os, "replace", failing_replace)
+        assert _run(monkeypatch, source, bundle) == 1
+    assert "Access is denied" in capsys.readouterr().err
+    assert (bundle / "plugin.json").is_file()
     assert sorted(p.name for p in tmp_path.iterdir()) == ["bundle", "source"]
+    assert _run(monkeypatch, source, bundle) == 0
+    assert "v2" in (bundle / "agents/value-management-officer.agent.md").read_text(encoding="utf-8")
 
 
 def test_render_usage(monkeypatch: pytest.MonkeyPatch) -> None:
