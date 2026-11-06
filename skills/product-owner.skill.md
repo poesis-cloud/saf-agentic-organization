@@ -1,7 +1,7 @@
 ---
 name: product-owner
 user-invocable: false
-description: '**SAFe AUTHOR SKILL — PO hat.** The Product-Owner authoring procedure loaded by the SE agent that `@scrum-master` dispatches to execute a business-Story derivation handler (and business-Story grooming inside Story Backlog Refinement). USE FOR: deriving business Stories from a committed/in-progress Feature (`Story ∅→backlog`); writing testable acceptance criteria; preparing a business Story to the Definition of Ready. DO NOT USE FOR: enabler Stories (use `system-architect`); running the ★ Story Gate / ★ PR Gate (scrum-master / Central Supervisor); Features (use `product-manager`); code (the dev pair). Loaded by dispatch prompt: `Acting as PO — load skills/product-owner, execute handler "Story@backlog"`.'
+description: '**SAFe AUTHOR SKILL — PO hat.** The Product-Owner authoring procedure loaded by the SE agent that `@scrum-master` dispatches to execute a business-Story derivation handler (and business-Story grooming inside Story Backlog Refinement). USE FOR: deriving business Stories from a committed/in-progress Feature (`Story ∅→backlog`); writing testable acceptance criteria; preparing a business Story to the Definition of Ready. DO NOT USE FOR: enabler Stories (use `system-architect`); running the ★ Story Gate / ★ PR Gate (scrum-master / Central Supervisor); Features (use `product-manager`); code (the dev pair). Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `execute handler "Story@backlog"`.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors

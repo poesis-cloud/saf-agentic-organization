@@ -49,7 +49,8 @@ Before executing any ceremony or practice row, load that sub-orchestration skill
 |---|---|---|---|---|
 | Strategic Theme + idea | Practice·CE | **Epic Lean Business Case** | — | `epic-lean-business-case/draft-epic`: `∅→funnel` |
 | `funnel` valid | Practice·CE | **Epic Lean Business Case** | — | `epic-transition`: `funnel→reviewing` |
-| `reviewing` valid | Practice·CE | **Architectural Vision** | — | `epic-transition`: `reviewing→analyzing` |
+| `reviewing` valid | Practice·CE | **Architectural Vision** | — | `epic-vision-alignment` (once per Epic the Vision decides about), then `epic-transition`: `reviewing→analyzing` |
+| the Vision decides about an Epic | Practice·CE | **Epic–Vision Alignment** | — | `epic-vision-alignment`: EA → Enabler Epic, BO → Epic, BO → Lean Business Case |
 | runway gap after shaping | Practice·CE | **Architectural Vision** seeds Enabler Epic | — | `epic-transition`: parent `→funnel`; replay `epic-lean-business-case` (`draft-enabler-epic`) |
 | `analyzing` (challenge done) | **Gate** | — | **★ Epic Gate** (CS·BO) | `epic-transition`: accept→`portfolio-backlog` · reject→`funnel` |
 | →`portfolio-backlog` or Epic `→done` | Ceremony | **Participatory Budgeting** | — | `strategic-investment-planning`: budget allocation |

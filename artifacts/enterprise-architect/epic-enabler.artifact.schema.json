@@ -34,6 +34,7 @@
     "type": "enabler"
   },
   "required": [
+    "id",
     "status",
     "type",
     "title",
@@ -51,6 +52,11 @@
     "enablerType"
   ],
   "properties": {
+    "id": {
+      "description": "Portfolio Epic id (E-N) of the business Epic this Enabler Epic is the sibling of: the key an Architectural Vision's `closedItems[].unit` names.",
+      "type": "string",
+      "minLength": 1
+    },
     "status": {
       "description": "funnel | reviewing | analyzing | portfolio-backlog | implementing | done | blocked | not-needed (the step decided no enabler is needed; the file records that decision and leaves the flow)",
       "enum": [

@@ -124,14 +124,15 @@ only evidence (see [docs/step-artifacts.md](docs/step-artifacts.md)).
 | Workflow | Purpose | Mains presented at the human gate |
 |---|---|---|
 | `epic-lean-business-case` | Write a portfolio bet | `epic`, `lean-business-case`, `epic-enabler` |
-| `architectural-vision` | Portfolio runway + NFR backbone | `architecture-vision` |
+| `architectural-vision` | Portfolio runway + NFR backbone; records its decisions on Epics, writes no Epic | `architecture-vision` |
+| `epic-vision-alignment` | Write the Vision's decisions on ONE Epic into it (one run per Epic the Vision names) | `epic-enabler`, `epic`, `lean-business-case` (owner updates) |
 | `strategic-investment-planning` | Allocate / guardrail ART funding | `budget-allocation` |
 | `strategic-portfolio-review` | Keep / pivot / stop / re-rank | themes, vision, roadmap, `architecture-vision` |
 | `portfolio-sync` | Portfolio snapshot; registers ONE product per run | `portfolio-sync`, `portfolio-manifest`, `product-manifest`, `portfolio-kanban` |
 | `epic-transition` | Move ONE Epic (and its enabler) to a new `status:` | `epic`, `epic-enabler` (owner steps), `portfolio-kanban` |
-| `feature-derivation` | Split an approved Epic into ART Features | `feature`, `feature-enabler` |
+| `feature-derivation` | Split an approved Epic into ART Features (refused while no Epic is approved) | `feature`, `feature-enabler` |
 | `feature-backlog-refinement` | Write a PI-ready Feature | `feature`, `feature-enabler` |
-| `architectural-runway-extension` | Extend ART runway (product NFR register before ADR) | `nfr-list`, `adr`, `architecture-runway` |
+| `architectural-runway-extension` | Extend ART runway (product NFR register before ADR); its decisions written into the Features by their owners | `nfr-list`, `adr`, `architecture-runway`, `feature`, `feature-enabler` (owner updates) |
 | `feature-transition` | Move ONE Feature (and its enabler) to a new `status:` | `feature`, `feature-enabler` (owner steps), `program-kanban` |
 | `pi-planning` | ART PI commit | confirm vision/roadmap/feature/runway; write `objectives` |
 | `art-sync` | Mid-PI impediments | mediation record only |
@@ -282,6 +283,8 @@ and open a new session. The orchestrators are `value-management-officer`,
 namespaced by the plugin name). Harness requests need no permission rule: the
 harness hook answers them itself (see below). One orchestrator session drives one workflow
 instance: after `no-next-step`, start a new session for the next run (e.g. the next product).
+Reaching a ★ gate takes several runs: the orchestrator names the next workflow at each return,
+and answers "drive to the gate" with the plan of runs, one session each.
 
 ### VS Code Copilot Chat
 

@@ -211,3 +211,51 @@ def test_pm_skill_is_safe_feature_authoring() -> None:
     assert "Poesis GitHub Project sync" in text
     body = text.split("---", 2)[-1]
     assert "github-sync" not in body.lower()
+
+
+def _actor_skills() -> set[str]:
+    """Actors with an author or bench skill: the skill the harness injects into their step (function 7)."""
+    return {
+        slug
+        for slug in skill_slugs()
+        if str(parse_frontmatter(ORG / "skills" / f"{slug}.skill.md").get("description", "")).startswith(
+            ("**SAFe AUTHOR SKILL", "**SAFe BENCH SKILL")
+        )
+    }
+
+
+def test_actor_skills_are_the_author_and_bench_hats() -> None:
+    assert _actor_skills() == {
+        "business-owner",
+        "developer",
+        "enterprise-architect",
+        "operator",
+        "product-manager",
+        "product-owner",
+        "quality-engineer",
+        "security-expert",
+        "system-architect",
+        "tech-writer",
+        "ux-designer",
+    }
+
+
+def test_every_step_declares_its_actor_authoring_skill() -> None:
+    actor_skills = _actor_skills()
+    missing = [
+        f"{slug}/{step['slug']} ({step['actor']})"
+        for slug, workflow in load_workflows().items()
+        for step in workflow["steps"]
+        if step["actor"] in actor_skills and step["actor"] not in slug_refs(step.get("skills"))
+    ]
+    assert missing == []
+
+
+def test_dispatch_prose_does_not_name_the_skill_to_load() -> None:
+    offenders = [
+        path.name
+        for folder in ("skills", "agents", "instructions")
+        for path in sorted((ORG / folder).rglob("*.md"))
+        if "load skills/" in path.read_text(encoding="utf-8")
+    ]
+    assert offenders == []

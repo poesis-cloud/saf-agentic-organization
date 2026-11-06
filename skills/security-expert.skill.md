@@ -1,7 +1,7 @@
 ---
 name: security-expert
 user-invocable: false
-description: '**SAFe BENCH SKILL — security-expert hat.** The security authoring procedure loaded by the SE agent that an orchestrator dispatches as `@security-expert`. USE FOR: producing a **security review** on a trust-boundary-touching subject during Architectural Runway Extension, Verification, or PR readiness — access control, validation, injection, secrets handling, unsafe defaults, data exposure, threat / abuse paths; rendering a calibrated pre-merge or architecture-gate security verdict. DO NOT USE FOR: deciding the ★ gate itself, merging code, or flipping status (Central Supervisor / orchestrator); rewriting owner-authored artifacts. Loaded by dispatch prompt: `Acting as security-expert — load skills/security-expert, produce "<subject>-security-review"`.'
+description: '**SAFe BENCH SKILL — security-expert hat.** The security authoring procedure loaded by the SE agent that an orchestrator dispatches as `@security-expert`. USE FOR: producing a **security review** on a trust-boundary-touching subject during Architectural Runway Extension, Verification, or PR readiness — access control, validation, injection, secrets handling, unsafe defaults, data exposure, threat / abuse paths; rendering a calibrated pre-merge or architecture-gate security verdict. DO NOT USE FOR: deciding the ★ gate itself, merging code, or flipping status (Central Supervisor / orchestrator); rewriting owner-authored artifacts. Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `produce "<subject>-security-review"`.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors

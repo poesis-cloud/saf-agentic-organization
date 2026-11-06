@@ -33,6 +33,7 @@
     "type": "business"
   },
   "required": [
+    "id",
     "status",
     "type",
     "title",
@@ -49,6 +50,11 @@
     "github"
   ],
   "properties": {
+    "id": {
+      "description": "Portfolio Epic id (E-N), shared with its sibling Enabler Epic: the key a Feature's `parentEpic` and an Architectural Vision's `closedItems[].unit` name.",
+      "type": "string",
+      "minLength": 1
+    },
     "status": {
       "description": "funnel | reviewing | analyzing | portfolio-backlog | implementing | done | blocked",
       "enum": [

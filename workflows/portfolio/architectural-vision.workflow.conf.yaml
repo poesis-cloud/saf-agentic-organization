@@ -17,8 +17,11 @@ description: >
   Purpose: establish the portfolio architectural runway and NFR backbone. Act:
   Demand. Orchestrator: Value Management Officer. In-scope mains:
   architecture-vision. Challenges: security (NFR backbone), operability (not
-  evaluated). Evaluate: architecture-vision; KO reiterates the workflow (new
-  instance; the EA owner step absorbs the KO).
+  evaluated). The Vision records its decisions on Epics (closedItems,
+  Decisions on Epics); it never writes an Epic. When it decides about Epics,
+  the next run is epic-vision-alignment, once per Epic, in a new session; a
+  Vision-only run ends here. Evaluate: architecture-vision; KO reiterates the
+  workflow (new instance; the EA owner step absorbs the KO).
   Use when: portfolio NFR backbone, target ARTs, enabler Epic seeds, Architectural
   Vision itself. Refuse ART ADRs (architectural-runway-extension). Refuse Epic
   hypothesis (epic-lean-business-case). Strategic Portfolio Review may confirm
@@ -42,6 +45,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: enterprise-architect
+  skills: enterprise-architect
   artifact: architecture-vision
   conditions: []
   instructions: portfolio-architectural-vision-draft
@@ -58,6 +62,7 @@ steps:
     fast-iteration: 3
     schema-adherence: 6
   actor: security-expert
+  skills: security-expert
   artifact: security-review
   conditions:
   - slug: after-ea-draft
@@ -77,6 +82,7 @@ steps:
     fast-iteration: 3
     schema-adherence: 6
   actor: operator
+  skills: operator
   artifact: operability-review
   conditions:
   - slug: after-ea-draft
@@ -96,6 +102,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: enterprise-architect
+  skills: enterprise-architect
   artifact: architecture-vision
   conditions:
   - slug: after-challenge-security-nfr

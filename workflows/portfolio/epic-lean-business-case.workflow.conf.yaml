@@ -41,6 +41,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: business-owner
+  skills: business-owner
   artifact: epic
   conditions: []
   instructions: portfolio-epic-lean-business-case-draft-epic
@@ -57,6 +58,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: business-owner
+  skills: business-owner
   artifact: lean-business-case
   conditions:
   - slug: after-draft-epic
@@ -76,6 +78,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: enterprise-architect
+  skills: enterprise-architect
   artifact: epic-enabler
   conditions:
   - slug: after-draft-epic
@@ -95,6 +98,7 @@ steps:
     fast-iteration: 3
     schema-adherence: 6
   actor: developer
+  skills: developer
   artifact: feasibility-review
   conditions:
   - slug: after-discovery-and-draft
@@ -117,6 +121,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: business-owner
+  skills: business-owner
   artifact: lean-business-case
   conditions:
   - slug: after-discovery-and-draft
@@ -142,6 +147,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: business-owner
+  skills: business-owner
   artifact: epic
   conditions:
   - slug: after-owner-rewrite
@@ -161,6 +167,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: enterprise-architect
+  skills: enterprise-architect
   artifact: epic-enabler
   conditions:
   - slug: after-owner-rewrite

@@ -114,10 +114,19 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Checkout harness
+              # The harness specs are the reference: test against harness `main`, which must
+              # carry the condition language with load-time typing (de1b5f0 or later).
               uses: actions/checkout@v4
               with:
                   repository: poesis-cloud/saf-agentic-harness
+                  ref: main
                   path: .harness
+                  fetch-depth: 0
+
+            - name: Require harness main at de1b5f0 or later
+              run: |
+                  git -C .harness merge-base --is-ancestor de1b5f0 HEAD
+                  echo "harness main at $(git -C .harness rev-parse --short HEAD)"
 
             - name: Set up Python
               uses: actions/setup-python@v5

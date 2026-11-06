@@ -19,7 +19,10 @@ description: >
   Engineer. In-scope mains: feature, feature-enabler. Product Manager
   derives the business Feature; System Architect derives the Enabler
   Feature. One business Feature per run: split an Epic into N Features with
-  N runs. No challenge protocol here — derived items then enter
+  N runs. Guard: the harness refuses to start the run while no business Epic
+  is approved (portfolio-backlog or implementing): the ★ Epic Gate comes
+  first; it withholds the business Feature unless its parentEpic names an
+  approved business Epic (null, a standalone Feature, is accepted). No challenge protocol here — derived items then enter
   feature-backlog-refinement. Evaluate: those mains. Refuse Feature AC/WSJF
   thickening and NFR traces (that is refinement). Refuse ADR/NFR register
   (that is architectural-runway-extension). There is no Feature-to-Story
@@ -44,8 +47,25 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: product-manager
+  skills: product-manager
   artifact: feature
-  conditions: []
+  conditions:
+  - slug: an-approved-epic-exists
+    kind: precondition
+    setSelector:
+      setQuery: >-
+        workspace.filter(e, e.kind == 'epic'
+        && e.data.status in ['portfolio-backlog', 'implementing'])
+    setPredicate: selected.size() > 0
+  - slug: parent-epic-approved
+    kind: postcondition
+    setSelector:
+      setQuery: >-
+        workspace.filter(f, f.path == step.artifact.path && f.data.parentEpic != null)
+    setPredicate: >-
+      selected.all(f, workspace.exists(e, e.kind == 'epic'
+      && e.data.id == f.data.parentEpic
+      && e.data.status in ['portfolio-backlog', 'implementing']))
   instructions: program-feature-derivation-derive-business
 - slug: derive-enabler
   description: Main artifact draft — System Architect derives the sibling Enabler Feature from the approved Epic.
@@ -60,6 +80,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: system-architect
+  skills: system-architect
   artifact: feature-enabler
   conditions:
   - slug: after-derive-business

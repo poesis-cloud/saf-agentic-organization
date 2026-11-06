@@ -38,6 +38,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: developer
+  skills: developer
   artifact: code-change
   conditions: []
   instructions: team-pair-programming-drive-code-change

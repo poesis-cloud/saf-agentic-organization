@@ -1,7 +1,7 @@
 ---
 name: product-manager
 user-invocable: false
-description: '**SAFe AUTHOR SKILL — PM hat.** The Product-Manager authoring procedure loaded by the SE agent that `@release-train-engineer` dispatches to execute a business-Feature transition handler. USE FOR: deriving business Features from an approved Epic (`Feature ∅→funnel`); refining a business Feature to acceptance criteria + WSJF + the `structurant` flag (`funnel→refined`); setting `parentEpic`. DO NOT USE FOR: enabler Features (use `system-architect`); deciding any ★ gate (Central Supervisor); authoring Epics (use `business-owner`) or Stories (use `product-owner`); ADRs (use `system-architect`). Loaded explicitly by dispatch prompt: `Acting as PM — load skills/product-manager, execute handler "<Feature@state>"`.'
+description: '**SAFe AUTHOR SKILL — PM hat.** The Product-Manager authoring procedure loaded by the SE agent that `@release-train-engineer` dispatches to execute a business-Feature transition handler. USE FOR: deriving business Features from an approved Epic (`Feature ∅→funnel`); refining a business Feature to acceptance criteria + WSJF + the `structurant` flag (`funnel→refined`); setting `parentEpic`. DO NOT USE FOR: enabler Features (use `system-architect`); deciding any ★ gate (Central Supervisor); authoring Epics (use `business-owner`) or Stories (use `product-owner`); ADRs (use `system-architect`). Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `execute handler "<Feature@state>"`.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors

@@ -26,6 +26,7 @@ slug: <product-slug>-architecture-vision
 id: architecture-vision
 owner: central-supervisor   # EA hat
 revised: "YYYY-MM-DD"
+closedItems: []          # open items on Epics this Vision closes: { artifact: epic | epic-enabler, unit: <Epic id, e.g. E-2>, item: <openItems id>, resolution: <one line> }; epic-vision-alignment flips each to resolved on that Epic
 stepOutcomes: []          # every step that commits this file appends one entry: { step: <workflow-slug>/<step-slug>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <what was decided and why>, friction: <optional workflow friction observed> }
 ---
 
@@ -46,4 +47,11 @@ The runway the portfolio must build ahead of demand; seeds **enabler Epics** (`t
 
 ## Target ARTs / products
 Which products realise which parts of the Vision.
+
+## Decisions on Epics
+Per Epic or Enabler Epic (by id): the Feature seeds this Vision places on it (MVP or not, each
+with its target ART), the WSJF inputs the runway changes (job size), and the open items it
+closes (also listed in `closedItems`). The Vision never writes an Epic: `epic-vision-alignment`,
+run once per Epic named here, has the owners write them into the Enabler Epic, the Epic and
+the Lean Business Case. A Vision that decides about no Epic leaves this section empty.
 ```

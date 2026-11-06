@@ -23,11 +23,16 @@ SKILL_RULES = (
     "`no-next-step`",
     "needs a **new orchestrator session**: when you return the mains, tell the user so",
     "`portfolio-sync` writes **one** product manifest per run",
+    "**name the next workflow toward the gate**",
+    "**and say that it runs in a new orchestrator session**",
+    "only its first run is started, on assent: never improvise across instances",
 )
 AGENT_RULES = (
     "never calls the harness (`resolve-step` / `resolve-step-model`",
     "never reads the harness source or tests",
     "needs a new orchestrator session",
+    "which workflow comes next toward the gate",
+    "answer a \"drive to the gate\" request with that plan",
 )
 
 
@@ -49,6 +54,31 @@ def test_cli_host_binding_states_the_dispatch_boundaries() -> None:
     assert "`not-facilitator`" in text
     assert "never reads the harness source code or tests" in text
     assert "After `no-next-step` this session" in text
+    assert "which workflow comes next toward the gate" in text
+
+
+@pytest.mark.parametrize("slug", ORCHESTRATORS)
+def test_orchestrator_names_the_next_run_and_answers_drive_to_gate_with_a_plan(slug: str) -> None:
+    """Function 1 handling: a gate is several instances away, one orchestrator session each."""
+    text = (ORG_ROOT / "instructions" / slug / f"{slug}-interpret-speech-acts.instructions.md").read_text(encoding="utf-8")
+    for rule in (
+        "**Return, and the next run.** At `no-next-step` this session is done",
+        "say it runs in a **new** orchestrator session",
+        "**Drive to a gate**",
+        "answer it with the plan",
+        "Never improvise across instances.",
+        "One session per run." if slug != "value-management-officer" else "Seven runs, seven sessions.",
+    ):
+        assert rule in text
+
+
+def test_no_orchestrator_prose_drives_autonomously_to_a_gate_across_instances() -> None:
+    texts = [
+        (ORG_ROOT / folder / f"{slug}.{kind}.md").read_text(encoding="utf-8")
+        for slug in ORCHESTRATORS
+        for folder, kind in (("skills", "skill"), ("agents", "agent"))
+    ]
+    assert not [text for text in texts if "until the next gate packet is ready" in text or "until the ★ Epic Gate packet is ready" in text]
 
 
 def test_portfolio_sync_writes_one_product_manifest_per_run() -> None:

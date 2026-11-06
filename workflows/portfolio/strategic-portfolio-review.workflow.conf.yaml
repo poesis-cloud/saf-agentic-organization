@@ -37,6 +37,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: business-owner
+  skills: business-owner
   artifact: strategic-themes
   instructions: portfolio-strategic-portfolio-review-update-strategic-themes
 - slug: update-portfolio-vision
@@ -52,6 +53,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: business-owner
+  skills: business-owner
   artifact: portfolio-vision
   conditions:
   - slug: after-rerank
@@ -71,6 +73,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: business-owner
+  skills: business-owner
   artifact: portfolio-roadmap
   conditions:
   - slug: after-update-portfolio-vision
@@ -90,6 +93,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: enterprise-architect
+  skills: enterprise-architect
   artifact: architecture-vision
   conditions:
   - slug: after-update-portfolio-vision
@@ -109,6 +113,7 @@ steps:
     fast-iteration: 8
     schema-adherence: 8
   actor: business-owner
+  skills: business-owner
   artifact: portfolio-review-decision
   conditions:
   - slug: after-rerank

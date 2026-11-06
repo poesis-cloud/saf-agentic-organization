@@ -1,7 +1,7 @@
 ---
 name: enterprise-architect
 user-invocable: false
-description: '**SAFe AUTHOR SKILL — EA hat.** The Enterprise-Architect authoring procedure loaded by the SE agent that `@value-management-officer` dispatches to add the architecture runway to an Epic or author enabler Epics. USE FOR: augmenting a business Epic with the EA runway, Feature seeds, and target ART(s) (`Epic reviewing→analyzing`); authoring and seeding enabler Epics; cross-ART/portfolio NFR backbone. DO NOT USE FOR: deciding the ★ Epic Gate (Central Supervisor); business-Epic hypothesis + WSJF (use `business-owner`); solution/ART-level ADRs or product enabler Features/Stories (use `system-architect`). Loaded by dispatch prompt: `Acting as EA — load skills/enterprise-architect, execute handler "Epic@analyzing"`.'
+description: '**SAFe AUTHOR SKILL — EA hat.** The Enterprise-Architect authoring procedure loaded by the SE agent that `@value-management-officer` dispatches to add the architecture runway to an Epic or author enabler Epics. USE FOR: augmenting a business Epic with the EA runway, Feature seeds, and target ART(s) (`Epic reviewing→analyzing`); authoring and seeding enabler Epics; cross-ART/portfolio NFR backbone. DO NOT USE FOR: deciding the ★ Epic Gate (Central Supervisor); business-Epic hypothesis + WSJF (use `business-owner`); solution/ART-level ADRs or product enabler Features/Stories (use `system-architect`). Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `execute handler "Epic@analyzing"`.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors

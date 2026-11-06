@@ -37,6 +37,7 @@ steps:
     fast-iteration: 7
     schema-adherence: 8
   actor: quality-engineer
+  skills: quality-engineer
   artifact: qa-signoff
   conditions: []
   instructions: team-verification-record-qa-signoff

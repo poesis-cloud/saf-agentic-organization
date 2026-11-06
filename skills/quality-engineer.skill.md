@@ -1,7 +1,7 @@
 ---
 name: quality-engineer
 user-invocable: false
-description: '**SAFe BENCH SKILL — quality-engineer hat.** The quality / verification authoring procedure loaded by the SE agent that an orchestrator dispatches as `@quality-engineer`. USE FOR: producing a **testability review** on a subject during Feature Backlog Refinement; producing a **QA sign-off** against acceptance criteria + Definition of Done during Verification; recording bugs / escaped-defect findings. DO NOT USE FOR: deciding the ★ PR or Demo gate (Central Supervisor / orchestrator); implementing the fix (use `developer`); rewriting owner-authored backlog intent. Loaded by dispatch prompt: `Acting as quality-engineer — load skills/quality-engineer, produce "<subject>-testability-review"` or `... produce "<subject>-qa-signoff"`.'
+description: '**SAFe BENCH SKILL — quality-engineer hat.** The quality / verification authoring procedure loaded by the SE agent that an orchestrator dispatches as `@quality-engineer`. USE FOR: producing a **testability review** on a subject during Feature Backlog Refinement; producing a **QA sign-off** against acceptance criteria + Definition of Done during Verification; recording bugs / escaped-defect findings. DO NOT USE FOR: deciding the ★ PR or Demo gate (Central Supervisor / orchestrator); implementing the fix (use `developer`); rewriting owner-authored backlog intent. Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `produce "<subject>-testability-review"` or `... produce "<subject>-qa-signoff"`.'
 ---
 
 <!-- Copyright 2026 Poesis Cloud and contributors

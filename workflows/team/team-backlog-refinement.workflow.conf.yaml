@@ -45,6 +45,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: product-owner
+  skills: product-owner
   artifact: story
   conditions: []
   instructions: team-story-backlog-refinement-discovery-open-items-recorded-or-explicitly-none
@@ -61,6 +62,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: system-architect
+  skills: system-architect
   artifact: story-enabler
   conditions:
   - slug: after-draft
@@ -80,6 +82,7 @@ steps:
     fast-iteration: 3
     schema-adherence: 6
   actor: developer
+  skills: developer
   artifact: feasibility-review
   conditions:
   - slug: after-draft
@@ -102,6 +105,7 @@ steps:
     fast-iteration: 3
     schema-adherence: 6
   actor: ux-designer
+  skills: ux-designer
   artifact: ux-review
   conditions:
   - slug: after-draft
@@ -121,6 +125,7 @@ steps:
     fast-iteration: 3
     schema-adherence: 6
   actor: system-architect
+  skills: system-architect
   artifact: architecture-review
   conditions:
   - slug: after-draft
@@ -143,6 +148,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: product-owner
+  skills: product-owner
   artifact: story
   conditions:
   - slug: after-challenge-feasibility
@@ -168,6 +174,7 @@ steps:
     fast-iteration: 2
     schema-adherence: 8
   actor: system-architect
+  skills: system-architect
   artifact: story-enabler
   conditions:
   - slug: after-challenge-feasibility
