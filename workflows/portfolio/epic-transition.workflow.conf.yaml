@@ -21,11 +21,11 @@ description: >
   Officer renders the Portfolio Kanban. Input: one transition request (Epic,
   from and to status, trigger: a human gate decision, a roll-up, a block or an
   unblock, or the close with its cost snapshot). One Epic per run. The
-  orchestrator never writes an Epic status itself. Guard: the harness refuses
-  to start the run while an open item that the Architectural Vision closes
-  is still open on an Epic or Enabler Epic (run epic-vision-alignment for
-  that Epic first); each owner step refuses an inconsistent advance
-  with a recorded no-change. Do not Evaluate: the decision was made at the
+  orchestrator never writes an Epic status itself. Guard: the harness
+  withholds an owner step's delivery while the Epic or Enabler Epic it
+  delivers still carries an open item that the Architectural Vision closes
+  (run epic-vision-alignment for that Epic first); each owner step refuses
+  an inconsistent advance with a recorded no-change. Do not Evaluate: the decision was made at the
   gate or by the roll-up rule.
 instructions: value-management-officer-interpret-speech-acts
 orchestrator: value-management-officer
@@ -48,14 +48,14 @@ steps:
   artifact: epic
   conditions:
   - slug: no-epic-item-open-that-the-vision-closes
-    kind: precondition
+    kind: postcondition
     setSelector:
-      setQuery: "artifacts['epic'].filter(e, has(e.id) && e.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open' && artifacts['architecture-vision'].exists(v, has(v.closedItems) && v.closedItems.exists(c, c.artifact == 'epic' && c.unit == e.id && c.item == i.id))))"
-    setPredicate: selected.size() == 0
-  - slug: no-enabler-epic-item-open-that-the-vision-closes
-    kind: precondition
-    setSelector:
-      setQuery: "artifacts['epic-enabler'].filter(e, has(e.id) && e.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open' && artifacts['architecture-vision'].exists(v, has(v.closedItems) && v.closedItems.exists(c, c.artifact == 'epic-enabler' && c.unit == e.id && c.item == i.id))))"
+      setQuery: >-
+        workspace.filter(e, e.path == step.artifact.path
+        && e.data.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open'
+        && workspace.exists(v, v.kind == 'architecture-vision' && has(v.data.closedItems)
+        && v.data.closedItems.exists(c, c.artifact == 'epic' && c.unit == e.data.id
+        && c.item == i.id))))
     setPredicate: selected.size() == 0
   instructions: portfolio-epic-transition-transition-epic
 - slug: transition-enabler
@@ -77,6 +77,16 @@ steps:
   - slug: after-transition-epic
     kind: precondition
     step: transition-epic
+  - slug: no-enabler-epic-item-open-that-the-vision-closes
+    kind: postcondition
+    setSelector:
+      setQuery: >-
+        workspace.filter(e, e.path == step.artifact.path
+        && e.data.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open'
+        && workspace.exists(v, v.kind == 'architecture-vision' && has(v.data.closedItems)
+        && v.data.closedItems.exists(c, c.artifact == 'epic-enabler' && c.unit == e.data.id
+        && c.item == i.id))))
+    setPredicate: selected.size() == 0
   instructions: portfolio-epic-transition-transition-enabler
 - slug: update-portfolio-kanban
   description: Operational projection — Value Management Officer refreshes the Portfolio Kanban from Epic frontmatter.

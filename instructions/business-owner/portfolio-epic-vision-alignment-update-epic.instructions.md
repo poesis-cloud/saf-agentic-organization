@@ -26,7 +26,7 @@ Output: the epic artifact only. Do not edit the Vision, the Enabler Epic or the 
 
 Write, at least:
 
-- **Closed open items.** For every `closedItems` entry with `artifact: epic` and `unit:` this Epic's `id`, set that `openItems` entry to `status: resolved` and record the Vision's `resolution` on it. Never delete the entry. If the Vision closes an item this Epic does not carry, record that contradiction as a new open item; never invent an entry just to close it. `epic-transition` refuses to dispatch while an item the Vision closes is still `open` here.
+- **Closed open items.** For every `closedItems` entry with `artifact: epic` and `unit:` this Epic's `id`, set that `openItems` entry to `status: resolved` and record the Vision's `resolution` on it. Never delete the entry. If the Vision closes an item this Epic does not carry, record that contradiction as a new open item; never invent an entry just to close it. `epic-transition` withholds this Epic's transition while an item the Vision closes is still `open` here.
 - **Dependencies and scope.** `dependsOn` and `## Dependencies / constraints` on the Enabler Epic's runway as now written, and `## Enterprise-Architect runway (EA hat)` and `## Affected products & Feature seeds` against the Vision's decisions on this Epic. If the Enabler Epic now carries a blocking item for an `epic-lean-business-case` replay, record the same dependency here.
 - **MVP and WSJF.** `mvpFeatures` and `## MVP & pivot/persevere` when the Vision changes the first-release scope; `wsjf.jobSize` and `wsjf.score` when it changes the size of the work. Change the value inputs only when the Vision states a reason.
 

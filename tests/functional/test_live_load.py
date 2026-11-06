@@ -145,10 +145,14 @@ def test_start_resolve_and_authorize_per_layer(
     )
     assert resolved["outcome"]["status"] == "step-resolution"
     assert resolved["step"]["actor"] == agent
+    # Writes come from the step instance's own worker session (harness step transactions).
+    worker_id = f"{workflow_slug}-worker"
+    worker = _invoke(application, "start-session", sessionId=worker_id, parentSessionId=session_id, agent=agent)
+    assert worker["outcome"]["status"] == "started"
     authorized = _invoke(
         application,
         "check-step-authorization",
-        sessionId=session_id,
+        sessionId=worker_id,
         artifactPath=path,
         action="create",
     )

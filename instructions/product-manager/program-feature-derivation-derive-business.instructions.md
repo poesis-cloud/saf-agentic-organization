@@ -21,7 +21,7 @@ name: program-feature-derivation-derive-business
 The Product Manager derives **one** business Feature from an approved Epic. Another Feature from the same Epic is another Feature Derivation run.
 
 Inputs: the approved Epic / Lean Business Case, Strategic Themes, Product Vision / Roadmap.
-Output: a Feature that names its parent Epic (`parentEpic`). This step **mints identity**, not NFR applicability. Leave `## NFR applicability / trace` empty or "deferred to feature-backlog-refinement".
+Output: a Feature that names its parent Epic (`parentEpic`: that Epic's `id`). The harness withholds the Feature unless `parentEpic` names an approved business Epic (`portfolio-backlog` or `implementing`); `null` marks a standalone Feature. This step **mints identity**, not NFR applicability. Leave `## NFR applicability / trace` empty or "deferred to feature-backlog-refinement".
 
 Do not run Feature Backlog Refinement challenges here; derived items then enter `feature-backlog-refinement`.
 
