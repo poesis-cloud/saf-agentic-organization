@@ -48,7 +48,8 @@ Before executing any ceremony or practice row, load that sub-orchestration skill
 |---|---|---|---|---|
 | Strategic Theme + idea | Practice·CE | **Epic Lean Business Case** (`@business-owner` authors business Epics only; EA / Security challenge) | — | `epic-lean-business-case/draft-epic`: `∅→funnel` (trace to a Theme) |
 | `funnel` valid | Practice·CE | **Epic Lean Business Case** — hypothesis + WSJF | — | `epic-transition`: `funnel→reviewing` |
-| `reviewing` valid | Practice·CE | **Architectural Vision** (`@enterprise-architect` → Vision + NFRs + runway + Feature seeds + target ARTs) | — | `epic-transition`: `reviewing→analyzing` *(only if no replay-triggering enabler was newly seeded after shaping)* |
+| `reviewing` valid | Practice·CE | **Architectural Vision** (`@enterprise-architect` → Vision + NFRs + runway + Feature seeds + target ARTs; records its decisions on Epics, writes no Epic) | — | `epic-vision-alignment` (once per Epic the Vision decides about), then `epic-transition`: `reviewing→analyzing` *(only if no replay-triggering enabler was newly seeded after shaping)* |
+| the Vision decides about an Epic | Practice·CE | **Epic–Vision Alignment** (`@enterprise-architect` → Enabler Epic; `@business-owner` → Epic, then Lean Business Case) | — | `epic-vision-alignment`, one Epic per run |
 | runway gap surfaced after business shaping | Practice·CE | **Architectural Vision** → seeds an **Enabler Epic** from the enabler Epic template and invalidates the parent Epic's prior business shaping packet | — | `epic-transition`: parent Epic `→funnel`; then replay `epic-lean-business-case`, whose `draft-enabler-epic` step writes the Enabler Epic (`type: enabler`) |
 | `analyzing` *(refined · challenge done · board-published)* | **Gate** | — | **★ Epic Gate** (CS·BO) | `epic-transition`: accept→`portfolio-backlog` (**dispatch `@release-train-engineer` per ART**) · reject→`funnel` (reshape) |
 | →`portfolio-backlog`, or an Epic `→done` (frees capacity) | Ceremony | **Participatory Budgeting** (BO + EA → Lean Budgets; the CS decides, `@business-owner` commits) | — | `strategic-investment-planning`: budget allocation *(meta)*; funded Epics cleared |
@@ -240,6 +241,7 @@ When one review packet spans mixed ownership, split the routing by owner rather 
 | Portfolio Sync | `@value-management-officer` | `value-management-officer/workflows/portfolio-sync` **(nested)** | Ceremony |
 | Epic Lean Business Case | `@value-management-officer` | `value-management-officer/workflows/epic-lean-business-case` **(nested)** | Practice·CE |
 | Architectural Vision | `@value-management-officer` | `value-management-officer/workflows/architectural-vision` **(nested)** | Practice·CE |
+| Epic–Vision Alignment | `@value-management-officer` | `value-management-officer/workflows/epic-vision-alignment` **(nested)** | Practice·CE |
 | Feature Backlog Refinement | `@release-train-engineer` | `release-train-engineer/workflows/feature-backlog-refinement` **(nested)** | Ceremony·CE |
 | PI Planning | `@release-train-engineer` | `release-train-engineer/workflows/pi-planning` **(nested)** | Ceremony |
 | Demo Gate | `@release-train-engineer` | `release-train-engineer/workflows/demo-gate` **(nested)** | Ceremony |

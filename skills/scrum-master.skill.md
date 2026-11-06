@@ -269,6 +269,7 @@ When one review packet spans mixed ownership, split the routing by owner rather 
 | Portfolio Sync | `@value-management-officer` | `value-management-officer/workflows/portfolio-sync` **(nested)** | Ceremony |
 | Epic Lean Business Case | `@value-management-officer` | `value-management-officer/workflows/epic-lean-business-case` **(nested)** | Practice·CE |
 | Architectural Vision | `@value-management-officer` | `value-management-officer/workflows/architectural-vision` **(nested)** | Practice·CE |
+| Epic–Vision Alignment | `@value-management-officer` | `value-management-officer/workflows/epic-vision-alignment` **(nested)** | Practice·CE |
 | Feature Backlog Refinement | `@release-train-engineer` | `release-train-engineer/workflows/feature-backlog-refinement` **(nested)** | Ceremony·CE |
 | PI Planning | `@release-train-engineer` | `release-train-engineer/workflows/pi-planning` **(nested)** | Ceremony |
 | Demo Gate | `@release-train-engineer` | `release-train-engineer/workflows/demo-gate` **(nested)** | Ceremony |

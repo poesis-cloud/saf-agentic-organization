@@ -124,7 +124,8 @@ only evidence (see [docs/step-artifacts.md](docs/step-artifacts.md)).
 | Workflow | Purpose | Mains presented at the human gate |
 |---|---|---|
 | `epic-lean-business-case` | Write a portfolio bet | `epic`, `lean-business-case`, `epic-enabler` |
-| `architectural-vision` | Portfolio runway + NFR backbone; its decisions written into the Epics by their owners | `architecture-vision`, `epic-enabler`, `epic` (owner updates) |
+| `architectural-vision` | Portfolio runway + NFR backbone; records its decisions on Epics, writes no Epic | `architecture-vision` |
+| `epic-vision-alignment` | Write the Vision's decisions on ONE Epic into it (one run per Epic the Vision names) | `epic-enabler`, `epic`, `lean-business-case` (owner updates) |
 | `strategic-investment-planning` | Allocate / guardrail ART funding | `budget-allocation` |
 | `strategic-portfolio-review` | Keep / pivot / stop / re-rank | themes, vision, roadmap, `architecture-vision` |
 | `portfolio-sync` | Portfolio snapshot; registers ONE product per run | `portfolio-sync`, `portfolio-manifest`, `product-manifest`, `portfolio-kanban` |

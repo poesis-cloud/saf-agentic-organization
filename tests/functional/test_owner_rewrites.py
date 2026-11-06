@@ -69,29 +69,49 @@ def test_epic_lean_business_case_aligns_epic_and_enabler_with_the_rewritten_case
         assert "owner-rewrite" in _ancestors(steps, slug)
 
 
-@pytest.mark.parametrize(
-    ("workflow", "folder", "updates"),
-    [
-        (
-            "architectural-vision",
-            "portfolio",
-            (("update-enabler-epic", "enterprise-architect", "epic-enabler"), ("update-epic", "business-owner", "epic")),
-        ),
-        (
-            "architectural-runway-extension",
-            "program",
-            (("update-feature", "product-manager", "feature"), ("update-feature-enabler", "system-architect", "feature-enabler")),
-        ),
-    ],
-)
-def test_decisions_on_another_owners_artifact_are_written_back_by_that_owner(
-    workflow: str, folder: str, updates: tuple[tuple[str, str, str], ...]
-) -> None:
-    """A workflow whose main decides about another owner's artifact (the Vision closing Epic items and
-    seeding MVP Features; the architecture packet linking ADRs and gate entries on the Feature) ends
-    with that owner's update step, one artifact per step, after the main's owner rewrite."""
-    steps = {step["slug"]: step for step in _load(ORG_ROOT / "workflows" / folder / f"{workflow}.workflow.conf.yaml")["steps"]}
+def test_decisions_on_another_owners_artifact_are_written_back_by_that_owner() -> None:
+    """The architecture packet decides about the Feature (ADR links, inventory, gate entries): the
+    Feature owners write it back after the runway rewrite, one artifact per step."""
+    steps = {
+        step["slug"]: step
+        for step in _load(ORG_ROOT / "workflows" / "program" / "architectural-runway-extension.workflow.conf.yaml")["steps"]
+    }
+    updates = (("update-feature", "product-manager", "feature"), ("update-feature-enabler", "system-architect", "feature-enabler"))
     for slug, actor, artifact in updates:
         assert (steps[slug]["actor"], steps[slug]["artifact"]) == (actor, artifact)
         assert "owner-rewrite" in _ancestors(steps, slug)
-    assert list(steps)[-len(updates):] == [slug for slug, _, _ in updates]
+    assert list(steps)[-2:] == [slug for slug, _, _ in updates]
+
+
+def test_a_vision_only_run_needs_no_epic() -> None:
+    """Every step delivers exactly one instance of its artifact: architectural-vision writes the
+    Vision and its reviews only, so a standalone Demand vision completes without any Epic."""
+    workflow = _load(ORG_ROOT / "workflows" / "portfolio" / "architectural-vision.workflow.conf.yaml")
+    assert {step["artifact"] for step in workflow["steps"]} == {"architecture-vision", "security-review", "operability-review"}
+
+
+def test_epic_vision_alignment_writes_the_visions_decisions_into_one_epic_through_its_owners() -> None:
+    workflow = _load(ORG_ROOT / "workflows" / "portfolio" / "epic-vision-alignment.workflow.conf.yaml")
+    assert workflow["predecessors"] == ["architectural-vision"]
+    steps = {step["slug"]: step for step in workflow["steps"]}
+    assert [(slug, step["actor"], step["artifact"]) for slug, step in steps.items()] == [
+        ("update-enabler-epic", "enterprise-architect", "epic-enabler"),
+        ("update-epic", "business-owner", "epic"),
+        ("reconcile-lean-business-case", "business-owner", "lean-business-case"),
+    ]
+    assert _ancestors(steps, "reconcile-lean-business-case") == {"update-epic", "update-enabler-epic"}
+
+
+def test_alignment_flags_a_not_needed_enabler_that_the_vision_needs() -> None:
+    text = (
+        ORG_ROOT / "instructions" / "enterprise-architect" / "portfolio-epic-vision-alignment-update-enabler-epic.instructions.md"
+    ).read_text(encoding="utf-8")
+    assert "`status: not-needed`" in text and "blocking open item" in text
+    assert "`epic-lean-business-case` must run again" in text
+
+
+@pytest.mark.parametrize("instruction", ["product-manager/program-feature-transition-transition-business", "system-architect/program-feature-transition-transition-enabler"])
+def test_feature_transitions_check_the_parent_epic_only_when_set(instruction: str) -> None:
+    text = (ORG_ROOT / "instructions" / f"{instruction}.instructions.md").read_text(encoding="utf-8")
+    assert "its parent Epic when `parentEpic` is set" in text
+    assert "`parentEpic: null`" in text and "never refused for it" in text

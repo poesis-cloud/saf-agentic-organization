@@ -23,8 +23,8 @@ description: >
   unblock, or the close with its cost snapshot). One Epic per run. The
   orchestrator never writes an Epic status itself. Guard: the harness refuses
   to start the run while an open item that the Architectural Vision closes
-  is still open on an Epic or Enabler Epic (finish architectural-vision's
-  owner updates first); each owner step refuses an inconsistent advance
+  is still open on an Epic or Enabler Epic (run epic-vision-alignment for
+  that Epic first); each owner step refuses an inconsistent advance
   with a recorded no-change. Do not Evaluate: the decision was made at the
   gate or by the roll-up rule.
 instructions: value-management-officer-interpret-speech-acts

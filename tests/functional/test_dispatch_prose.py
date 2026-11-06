@@ -67,7 +67,7 @@ def test_orchestrator_names_the_next_run_and_answers_drive_to_gate_with_a_plan(s
         "**Drive to a gate**",
         "answer it with the plan",
         "Never improvise across instances.",
-        "One session per run." if slug != "value-management-officer" else "Six runs, six sessions.",
+        "One session per run." if slug != "value-management-officer" else "Seven runs, seven sessions.",
     ):
         assert rule in text
 

@@ -16,14 +16,12 @@ slug: architectural-vision
 description: >
   Purpose: establish the portfolio architectural runway and NFR backbone. Act:
   Demand. Orchestrator: Value Management Officer. In-scope mains:
-  architecture-vision, epic-enabler, epic. Challenges: security (NFR
-  backbone), operability (not evaluated). Owner updates: after the Vision
-  rewrite, the Enterprise Architect writes the Vision's decisions on the
-  Enabler Epic into it (closed open items, MVP Feature seeds, runway WSJF),
-  then the Business Owner writes those on the business Epic into it (every
-  step commits its artifact: an Epic the Vision does not touch gets a
-  no-change entry). Evaluate: those mains; KO reiterates the workflow (new
-  instance; that main's owner step absorbs the KO).
+  architecture-vision. Challenges: security (NFR backbone), operability (not
+  evaluated). The Vision records its decisions on Epics (closedItems,
+  Decisions on Epics); it never writes an Epic. When it decides about Epics,
+  the next run is epic-vision-alignment, once per Epic, in a new session; a
+  Vision-only run ends here. Evaluate: architecture-vision; KO reiterates the
+  workflow (new instance; the EA owner step absorbs the KO).
   Use when: portfolio NFR backbone, target ARTs, enabler Epic seeds, Architectural
   Vision itself. Refuse ART ADRs (architectural-runway-extension). Refuse Epic
   hypothesis (epic-lean-business-case). Strategic Portfolio Review may confirm
@@ -114,43 +112,3 @@ steps:
     kind: precondition
     step: challenge-operability
   instructions: portfolio-architectural-vision-rewrite
-- slug: update-enabler-epic
-  description: Owner update — Enterprise Architect writes the rewritten Vision's decisions on the Enabler Epic into it (closed open items, MVP Feature seeds, runway WSJF).
-  capabilities:
-    deep-reasoning: 7
-    coding: 0
-    tool-use: 4
-    long-context: 6
-    multimodal: 0
-    writing-quality: 7
-    instruction-following: 9
-    fast-iteration: 3
-    schema-adherence: 9
-  actor: enterprise-architect
-  skills: enterprise-architect
-  artifact: epic-enabler
-  conditions:
-  - slug: after-owner-rewrite
-    kind: precondition
-    step: owner-rewrite
-  instructions: portfolio-architectural-vision-update-enabler-epic
-- slug: update-epic
-  description: Owner update — Business Owner writes the rewritten Vision's decisions on the business Epic into it (closed open items, dependencies, MVP scope, WSJF).
-  capabilities:
-    deep-reasoning: 7
-    coding: 0
-    tool-use: 4
-    long-context: 6
-    multimodal: 0
-    writing-quality: 7
-    instruction-following: 9
-    fast-iteration: 3
-    schema-adherence: 9
-  actor: business-owner
-  skills: business-owner
-  artifact: epic
-  conditions:
-  - slug: after-update-enabler-epic
-    kind: precondition
-    step: update-enabler-epic
-  instructions: portfolio-architectural-vision-update-epic
