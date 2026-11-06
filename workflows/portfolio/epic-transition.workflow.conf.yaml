@@ -21,11 +21,12 @@ description: >
   Officer renders the Portfolio Kanban. Input: one transition request (Epic,
   from and to status, trigger: a human gate decision, a roll-up, a block or an
   unblock, or the close with its cost snapshot). One Epic per run. The
-  orchestrator never writes an Epic status itself. Guard: the harness
-  withholds an owner step's delivery while the Epic or Enabler Epic it
-  delivers still carries an open item that the Architectural Vision closes
-  (run epic-vision-alignment for that Epic first); each owner step refuses
-  an inconsistent advance with a recorded no-change. Do not Evaluate: the decision was made at the
+  orchestrator never writes an Epic status itself. Guard: each owner step
+  refuses an inconsistent advance with a recorded no-change, which the
+  harness accepts; it withholds any other transition while the Epic or
+  Enabler Epic the step delivers (for the business Epic, its sibling Enabler
+  Epic too) still carries an open item that the Architectural Vision closes:
+  report the refusal, then run epic-vision-alignment for that Epic. Do not Evaluate: the decision was made at the
   gate or by the roll-up rule.
 instructions: value-management-officer-interpret-speech-acts
 orchestrator: value-management-officer
@@ -52,11 +53,28 @@ steps:
     setSelector:
       setQuery: >-
         workspace.filter(e, e.path == step.artifact.path
-        && e.data.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open'
-        && workspace.exists(v, v.kind == 'architecture-vision' && has(v.data.closedItems)
-        && v.data.closedItems.exists(c, c.artifact == 'epic' && c.unit == e.data.id
-        && c.item == i.id))))
-    setPredicate: selected.size() == 0
+        && !(has(e.data.stepOutcomes) && size(e.data.stepOutcomes) > 0
+        && e.data.stepOutcomes[size(e.data.stepOutcomes) - 1].step == 'epic-transition/transition-epic'
+        && e.data.stepOutcomes[size(e.data.stepOutcomes) - 1].outcome == 'no-change'))
+    setPredicate: >-
+      selected.all(e, !e.data.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open'
+      && workspace.exists(v, v.kind == 'architecture-vision' && has(v.data.closedItems)
+      && v.data.closedItems.exists(c, c.artifact == 'epic' && c.unit == e.data.id
+      && c.item == i.id))))
+  - slug: no-sibling-enabler-epic-item-open-that-the-vision-closes
+    kind: postcondition
+    setSelector:
+      setQuery: >-
+        workspace.filter(e, e.path == step.artifact.path
+        && !(has(e.data.stepOutcomes) && size(e.data.stepOutcomes) > 0
+        && e.data.stepOutcomes[size(e.data.stepOutcomes) - 1].step == 'epic-transition/transition-epic'
+        && e.data.stepOutcomes[size(e.data.stepOutcomes) - 1].outcome == 'no-change'))
+    setPredicate: >-
+      selected.all(e, !workspace.exists(x, x.kind == 'epic-enabler' && x.data.id == e.data.id
+      && x.data.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open'
+      && workspace.exists(v, v.kind == 'architecture-vision' && has(v.data.closedItems)
+      && v.data.closedItems.exists(c, c.artifact == 'epic-enabler' && c.unit == x.data.id
+      && c.item == i.id)))))
   instructions: portfolio-epic-transition-transition-epic
 - slug: transition-enabler
   description: Owner transition — Enterprise Architect records the requested status change (or no-change) on the sibling Enabler Epic.
@@ -82,11 +100,14 @@ steps:
     setSelector:
       setQuery: >-
         workspace.filter(e, e.path == step.artifact.path
-        && e.data.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open'
-        && workspace.exists(v, v.kind == 'architecture-vision' && has(v.data.closedItems)
-        && v.data.closedItems.exists(c, c.artifact == 'epic-enabler' && c.unit == e.data.id
-        && c.item == i.id))))
-    setPredicate: selected.size() == 0
+        && !(has(e.data.stepOutcomes) && size(e.data.stepOutcomes) > 0
+        && e.data.stepOutcomes[size(e.data.stepOutcomes) - 1].step == 'epic-transition/transition-enabler'
+        && e.data.stepOutcomes[size(e.data.stepOutcomes) - 1].outcome == 'no-change'))
+    setPredicate: >-
+      selected.all(e, !e.data.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open'
+      && workspace.exists(v, v.kind == 'architecture-vision' && has(v.data.closedItems)
+      && v.data.closedItems.exists(c, c.artifact == 'epic-enabler' && c.unit == e.data.id
+      && c.item == i.id))))
   instructions: portfolio-epic-transition-transition-enabler
 - slug: update-portfolio-kanban
   description: Operational projection — Value Management Officer refreshes the Portfolio Kanban from Epic frontmatter.

@@ -26,7 +26,7 @@ Output: the feature artifact only. Do not edit the ADR, the NFR list, the runway
 
 Write, at least:
 
-- `adrs`: the ids of the ADRs that now cover this Feature, this run's included; `architectureInventory` and `## Architecture decision inventory`: the decision inventory the runway register commits for this Feature, every row covered by an ADR or an explicit waiver.
+- `adrs`: the ids of the ADRs that now cover this Feature, this run's included; `architectureInventory` and `## Architecture decision inventory`: the decision inventory the runway register commits for this Feature: each row names the ADR or the explicit waiver that covers it, or stays explicitly uncovered when the packet leaves that decision for a later pass (an incremental pass decides only the units that are ready). Full coverage is what the ★ Architecture Gate requires, not this step: an uncovered row keeps the Feature `arch-pending` and gets a blocking `openItems` entry (below).
 - `## NFR applicability / trace`: the product NFRs the packet makes applicable to this Feature.
 - `openItems`: an entry for every Architecture Gate decision the packet leaves open, and an Enabler Feature seed it records (blocking, so the gate sees it). Set an entry the packet resolves to `status: resolved`; never delete one.
 

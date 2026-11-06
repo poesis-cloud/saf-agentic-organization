@@ -55,7 +55,7 @@
       "$ref": "#/$defs/openItems"
     },
     "closedItems": {
-      "description": "Open items on Epics that this Vision closes, one entry per item: { artifact: epic | epic-enabler, unit: <the Epic's id, e.g. E-2>, item: <the openItems id>, resolution: <one line> }. The epic-vision-alignment run for that Epic flips each one to `resolved` there; epic-transition withholds that Epic's transition while one is still `open` there.",
+      "description": "Open items on Epics that this Vision closes, one entry per item: { artifact: epic | epic-enabler, unit: <the Epic's id, e.g. E-2>, item: <the openItems id>, resolution: <one line> }. The epic-vision-alignment run for that Epic flips each one to `resolved` there; epic-transition accepts only a no-change refusal on that Epic while one is still `open` there.",
       "type": "array",
       "items": {
         "type": "object",

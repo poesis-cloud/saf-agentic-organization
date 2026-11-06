@@ -77,8 +77,12 @@ def _closure(kind: str, unit: str, item: str) -> dict[str, str]:
     return {"artifact": kind, "unit": unit, "item": item, "resolution": "settled by the Vision's runway"}
 
 
-def _epic(kind: str, unit: str, status: str = "analyzing", items: tuple[dict, ...] = ()) -> Fixture:
-    return (kind, f"e-{unit[2:]}", {"id": unit, "status": status, "openItems": list(items)})
+def _outcome(step: str, outcome: str) -> dict[str, str]:
+    return {"step": step, "outcome": outcome, "date": "2026-11-06", "note": f"{outcome} by {step}"}
+
+
+def _epic(kind: str, unit: str, status: str = "analyzing", items: tuple[dict, ...] = (), outcomes: tuple[dict, ...] = ()) -> Fixture:
+    return (kind, f"e-{unit[2:]}", {"id": unit, "status": status, "openItems": list(items), "stepOutcomes": list(outcomes)})
 
 
 def _vision(*closed: dict[str, str]) -> Fixture:
@@ -118,11 +122,18 @@ def _parent_epic_cases() -> list[Case]:
     ]
 
 
-def _vision_closure_cases(kind: str) -> list[Case]:
-    """The Vision closes FR4 on E-1 and E-2 of `kind` (and of the other kind on E-2).
+TRANSITION_STEP = {"epic": "epic-transition/transition-epic", "epic-enabler": "epic-transition/transition-enabler"}
 
-    Only the Epic the evaluated step delivers decides: E-1, the bystander, keeps FR4 `open`
-    in the passing variant, which the former portfolio-wide precondition refused.
+
+def _vision_closure_cases(kind: str) -> list[Case]:
+    """The Epic (or Enabler Epic) the step delivers keeps no item the Vision closes `open`.
+
+    The Vision closes FR3 and FR4 on E-2 of `kind`, FR4 on the bystander E-1, and FR5 on the other
+    kind's E-2. Only the delivered E-2 decides: E-1 keeps FR4 `open` in every variant, which the
+    former portfolio-wide precondition refused. A recorded `no-change` refusal is accepted, so it is
+    promoted and releases the artifact lock for `epic-vision-alignment`; an earlier run's refusal
+    does not exempt this run's transition. For the Enabler Epic the run's business Epic transition
+    is itself a refusal (its sibling check would otherwise refuse it).
     """
     other = "epic-enabler" if kind == "epic" else "epic"
     vision = _vision(_closure(kind, "E-1", "FR4"), _closure(kind, "E-2", "FR4"), _closure(kind, "E-2", "FR3"), _closure(other, "E-2", "FR5"))
@@ -133,19 +144,47 @@ def _vision_closure_cases(kind: str) -> list[Case]:
         _epic("epic-enabler", "E-1", items=(_item("FR4", "open"),)),
         _epic("epic-enabler", "E-2", items=(_item("FR4", "open"),)),
     )
-    sibling = _epic(other, "E-2", "portfolio-backlog", (_item("FR4", "open"),))
+    step = TRANSITION_STEP[kind]
+    refused_epic = _epic("epic", "E-2", items=(_item("FR4", "open"),), outcomes=(_outcome(TRANSITION_STEP["epic"], "no-change"),))
 
-    def delivered(*items: dict) -> Fixture:
-        return _epic(kind, "E-2", "portfolio-backlog", items)
-
-    def run(subject: Fixture) -> tuple[Fixture, ...]:
-        return (subject,) if kind == "epic" else (sibling, subject)
+    def delivered(*items: dict, outcomes: tuple[str, ...] = ("revised",)) -> tuple[Fixture, ...]:
+        status = "portfolio-backlog" if outcomes[-1] == "revised" else "analyzing"
+        subject = _epic(kind, "E-2", status, items, tuple(_outcome(step, outcome) for outcome in outcomes))
+        return (subject,) if kind == "epic" else (refused_epic, subject)
 
     return [
-        Case("pass", workspace, run(delivered(_item("FR3", "withdrawn"), _item("FR4", "resolved"), _item("FR5", "open")))),
-        Case("pass", workspace, run(delivered(_item("FR6", "open")))),
-        Case("fail", workspace, run(delivered(_item("FR3", "resolved"), _item("FR4", "open")))),
-        Case("fail", workspace, run(delivered(_item("FR3", "open"), _item("FR4", "resolved")))),
+        Case("pass", workspace, delivered(_item("FR3", "withdrawn"), _item("FR4", "resolved"), _item("FR5", "open"))),
+        Case("pass", workspace, delivered(_item("FR6", "open"))),
+        Case("pass", workspace, delivered(_item("FR4", "open"), outcomes=("no-change",))),
+        Case("fail", workspace, delivered(_item("FR3", "resolved"), _item("FR4", "open"))),
+        Case("fail", workspace, delivered(_item("FR3", "open"), _item("FR4", "resolved"))),
+        Case("fail", workspace, delivered(_item("FR4", "open"), outcomes=("no-change", "revised"))),
+    ]
+
+
+def _sibling_closure_cases() -> list[Case]:
+    """The business Epic advances only once its sibling Enabler Epic keeps no Vision-closed item open.
+
+    Checked on `transition-epic`, before the Epic is promoted: the Enabler Epic's own guard runs
+    only after it. Bystander E-1 keeps its Vision-closed FR5 open in every variant.
+    """
+    vision = _vision(_closure("epic-enabler", "E-1", "FR5"), _closure("epic-enabler", "E-2", "FR5"))
+
+    def workspace(status: str) -> tuple[Fixture, ...]:
+        return (
+            vision,
+            _epic("epic", "E-2"),
+            _epic("epic-enabler", "E-1", items=(_item("FR5", "open"),)),
+            _epic("epic-enabler", "E-2", items=(_item("FR5", status),)),
+        )
+
+    def transition(outcome: str) -> tuple[Fixture, ...]:
+        return (_epic("epic", "E-2", "portfolio-backlog" if outcome == "revised" else "analyzing", outcomes=(_outcome(TRANSITION_STEP["epic"], outcome),)),)
+
+    return [
+        Case("pass", workspace("resolved"), transition("revised")),
+        Case("pass", workspace("open"), transition("no-change")),
+        Case("fail", workspace("open"), transition("revised")),
     ]
 
 
@@ -153,6 +192,7 @@ CASES: dict[tuple[str, str, str], list[Case]] = {
     ("feature-derivation", "derive-business", "an-approved-epic-exists"): _epic_gate_cases(),
     ("feature-derivation", "derive-business", "parent-epic-approved"): _parent_epic_cases(),
     ("epic-transition", "transition-epic", "no-epic-item-open-that-the-vision-closes"): _vision_closure_cases("epic"),
+    ("epic-transition", "transition-epic", "no-sibling-enabler-epic-item-open-that-the-vision-closes"): _sibling_closure_cases(),
     ("epic-transition", "transition-enabler", "no-enabler-epic-item-open-that-the-vision-closes"): _vision_closure_cases("epic-enabler"),
 }
 PARAMETERS = [(key, index, case) for key, cases in sorted(CASES.items()) for index, case in enumerate(cases)]
@@ -334,6 +374,65 @@ def test_state_condition_outcome(catalog, rig: Rig, key: tuple[str, str, str], i
     # Postconditions run on the step state before promotion: a failing one accepts nothing.
     assert report["promotion"]["outcome"] == ("promoted" if case.expected == "pass" else "withheld")
     assert (rig.head() == before) is (case.expected == "fail")
+
+
+def _failing(report: Mapping[str, Any]) -> list[str]:
+    return [check["condition"]["slug"] for check in report["conditionChecks"] if check["outcome"] == "fail"]
+
+
+def test_a_refused_transition_releases_the_epic_for_vision_alignment(catalog, rig: Rig) -> None:
+    """Refusal → alignment → transition, on both siblings.
+
+    A withheld step instance keeps its artifact lock until it is promoted (core spec, function 8,
+    invariant 8; function 10). The advance is withheld while the Vision's closed items are still
+    `open`; the retry records the owner's `no-change` refusal, which is promoted and releases the
+    lock, so `epic-vision-alignment` can write the closures into both siblings, and the next
+    `epic-transition` run advances them.
+    """
+    transition = catalog.find_workflow("epic-transition")
+    alignment = catalog.find_workflow("epic-vision-alignment")
+    epic_step, enabler_step = TRANSITION_STEP["epic"], TRANSITION_STEP["epic-enabler"]
+    rig.commit(
+        (
+            _vision(_closure("epic", "E-2", "FR4"), _closure("epic-enabler", "E-2", "FR5")),
+            _epic("epic", "E-2", items=(_item("FR4", "open"),)),
+            _epic("epic-enabler", "E-2", items=(_item("FR5", "open"),)),
+            ("portfolio-kanban", "core", {"stepOutcomes": []}),
+        )
+    )
+    start = rig.head()
+
+    run = rig.open(transition)
+    advance = _epic("epic", "E-2", "portfolio-backlog", (_item("FR4", "open"),), (_outcome(epic_step, "revised"),))
+    withheld = rig.deliver(run, rig.resolve(run, transition, "transition-epic"), advance)
+    assert (withheld["outcome"]["status"], withheld["promotion"]["outcome"]) == ("fail", "withheld")
+    assert _failing(withheld) == ["no-epic-item-open-that-the-vision-closes", "no-sibling-enabler-epic-item-open-that-the-vision-closes"]
+    assert rig.head() == start
+    refusal = _epic("epic", "E-2", items=(_item("FR4", "open"),), outcomes=(_outcome(epic_step, "no-change"),))
+    retried = rig.deliver(run, rig.resolve(run, transition, "transition-epic"), refusal)
+    assert (retried["outcome"]["status"], retried["promotion"]["outcome"]) == ("pass", "promoted")
+    enabler_refusal = _epic("epic-enabler", "E-2", items=(_item("FR5", "open"),), outcomes=(_outcome(enabler_step, "no-change"),))
+    assert rig.deliver(run, rig.resolve(run, transition, "transition-enabler"), enabler_refusal)["outcome"]["status"] == "pass"
+    kanban = ("portfolio-kanban", "core", {"stepOutcomes": [_outcome("epic-transition/update-portfolio-kanban", "confirmed")]})
+    assert rig.deliver(run, rig.resolve(run, transition, "update-portfolio-kanban"), kanban)["outcome"]["status"] == "pass"
+
+    # The refusals released both locks: the alignment owners may write the closures back.
+    run = rig.open(alignment)
+    closed_enabler = _epic("epic-enabler", "E-2", items=(_item("FR5", "resolved"),), outcomes=(_outcome(enabler_step, "no-change"), _outcome("epic-vision-alignment/update-enabler-epic", "revised")))
+    assert rig.deliver(run, rig.resolve(run, alignment, "update-enabler-epic"), closed_enabler)["outcome"]["status"] == "pass"
+    closed_epic = _epic("epic", "E-2", items=(_item("FR4", "resolved"),), outcomes=(_outcome(epic_step, "no-change"), _outcome("epic-vision-alignment/update-epic", "revised")))
+    assert rig.deliver(run, rig.resolve(run, alignment, "update-epic"), closed_epic)["outcome"]["status"] == "pass"
+
+    run = rig.open(transition)
+    advanced = _epic("epic", "E-2", "portfolio-backlog", (_item("FR4", "resolved"),), (*closed_epic[2]["stepOutcomes"], _outcome(epic_step, "revised")))
+    assert rig.deliver(run, rig.resolve(run, transition, "transition-epic"), advanced)["promotion"]["outcome"] == "promoted"
+    enabler_advanced = _epic(
+        "epic-enabler", "E-2", "portfolio-backlog", (_item("FR5", "resolved"),), (*closed_enabler[2]["stepOutcomes"], _outcome(enabler_step, "revised"))
+    )
+    assert rig.deliver(run, rig.resolve(run, transition, "transition-enabler"), enabler_advanced)["promotion"]["outcome"] == "promoted"
+    for kind in ("epic", "epic-enabler"):
+        committed = _git(rig.workspace, "show", f"HEAD:{rig._path(kind, 'e-2')}")
+        assert yaml.safe_load(committed.split("---\n")[1])["status"] == "portfolio-backlog"
 
 
 def _organization_copy(tmp_path: Path) -> Path:
