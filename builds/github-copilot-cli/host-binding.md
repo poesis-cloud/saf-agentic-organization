@@ -51,8 +51,7 @@ Rendered by `builds/github-copilot-cli`; it binds the host-agnostic prose above 
   `SAFe agentic harness REJECTED` means the request was refused: fix the named problem, using the
   accepted line it gives.
 - **Writing artifacts.** Write every file with this host's file-edit tools — `create`, `edit` or
-  `apply_patch`, whichever your tool set has (GPT-family models write with `apply_patch`) —
-  never through the shell (`echo >`, `Set-Content`, `Out-File`, heredocs, scripts). The harness
+  `apply_patch`, whichever your tool set has — never through the shell (`echo >`, `Set-Content`, `Out-File`, heredocs, scripts). The harness
   authorizes and schema-checks all three, and reverts an invalid write; it cannot see a shell
   write.
 - **Step evidence.** A step is valid only when its session commits a change to **exactly one**

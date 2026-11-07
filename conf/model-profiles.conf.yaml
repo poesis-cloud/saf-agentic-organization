@@ -86,15 +86,20 @@
 #                           This score (0..10) is essential to separate Tier-1 reasoning models from
 #                           smaller models that fail on SAFe artifact layouts.
 #
-# Catalog scope (2026-11-04): the 6 profiled models that the GitHub Copilot app / Copilot CLI
+# Catalog scope (2026-11-07): the 5 profiled models that the GitHub Copilot app / Copilot CLI
 # offers (its `task` model catalogue) AND that both harness adapters bind
 # (`vscode-github-copilot-chat` and `github-copilot-cli` `models.yaml`). The 2026-07-04 snapshot
 # held 20 models; the 14 no longer offered by the app (gpt-5.5, gpt-5.4, gpt-5.4-mini, gpt-5-mini,
 # claude-opus-4.7/4.6/4.5, claude-sonnet-4.6/4.5, gemini-3.1-pro-preview, gemini-3.5-flash,
-# gemini-2.5-pro, kimi-k2.7-code, mai-code-1-flash) were removed. Newer app models (e.g.
-# claude-opus-5.5, claude-sonnet-5.5, gpt-5.6-*, gpt-6-*) need sourced capability scores and
-# bindings in both adapters before they are added. `costRank` values are still the percentile
-# ranks computed over the 2026-07-04 20-model snapshot; their relative order is unchanged.
+# gemini-2.5-pro, kimi-k2.7-code, mai-code-1-flash) were removed on 2026-11-04.
+# gpt-5.3-codex was removed on 2026-11-07: harness `main` (8e212dd, saf-agentic-harness PR #31)
+# no longer binds it in the `github-copilot-cli` adapter, because in the GitHub Copilot app (CLI
+# runtime 1.0.102) a `task` subagent on it got no write tool (no `create`, `edit` or
+# `apply_patch`), so it could never author an artifact. On that host a model is bindable only if
+# its `task` subagents get a write tool. Newer app models (e.g. claude-opus-5.5, claude-sonnet-5.5, gpt-5.6-*, gpt-6-*) need
+# sourced capability scores and bindings in both adapters before they are added. `costRank`
+# values are still the percentile ranks computed over the 2026-07-04 20-model snapshot; their
+# relative order is unchanged.
 #
 # CONFIDENCE CAVEAT: Artificial Analysis publishes only its top-N models per chart; not every
 # catalog model surfaced in every list fetched here. Where a model is not directly observed in a
@@ -164,21 +169,6 @@ modelProfiles:
       instruction-following: 7
       fast-iteration: 6
       schema-adherence: 8
-
-  - slug: gpt-5.3-codex
-    costRank: 5
-    description: "OpenAI's code-specialized model."
-    note: "Highly tuned for implementation/test-heavy agentic dispatches. Schema adherence is notably robust."
-    capabilities:
-      deep-reasoning: 6
-      coding: 9
-      tool-use: 6
-      long-context: 6
-      multimodal: 3
-      writing-quality: 5
-      instruction-following: 7
-      fast-iteration: 6
-      schema-adherence: 9
 
   - slug: claude-haiku-4.5
     costRank: 3

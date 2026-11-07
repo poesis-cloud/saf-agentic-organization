@@ -66,8 +66,8 @@ checks that the frontmatter still parses.
   the accepted line. No permission rule, `setx`, or `$env:` setting is needed. The orchestrator
   skills and the binding state this verbatim, and a test enforces the command form.
 - **Artifact writes.** The host's file-edit tools are `create`, `edit` and `apply_patch`. Which
-  ones an actor has depends on its model's tool set: GPT-family models write with `apply_patch`.
-  The harness authorizes (H3) and checks (H5) all three, never a shell write. So the binding and
+  ones an actor has depends on its model's tool set: the runtime picks a `task` subagent's tools
+  by model, not only by the agent's `tools:`. The harness authorizes (H3) and checks (H5) all three, never a shell write. So the binding and
   the orchestrator skills name all three, forbid writing files through the shell, and every
   dispatch restates the rule to the actor.
 - **Model routing.** `conf/model-profiles.conf.yaml` holds canonical slugs only. The harness
@@ -75,7 +75,9 @@ checks that the frontmatter still parses.
   `resolve-step-model` ranks the whole catalogue, so the catalogue holds only models this app
   offers and both adapters bind. Each adapter refuses, at every hook load, a catalogue slug its
   `models.yaml` does not bind (a bootstrap failure, so `preToolUse` denies); a functional test
-  checks the bindings against the harness checkout.
+  checks the bindings against the harness checkout. On this host a model is bindable only if its
+  `task` subagents get a write tool (`create`/`edit` or `apply_patch`); the catalogue header
+  records the models removed for this reason.
 - **Unavailable models.** A bound slug can still name a model the app no longer offers (the
   runtime gives hooks no model list). The app does not refuse a `task` `model` it does not offer. It silently
   runs the subagent on another model but keeps the tool set of the model that was named. Trial
