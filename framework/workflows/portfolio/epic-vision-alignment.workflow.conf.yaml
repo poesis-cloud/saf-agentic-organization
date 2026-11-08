@@ -1,0 +1,93 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: epic-vision-alignment
+description: >
+  Purpose: write the Architectural Vision's decisions on ONE Epic into that
+  Epic's artifacts, through their owners. Act: Demand. Orchestrator: Value
+  Management Officer. Run it after architectural-vision, once per Epic that
+  the Vision decides about (its closedItems, Decisions on Epics); a Vision
+  that decides about no Epic needs no run. In-scope mains: epic-enabler,
+  epic, lean-business-case. Dispatch: the Enterprise Architect updates the
+  Enabler Epic (closed items, MVP Feature seeds, runway WSJF; a not-needed
+  Enabler the Vision now needs is a blocking item that replays
+  epic-lean-business-case), then the Business Owner the business Epic, then
+  the Business Owner reconciles the Lean Business Case with the Epic (MVP,
+  WSJF, runway dependency), so the case and the Epic agree. Every step
+  commits its artifact (no-change when it already matches). No challenge.
+  Evaluate: those mains; KO reiterates the workflow (new instance; that
+  main's owner step absorbs the KO).
+instructions: value-management-officer-interpret-speech-acts
+predecessors:
+- architectural-vision
+orchestrator: value-management-officer
+skills: portfolio-architectural-vision
+steps:
+- slug: update-enabler-epic
+  description: Owner update — Enterprise Architect writes the Vision's decisions on the Enabler Epic into it (closed open items, MVP Feature seeds, runway WSJF).
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 9
+    fast-iteration: 3
+    schema-adherence: 9
+  actor: enterprise-architect
+  skills: enterprise-architect
+  artifact: epic-enabler
+  conditions: []
+  instructions: portfolio-epic-vision-alignment-update-enabler-epic
+- slug: update-epic
+  description: Owner update — Business Owner writes the Vision's decisions on the business Epic into it (closed open items, dependencies, MVP scope, WSJF).
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 9
+    fast-iteration: 3
+    schema-adherence: 9
+  actor: business-owner
+  skills: business-owner
+  artifact: epic
+  conditions:
+  - slug: after-update-enabler-epic
+    kind: precondition
+    step: update-enabler-epic
+  instructions: portfolio-epic-vision-alignment-update-epic
+- slug: reconcile-lean-business-case
+  description: Owner update — Business Owner reconciles the Lean Business Case with the Epic just updated (MVP, WSJF, runway dependency), so the case and the Epic agree.
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 9
+    fast-iteration: 3
+    schema-adherence: 9
+  actor: business-owner
+  skills: business-owner
+  artifact: lean-business-case
+  conditions:
+  - slug: after-update-epic
+    kind: precondition
+    step: update-epic
+  instructions: portfolio-epic-vision-alignment-reconcile-lean-business-case

@@ -1,0 +1,130 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: epic-transition
+description: >
+  Purpose: commit ONE Epic status transition (or cost close) through its
+  author hats. Act: Transition. Orchestrator: Value Management Officer.
+  Dispatch: the Business Owner records the transition on the Epic, the
+  Enterprise Architect on its sibling Enabler Epic, then the Value Management
+  Officer renders the Portfolio Kanban. Input: one transition request (Epic,
+  from and to status, trigger: a human gate decision, a roll-up, a block or an
+  unblock, or the close with its cost snapshot). One Epic per run. The
+  orchestrator never writes an Epic status itself. Guard: each owner step
+  refuses an inconsistent advance with a recorded no-change, which the
+  harness accepts; it withholds any other transition while the Epic or
+  Enabler Epic the step delivers (for the business Epic, its sibling Enabler
+  Epic too) still carries an open item that the Architectural Vision closes:
+  report the refusal, then run epic-vision-alignment for that Epic. Do not Evaluate: the decision was made at the
+  gate or by the roll-up rule.
+instructions: value-management-officer-interpret-speech-acts
+orchestrator: value-management-officer
+skills: lpm
+steps:
+- slug: transition-epic
+  description: Owner transition — Business Owner records the requested status change (or no-change) on the business Epic.
+  capabilities:
+    deep-reasoning: 5
+    coding: 0
+    tool-use: 4
+    long-context: 4
+    multimodal: 0
+    writing-quality: 5
+    instruction-following: 9
+    fast-iteration: 4
+    schema-adherence: 9
+  actor: business-owner
+  skills: business-owner
+  artifact: epic
+  conditions:
+  - slug: no-epic-item-open-that-the-vision-closes
+    kind: postcondition
+    setSelector:
+      setQuery: >-
+        workspace.filter(e, e.path == step.artifact.path
+        && !(has(e.data.stepOutcomes) && size(e.data.stepOutcomes) > 0
+        && e.data.stepOutcomes[size(e.data.stepOutcomes) - 1].step == 'epic-transition/transition-epic'
+        && e.data.stepOutcomes[size(e.data.stepOutcomes) - 1].outcome == 'no-change'))
+    setPredicate: >-
+      selected.all(e, !e.data.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open'
+      && workspace.exists(v, v.kind == 'architecture-vision' && has(v.data.closedItems)
+      && v.data.closedItems.exists(c, c.artifact == 'epic' && c.unit == e.data.id
+      && c.item == i.id))))
+  - slug: no-sibling-enabler-epic-item-open-that-the-vision-closes
+    kind: postcondition
+    setSelector:
+      setQuery: >-
+        workspace.filter(e, e.path == step.artifact.path
+        && !(has(e.data.stepOutcomes) && size(e.data.stepOutcomes) > 0
+        && e.data.stepOutcomes[size(e.data.stepOutcomes) - 1].step == 'epic-transition/transition-epic'
+        && e.data.stepOutcomes[size(e.data.stepOutcomes) - 1].outcome == 'no-change'))
+    setPredicate: >-
+      selected.all(e, !workspace.exists(x, x.kind == 'epic-enabler' && x.data.id == e.data.id
+      && x.data.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open'
+      && workspace.exists(v, v.kind == 'architecture-vision' && has(v.data.closedItems)
+      && v.data.closedItems.exists(c, c.artifact == 'epic-enabler' && c.unit == x.data.id
+      && c.item == i.id)))))
+  instructions: portfolio-epic-transition-transition-epic
+- slug: transition-enabler
+  description: Owner transition — Enterprise Architect records the requested status change (or no-change) on the sibling Enabler Epic.
+  capabilities:
+    deep-reasoning: 5
+    coding: 0
+    tool-use: 4
+    long-context: 4
+    multimodal: 0
+    writing-quality: 5
+    instruction-following: 9
+    fast-iteration: 4
+    schema-adherence: 9
+  actor: enterprise-architect
+  skills: enterprise-architect
+  artifact: epic-enabler
+  conditions:
+  - slug: after-transition-epic
+    kind: precondition
+    step: transition-epic
+  - slug: no-enabler-epic-item-open-that-the-vision-closes
+    kind: postcondition
+    setSelector:
+      setQuery: >-
+        workspace.filter(e, e.path == step.artifact.path
+        && !(has(e.data.stepOutcomes) && size(e.data.stepOutcomes) > 0
+        && e.data.stepOutcomes[size(e.data.stepOutcomes) - 1].step == 'epic-transition/transition-enabler'
+        && e.data.stepOutcomes[size(e.data.stepOutcomes) - 1].outcome == 'no-change'))
+    setPredicate: >-
+      selected.all(e, !e.data.openItems.exists(i, has(i.id) && has(i.status) && i.status == 'open'
+      && workspace.exists(v, v.kind == 'architecture-vision' && has(v.data.closedItems)
+      && v.data.closedItems.exists(c, c.artifact == 'epic-enabler' && c.unit == e.data.id
+      && c.item == i.id))))
+  instructions: portfolio-epic-transition-transition-enabler
+- slug: update-portfolio-kanban
+  description: Operational projection — Value Management Officer refreshes the Portfolio Kanban from Epic frontmatter.
+  capabilities:
+    deep-reasoning: 2
+    coding: 3
+    tool-use: 8
+    long-context: 2
+    multimodal: 0
+    writing-quality: 1
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 8
+  actor: value-management-officer
+  artifact: portfolio-kanban
+  conditions:
+  - slug: after-transition-enabler
+    kind: precondition
+    step: transition-enabler
+  instructions: portfolio-epic-transition-update-portfolio-kanban

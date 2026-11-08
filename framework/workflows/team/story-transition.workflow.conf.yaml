@@ -1,0 +1,66 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: story-transition
+description: >
+  Purpose: commit ONE Story status transition (or cost snapshot) through its
+  author hats. Act: Transition. Orchestrator: Scrum Master. Dispatch: the
+  Product Owner records the transition on the business Story, then the System
+  Architect on its sibling Enabler Story. Input: one transition request
+  (Story, from and to status, trigger: a gate decision, a pair or QA outcome,
+  a merge, a block or an unblock, or the awaiting-pr cost snapshot). One Story
+  per run. The orchestrator never writes a Story status itself; the Team
+  Kanban is rendered in the next Daily Sync record. Do not Evaluate: the
+  decision was made at the gate or by the practice that emitted it.
+instructions: scrum-master-interpret-speech-acts
+orchestrator: scrum-master
+skills: scrum
+steps:
+- slug: transition-story
+  description: Owner transition — Product Owner records the requested status change (or no-change) on the business Story.
+  capabilities:
+    deep-reasoning: 5
+    coding: 0
+    tool-use: 4
+    long-context: 4
+    multimodal: 0
+    writing-quality: 5
+    instruction-following: 9
+    fast-iteration: 4
+    schema-adherence: 9
+  actor: product-owner
+  skills: product-owner
+  artifact: story
+  conditions: []
+  instructions: team-story-transition-transition-story
+- slug: transition-enabler
+  description: Owner transition — System Architect records the requested status change (or no-change) on the sibling Enabler Story.
+  capabilities:
+    deep-reasoning: 5
+    coding: 0
+    tool-use: 4
+    long-context: 4
+    multimodal: 0
+    writing-quality: 5
+    instruction-following: 9
+    fast-iteration: 4
+    schema-adherence: 9
+  actor: system-architect
+  skills: system-architect
+  artifact: story-enabler
+  conditions:
+  - slug: after-transition-story
+    kind: precondition
+    step: transition-story
+  instructions: team-story-transition-transition-enabler

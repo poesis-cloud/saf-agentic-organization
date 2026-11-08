@@ -1,0 +1,364 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+actors:
+- roles:
+  - value-management-officer
+  - workspace-reader
+  slug: value-management-officer
+- roles:
+  - business-owner
+  - workspace-reader
+  slug: business-owner
+- roles:
+  - enterprise-architect
+  - workspace-reader
+  slug: enterprise-architect
+- roles:
+  - release-train-engineer
+  - workspace-reader
+  slug: release-train-engineer
+- roles:
+  - product-manager
+  - workspace-reader
+  slug: product-manager
+- roles:
+  - system-architect
+  - workspace-reader
+  slug: system-architect
+- roles:
+  - scrum-master
+  - workspace-reader
+  slug: scrum-master
+- roles:
+  - product-owner
+  - workspace-reader
+  slug: product-owner
+- roles:
+  - developer
+  - workspace-reader
+  slug: developer
+- roles:
+  - operator
+  - workspace-reader
+  slug: operator
+- roles:
+  - security-expert
+  - workspace-reader
+  slug: security-expert
+- roles:
+  - ux-designer
+  - workspace-reader
+  slug: ux-designer
+- roles:
+  - quality-engineer
+  - workspace-reader
+  slug: quality-engineer
+- roles:
+  - workspace-reader
+  slug: tech-writer
+roles:
+- privileges:
+  - artifact: portfolio-manifest
+    action: create
+  - artifact: portfolio-manifest
+    action: update
+  - artifact: portfolio-manifest
+    action: delete
+  - artifact: product-manifest
+    action: create
+  - artifact: product-manifest
+    action: update
+  - artifact: product-manifest
+    action: delete
+  - artifact: portfolio-sync
+    action: create
+  - artifact: portfolio-sync
+    action: update
+  - artifact: portfolio-sync
+    action: delete
+  - artifact: portfolio-kanban
+    action: create
+  - artifact: portfolio-kanban
+    action: update
+  - artifact: portfolio-kanban
+    action: delete
+  slug: value-management-officer
+- privileges:
+  - artifact: epic
+    action: create
+  - artifact: epic
+    action: update
+  - artifact: epic
+    action: delete
+  - artifact: lean-business-case
+    action: create
+  - artifact: lean-business-case
+    action: update
+  - artifact: lean-business-case
+    action: delete
+  - artifact: strategic-themes
+    action: create
+  - artifact: strategic-themes
+    action: update
+  - artifact: strategic-themes
+    action: delete
+  - artifact: budget-allocation
+    action: create
+  - artifact: budget-allocation
+    action: update
+  - artifact: budget-allocation
+    action: delete
+  - artifact: portfolio-review-decision
+    action: create
+  - artifact: portfolio-review-decision
+    action: update
+  - artifact: portfolio-review-decision
+    action: delete
+  - artifact: portfolio-vision
+    action: create
+  - artifact: portfolio-vision
+    action: update
+  - artifact: portfolio-vision
+    action: delete
+  - artifact: portfolio-roadmap
+    action: create
+  - artifact: portfolio-roadmap
+    action: update
+  - artifact: portfolio-roadmap
+    action: delete
+  slug: business-owner
+- privileges:
+  - artifact: architecture-vision
+    action: create
+  - artifact: architecture-vision
+    action: update
+  - artifact: architecture-vision
+    action: delete
+  - artifact: epic-enabler
+    action: create
+  - artifact: epic-enabler
+    action: update
+  - artifact: epic-enabler
+    action: delete
+  slug: enterprise-architect
+- privileges:
+  - artifact: art-manifest
+    action: create
+  - artifact: art-manifest
+    action: update
+  - artifact: art-manifest
+    action: delete
+  - artifact: pain-point
+    action: create
+  - artifact: pain-point
+    action: update
+  - artifact: pain-point
+    action: delete
+  - artifact: art-sync
+    action: create
+  - artifact: art-sync
+    action: update
+  - artifact: art-sync
+    action: delete
+  - artifact: system-demo
+    action: create
+  - artifact: system-demo
+    action: update
+  - artifact: system-demo
+    action: delete
+  - artifact: inspect-and-adapt
+    action: create
+  - artifact: inspect-and-adapt
+    action: update
+  - artifact: inspect-and-adapt
+    action: delete
+  - artifact: program-kanban
+    action: create
+  - artifact: program-kanban
+    action: update
+  - artifact: program-kanban
+    action: delete
+  - artifact: objectives
+    action: create
+  - artifact: objectives
+    action: update
+  - artifact: objectives
+    action: delete
+  slug: release-train-engineer
+- privileges:
+  - artifact: feature
+    action: create
+  - artifact: feature
+    action: update
+  - artifact: feature
+    action: delete
+  - artifact: objectives
+    action: create
+  - artifact: objectives
+    action: update
+  - artifact: objectives
+    action: delete
+  - artifact: product-roadmap
+    action: create
+  - artifact: product-roadmap
+    action: update
+  - artifact: product-roadmap
+    action: delete
+  - artifact: product-vision
+    action: create
+  - artifact: product-vision
+    action: update
+  - artifact: product-vision
+    action: delete
+  - artifact: risks
+    action: create
+  - artifact: risks
+    action: update
+  - artifact: risks
+    action: delete
+  - artifact: release-on-demand
+    action: create
+  - artifact: release-on-demand
+    action: update
+  - artifact: release-on-demand
+    action: delete
+  slug: product-manager
+- privileges:
+  - artifact: adr
+    action: create
+  - artifact: adr
+    action: update
+  - artifact: adr
+    action: delete
+  - artifact: architecture-review
+    action: create
+  - artifact: architecture-review
+    action: update
+  - artifact: architecture-review
+    action: delete
+  - artifact: architecture-runway
+    action: create
+  - artifact: architecture-runway
+    action: update
+  - artifact: architecture-runway
+    action: delete
+  - artifact: feature-enabler
+    action: create
+  - artifact: feature-enabler
+    action: update
+  - artifact: feature-enabler
+    action: delete
+  - artifact: nfr-list
+    action: create
+  - artifact: nfr-list
+    action: update
+  - artifact: nfr-list
+    action: delete
+  - artifact: story-enabler
+    action: create
+  - artifact: story-enabler
+    action: update
+  - artifact: story-enabler
+    action: delete
+  slug: system-architect
+- privileges:
+  - artifact: plan
+    action: create
+  - artifact: plan
+    action: update
+  - artifact: plan
+    action: delete
+  - artifact: team-manifest
+    action: create
+  - artifact: team-manifest
+    action: update
+  - artifact: team-manifest
+    action: delete
+  - artifact: team-sync
+    action: create
+  - artifact: team-sync
+    action: update
+  - artifact: team-sync
+    action: delete
+  - artifact: iteration-retrospective
+    action: create
+  - artifact: iteration-retrospective
+    action: update
+  - artifact: iteration-retrospective
+    action: delete
+  - artifact: iteration-review
+    action: create
+  - artifact: iteration-review
+    action: update
+  - artifact: iteration-review
+    action: delete
+  slug: scrum-master
+- privileges:
+  - artifact: story
+    action: create
+  - artifact: story
+    action: update
+  - artifact: story
+    action: delete
+  slug: product-owner
+- privileges:
+  - artifact: code-change
+    action: create
+  - artifact: code-change
+    action: update
+  - artifact: code-change
+    action: delete
+  - artifact: feasibility-review
+    action: create
+  - artifact: feasibility-review
+    action: update
+  - artifact: feasibility-review
+    action: delete
+  slug: developer
+- privileges:
+  - artifact: operability-review
+    action: create
+  - artifact: operability-review
+    action: update
+  - artifact: operability-review
+    action: delete
+  slug: operator
+- privileges:
+  - artifact: security-review
+    action: create
+  - artifact: security-review
+    action: update
+  - artifact: security-review
+    action: delete
+  slug: security-expert
+- privileges:
+  - artifact: ux-review
+    action: create
+  - artifact: ux-review
+    action: update
+  - artifact: ux-review
+    action: delete
+  slug: ux-designer
+- privileges:
+  - artifact: qa-signoff
+    action: create
+  - artifact: qa-signoff
+    action: update
+  - artifact: qa-signoff
+    action: delete
+  slug: quality-engineer
+# Reads are not gated: the harness authorizes writes only, so this role grants nothing.
+- privileges: []
+  slug: workspace-reader

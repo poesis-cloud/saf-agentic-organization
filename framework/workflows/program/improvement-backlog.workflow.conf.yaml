@@ -1,0 +1,41 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: improvement-backlog
+description: >
+  Purpose: record or update ONE ART pain point. Act: Cadence. Orchestrator:
+  Release Train Engineer. Dispatch: one pain-point mediation record per run.
+  Input: one friction note (a step's stepOutcomes friction, an Inspect & Adapt
+  candidate or triage row, a team retrospective escalation, or the user). Run
+  once per pain point; never batch. Do not Evaluate pain points. A resulting
+  Feature, Story or meta-artifact change is a later Demand, not this workflow.
+instructions: release-train-engineer-interpret-speech-acts
+orchestrator: release-train-engineer
+skills: program-inspect-and-adapt
+steps:
+- slug: record-pain-point
+  description: Mediation record — Release Train Engineer creates or updates exactly one ART pain point. Not itself challenged.
+  capabilities:
+    deep-reasoning: 6
+    coding: 0
+    tool-use: 4
+    long-context: 4
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 8
+  actor: release-train-engineer
+  artifact: pain-point
+  instructions: program-improvement-backlog-record-pain-point

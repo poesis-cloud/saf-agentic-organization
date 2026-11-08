@@ -1,0 +1,252 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: architectural-runway-extension
+description: >
+  Purpose: extend ART architectural runway. Orchestrator: Release
+  Train Engineer. In-scope mains: nfr-list, adr, architecture-runway.
+  nfr-list is the product singleton at portfolio/products/<product-slug>/nfr-list.md,
+  not a Feature-folder file. It is a precondition for ADR production.
+  Same workflow for ADR needed, new or changed product NFR, runway gap,
+  structurant architecture. Challenges of that packet: security,
+  operability, feasibility (not evaluated). Owner updates: the System
+  Architect then updates the NFR list and the ADR, and rewrites the runway
+  register; then the Product Manager writes the packet's decisions on the
+  business Feature into it and the System Architect those on the Enabler
+  Feature (adrs, architectureInventory, NFR trace, Architecture Gate open
+  items; a Feature the packet does not touch gets a no-change entry).
+  Evaluate: those mains; KO
+  reiterates the workflow (new instance; that main's owner step absorbs the KO). Late-seeded Enabler Feature forces
+  Feature refinement replay before the Architecture Gate is restaged.
+  Refuse Feature AC/WSJF shaping (that is feature-backlog-refinement).
+  Refuse portfolio NFR backbone (that is architectural-vision). PI Planning
+  only confirms runway; it does not author it.
+instructions: release-train-engineer-interpret-speech-acts
+predecessors:
+- feature-backlog-refinement
+orchestrator: release-train-engineer
+skills: program-architectural-runway-extension
+steps:
+- slug: author-nfrs
+  description: Main artifact draft — System Architect records the NFR list before any ADR.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: system-architect
+  skills: system-architect
+  artifact: nfr-list
+  conditions: []
+  instructions: program-architectural-runway-extension-author-nfrs
+- slug: author-adr
+  description: Main artifact draft — System Architect records one ADR after the NFR list exists.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: system-architect
+  skills: system-architect
+  artifact: adr
+  conditions:
+  - slug: after-author-nfrs
+    kind: precondition
+    step: author-nfrs
+  instructions: program-architectural-runway-extension-author-adr
+- slug: challenge-security
+  description: Challenge packet — Security Expert security-review of the NFR/ADR packet. Not itself challenged.
+  capabilities:
+    deep-reasoning: 9
+    coding: 2
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 6
+  actor: security-expert
+  skills: security-expert
+  artifact: security-review
+  conditions:
+  - slug: after-author-adr
+    kind: precondition
+    step: author-adr
+  instructions: program-feature-backlog-refinement-challenger-writes-no-owner-content
+- slug: challenge-operability
+  description: Challenge packet — Operator operability-review of the NFR/ADR packet. Not itself challenged.
+  capabilities:
+    deep-reasoning: 8
+    coding: 2
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 6
+  actor: operator
+  skills: operator
+  artifact: operability-review
+  conditions:
+  - slug: after-author-adr
+    kind: precondition
+    step: author-adr
+  instructions: program-feature-backlog-refinement-challenger-writes-no-owner-content
+- slug: challenge-feasibility
+  description: Challenge packet — Developer feasibility-review of the NFR/ADR packet. Not itself challenged.
+  capabilities:
+    deep-reasoning: 8
+    coding: 8
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 6
+  actor: developer
+  skills: developer
+  artifact: feasibility-review
+  conditions:
+  - slug: after-author-adr
+    kind: precondition
+    step: author-adr
+  instructions: program-feature-backlog-refinement-challenger-writes-no-owner-content
+- slug: update-nfrs
+  description: Owner update — System Architect absorbs the challenge findings into the product NFR list.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: system-architect
+  skills: system-architect
+  artifact: nfr-list
+  conditions:
+  - slug: after-challenge-security
+    kind: precondition
+    step: challenge-security
+  - slug: after-challenge-operability
+    kind: precondition
+    step: challenge-operability
+  - slug: after-challenge-feasibility
+    kind: precondition
+    step: challenge-feasibility
+  instructions: program-architectural-runway-extension-update-nfrs
+- slug: update-adr
+  description: Owner update — System Architect absorbs the challenge findings into the ADR this run authored.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: system-architect
+  skills: system-architect
+  artifact: adr
+  conditions:
+  - slug: after-challenge-security
+    kind: precondition
+    step: challenge-security
+  - slug: after-challenge-operability
+    kind: precondition
+    step: challenge-operability
+  - slug: after-challenge-feasibility
+    kind: precondition
+    step: challenge-feasibility
+  instructions: program-architectural-runway-extension-update-adr
+- slug: owner-rewrite
+  description: Owner rewrite — System Architect commits Architecture Runway after the three challenge packets and the NFR / ADR updates.
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: system-architect
+  skills: system-architect
+  artifact: architecture-runway
+  conditions:
+  - slug: after-update-nfrs
+    kind: precondition
+    step: update-nfrs
+  - slug: after-update-adr
+    kind: precondition
+    step: update-adr
+  instructions: program-architectural-runway-extension-rewrite-architecture-runway
+- slug: update-feature
+  description: Owner update — Product Manager writes the committed architecture packet's decisions on the business Feature into it (ADR links, decision inventory, NFR trace, Architecture Gate open items).
+  capabilities:
+    deep-reasoning: 6
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 9
+    fast-iteration: 3
+    schema-adherence: 9
+  actor: product-manager
+  skills: product-manager
+  artifact: feature
+  conditions:
+  - slug: after-owner-rewrite
+    kind: precondition
+    step: owner-rewrite
+  instructions: program-architectural-runway-extension-update-feature
+- slug: update-feature-enabler
+  description: Owner update — System Architect writes the committed architecture packet's decisions on the Enabler Feature into it (ADR links, decision inventory, NFR trace, Architecture Gate open items).
+  capabilities:
+    deep-reasoning: 6
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 9
+    fast-iteration: 3
+    schema-adherence: 9
+  actor: system-architect
+  skills: system-architect
+  artifact: feature-enabler
+  conditions:
+  - slug: after-update-feature
+    kind: precondition
+    step: update-feature
+  instructions: program-architectural-runway-extension-update-feature-enabler

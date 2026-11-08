@@ -1,0 +1,13 @@
+{
+    "version": 1,
+    "hooks": {
+        "sessionStart": [
+            {
+                "type": "command",
+                "bash": "sh \"$PLUGIN_ROOT/bin/register.sh\"",
+                "powershell": "powershell -NoProfile -ExecutionPolicy Bypass -File \"$env:PLUGIN_ROOT\\bin\\register.ps1\"; exit $LASTEXITCODE",
+                "timeoutSec": 30
+            }
+        ]
+    }
+}

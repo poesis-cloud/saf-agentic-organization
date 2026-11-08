@@ -1,0 +1,62 @@
+---
+name: release-train-engineer-interpret-speech-acts
+description: 'Classify every message as Demand Feature, Demand derive-from-Epic, Demand runway, Cadence, Advance release, Inspect, Evaluate, or Refuse before choosing a program workflow. Return mains for Evaluate.'
+---
+
+<!-- Copyright 2026 Poesis Cloud and contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
+# Interpret speech acts — Release Train Engineer
+
+Read the organization usage model (`docs/usage-model.md` at the framework root). Classify the message as **exactly one** act
+before loading a workflow.
+
+- **Demand Feature** — write a PI-ready Feature (new or thicken AC/WSJF). Business vs
+  Enabler Feature is judged in-workflow. Start `feature-backlog-refinement`. Same
+  workflow for: new Feature; thicken; Feature-sized impact of changing X; Feature-sized
+  UX/security gap; Enabler Feature sibling. **In-scope mains:** `feature`,
+  `feature-enabler`. SA architecture-review is a challenge of those mains, not an ADR.
+  Do not author ADR, NFR list, or runway here.
+- **Demand derive-from-Epic** — split an approved Epic into ART Features. Start
+  `feature-derivation`, once per Feature (one business Feature per run). Derived items
+  then enter Feature refinement. Do not thicken
+  AC/WSJF here.
+- **Demand runway** — ADR needed, new or changed product NFR, runway gap, structurant
+  architecture. Start `architectural-runway-extension`. **In-scope mains:** `nfr-list`,
+  `adr`, `architecture-runway`, plus `feature` and `feature-enabler`, whose owner-update steps
+  write the packet's ADR links, decision inventory, NFR trace and gate items into them. `nfr-list`
+  is the product singleton (`portfolio/products/<product-slug>/nfr-list.md`) and a precondition
+  for ADR. Do not reshape Feature AC here (Refuse-to-Demand Feature).
+- **Cadence** — PI Planning, ART Sync, System Demo, Inspect and Adapt, Improvement
+  Backlog (`improvement-backlog`: record or update ONE pain point from one friction note;
+  one run per pain point). The user is not
+  creating a Feature. "I want SSO" during PI Planning is Refuse-to-Demand Feature, not
+  a PI Objective. PI Planning confirms runway; it does not author ADR/NFR.
+- **Advance** — Release on Demand for an increment already OK enough to ship.
+- **Transition** — move ONE existing Feature (and its Enabler sibling) to a new
+  `status:` (gate decision, PI commit, `→blocked`/unblock, Demo Gate close). Start
+  `feature-transition`, once per Feature. **In-scope mains:** `feature`,
+  `feature-enabler`, written by their author steps; you render only the
+  `program-kanban`. You never write the Feature yourself.
+- **Inspect** — show current program mains. Write nothing.
+- **Evaluate** — OK / concerns / KO **per main** just returned. A KO reiterates the
+  workflow: a new instance whose owner step absorbs the KO. Never re-dispatch a step yourself. Never Evaluate a review packet, ROAM ledger, or minutes.
+- **Refuse** — Epic grain → `@value-management-officer`. Story grain (bug, spike, thin
+  slice) → `@scrum-master`. Do not mint a Feature.
+
+After Demand, Cadence, or Advance, return the mains (reviews as evidence) and wait for Evaluate.
+
+**Return, and the next run.** At `no-next-step` this session is done: it can drive no other instance (harness function 3, invariant 9). Return the mains, then name the next workflow toward the unit's next ★ gate and say it runs in a **new** orchestrator session; the user decides. **Drive to a gate** (a request to reach a gate, or to run several workflows) is not an act of its own: answer it with the plan, the ordered workflow runs with one session each, then classify and start only its first run, on assent. Never improvise across instances. From an approved Epic to the ★ Architecture Gate, for a structurant Feature: `feature-derivation` → `feature-backlog-refinement` → `feature-transition` `funnel→refined` → the ★ Feature Gate → `feature-transition` `refined→arch-pending` → `architectural-runway-extension` → the ★ Architecture Gate → `feature-transition` (accept `→ready`). Then `pi-planning` and `feature-transition` `ready→committed`. One session per run. The Flow table in your orchestration skill is the authority for each edge.
+
+Closed set: Demand Feature · Demand derive-from-Epic · Demand runway · Cadence PI / sync / demo / I&A / improvement-backlog · Advance release · Transition Feature · Inspect · Evaluate main · Refuse.

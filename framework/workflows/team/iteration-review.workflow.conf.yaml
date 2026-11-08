@@ -1,0 +1,38 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: iteration-review
+description: >
+  Purpose: inspect the increment at iteration end. Act: Cadence. Orchestrator:
+  Scrum Master. Dispatch: iteration-review mediation record. Evaluate: the
+  increment shown, not the minutes.
+instructions: scrum-master-interpret-speech-acts
+orchestrator: scrum-master
+skills: team-iteration-review
+steps:
+- slug: review
+  description: Mediation record — Scrum Master records the Iteration Review. Not itself challenged.
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  actor: scrum-master
+  artifact: iteration-review
+  instructions: team-iteration-review-facilitator-authors-no-owner-content

@@ -1,0 +1,313 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gsmarc://saf/artifacts/lean-business-case.artifact/v1",
+  "$ref": "gsmarc://saf/contracts/artifact/v1",
+  "title": "lean-business-case artifact schema",
+  "description": "Validates the Markdown Lean Business Case artifact for an Epic. Authored in the Epic Lean Business Case practice; challenged by @enterprise-architect and @security-expert; weighed by the Central Supervisor at the \u2605 Epic Gate.",
+  "type": "object",
+  "additionalProperties": true,
+  "x-artifact": {
+    "id": "lean-business-case",
+    "kind": "lean-business-case",
+    "template": "templates/layers/portfolio/actors/business-owner/artifacts/lean-business-case.artifact-template.md",
+    "pathPatterns": [
+      "portfolio/portfolio-backlog/*/*.lean-business-case.md"
+    ],
+    "sections": {
+      "required": [
+        "Problem & opportunity",
+        "Solution hypothesis (MVP)",
+        "WSJF",
+        "Leading & lagging indicators",
+        "Cost / effort estimate",
+        "Enabler / runway dependency",
+        "Pivot / persevere / stop criteria",
+        "Challenge findings"
+      ],
+      "optional": [],
+      "maxDepth": 2,
+      "allowUnknown": false
+    },
+    "renderOnly": false
+  },
+  "required": [
+    "epic",
+    "status",
+    "slug",
+    "title"
+  ],
+  "properties": {
+    "epic": {
+      "description": "Id of the Epic this lean business case shapes (e.g. E-1).",
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "description": "Authoring lifecycle of the business case.",
+      "enum": [
+        "draft",
+        "challenged",
+        "gate-ready"
+      ]
+    },
+    "fundingState": {
+      "description": "Funding posture proposed by the case (set by Participatory Budgeting).",
+      "enum": [
+        "proposed",
+        "funded",
+        "not-funded"
+      ]
+    },
+    "slug": {
+      "$ref": "gsmarc://saf/contracts/slugs/v1#/$defs/artifactSlug",
+      "description": "URL-safe slug for the artifact (e.g. e-1-lbc)."
+    },
+    "title": {
+      "description": "Human-readable title for the lean business case.",
+      "type": "string",
+      "minLength": 1
+    },
+    "workItemRelations": {
+      "description": "Typed work-item relations (dependsOn / enables / relatedTo / supersedes).",
+      "$ref": "#/$defs/workItemRelations"
+    },
+    "wsjf": {
+      "description": "Weighted Shortest Job First scoring block.",
+      "$ref": "#/$defs/wsjf"
+    },
+    "openItems": {
+      "description": "Clarification + challenge ledger (a blocking open entry halts the relevant gate).",
+      "$ref": "#/$defs/openItems"
+    },
+    "cost": {
+      "description": "Token-cost accounting block (see the cost definition).",
+      "$ref": "#/$defs/cost"
+    },
+    "github": {
+      "description": "GitHub Projects sync envelope, filled by portfolio/_sync (null when authoring).",
+      "$ref": "#/$defs/githubSync"
+    },
+    "sources": {
+      "description": "Derivation provenance (narrowed subtype of the base contract's sources): refs to the upstream artifact(s) this lean-business-case was built from. Allowed source kinds: epic, epic-enabler.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "(^|/)([a-z0-9-]+\\.)?(epic|epic-enabler)\\.md$"
+      }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record \u2014 one entry per step that committed this artifact (see the stepOutcomes definition).",
+      "$ref": "#/$defs/stepOutcomes"
+    }
+  },
+  "$defs": {
+    "cost": {
+      "description": "Token-cost accounting block.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "tokensIn",
+        "tokensOut",
+        "tokensCached",
+        "tokensSelf",
+        "tokensRolled",
+        "dispatches",
+        "source",
+        "committed"
+      ],
+      "properties": {
+        "tokensIn": {
+          "description": "NET-NEW prompt tokens = sum(inputTokens - cachedTokens) of this item's dispatches.",
+          "type": "number"
+        },
+        "tokensOut": {
+          "description": "Sum of outputTokens of those dispatches.",
+          "type": "number"
+        },
+        "tokensCached": {
+          "description": "Sum of cachedTokens (re-sent context); excluded from tokensSelf, kept for billed-cost reconstruction.",
+          "type": "number"
+        },
+        "tokensSelf": {
+          "description": "tokensIn + tokensOut - the item's own net cost.",
+          "type": "number"
+        },
+        "tokensRolled": {
+          "description": "tokensSelf plus the rolled cost of child items - the item's end-to-end cost.",
+          "type": "number"
+        },
+        "dispatches": {
+          "description": "Number of subagent dispatches counted into tokensSelf (not llm_request turns).",
+          "type": "number"
+        },
+        "source": {
+          "description": "Provenance of the cost figures: measured, estimated, or mixed.",
+          "enum": [
+            "measured",
+            "estimated",
+            "mixed"
+          ]
+        },
+        "committed": {
+          "description": "YYYY-MM-DD the one-time cost snapshot was written; immutable after (null until committed).",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "githubSync": {
+      "description": "GitHub Projects sync envelope; filled by portfolio/_sync, null when authoring.",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "issueNumber": {
+          "description": "GitHub issue number; filled by portfolio/_sync, null when authoring.",
+          "type": [
+            "integer",
+            "number",
+            "string",
+            "null"
+          ]
+        },
+        "issueNodeId": {
+          "description": "GitHub issue node id; filled by portfolio/_sync, null when authoring.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "projectItemId": {
+          "description": "GitHub Projects item id; filled by portfolio/_sync, null when authoring.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "openItems": {
+      "description": "Clarification + challenge ledger entries (each an object: id, kind, raised_by, owner, blocking, status, ...).",
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record. Every workflow step that commits this artifact appends exactly one entry, so the artifact itself carries the step's decision \u2014 including `confirmed`, `no-change` and `none` \u2014 and the agent's reply stays indicative.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "step",
+          "outcome",
+          "date",
+          "note"
+        ],
+        "properties": {
+          "step": {
+            "description": "`<workflow-slug>/<step-slug>` of the step that appended this entry.",
+            "type": "string",
+            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+          },
+          "outcome": {
+            "description": "written (created) | revised (content changed) | confirmed (reviewed, still valid) | no-change (out of scope on this run) | none (not needed; the artifact records that decision)",
+            "enum": [
+              "written",
+              "revised",
+              "confirmed",
+              "no-change",
+              "none"
+            ]
+          },
+          "date": {
+            "description": "YYYY-MM-DD of the step.",
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "description": "One line: what the step decided and why.",
+            "type": "string",
+            "minLength": 1
+          },
+          "friction": {
+            "description": "Optional. Workflow friction the step's actor observed (raw input, never a fix). Only `@release-train-engineer` turns it into a pain point, in an `improvement-backlog` workflow step.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "workItemRelations": {
+      "description": "Typed work-item relations between artifacts.",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "dependsOn": {
+          "description": "Hard prerequisite artifact ids that must advance or land before this item.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enables": {
+          "description": "Artifact ids this item intentionally makes possible or materially easier.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "relatedTo": {
+          "description": "Non-gating semantic or strategic links; never use as a hidden dependency list.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "supersedes": {
+          "description": "Artifact ids intentionally replaced by this item.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "wsjf": {
+      "description": "Weighted Shortest Job First scoring block used to rank the backlog.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "userBusinessValue",
+        "timeCriticality",
+        "riskReduction",
+        "jobSize",
+        "score"
+      ],
+      "properties": {
+        "userBusinessValue": {
+          "description": "Relative user/business value of the work item.",
+          "type": "number"
+        },
+        "timeCriticality": {
+          "description": "How time-sensitive the value is (it decays if delayed).",
+          "type": "number"
+        },
+        "riskReduction": {
+          "description": "Risk reduction / opportunity enablement value.",
+          "type": "number"
+        },
+        "jobSize": {
+          "description": "Relative size/effort of the job (the WSJF denominator).",
+          "type": "number"
+        },
+        "score": {
+          "description": "Computed WSJF score = (userBusinessValue + timeCriticality + riskReduction) / jobSize.",
+          "type": "number"
+        }
+      }
+    }
+  }
+}
