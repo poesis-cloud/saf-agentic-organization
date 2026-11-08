@@ -492,7 +492,7 @@ def test_live_plugin_dispatches_namespaced_agents_once_per_step(live_plugin: Pat
         assert "Unknown agent_type" in skill, slug
     binding = (live_plugin / AGENTS / "developer.agent.md").read_text(encoding="utf-8")
     assert f"`agent_type` set to `{PLUGIN}:<actor>`" in binding
-    assert f"`{PLUGIN}:release-train-engineer`" in binding and "`init`" in binding
+    assert f"`{PLUGIN}:release-train-engineer`" in binding and "with the `init` skill" in binding
     assert "exactly once" in binding and "step-session-bound" in binding
     assert "{{" not in binding
 
@@ -537,7 +537,8 @@ def test_init_skill_is_named_as_it_resolves() -> None:
 
 def test_init_skill_detects_the_channel_without_the_copilot_command() -> None:
     skill = (BUILD / "skills" / "init" / "SKILL.md").read_text(encoding="utf-8")
+    assert "Choose the channel" in skill and "| Channel |" in skill
     channel = skill.split("Choose the channel", 1)[1].split("| Channel |", 1)[0]
     assert "installed-plugins/<marketplace>/{{PLUGIN_NAME}}" in channel
-    assert channel.index("installed-plugins") < channel.index("copilot plugin list")
+    assert 0 <= channel.find("installed-plugins") < channel.find("copilot plugin list")
     assert "use the **stable** channel" in channel
