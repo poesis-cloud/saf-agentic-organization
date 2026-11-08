@@ -33,7 +33,7 @@ import re
 import shutil
 import sys
 import uuid
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import yaml
 
@@ -47,7 +47,7 @@ NAME_RE = re.compile(r"^(?!.*(?:--|\.\.))[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$")
 SKILL_NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 LINK_RE = re.compile(r"(\]\()([^)\s]+)(\))")
 LEADING_COMMENT_RE = re.compile(r"\A\s*<!--.*?-->\s*", re.DOTALL)
-ROOT_FILES = ("LICENSE", "NOTICE", "README.md")
+ROOT_FILES = ("LICENSE", "NOTICE", "README.md", "docs/usage-model.md", "docs/step-artifacts.md")
 FRAMEWORK = "framework"
 EXTENSION = "com.github.copilot"
 AGENTS = f"{EXTENSION}/agents"
@@ -115,7 +115,8 @@ def _layout(source_root: Path) -> tuple[list[str], str]:
         key, value = (part.strip() for part in line.split("=", 1))
         value = value.strip("'\"")
         if key.startswith("FRAMEWORK_") and key.endswith("_DIR") and key != "FRAMEWORK_WORKSPACE_DIR":
-            if value.startswith(("/", "..")) or value in ("", ".", "conf"):
+            parts = PurePosixPath(value).parts
+            if value.startswith(("/", "\\")) or ":" in value or "\\" in value or ".." in parts or value in ("", ".", "conf"):
                 raise RenderError(f"layout directory must be a relative child of the source: {key}={value}")
             dirs.add(value)
             value = f"{FRAMEWORK}/{value}"
@@ -293,6 +294,7 @@ def _copy_framework(source_root: Path, plugin_root: Path, layout: list[str], env
     shutil.copytree(source_root / "conf", plugin_root / "conf", ignore=ignore)
     for name in ROOT_FILES:
         if (source_root / name).is_file():
+            (plugin_root / name).parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source_root / name, plugin_root / name)
     (plugin_root / ".env").write_text(env, encoding="utf-8")
 
@@ -441,13 +443,19 @@ def main() -> int:
 
 def _unsafe_target(source_root: Path, plugin_root: Path) -> bool:
     """The plugin root is replaced: refuse the source, its ancestors, its `builds` subtree (the
-    checked-in build inputs carry a `plugin.json` too), and any existing path that is not an
-    earlier rendered plugin (a directory with `plugin.json` at its root)."""
+    checked-in build inputs carry a `plugin.json` too), any path inside a directory the render
+    copies (the layout, `conf/`, `docs/`: it would copy itself), and any existing path that is not
+    an earlier rendered plugin (a directory with `plugin.json` at its root)."""
     if plugin_root == source_root or plugin_root in source_root.parents:
         return True
-    builds = source_root / BUILD.parts[0]
-    if plugin_root == builds or builds in plugin_root.parents:
-        return True
+    try:
+        copied, _ = _layout(source_root)
+    except RenderError:
+        copied = []
+    for name in (BUILD.parts[0], "conf", "docs", *copied):
+        top = source_root / name
+        if plugin_root == top or top in plugin_root.parents:
+            return True
     if not plugin_root.exists():
         return False
     return not (plugin_root.is_dir() and (plugin_root / "plugin.json").is_file())

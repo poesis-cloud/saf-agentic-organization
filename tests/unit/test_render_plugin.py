@@ -212,6 +212,9 @@ def _write(path: str, text: str):
         (lambda s: (s / ".env").unlink(), "layout file"),
         (_write(".env", "FRAMEWORK_SKILLS_DIR=/abs\n"), "relative child"),
         (_write(".env", "FRAMEWORK_SKILLS_DIR=conf\n"), "relative child"),
+        (_write(".env", "FRAMEWORK_SKILLS_DIR=nested/../../outside\n"), "relative child"),
+        (_write(".env", "FRAMEWORK_SKILLS_DIR=C:/abs\n"), "relative child"),
+        (_write(".env", "FRAMEWORK_SKILLS_DIR=..\\outside\n"), "relative child"),
         (lambda s: shutil.rmtree(s / "conf"), "framework configuration"),
     ],
 )
@@ -269,7 +272,11 @@ def test_render_refuses_malformed_tools_entries(
     assert _tree(plugin) == earlier
 
 
-@pytest.mark.parametrize("target", [".", "..", "skills", "workflows", "builds", "builds/plugin", "builds/plugin/out", "README.md"])
+@pytest.mark.parametrize(
+    "target",
+    [".", "..", "skills", "skills/out", "workflows", "workflows/new/out", "conf/out", "docs/out", "builds", "builds/plugin",
+     "builds/plugin/out", "README.md"],
+)
 def test_render_refuses_to_overwrite_source(source: Path, monkeypatch: pytest.MonkeyPatch, target: str) -> None:
     build_inputs = sorted(p.relative_to(source) for p in (source / "builds").rglob("*"))
     assert _run(monkeypatch, source, source / target) == 2
@@ -409,6 +416,13 @@ def test_live_manifest_is_a_closed_agent_plugins_manifest() -> None:
     manifest = json.loads((BUILD / "plugin.json").read_text(encoding="utf-8"))
     assert manifest["$schema"] == SCHEMA and manifest["name"] == PLUGIN
     assert set(manifest) <= set(render_plugin.MANIFEST_KEYS)
+
+
+def test_live_plugin_ships_the_usage_model(live_plugin: Path) -> None:
+    assert (live_plugin / "docs" / "usage-model.md").is_file() and (live_plugin / "docs" / "step-artifacts.md").is_file()
+    for slug in _orchestrators():
+        text = (ORG / "instructions" / slug / f"{slug}-interpret-speech-acts.instructions.md").read_text(encoding="utf-8")
+        assert "`docs/usage-model.md` at the framework root" in text and "README usage model" not in text
 
 
 def test_live_plugin_matches_harness_contract(live_plugin: Path) -> None:

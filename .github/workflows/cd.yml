@@ -70,6 +70,7 @@ jobs:
         outputs:
             plugin-zip: ${{ steps.plugin.outputs.zip }}
             version: ${{ steps.plugin.outputs.version }}
+            prerelease: ${{ steps.plugin.outputs.prerelease }}
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -90,6 +91,15 @@ jobs:
                       echo "::error::tag ${GITHUB_REF_NAME} does not match builds/plugin/plugin.json version ${VERSION}"
                       exit 1
                   fi
+                  # The channel follows the pre-release identifier: only alpha, beta and rc exist.
+                  case "${VERSION%%+*}" in
+                      *-*)
+                          if ! printf '%s\n' "${VERSION%%+*}" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|rc)(\.[0-9A-Za-z-]+)*$'; then
+                              echo "::error::pre-release ${VERSION} must be -alpha, -beta or -rc"
+                              exit 1
+                          fi
+                          ;;
+                  esac
 
             - name: Build the organization plugin
               id: plugin
@@ -101,6 +111,10 @@ jobs:
                   sha256sum "${NAME}.zip" > "${NAME}.zip.sha256"
                   echo "zip=${NAME}.zip" >> "$GITHUB_OUTPUT"
                   echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+                  case "${VERSION%%+*}" in
+                      *-*) echo "prerelease=true" >> "$GITHUB_OUTPUT" ;;
+                      *) echo "prerelease=false" >> "$GITHUB_OUTPUT" ;;
+                  esac
 
             - name: Validate the manifest against the official Agent Plugins schema
               run: |
@@ -149,10 +163,7 @@ jobs:
                   generate_release_notes: true
                   # SemVer pre-release tags (-alpha / -beta / -rc) publish
                   # as GitHub pre-releases, never as the latest release.
-                  prerelease: >-
-                      ${{ contains(github.ref_name, '-alpha')
-                      || contains(github.ref_name, '-beta')
-                      || contains(github.ref_name, '-rc') }}
+                  prerelease: ${{ needs.package.outputs.prerelease == 'true' }}
 
     plugin-branch:
         # The plugin at the root of the orphan branch `copilot-plugin`, one commit per release
@@ -192,14 +203,25 @@ jobs:
                   chmod +x "$RUNNER_TEMP/plugin/bin/register.sh"
                   git --work-tree="$RUNNER_TEMP/plugin" add --all .
                   TREE="$(git write-tree)"
-                  PARENT=""
-                  if git fetch --quiet origin copilot-plugin; then
-                      PARENT="-p $(git rev-parse FETCH_HEAD)"
-                  fi
-                  # shellcheck disable=SC2086
-                  SHA="$(git commit-tree "$TREE" $PARENT -m "Organization plugin ${VERSION} (from ${GITHUB_SHA})")"
-                  git tag -a "$REF" "$SHA" -m "Organization plugin ${VERSION}"
-                  git push origin "${SHA}:refs/heads/copilot-plugin" "refs/tags/${REF}"
+                  # Concurrent releases race on the branch: on a rejected push, refetch the
+                  # parent and commit again (an atomic push never moves the tag alone).
+                  for ATTEMPT in 1 2 3 4 5; do
+                      PARENT=""
+                      if git fetch --quiet origin copilot-plugin; then
+                          PARENT="-p $(git rev-parse FETCH_HEAD)"
+                      fi
+                      # shellcheck disable=SC2086
+                      SHA="$(git commit-tree "$TREE" $PARENT -m "Organization plugin ${VERSION} (from ${GITHUB_SHA})")"
+                      git tag -f -a "$REF" "$SHA" -m "Organization plugin ${VERSION}"
+                      if git push --atomic origin "${SHA}:refs/heads/copilot-plugin" "refs/tags/${REF}"; then
+                          break
+                      fi
+                      if [ "$ATTEMPT" = 5 ]; then
+                          echo "::error::could not publish copilot-plugin after ${ATTEMPT} attempts"
+                          exit 1
+                      fi
+                      sleep $((ATTEMPT * 5))
+                  done
                   echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
                   echo "ref=${REF}" >> "$GITHUB_OUTPUT"
 
@@ -228,11 +250,14 @@ jobs:
             - name: Choose the channel
               if: steps.credentials.outputs.enabled == 'true'
               id: channel
+              env:
+                  PRERELEASE: ${{ needs.package.outputs.prerelease }}
               run: |
-                  case "${GITHUB_REF_NAME}" in
-                      *-alpha* | *-beta* | *-rc*) echo "branch=preview" >> "$GITHUB_OUTPUT"; echo "name=poesis-saf-preview" >> "$GITHUB_OUTPUT" ;;
-                      *) echo "branch=main" >> "$GITHUB_OUTPUT"; echo "name=poesis-saf" >> "$GITHUB_OUTPUT" ;;
-                  esac
+                  if [ "$PRERELEASE" = true ]; then
+                      echo "branch=preview" >> "$GITHUB_OUTPUT"; echo "name=poesis-saf-preview" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "branch=main" >> "$GITHUB_OUTPUT"; echo "name=poesis-saf" >> "$GITHUB_OUTPUT"
+                  fi
 
             - name: Create the GitHub App token
               if: steps.credentials.outputs.enabled == 'true'

@@ -33,6 +33,7 @@ The plugin root is the framework root the harness registry records, so it holds 
 ├── com.github.copilot/hooks/hooks.json         sessionStart: the registration only
 ├── bin/register.{sh,ps1}
 ├── skills/<stem>/SKILL.md                      one Agent Skill per source skill, plus init
+├── docs/{usage-model,step-artifacts}.md        the orchestrators' required reading
 └── LICENSE NOTICE README.md
 ```
 
