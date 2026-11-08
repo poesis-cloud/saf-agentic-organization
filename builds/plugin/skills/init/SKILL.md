@@ -46,6 +46,8 @@ fine).
 
 ## 3. Write the marker
 
+**Steps 3 to 5 run in ONE shell command.** The harness denies every tool call, shell commands included, while `.saf/workspace.yaml` exists but is not committed in `HEAD`, so writing the marker with a file tool and committing it in a later call is denied. Prepare the contents, then write both files and commit them inside a single shell invocation (e.g. a single PowerShell or `sh` script), with the marker written last before `git add`. If that command fails after writing the marker, remove the marker (`.saf/workspace.yaml`) in the same command so the folder is not left half-initialised.
+
 Write `.saf/workspace.yaml` at the top-level, exactly (the harness marker schema allows these
 two properties and no other):
 
@@ -87,7 +89,7 @@ marketplace entry under `extraKnownMarketplaces` and the two entries under `enab
 
 ## 5. Commit
 
-Commit the two files, and only them:
+Commit the two files, and only them, in the same shell command as steps 3 and 4:
 
 ```sh
 git add .saf/workspace.yaml .github/copilot/settings.json
