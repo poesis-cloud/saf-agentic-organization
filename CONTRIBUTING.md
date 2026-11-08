@@ -57,6 +57,31 @@ They are installation prerequisites, not framework constituents.
 
 ---
 
+## Building, testing and releasing
+
+The repository root is the host-agnostic source; the shipped artifact is the Copilot plugin
+rendered from [`builds/plugin/`](builds/plugin/) (see [docs/hosts/copilot-plugin.md](docs/hosts/copilot-plugin.md)).
+
+```bash
+python3 -m pip install -r requirements-dev.txt
+make verify                          # tests + ≥95% coverage; harness checkout at ../saf-agentic-harness
+make plugin PLUGIN_DIR=/tmp/plugin   # render the plugin
+copilot plugin install /tmp/plugin   # try it locally
+```
+
+`make verify` needs a checkout of [`saf-agentic-harness`](https://github.com/poesis-cloud/saf-agentic-harness)
+at the version `conf/harness.conf.yaml` requires (override the path with `SAF_HARNESS_SRC`).
+
+To release, set `version` in [`builds/plugin/plugin.json`](builds/plugin/plugin.json), merge, then
+push the tag `v<version>` (for example `v0.2.0` or `v0.2.0-rc.1`). The CD workflow refuses a tag
+that differs from the manifest version. It publishes the release, commits the rendered plugin to
+the `copilot-plugin` branch (tag `plugin-v<version>`), and opens a pull request on
+`poesis-cloud/saf-marketplace`: on `preview` for a pre-release, on `main` otherwise. The
+marketplace job authenticates as a GitHub App through the repository secrets
+`SAF_MARKETPLACE_APP_ID` and `SAF_MARKETPLACE_APP_PRIVATE_KEY`.
+
+---
+
 ## License header convention
 
 Every Poesis-authored file that is part of the SHIP set (skills, agents, instructions,

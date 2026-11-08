@@ -1,46 +1,60 @@
-# Host build — GitHub Copilot app / Copilot CLI
+# Host build — the Copilot plugin
 
-`builds/github-copilot-cli/` renders this host-agnostic source into a Copilot CLI plugin, the
-runtime the GitHub Copilot desktop app embeds. The VS Code build (`builds/github-copilot/`) is
-untouched; both read the same `agents/`, `skills/`, `workflows/`, and `conf/`.
+`builds/plugin/` renders this host-agnostic source into the Copilot plugin
+`poesis-saf-agentic-organization` (Agent Plugins 1.0). One plugin serves every GitHub Copilot
+host: the Copilot CLI, the GitHub Copilot app (which embeds it), and VS Code with Session Target:
+Copilot. The harness ships separately as the plugin `poesis-saf-agentic-harness`; its `def/`
+specifications are binding on this build.
 
 ## Inputs
 
 | File | Role |
 | --- | --- |
-| `plugin.json` | Legacy-layout manifest: `name`, `version`, `description` (tracked against the VS Code manifest by a test), `agents: agents/`, `skills: skills/`. No `hooks` key. |
-| `tools.yaml` | Per-agent `tools:` as CLI aliases. Orchestrators: `read, edit, search, execute, agent, skill, ask_user`. Bench: `read, edit, search, execute, skill`. Must list exactly the source agents. |
-| `host-binding.md` | Section appended to every rendered agent: dispatch with `task`, actors never asking the harness (`not-facilitator`) or reading its source, one workflow instance per orchestrator session, the one allowed plain harness command form, artifact writes through `create`/`edit`/`apply_patch` only, skill loading, framework-path anchoring on the injected harness context, and the trust note. |
-| `render_bundle.py` | `render_bundle.py <source-root> <bundle-root>`. Renders into a sibling staging directory and, only when the render succeeds, updates an existing bundle in place (changed files replaced, new ones added, stale ones removed; the bundle directory itself is never renamed, so a live-loaded bundle re-renders on Windows), so a refused source leaves the earlier bundle intact. Refuses any target that is the source, an ancestor of it, inside its `builds/` subtree, or an existing path that is not an earlier bundle. |
+| `plugin.json` | The closed Agent Plugins 1.0 manifest (`name`, `version`, `description`, `author`, `homepage`, `repository`, `license`, `keywords`). No `agents`, `skills` or `hooks` keys: the host discovers them by convention. Its `version` is the release version. |
+| `tools.yaml` | Per-agent `tools:` as Copilot aliases. Must list exactly the source agents. |
+| `host-binding.md` | Section appended to every rendered agent: dispatch with `task`, the one allowed plain harness command form, artifact writes through `create`/`edit`/`apply_patch` only, skill loading, the `init` skill, and the "No harness context" refusal. |
+| `bin/register.{sh,ps1}` | The `sessionStart` registration: writes `frameworks/<plugin>/root` (the plugin root) into the per-user SAF registry. |
+| `skills/init/SKILL.md` | The workspace initialisation skill (`.saf/workspace.yaml`, `.github/copilot/settings.json`). |
+| `render_plugin.py` | `render_plugin.py <source-root> <plugin-root>` (or `make plugin PLUGIN_DIR=<plugin-root>`). Renders into a sibling staging directory and only on success updates the plugin root in place, so a refused source leaves the earlier render intact. Refuses a target that is the source, an ancestor of it, inside `builds/`, or an existing path that is not an earlier render. |
 
-## Bundle layout
+## Plugin layout
+
+The plugin root is the framework root the harness registry records, so it holds the framework's
+`.env` and `conf/`:
 
 ```text
-<bundle>/
-├── plugin.json                       manifest ($license stripped)
-├── .github/plugin/marketplace.json   one-plugin local marketplace (source ".")
-├── agents/<slug>.agent.md            tools: rewritten, links re-anchored, binding appended
-├── skills/<stem>/SKILL.md            one folder per source skill, name: <stem>
-├── skills/<stem>.skill.md            flat source skills (the harness load directives name these)
-├── workflows/ conf/ instructions/ templates/ artifacts/   framework layout from .env
-└── .env LICENSE NOTICE README.md
+<plugin>/
+├── plugin.json                                 Agent Plugins 1.0 manifest
+├── .env                                        layout: every FRAMEWORK_*_DIR under framework/
+├── conf/                                       harness.conf.yaml (harness version range) and the rest
+├── framework/{agents,artifacts,instructions,skills,templates,workflows}/
+├── com.github.copilot/agents/<slug>.agent.md   tools:, links re-anchored, binding appended;
+│                                               orchestrators carry the scoped H0 hooks
+├── com.github.copilot/hooks/hooks.json         sessionStart: the registration only
+├── bin/register.{sh,ps1}
+├── skills/<stem>/SKILL.md                      one Agent Skill per source skill, plus init
+└── LICENSE NOTICE README.md
 ```
 
-Written later by the harness installer (`adapters/github-copilot-cli/install.py --framework-dir
-<org checkout> --bundle-dir <bundle> [--workspace-dir <portfolio>] [--hooks-target
-plugin|repo|user] [--hook-style exec|shell]`, or `make install-hooks-copilot-cli FRAMEWORK_DIR=…
-BUNDLE_DIR=… [WORKSPACE_DIR=…] [HARNESS_PYTHON=…]`), never by the renderer:
+The orchestrators' scoped H0 hooks (`userPromptSubmitted`, `userPromptTransformed`) call the
+harness's stable per-user launcher in the SAF registry
+(`$SAF_AGENTIC_REGISTRY_DIR`, else `~/.local/state/saf-agentic/registry/harness/launcher.sh`, or
+`%LOCALAPPDATA%\saf-agentic\registry\harness\launcher.ps1`). The plugin writes no machine path:
+everything absolute is resolved by the harness at run time.
 
-- `hooks.json`, the plugin-level hook file the CLI picks up from the plugin root. Each hook's
-  `env` carries `FRAMEWORK_DIR` and every `FRAMEWORK_*_DIR`, so no user-level variables are set;
-- the agent-scoped `hooks:` block between `# >>> safe-harness copilot-cli >>>` /
-  `# <<< safe-harness copilot-cli <<<` in each orchestrator's frontmatter;
-- with `--hooks-target repo`, `<portfolio>/.github/hooks/safe-harness-copilot-cli.json` instead
-  of `hooks.json`.
+## Install and release
 
-The renderer refuses a source agent that declares `hooks:` and a manifest with `hooks`, so the
-installer's slots are always free. A test injects a marker block into a rendered orchestrator and
-checks that the frontmatter still parses.
+- **Users** install from the marketplace `poesis-cloud/saf-marketplace` (`poesis-saf`, or
+  `poesis-saf-preview` from its `preview` branch), with `install.sh` / `install.ps1` or
+  `copilot plugin install poesis-saf-agentic-organization@<marketplace>` (see the README).
+- **Contributors** run `make plugin PLUGIN_DIR=<dir>` and `copilot plugin install <dir>`.
+- **CI** renders the plugin, validates `plugin.json` against the Agent Plugins 1.0 schema, and
+  installs it with the Copilot CLI.
+- **CD** runs on a `v<version>` tag equal to the `plugin.json` version: it publishes the release
+  zip, commits the rendered plugin to the orphan branch `copilot-plugin` tagged
+  `plugin-v<version>`, and opens a pull request on `poesis-cloud/saf-marketplace` that pins the
+  entry to that commit — on `preview` for a pre-release tag (`-alpha`, `-beta`, `-rc`), on `main`
+  otherwise.
 
 ## Host-specific decisions
 
@@ -51,10 +65,10 @@ checks that the frontmatter still parses.
   (`--agent poesis-saf-agentic-organization:<orchestrator>`), and the harness adapter strips it.
   The renderer fills the binding's namespaced agent list from `plugin.json` `name`, and a test
   keeps the orchestrator skills' prefix equal to it.
-- **One step = one session.** The harness binds each resolved step to the one session that runs
-  it and refuses a second (`step-session-bound`). Orchestrators dispatch each resolved step
+- **One step = one Copilot session.** The harness binds each resolved step to the one Copilot
+  session that runs it and refuses a second (`step-session-bound`). Orchestrators dispatch each resolved step
   exactly once; after a failure they ask `resolve-step` again and dispatch the new resolution,
-  never re-dispatching on their own. A user KO reiterates the workflow as a new instance.
+  never re-dispatching on their own. A user KO reiterates the workflow as a new workflow instance.
 - **Harness requests.** An orchestrator asks with ONE plain command, alone in its tool call:
   `& <venv python> <harness.py> resolve-step --workflow-slug <workflow-slug>` or
   `… resolve-step-model` (Linux/macOS: no leading `&`; `python`, `python3`, `py -3` also accepted;
@@ -91,20 +105,9 @@ checks that the frontmatter still parses.
 - **Links.** `[x.skill.md](x.skill.md)` from an agent becomes `../skills/x/SKILL.md`; skill links
   into the layout (`../workflows/...`) are re-anchored one level deeper. A test asserts that the
   rendered bundle has no more broken links than the source.
-- **Install.** `copilot plugin install <path>` copies the plugin and is deprecated for direct
-  paths. A local marketplace (`copilot plugin marketplace add <bundle>`, then
-  `install <plugin>@<plugin>-local`) loads the bundle live from its directory. A harness re-install
-  or re-render then takes effect in the next session with no reinstall.
-
-## Verification evidence (Copilot CLI 1.0.105, Linux)
-
-- `copilot plugin marketplace add` / `plugin install`: accepted, `Installed 37 skills`, `source: live`.
-- Session debug log: `Plugin activation [agents]: … loaded=14`.
-- Not verifiable offline: model-backed dispatch and hook execution. These need an authenticated
-  session in a trusted folder, which is the live trial in the GitHub Copilot app.
 
 ## Known source debt (not changed here)
 
 The source agents and skills carry about 240 relative links left over from an older nested
 layout (`../../../../artifacts/…`, `../scrum-master/scrum-master.skill.md`, …). They are broken
-in the source and in both bundles. The CLI bundle reproduces them and adds none.
+in the source and in the plugin. The plugin reproduces them and adds none.

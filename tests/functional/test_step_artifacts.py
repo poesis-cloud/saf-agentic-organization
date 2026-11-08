@@ -121,8 +121,8 @@ def test_skills_state_that_artifacts_are_the_only_evidence(name: str) -> None:
     assert "`stepOutcomes`" in text
 
 
-def test_readme_and_cli_binding_state_the_rule() -> None:
+def test_readme_and_plugin_binding_state_the_rule() -> None:
     readme = (ORG_ROOT / "README.md").read_text(encoding="utf-8")
     assert "No valid step" in readme and INDICATIVE in readme
-    binding = (ORG_ROOT / "builds" / "github-copilot-cli" / "host-binding.md").read_text(encoding="utf-8")
+    binding = (ORG_ROOT / "builds" / "plugin" / "host-binding.md").read_text(encoding="utf-8")
     assert "**Step evidence.**" in binding and INDICATIVE in binding

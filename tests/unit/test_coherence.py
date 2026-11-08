@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from tests.loaders import (
@@ -183,17 +184,17 @@ def test_no_broken_markdown_skill_links() -> None:
 
 
 def test_plugin_skills_are_flat_skill_files() -> None:
+    """Source skills are flat `skills/<stem>.skill.md` files; the Agent Plugins 1.0 manifest is
+    closed (components are discovered by convention, never enumerated) and the tools map binds
+    exactly the source agents."""
     plugin = load_plugin()
-    skills = plugin["skills"]
-    assert set(skills) == {f"skills/{slug}.skill.md" for slug in skill_slugs()}
-    assert set(plugin["agents"]) == {f"agents/{slug}.agent.md" for slug in agent_slugs()}
-    assert plugin["version"] == "0.1.0"
-    for path in skills:
-        assert path.startswith("skills/")
-        assert path.count("/") == 1
-        assert path.endswith(".skill.md")
+    assert "skills" not in plugin and "agents" not in plugin
+    assert plugin["name"] == "poesis-saf-agentic-organization"
+    assert re.fullmatch(r"\d+\.\d+\.\d+(-[0-9A-Za-z.]+)?", plugin["version"])
+    assert skill_slugs()
+    assert not [path for path in (ORG / "skills").rglob("*.skill.md") if path.parent != ORG / "skills"]
     tools = load_tools_map()["agents"]
-    assert set(tools) == set(plugin["agents"])
+    assert set(tools) == {f"agents/{slug}.agent.md" for slug in agent_slugs()}
 
 
 def test_agent_frontmatter_name_matches_filename() -> None:

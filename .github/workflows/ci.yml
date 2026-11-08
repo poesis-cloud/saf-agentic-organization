@@ -1,7 +1,8 @@
 ---
 # CI baseline for saf-agentic-organization
 # Runs on every push and PR to main.
-# Jobs: markdown lint, YAML lint, license-header check, WITHHOLD scrub, verify (tests + both host bundles).
+# Jobs: markdown lint, YAML lint, license-header check, WITHHOLD scrub, verify (tests + the plugin:
+# render, Agent Plugins schema, Copilot CLI install), installers.
 
 name: ci
 
@@ -115,7 +116,7 @@ jobs:
 
             - name: Checkout harness
               # The harness specs are the reference: test against harness `main`, which must
-              # carry the condition language with load-time typing (de1b5f0 or later).
+              # carry the harness plugin and the harness compatibility check (8598e33 or later).
               uses: actions/checkout@v4
               with:
                   repository: poesis-cloud/saf-agentic-harness
@@ -123,9 +124,9 @@ jobs:
                   path: .harness
                   fetch-depth: 0
 
-            - name: Require harness main at de1b5f0 or later
+            - name: Require harness main at 8598e33 or later
               run: |
-                  git -C .harness merge-base --is-ancestor de1b5f0 HEAD
+                  git -C .harness merge-base --is-ancestor 8598e33 HEAD
                   echo "harness main at $(git -C .harness rev-parse --short HEAD)"
 
             - name: Set up Python
@@ -139,11 +140,58 @@ jobs:
             - name: make verify
               run: make verify SAF_HARNESS_SRC=.harness/src
 
-            - name: Render both host bundles
-              # The live-tree contract is asserted by tests/unit/test_render_cli_bundle.py;
-              # this proves the documented `make` entry points render outside the source.
+            - name: Render the plugin
+              # The live-tree contract is asserted by tests/unit/test_render_plugin.py; this
+              # proves the documented `make plugin` entry point renders outside the source.
               run: |
-                  make bundle BUNDLE_DIR="$RUNNER_TEMP/bundle/github-copilot"
-                  make bundle-cli CLI_BUNDLE_DIR="$RUNNER_TEMP/bundle/github-copilot-cli"
-                  test -f "$RUNNER_TEMP/bundle/github-copilot-cli/.github/plugin/marketplace.json"
-                  test ! -e "$RUNNER_TEMP/bundle/github-copilot-cli/hooks.json"
+                  make plugin PLUGIN_DIR="$RUNNER_TEMP/plugin"
+                  test -f "$RUNNER_TEMP/plugin/com.github.copilot/hooks/hooks.json"
+                  test -f "$RUNNER_TEMP/plugin/skills/init/SKILL.md"
+
+            - name: Validate the manifest against the official Agent Plugins schema
+              run: |
+                  curl -sSfL -o "$RUNNER_TEMP/plugin.schema.json" \
+                      https://raw.githubusercontent.com/agentplugins/agent-plugins-spec/main/schemas/1.0.0/plugin.schema.json
+                  python3 .github/scripts/validate_plugin_manifest.py "$RUNNER_TEMP/plugin/plugin.json" \
+                      "$RUNNER_TEMP/plugin.schema.json"
+
+            - name: Set up Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "22"
+
+            - name: Install the plugin with the Copilot CLI (unauthenticated)
+              run: |
+                  npm install --global --silent @github/copilot
+                  export COPILOT_HOME="$RUNNER_TEMP/copilot-home"
+                  copilot --version
+                  copilot plugin install "$RUNNER_TEMP/plugin"
+                  copilot plugin list | tee "$RUNNER_TEMP/plugins.txt"
+                  grep -F "poesis-saf-agentic-organization" "$RUNNER_TEMP/plugins.txt"
+
+    installers:
+        name: Installers (${{ matrix.os }})
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 10
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest, windows-latest]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Check install.sh
+              if: runner.os != 'Windows'
+              run: |
+                  sh -n install.sh
+                  sh install.sh --help
+
+            - name: Check install.ps1
+              if: runner.os == 'Windows'
+              shell: pwsh
+              run: |
+                  $errors = $null
+                  [System.Management.Automation.Language.Parser]::ParseFile("$PWD/install.ps1", [ref]$null, [ref]$errors) | Out-Null
+                  if ($errors) { $errors; exit 1 }
+                  ./install.ps1 -Help
