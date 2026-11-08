@@ -7,7 +7,7 @@
 #   - push a tag v*      → gate, then:
 #                          - a GitHub Release with the plugin zip and its .sha256 — marked as a
 #                            pre-release when the tag is a SemVer pre-release (it contains
-#                            -alpha, -beta, or -rc, e.g. v0.1.0-alpha.1);
+#                            -alpha, -beta, or -rc, e.g. v1.0.0-alpha.1);
 #                          - the plugin, at the root of the orphan branch `copilot-plugin`,
 #                            tagged `plugin-v<version>`;
 #                          - a PR on poesis-cloud/saf-marketplace bumping the plugin entry's
