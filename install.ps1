@@ -85,4 +85,4 @@ foreach ($Plugin in $Plugins) {
 }
 
 if ($Status -ne 0) { exit $Status }
-Say 'done. In a Git repository, start a session and ask to initialise it as a SAF workspace (skill poesis-saf-agentic-organization:init).'
+Say 'done. In a Git repository, start a session and ask to initialise it as a SAF workspace (skill init).'

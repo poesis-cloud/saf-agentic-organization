@@ -87,4 +87,4 @@ for plugin in $PLUGINS; do
 done
 
 [ "$status" -eq 0 ] || exit "$status"
-say "done. In a Git repository, start a session and ask to initialise it as a SAF workspace (skill poesis-saf-agentic-organization:init)."
+say "done. In a Git repository, start a session and ask to initialise it as a SAF workspace (skill init)."
