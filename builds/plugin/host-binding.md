@@ -12,9 +12,10 @@
      See the License for the specific language governing permissions and
      limitations under the License. -->
 
-## Host binding — GitHub Copilot app / Copilot CLI
+## Host binding — GitHub Copilot (plugin)
 
-Rendered by `builds/github-copilot-cli`; it binds the host-agnostic prose above to this host.
+Rendered by `builds/plugin`; it binds the host-agnostic prose above to the GitHub Copilot
+runtime (the Copilot CLI, the GitHub Copilot app, and VS Code with Session Target: Copilot).
 
 - **Dispatch (orchestrators only).** The subagent-dispatch tool is `task`. Plugin agents are
   namespaced: dispatch a step with `agent_type` set to `{{PLUGIN_NAME}}:<actor>`, the step's
@@ -62,11 +63,17 @@ Rendered by `builds/github-copilot-cli`; it binds the host-agnostic prose above 
   the only evidence.
 - **Skills.** Load a skill by name with the `skill` tool. The name is the source file stem
   (`team-verification`, `program-pi-planning`, …). When the harness injects a load directive
-  naming a framework file (`<framework root>/skills/<name>.skill.md`), read that file.
+  naming a framework file (`<framework root>/framework/skills/<name>.skill.md`), read that file.
 - **Framework paths.** Relative framework paths in this agent and its skills (`workflows/`,
-  `conf/`, `templates/`, `artifacts/`, `instructions/`, `skills/`) resolve against the framework
-  root that the injected harness context names, never against the current folder. Artifacts
-  are written in the workspace that the same context names.
-- **Hooks.** The harness hooks run only in a trusted folder. If no harness context was injected
-  when this session opened, say so before the first dispatch and mark the gate packet
-  `harness=unchecked`.
+  `templates/`, `artifacts/`, `instructions/`, `skills/`) resolve under `framework/` in the
+  framework root that the injected harness context names (`conf/` sits at that root itself),
+  never against the current folder. Artifacts are written in the workspace that the same
+  context names.
+- **Not a SAF workspace (orchestrators only).** When the harness context says this folder is
+  not a SAF workspace, offer to initialise it with the `init` skill
+  (`{{PLUGIN_NAME}}:init`), run it only on the user's yes, and dispatch nothing until a new
+  session opens in the initialised workspace.
+- **No harness context (orchestrators only).** The harness context is injected when the
+  session opens, by the `poesis-saf-agentic-harness` plugin, in a trusted folder. If none was
+  injected, refuse to dispatch: say the SAF harness is not active, and that the user must
+  install and enable both SAF plugins, trust the folder, and start a new session.
