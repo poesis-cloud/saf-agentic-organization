@@ -20,15 +20,15 @@ SHA = "a" * 40
 def test_bump_creates_then_updates_the_entry(tmp_path: Path) -> None:
     plugin = load_plugin()
     path = tmp_path / ".github" / "plugin" / "marketplace.json"
-    assert bump_marketplace.main([str(path), "poesis-saf-preview", "1.0.0-alpha.1", "plugin-v1.0.0-alpha.1", SHA]) == 0
+    assert bump_marketplace.main([str(path), "poesis-saf-preview", "1.0.0-alpha.2", "plugin-v1.0.0-alpha.2", SHA]) == 0
     catalogue = json.loads(path.read_text(encoding="utf-8"))
     assert catalogue["name"] == "poesis-saf-preview"
     assert catalogue["plugins"] == [
         {
             "name": plugin["name"],
-            "version": "1.0.0-alpha.1",
+            "version": "1.0.0-alpha.2",
             "description": plugin["description"],
-            "source": {"source": "github", "repo": "poesis-cloud/saf-agentic-organization", "ref": "plugin-v1.0.0-alpha.1", "sha": SHA},
+            "source": {"source": "github", "repo": "poesis-cloud/saf-agentic-organization", "ref": "plugin-v1.0.0-alpha.2", "sha": SHA},
             "license": "Apache-2.0",
             "keywords": plugin["keywords"],
         }
