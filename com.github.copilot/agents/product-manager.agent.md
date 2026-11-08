@@ -148,8 +148,8 @@ runtime (the Copilot CLI, the GitHub Copilot app, and VS Code with Session Targe
   never against the current folder. Artifacts are written in the workspace that the same
   context names.
 - **Not a SAF workspace (orchestrators only).** When the harness context says this folder is
-  not a SAF workspace, offer to initialise it with the `init` skill
-  (`poesis-saf-agentic-organization:init`), run it only on the user's yes, and dispatch nothing until a new
+  not a SAF workspace, offer to initialise it with the `init` skill (plugin skills resolve by
+  bare name, unlike agents), run it only on the user's yes, and dispatch nothing until a new
   session opens in the initialised workspace.
 - **No harness context (orchestrators only).** The harness context is injected when the
   session opens, by the `poesis-saf-agentic-harness` plugin, in a trusted folder. If none was
