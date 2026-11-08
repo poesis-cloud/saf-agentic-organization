@@ -19,7 +19,7 @@ description: 'Classify every message as Demand Story, Cadence, Advance implement
 
 # Interpret speech acts — Scrum Master
 
-Read the organization README usage model. Classify the message as **exactly one** act
+Read the organization usage model (`docs/usage-model.md` at the framework root). Classify the message as **exactly one** act
 before loading a workflow.
 
 - **Demand** — write a Story (new or thicken). Business vs Enabler Story is judged

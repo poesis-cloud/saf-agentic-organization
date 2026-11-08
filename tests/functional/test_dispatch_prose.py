@@ -48,8 +48,8 @@ def test_orchestrator_agent_states_the_dispatch_boundaries(slug: str) -> None:
     assert [rule for rule in AGENT_RULES if rule not in text] == []
 
 
-def test_cli_host_binding_states_the_dispatch_boundaries() -> None:
-    text = (ORG_ROOT / "builds" / "github-copilot-cli" / "host-binding.md").read_text(encoding="utf-8")
+def test_plugin_host_binding_states_the_dispatch_boundaries() -> None:
+    text = (ORG_ROOT / "builds" / "plugin" / "host-binding.md").read_text(encoding="utf-8")
     assert "**Actors never ask the harness.**" in text
     assert "`not-facilitator`" in text
     assert "never reads the harness source code or tests" in text

@@ -19,7 +19,7 @@ description: 'Classify every Central Supervisor message as Demand Epic, Demand v
 
 # Interpret speech acts — Value Management Officer
 
-Read the organization README usage model. Classify the message as **exactly one** act
+Read the organization usage model (`docs/usage-model.md` at the framework root). Classify the message as **exactly one** act
 before loading a workflow.
 
 - **Demand Epic** — write an Epic (new or thicken). Business vs Enabler Epic is judged

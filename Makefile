@@ -5,22 +5,20 @@
 #   - CI runs the SAME `make verify` target over the whole tree.
 #
 # PYTHONPATH points at the sibling harness src (do not vendor it) plus the
-# host renderer so tests can import ConfigLoader / Application / render_bundle.
+# plugin renderer so tests can import ConfigLoader / Application / render_plugin.
 #
-# Host bundles (rendered outside the source; see README "Installing"):
-#   make bundle      BUNDLE_DIR=...      VS Code Copilot Chat
-#   make bundle-cli  CLI_BUNDLE_DIR=...  GitHub Copilot app / Copilot CLI
+# The GitHub Copilot plugin (Agent Plugins 1.0) is rendered outside the source:
+#   make plugin PLUGIN_DIR=...
 
 PYTEST := PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -p no:cacheprovider
 SAF_HARNESS_SRC ?= ../saf-agentic-harness/src
 export SAF_HARNESS_SRC
-PYTHONPATH := $(SAF_HARNESS_SRC):$(CURDIR)/builds/github-copilot
-COVERAGE := --cov=tests.loaders --cov=render_bundle --cov=builds/github-copilot-cli --cov-fail-under=95
+PYTHONPATH := $(SAF_HARNESS_SRC):$(CURDIR)/builds/plugin
+COVERAGE := --cov=tests.loaders --cov=builds/plugin --cov-fail-under=95
 
-BUNDLE_DIR ?= ../saf-agentic-organization-bundle/github-copilot
-CLI_BUNDLE_DIR ?= ../saf-agentic-organization-bundle/github-copilot-cli
+PLUGIN_DIR ?= ../saf-agentic-organization-plugin
 
-.PHONY: verify test unit functional bundle bundle-cli
+.PHONY: verify test unit functional plugin
 
 ## verify: unit + functional planes, coverage ≥95% on organization Python.
 verify:
@@ -37,10 +35,6 @@ functional:
 ## test: alias for the gate.
 test: verify
 
-## bundle: render the VS Code Copilot Chat bundle into BUNDLE_DIR.
-bundle:
-	python3 builds/github-copilot/render_bundle.py . "$(BUNDLE_DIR)"
-
-## bundle-cli: render the GitHub Copilot app / Copilot CLI plugin into CLI_BUNDLE_DIR.
-bundle-cli:
-	python3 builds/github-copilot-cli/render_bundle.py . "$(CLI_BUNDLE_DIR)"
+## plugin: render the GitHub Copilot plugin into PLUGIN_DIR.
+plugin:
+	python3 builds/plugin/render_plugin.py . "$(PLUGIN_DIR)"

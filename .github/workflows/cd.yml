@@ -1,17 +1,24 @@
 ---
-# CD — package & publish the GitHub Copilot customization plugin.
+# CD — publish the organization PLUGIN (Agent Plugins 1.0) for every GitHub Copilot host.
 #
-# The repository root is the host-agnostic source. CD renders a staged GitHub Copilot bundle
-# from builds/github-copilot/plugin.json + builds/github-copilot/tools.yaml, injects the
-# target `tools:` frontmatter into agent manifests, runs the packaging gate on that staged bundle,
-# then zips it into a single top-level install folder named after the plugin and publishes it as
-# the installable GitHub Copilot artifact. A second asset, `<name>-copilot-cli-<version>.zip`, is
-# the GitHub Copilot app / Copilot CLI plugin rendered by builds/github-copilot-cli/ (it keeps
-# `.github/plugin/marketplace.json`, the local-marketplace manifest the app installs from).
+# The gate runs first and in full: a tag never publishes an unverified tree.
 #
 # Triggers:
-#   - push a tag v*      → packaging gate, then publish a GitHub Release asset
-#   - workflow_dispatch  → packaging gate + build, upload a workflow artifact only
+#   - push a tag v*      → gate, then:
+#                          - a GitHub Release with the plugin zip and its .sha256 — marked as a
+#                            pre-release when the tag is a SemVer pre-release (it contains
+#                            -alpha, -beta, or -rc, e.g. v0.1.0-alpha.1);
+#                          - the plugin, at the root of the orphan branch `copilot-plugin`,
+#                            tagged `plugin-v<version>`;
+#                          - a PR on poesis-cloud/saf-marketplace bumping the plugin entry's
+#                            version, ref and sha: on `main` (marketplace poesis-saf) for a
+#                            final release, on `preview` (poesis-saf-preview) for a
+#                            pre-release. It auto-merges once its validation passes. Skipped,
+#                            with a notice, when the GitHub App secrets are absent.
+#   - workflow_dispatch  → gate + build, upload workflow artifacts only
+#
+# The tag must match builds/plugin/plugin.json `version` (`v` + version): the manifest is the
+# canonical version.
 
 name: cd
 
@@ -24,10 +31,46 @@ on:
 permissions:
     contents: read
 
+concurrency:
+    group: cd-${{ github.ref }}
+    cancel-in-progress: false
+
 jobs:
-    verify-bundle:
-        name: Packaging gate
+    gate:
+        name: Verification gate
         runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - name: Checkout organization
+              uses: actions/checkout@v4
+
+            - name: Checkout harness
+              uses: actions/checkout@v4
+              with:
+                  repository: poesis-cloud/saf-agentic-harness
+                  ref: main
+                  path: .harness
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+
+            - name: Install dependencies
+              run: python3 -m pip install --quiet -r requirements-dev.txt
+
+            - name: Run the verification gate
+              run: make verify SAF_HARNESS_SRC=.harness/src
+
+    package:
+        name: Package
+        needs: gate
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        outputs:
+            plugin-zip: ${{ steps.plugin.outputs.zip }}
+            version: ${{ steps.plugin.outputs.version }}
+            prerelease: ${{ steps.plugin.outputs.prerelease }}
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -35,175 +78,237 @@ jobs:
             - name: Set up Python
               uses: actions/setup-python@v5
               with:
-                  python-version: "3.11"
+                  python-version: "3.12"
 
-            - name: Checkout harness
-              uses: actions/checkout@v4
+            - name: Install the plugin renderer's dependencies
+              run: python3 -m pip install --quiet -r requirements-dev.txt
+
+            - name: Check the tag against plugin.json
+              if: startsWith(github.ref, 'refs/tags/v')
+              run: |
+                  VERSION="$(python3 -c "import json; print(json.load(open('builds/plugin/plugin.json'))['version'])")"
+                  if [ "${GITHUB_REF_NAME}" != "v${VERSION}" ]; then
+                      echo "::error::tag ${GITHUB_REF_NAME} does not match builds/plugin/plugin.json version ${VERSION}"
+                      exit 1
+                  fi
+                  # The channel follows the pre-release identifier: only alpha, beta and rc exist.
+                  case "${VERSION%%+*}" in
+                      *-*)
+                          if ! printf '%s\n' "${VERSION%%+*}" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|rc)(\.[0-9A-Za-z-]+)*$'; then
+                              echo "::error::pre-release ${VERSION} must be -alpha, -beta or -rc"
+                              exit 1
+                          fi
+                          ;;
+                  esac
+
+            - name: Build the organization plugin
+              id: plugin
+              run: |
+                  VERSION="$(python3 -c "import json; print(json.load(open('builds/plugin/plugin.json'))['version'])")"
+                  NAME="poesis-saf-agentic-organization-plugin-v${VERSION}"
+                  make plugin PLUGIN_DIR=build/plugin
+                  (cd build/plugin && zip -qr "../../${NAME}.zip" .)
+                  sha256sum "${NAME}.zip" > "${NAME}.zip.sha256"
+                  echo "zip=${NAME}.zip" >> "$GITHUB_OUTPUT"
+                  echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+                  case "${VERSION%%+*}" in
+                      *-*) echo "prerelease=true" >> "$GITHUB_OUTPUT" ;;
+                      *) echo "prerelease=false" >> "$GITHUB_OUTPUT" ;;
+                  esac
+
+            - name: Validate the manifest against the official Agent Plugins schema
+              run: |
+                  curl -sSfL -o "$RUNNER_TEMP/plugin.schema.json" \
+                      https://raw.githubusercontent.com/agentplugins/agent-plugins-spec/main/schemas/1.0.0/plugin.schema.json
+                  python3 .github/scripts/validate_plugin_manifest.py build/plugin/plugin.json \
+                      "$RUNNER_TEMP/plugin.schema.json"
+
+            - name: Upload the plugin
+              uses: actions/upload-artifact@v4
               with:
-                  repository: poesis-cloud/saf-agentic-harness
-                  path: harness
+                  name: organization-plugin
+                  path: build/plugin
+                  include-hidden-files: true
+                  retention-days: 14
 
-            - name: Install harness test dependencies
-              run: pip install --quiet -r harness/requirements-dev.txt
+            - name: Upload the plugin zip
+              uses: actions/upload-artifact@v4
+              with:
+                  name: organization-plugin-zip
+                  path: |
+                      ${{ steps.plugin.outputs.zip }}
+                      ${{ steps.plugin.outputs.zip }}.sha256
+                  retention-days: 14
 
-            - name: Render GitHub Copilot bundle
-              run: |
-                  BUNDLE="$RUNNER_TEMP/github-copilot-bundle"
-                  python3 builds/github-copilot/render_bundle.py . "$BUNDLE"
-                  echo "BUNDLE=$BUNDLE" >> "$GITHUB_ENV"
-
-            - name: Validate plugin.json manifest
-              # Packaging gate: every agents[]/skills[] path
-              # resolves, and no enumerated skill points into a workflows/ sub-workflow
-              # (Design Invariant 7 — a sub-orchestration is path-loaded, not matched).
-              run: |
-                  python3 - "$BUNDLE" <<'PY'
-                  import json
-                  import pathlib
-                  import sys
-
-                  root = pathlib.Path(sys.argv[1])
-                  manifest = json.loads((root / "plugin.json").read_text())
-                  errors = []
-
-                  for key in ("agents", "skills"):
-                      for rel in manifest.get(key, []):
-                          if not (root / rel).is_file():
-                              errors.append(f"{key}[]: missing file {rel}")
-
-                  for rel in manifest.get("skills", []):
-                      if "/workflows/" in rel:
-                          errors.append(
-                              f"skills[]: enumerated skill points into a sub-workflow: {rel}"
-                          )
-
-                  if errors:
-                      print("PACKAGING GATE FAILED:")
-                      for err in errors:
-                          print(f"  - {err}")
-                      sys.exit(1)
-
-                  print(
-                      f"OK: {len(manifest['agents'])} agents + "
-                      f"{len(manifest['skills'])} skills resolve; "
-                      "no sub-workflow enumerated"
-                  )
-                  PY
-
-            - name: Verify bundled harness (constitution gate)
-              run: make -C "$BUNDLE/harness" verify
-
-    package:
-        name: Package & publish
-        needs: verify-bundle
+    publish:
+        name: Publish release
+        needs: package
+        if: startsWith(github.ref, 'refs/tags/v')
         runs-on: ubuntu-latest
+        timeout-minutes: 10
         permissions:
             contents: write
         steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-
-            - name: Set up Python
-              uses: actions/setup-python@v5
+            - name: Download the plugin zip
+              uses: actions/download-artifact@v4
               with:
-                  python-version: "3.11"
+                  name: organization-plugin-zip
 
-            - name: Checkout harness
-              uses: actions/checkout@v4
-              with:
-                  repository: poesis-cloud/saf-agentic-harness
-                  path: harness
-
-            - name: Install build dependencies
-              run: pip install --quiet -r harness/requirements-dev.txt
-
-            - name: Render GitHub Copilot bundle
-              run: |
-                  BUNDLE="$RUNNER_TEMP/github-copilot-bundle"
-                  python3 builds/github-copilot/render_bundle.py . "$BUNDLE"
-                  echo "BUNDLE=$BUNDLE" >> "$GITHUB_ENV"
-
-            - name: Render GitHub Copilot app / CLI bundle
-              run: |
-                  CLI_BUNDLE="$RUNNER_TEMP/github-copilot-cli-bundle"
-                  python3 builds/github-copilot-cli/render_bundle.py . "$CLI_BUNDLE"
-                  echo "CLI_BUNDLE=$CLI_BUNDLE" >> "$GITHUB_ENV"
-
-            - name: Read plugin metadata
-              id: meta
-              run: |
-                  VERSION=$(python3 -c "import json; print(json.load(open('$BUNDLE/plugin.json'))['version'])")
-                  NAME=$(python3 -c "import json; print(json.load(open('$BUNDLE/plugin.json'))['name'])")
-                  echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-                  echo "name=$NAME" >> "$GITHUB_OUTPUT"
-                  echo "artifact=$NAME-$VERSION" >> "$GITHUB_OUTPUT"
-                  echo "cli_artifact=$NAME-copilot-cli-$VERSION" >> "$GITHUB_OUTPUT"
-
-            - name: Tag / version coherence check
-              if: startsWith(github.ref, 'refs/tags/')
-              # The canonical version lives in plugin.json; a release tag must match it.
-              run: |
-                  TAG="${GITHUB_REF_NAME#v}"
-                  if [ "$TAG" != "${{ steps.meta.outputs.version }}" ]; then
-                    echo "ERROR: tag v$TAG != plugin.json version ${{ steps.meta.outputs.version }}"
-                    echo "Bump plugin.json version (the canonical source) and re-tag."
-                    exit 1
-                  fi
-                  echo "OK: tag matches plugin.json version ${{ steps.meta.outputs.version }}"
-
-            - name: Build plugin zip
-              # The repository root is packaged into a single top-level install folder
-              # named after the plugin (plugin.json `name`). Exclude VCS/CI/build cruft.
-              # Built with Python's zipfile (no apt `zip` dependency; deterministic, testable).
-              # The CLI zip keeps `.github/` (its local-marketplace manifest lives there).
-              run: |
-                  cat > "$RUNNER_TEMP/zip_bundle.py" <<'PY'
-                  import os
-                  import sys
-                  import zipfile
-
-                  src = sys.argv[1].rstrip("/") or "."
-                  out = sys.argv[2]
-                  top = sys.argv[3]
-                  keep_github = len(sys.argv) > 4 and sys.argv[4] == "--keep-github"
-                  skip_dirs = {".pytest_cache", "__pycache__", "target", ".git", "dist"}
-                  if not keep_github:
-                      skip_dirs.add(".github")
-                  os.makedirs(os.path.dirname(out), exist_ok=True)
-
-                  count = 0
-                  with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as zf:
-                      for root, dirs, files in os.walk(src):
-                          dirs[:] = sorted(d for d in dirs if d not in skip_dirs)
-                          for name in sorted(files):
-                              if name.endswith(".pyc"):
-                                  continue
-                              full = os.path.join(root, name)
-                              rel = os.path.relpath(full, src)
-                              if rel == "portfolio/logs" or rel.startswith("portfolio/logs/"):
-                                  continue
-                              zf.write(full, os.path.join(top, rel))
-                              count += 1
-                  print(f"built: {out} ({count} files, root {top}/)")
-                  PY
-                  python3 "$RUNNER_TEMP/zip_bundle.py" "$BUNDLE" "dist/${{ steps.meta.outputs.artifact }}.zip" "${{ steps.meta.outputs.name }}"
-                  python3 "$RUNNER_TEMP/zip_bundle.py" "$CLI_BUNDLE" "dist/${{ steps.meta.outputs.cli_artifact }}.zip" "${{ steps.meta.outputs.name }}" --keep-github
-
-            - name: Upload build artifact
-              uses: actions/upload-artifact@v4
-              with:
-                  name: ${{ steps.meta.outputs.artifact }}
-                  path: |
-                      dist/${{ steps.meta.outputs.artifact }}.zip
-                      dist/${{ steps.meta.outputs.cli_artifact }}.zip
-                  if-no-files-found: error
-
-            - name: Publish GitHub Release
-              if: startsWith(github.ref, 'refs/tags/')
+            - name: Publish the GitHub Release
               uses: softprops/action-gh-release@v2
               with:
                   files: |
-                      dist/${{ steps.meta.outputs.artifact }}.zip
-                      dist/${{ steps.meta.outputs.cli_artifact }}.zip
+                      ${{ needs.package.outputs.plugin-zip }}
+                      ${{ needs.package.outputs.plugin-zip }}.sha256
                   generate_release_notes: true
-                  fail_on_unmatched_files: true
+                  # SemVer pre-release tags (-alpha / -beta / -rc) publish
+                  # as GitHub pre-releases, never as the latest release.
+                  prerelease: ${{ needs.package.outputs.prerelease == 'true' }}
+
+    plugin-branch:
+        # The plugin at the root of the orphan branch `copilot-plugin`, one commit per release
+        # (its parent is the previous release's), tagged `plugin-v<version>`.
+        name: Publish the plugin branch
+        needs: package
+        if: startsWith(github.ref, 'refs/tags/v')
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        permissions:
+            contents: write
+        outputs:
+            sha: ${{ steps.commit.outputs.sha }}
+            ref: ${{ steps.commit.outputs.ref }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Download the plugin
+              uses: actions/download-artifact@v4
+              with:
+                  name: organization-plugin
+                  path: ${{ runner.temp }}/plugin
+
+            - name: Commit and tag the plugin
+              id: commit
+              env:
+                  VERSION: ${{ needs.package.outputs.version }}
+              run: |
+                  REF="plugin-v${VERSION}"
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  export GIT_INDEX_FILE="$RUNNER_TEMP/plugin.index"
+                  # upload-artifact drops the executable bit: restore it on the registration.
+                  chmod +x "$RUNNER_TEMP/plugin/bin/register.sh"
+                  git --work-tree="$RUNNER_TEMP/plugin" add --all .
+                  TREE="$(git write-tree)"
+                  # Concurrent releases race on the branch: on a rejected push, refetch the
+                  # parent and commit again (an atomic push never moves the tag alone).
+                  for ATTEMPT in 1 2 3 4 5; do
+                      PARENT=""
+                      if git fetch --quiet origin copilot-plugin; then
+                          PARENT="-p $(git rev-parse FETCH_HEAD)"
+                      fi
+                      # shellcheck disable=SC2086
+                      SHA="$(git commit-tree "$TREE" $PARENT -m "Organization plugin ${VERSION} (from ${GITHUB_SHA})")"
+                      git tag -f -a "$REF" "$SHA" -m "Organization plugin ${VERSION}"
+                      if git push --atomic origin "${SHA}:refs/heads/copilot-plugin" "refs/tags/${REF}"; then
+                          break
+                      fi
+                      if [ "$ATTEMPT" = 5 ]; then
+                          echo "::error::could not publish copilot-plugin after ${ATTEMPT} attempts"
+                          exit 1
+                      fi
+                      sleep $((ATTEMPT * 5))
+                  done
+                  echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+                  echo "ref=${REF}" >> "$GITHUB_OUTPUT"
+
+    marketplace:
+        # A PR on the marketplace catalogue branch of the release's channel, auto-merging once
+        # its validation passes. Credentials: a GitHub App installed on saf-marketplace only.
+        name: Bump the marketplace entry
+        needs: [package, plugin-branch]
+        if: startsWith(github.ref, 'refs/tags/v')
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - name: Check the marketplace credentials
+              id: credentials
+              env:
+                  APP_ID: ${{ secrets.SAF_MARKETPLACE_APP_ID }}
+                  APP_KEY: ${{ secrets.SAF_MARKETPLACE_APP_PRIVATE_KEY }}
+              run: |
+                  if [ -z "$APP_ID" ] || [ -z "$APP_KEY" ]; then
+                      echo "::notice::SAF_MARKETPLACE_APP_ID / SAF_MARKETPLACE_APP_PRIVATE_KEY are not set: the marketplace PR is skipped."
+                      echo "enabled=false" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "enabled=true" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Choose the channel
+              if: steps.credentials.outputs.enabled == 'true'
+              id: channel
+              env:
+                  PRERELEASE: ${{ needs.package.outputs.prerelease }}
+              run: |
+                  if [ "$PRERELEASE" = true ]; then
+                      echo "branch=preview" >> "$GITHUB_OUTPUT"; echo "name=poesis-saf-preview" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "branch=main" >> "$GITHUB_OUTPUT"; echo "name=poesis-saf" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Create the GitHub App token
+              if: steps.credentials.outputs.enabled == 'true'
+              id: token
+              uses: actions/create-github-app-token@v1
+              with:
+                  app-id: ${{ secrets.SAF_MARKETPLACE_APP_ID }}
+                  private-key: ${{ secrets.SAF_MARKETPLACE_APP_PRIVATE_KEY }}
+                  owner: poesis-cloud
+                  repositories: saf-marketplace
+
+            - name: Checkout the organization scripts and manifest
+              if: steps.credentials.outputs.enabled == 'true'
+              uses: actions/checkout@v4
+              with:
+                  path: organization
+                  sparse-checkout: |
+                      .github/scripts
+                      builds/plugin/plugin.json
+                  sparse-checkout-cone-mode: false
+
+            - name: Checkout the marketplace
+              if: steps.credentials.outputs.enabled == 'true'
+              uses: actions/checkout@v4
+              with:
+                  repository: poesis-cloud/saf-marketplace
+                  ref: ${{ steps.channel.outputs.branch }}
+                  token: ${{ steps.token.outputs.token }}
+                  path: marketplace
+
+            - name: Open the PR and enable auto-merge
+              if: steps.credentials.outputs.enabled == 'true'
+              working-directory: marketplace
+              env:
+                  GH_TOKEN: ${{ steps.token.outputs.token }}
+                  VERSION: ${{ needs.package.outputs.version }}
+                  REF: ${{ needs.plugin-branch.outputs.ref }}
+                  SHA: ${{ needs.plugin-branch.outputs.sha }}
+                  BASE: ${{ steps.channel.outputs.branch }}
+                  MARKETPLACE: ${{ steps.channel.outputs.name }}
+              run: |
+                  BRANCH="bump/poesis-saf-agentic-organization-${VERSION}"
+                  git config user.name "saf-marketplace-bot"
+                  git config user.email "saf-marketplace-bot@users.noreply.github.com"
+                  git switch -c "$BRANCH"
+                  python3 ../organization/.github/scripts/bump_marketplace.py \
+                      .github/plugin/marketplace.json "$MARKETPLACE" "$VERSION" "$REF" "$SHA"
+                  git add .github/plugin/marketplace.json
+                  git commit -m "Bump poesis-saf-agentic-organization to ${VERSION}"
+                  git push --force origin "$BRANCH"
+                  gh pr create --base "$BASE" --head "$BRANCH" \
+                      --title "Bump poesis-saf-agentic-organization to ${VERSION}" \
+                      --body "Points the organization plugin at \`${REF}\` (\`${SHA}\`) of poesis-cloud/saf-agentic-organization."
+                  gh pr merge "$BRANCH" --auto --squash

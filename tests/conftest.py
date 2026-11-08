@@ -30,5 +30,5 @@ def _harness_src() -> Path:
 HARNESS_SRC = _harness_src()
 if str(HARNESS_SRC) not in sys.path:
     sys.path.insert(0, str(HARNESS_SRC))
-if str(ORG_ROOT / "builds" / "github-copilot") not in sys.path:
-    sys.path.insert(0, str(ORG_ROOT / "builds" / "github-copilot"))
+if str(ORG_ROOT / "builds" / "plugin") not in sys.path:
+    sys.path.insert(0, str(ORG_ROOT / "builds" / "plugin"))

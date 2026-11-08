@@ -95,11 +95,11 @@ def template_slugs() -> set[str]:
 
 
 def load_plugin() -> Mapping[str, Any]:
-    return load_json(ORG_ROOT / "builds" / "github-copilot" / "plugin.json")
+    return load_json(ORG_ROOT / "builds" / "plugin" / "plugin.json")
 
 
 def load_tools_map() -> Mapping[str, Any]:
-    return load_yaml(ORG_ROOT / "builds" / "github-copilot" / "tools.yaml")
+    return load_yaml(ORG_ROOT / "builds" / "plugin" / "tools.yaml")
 
 
 def load_acl() -> Mapping[str, Any]:
