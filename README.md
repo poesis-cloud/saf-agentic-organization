@@ -89,7 +89,7 @@ install both plugins. **VS Code:** enable `chat.plugins.enabled`, add the market
 The harness governs only a **SAF workspace**: a Git repository whose `HEAD` holds
 `.saf/workspace.yaml`. Open the repository in a trusted folder (in an untrusted folder the
 harness hooks do not run), start a Copilot session, and ask to initialise it as a SAF workspace.
-The `poesis-saf-agentic-organization:init` skill checks Git, writes and commits
+The `init` skill checks Git, writes and commits
 `.saf/workspace.yaml` and `.github/copilot/settings.json` (which recommends the marketplace and
 enables both plugins for everyone who opens the repository). Then start a new Copilot session and
 pick an orchestrator: `value-management-officer`, `release-train-engineer` or `scrum-master`

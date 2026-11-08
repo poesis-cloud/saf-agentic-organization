@@ -58,9 +58,19 @@ root: {{WORKSPACE_ROOT}}
 
 ## 4. Write the repository plugin settings
 
-Choose the channel: run `copilot plugin list --json` and find the `{{PLUGIN_NAME}}` row. If
-its `marketplace` is `poesis-saf-preview`, use the **preview** channel; otherwise (or if the
-command is unavailable) use the **stable** channel.
+Choose the channel without needing the `copilot` command (it is not always on `PATH`). Take the
+first that answers:
+
+1. The installed plugin folder: `<copilot home>/installed-plugins/<marketplace>/{{PLUGIN_NAME}}`,
+   where `<copilot home>` is `$COPILOT_HOME`, else `~/.copilot`. If it exists, its
+   `<marketplace>` names the channel.
+2. That folder's `plugin.json`: a `version` with a pre-release suffix (`-alpha`, `-beta`,
+   `-rc`) means **preview**.
+3. `copilot plugin list --json`, if the command exists: the `marketplace` of the
+   `{{PLUGIN_NAME}}` row.
+
+If none answers, use the **stable** channel. The **preview** channel is the marketplace
+`poesis-saf-preview`; any other answer is **stable**.
 
 | Channel | Marketplace name | `source` |
 | --- | --- | --- |
