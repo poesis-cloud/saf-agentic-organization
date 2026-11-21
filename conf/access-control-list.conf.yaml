@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # Access control list: one role per agent, granting create and update on exactly the artifact
-# kinds its workflow steps deliver. Generated from the workflow catalog; nobody deletes.
+# kinds its workflow steps deliver. Generated from builds/model (make generate); nobody deletes.
 
 actors:
 - slug: value-management-officer

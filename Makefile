@@ -18,11 +18,13 @@ COVERAGE := --cov=tests.loaders --cov=builds/plugin --cov-fail-under=95
 
 PLUGIN_DIR ?= ../saf-agentic-organization-plugin
 
-.PHONY: verify test unit functional plugin
+.PHONY: verify test unit functional plugin generate
 
-## verify: unit + functional planes, coverage ≥95% on organization Python.
+## verify: unit plane with coverage ≥95% on organization Python, then the functional plane
+## (every workflow run through the harness; untraced, which halves its run time).
 verify:
-	PYTHONPATH=$(PYTHONPATH) $(PYTEST) tests -q $(COVERAGE)
+	PYTHONPATH=$(PYTHONPATH) $(PYTEST) tests/unit -q $(COVERAGE)
+	PYTHONPATH=$(PYTHONPATH) $(PYTEST) tests/functional -q
 
 ## unit: coherence + renderer only.
 unit:
@@ -38,3 +40,8 @@ test: verify
 ## plugin: render the GitHub Copilot plugin into PLUGIN_DIR.
 plugin:
 	python3 builds/plugin/render_plugin.py . "$(PLUGIN_DIR)"
+
+## generate: rewrite the structured files (schemas, templates, workflows, briefs, catalogs,
+## access control list, workspace layout, tools map, docs/catalog.md) from builds/model.
+generate:
+	python3 builds/model/generate.py .

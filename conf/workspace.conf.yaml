@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Workspace layout: where every artifact kind lives. Generated from the organization model;
+# Workspace layout: where every artifact kind lives. Generated from builds/model (make generate);
 # a node slug is its own path segment, and `<name>` is a variable shared along the path.
 
 nodes:

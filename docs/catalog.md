@@ -2,7 +2,7 @@
 
 # Organization catalog
 
-Generated reference of the roster, the workflow catalog, the challenge panels and the artifact kinds. How to use them is in [usage-model.md](usage-model.md).
+Reference of the roster, the workflow catalog, the challenge panels and the artifact kinds, generated from [`builds/model/`](../builds/model/) (`make generate`). How to use them is in [usage-model.md](usage-model.md).
 
 ## Roster
 

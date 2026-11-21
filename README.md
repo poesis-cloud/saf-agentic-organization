@@ -147,6 +147,7 @@ indicative; artifacts are the only evidence.
 - [`workflows/`](workflows/): the 50 workflows by layer (`portfolio/`, `solution/`, `art/`, `team/`)
 - [`artifacts/`](artifacts/) and [`templates/`](templates/): one JSON Schema and one template per artifact kind
 - [`conf/`](conf/): harness configuration: `harness`, `model-profiles`, `access-control-list` (least privilege, one role per agent), `workspace` (where each artifact lives)
+- [`builds/model/`](builds/model/): the organization model (roster, artifact kinds, workflows, panels) and the generator of the structured files above (`make generate`); agents, skills and shared instructions are hand-written
 - [`builds/plugin/`](builds/plugin/): the plugin renderer and its inputs
 - [`docs/`](docs/): [usage model](docs/usage-model.md), [catalog](docs/catalog.md), [step artifacts](docs/step-artifacts.md), [SAFe conformance](docs/safe-conformance.md)
 
