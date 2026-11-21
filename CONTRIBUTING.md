@@ -106,8 +106,16 @@ first lines of the file:
 
 The canonical template is at [`license-header-template.txt`](license-header-template.txt) in the repo root.
 
-Use `#` for YAML/Markdown/shell files. For JSON files (which do not support comments),
-embed the copyright in a `"$license"` key at the top level.
+Use `#` for YAML and shell files. Markdown files that the harness injects into agent sessions
+(agents, skills, instructions, templates) carry the compact one-line form instead, so that the
+legal text does not consume agent context on every step:
+
+```text
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+```
+
+In a file with frontmatter the line comes right after the closing `---`. JSON files do not
+support comments and carry no header.
 
 The CI license-header check will enforce this once SHIP content is present. Files that
 do not carry the header will fail CI.

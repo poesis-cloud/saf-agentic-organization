@@ -13,86 +13,55 @@
 # limitations under the License.
 
 slug: portfolio-sync
-description: >
-  Purpose: cadence snapshot of portfolio risks, WIP, Kanban. Act: Cadence or
-  Inspect. Orchestrator: Value Management Officer. Dispatch: portfolio-sync
-  mediation record. Manifests and Kanban are projections, not mains. Evaluate:
-  nothing as a bet. An impediment that is Epic-sized is a later Demand, not this
-  workflow writing an Epic. Do not Evaluate the minutes. One product manifest
-  per run: another product is another run.
-instructions: value-management-officer-interpret-speech-acts
+description: 'Inspect the flow of Epics and the portfolio''s operations between Strategic Portfolio Reviews, and re-render the Portfolio Kanban. Main artifact at the human gate: event-record. Use for: Portfolio status; where the Epics are; impediments and dependencies across value streams.'
 orchestrator: value-management-officer
-skills: portfolio-portfolio-sync
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- value-management-officer-catalog
 steps:
-- slug: sync
-  description: Mediation record — Value Management Officer records the Portfolio Sync. Not itself challenged.
+- slug: record
+  description: 'Event record: the Value Management Officer writes the Portfolio Sync record.'
+  actor: value-management-officer
+  skills: value-management-officer
+  artifact: event-record
+  instructions:
+  - step-contract
+  - record-event
+  - portfolio-sync-brief
   capabilities:
-    deep-reasoning: 7
+    deep-reasoning: 4
     coding: 0
     tool-use: 4
-    long-context: 6
+    long-context: 5
     multimodal: 0
-    writing-quality: 8
-    instruction-following: 8
-    fast-iteration: 2
-    schema-adherence: 8
-  actor: value-management-officer
-  artifact: portfolio-sync
-  instructions: portfolio-portfolio-sync-business-owner-priority-or-risk-view-recorded
-- slug: update-portfolio-manifest
-  description: Operational projection — Value Management Officer updates the portfolio manifest from the sync.
-  capabilities:
-    deep-reasoning: 2
-    coding: 3
-    tool-use: 8
-    long-context: 2
-    multimodal: 0
-    writing-quality: 1
+    writing-quality: 6
     instruction-following: 9
     fast-iteration: 8
-    schema-adherence: 8
+    schema-adherence: 9
+  conditions: []
+- slug: update-kanban
+  description: 'Flow record: the Value Management Officer re-renders the Kanban board from the items'' status.'
   actor: value-management-officer
-  artifact: portfolio-manifest
-  conditions:
-  - slug: after-sync
-    kind: precondition
-    step: sync
-  instructions: portfolio-portfolio-sync-update-portfolio-manifest
-- slug: update-product-manifest
-  description: Operational projection — Value Management Officer updates the named product's manifest from the sync.
+  skills: value-management-officer
+  artifact: kanban
+  instructions:
+  - step-contract
+  - update-kanban
+  - portfolio-sync-brief
   capabilities:
     deep-reasoning: 2
-    coding: 3
-    tool-use: 8
-    long-context: 2
+    coding: 0
+    tool-use: 5
+    long-context: 5
     multimodal: 0
-    writing-quality: 1
+    writing-quality: 3
     instruction-following: 9
-    fast-iteration: 8
-    schema-adherence: 8
-  actor: value-management-officer
-  artifact: product-manifest
+    fast-iteration: 9
+    schema-adherence: 10
   conditions:
-  - slug: after-update-portfolio-manifest
-    kind: precondition
-    step: update-portfolio-manifest
-  instructions: portfolio-portfolio-sync-update-product-manifest
-- slug: update-portfolio-kanban
-  description: Operational projection — Value Management Officer refreshes Portfolio Kanban from Epic frontmatter.
-  capabilities:
-    deep-reasoning: 2
-    coding: 3
-    tool-use: 8
-    long-context: 2
-    multimodal: 0
-    writing-quality: 1
-    instruction-following: 9
-    fast-iteration: 8
-    schema-adherence: 8
-  actor: value-management-officer
-  artifact: portfolio-kanban
-  conditions:
-  - slug: after-sync
-    kind: precondition
-    step: sync
-  instructions: portfolio-portfolio-sync-update-portfolio-kanban
+  - kind: precondition
+    slug: after-record
+    step: record

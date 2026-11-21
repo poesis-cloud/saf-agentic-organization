@@ -1,0 +1,290 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gsmarc://saf/artifacts/event-record.artifact/v1",
+  "$ref": "gsmarc://saf/contracts/artifact/v1",
+  "title": "Event record artifact schema",
+  "description": "The record of one SAFe event, written by its facilitator: what was inspected, what was decided, who does what next.",
+  "type": "object",
+  "additionalProperties": true,
+  "x-artifact": {
+    "kind": "event-record",
+    "layer": "shared",
+    "class": "record",
+    "owners": [],
+    "templates": [
+      "templates/events/art-sync.artifact-template.md",
+      "templates/events/coordinate-and-deliver.artifact-template.md",
+      "templates/events/inspect-and-adapt.artifact-template.md",
+      "templates/events/iteration-retrospective.artifact-template.md",
+      "templates/events/iteration-review.artifact-template.md",
+      "templates/events/portfolio-sync.artifact-template.md",
+      "templates/events/pre-plan.artifact-template.md",
+      "templates/events/solution-demo.artifact-template.md",
+      "templates/events/strategic-portfolio-review.artifact-template.md",
+      "templates/events/system-demo.artifact-template.md",
+      "templates/events/team-sync.artifact-template.md"
+    ],
+    "pathPatterns": [
+      "portfolio/events/*.portfolio-sync.md",
+      "portfolio/events/*.strategic-portfolio-review.md",
+      "portfolio/solution-trains/*/events/*.pre-plan.md",
+      "portfolio/solution-trains/*/events/*.coordinate-and-deliver.md",
+      "portfolio/solution-trains/*/events/*.solution-demo.md",
+      "portfolio/solution-trains/*/events/*.inspect-and-adapt.md",
+      "portfolio/arts/*/events/*.art-sync.md",
+      "portfolio/arts/*/events/*.system-demo.md",
+      "portfolio/arts/*/events/*.inspect-and-adapt.md",
+      "portfolio/arts/*/teams/*/events/*.team-sync.md",
+      "portfolio/arts/*/teams/*/events/*.iteration-review.md",
+      "portfolio/arts/*/teams/*/events/*.iteration-retrospective.md"
+    ],
+    "sections": {
+      "required": [
+        "Summary"
+      ],
+      "optional": []
+    }
+  },
+  "required": [
+    "title",
+    "event",
+    "date",
+    "scope",
+    "decisions",
+    "actions",
+    "impediments",
+    "challengeLedger",
+    "stepOutcomes"
+  ],
+  "properties": {
+    "title": {
+      "description": "Human-readable title.",
+      "type": "string",
+      "minLength": 1
+    },
+    "event": {
+      "description": "The SAFe event recorded. One of: portfolio-sync | strategic-portfolio-review | pre-plan | coordinate-and-deliver | solution-demo | art-sync | system-demo | inspect-and-adapt | team-sync | iteration-review | iteration-retrospective.",
+      "enum": [
+        "portfolio-sync",
+        "strategic-portfolio-review",
+        "pre-plan",
+        "coordinate-and-deliver",
+        "solution-demo",
+        "art-sync",
+        "system-demo",
+        "inspect-and-adapt",
+        "team-sync",
+        "iteration-review",
+        "iteration-retrospective"
+      ]
+    },
+    "date": {
+      "type": "string",
+      "minLength": 1,
+      "description": "YYYY-MM-DD of the event."
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The portfolio, Solution Train, ART or team folder the event belongs to. Workspace-relative path."
+    },
+    "decisions": {
+      "type": "array",
+      "description": "Decisions taken, each with its owner.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "decision",
+          "owner"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "D1, D2, …"
+          },
+          "decision": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The decision."
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Agent slug or human role."
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "description": "Follow-up actions. An action that is really a backlog item names the workflow that will write it.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "action",
+          "owner"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A1, A2, …"
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1,
+            "description": "What to do."
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Agent slug or human role."
+          },
+          "workflow": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Workflow slug that carries it, or null."
+          }
+        }
+      }
+    },
+    "impediments": {
+      "type": "array",
+      "description": "Open impediments and risks raised, one line each.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "challengeLedger": {
+      "description": "Answers to the expert challenge, when the event's workflow has one (Inspect and Adapt).",
+      "$ref": "#/$defs/challengeLedger"
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record: one entry per step that committed this artifact.",
+      "$ref": "#/$defs/stepOutcomes"
+    }
+  },
+  "$defs": {
+    "challengeLedger": {
+      "description": "The owner's answer to the expert challenge. One entry per challenge packet of the latest run, written by the owner in the `revise` step: every finding is accepted, rejected or deferred with a reason. The human gate reads this ledger next to the artifact.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "packet",
+          "challenger",
+          "verdict",
+          "responses"
+        ],
+        "properties": {
+          "packet": {
+            "description": "Workspace-relative path of the challenge packet answered.",
+            "type": "string",
+            "minLength": 1
+          },
+          "challenger": {
+            "description": "Agent slug of the expert who wrote the packet.",
+            "type": "string",
+            "minLength": 1
+          },
+          "verdict": {
+            "description": "The packet's verdict, copied: pass | concerns | blocking | not-applicable.",
+            "enum": [
+              "pass",
+              "concerns",
+              "blocking",
+              "not-applicable"
+            ]
+          },
+          "responses": {
+            "description": "One response per finding of the packet (empty when the packet has no finding).",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "finding",
+                "disposition",
+                "note"
+              ],
+              "properties": {
+                "finding": {
+                  "description": "Finding id in the packet, e.g. F1.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "disposition": {
+                  "description": "accepted (the artifact changed) | rejected (the owner disagrees, with the reason) | deferred (valid, handled later: say where).",
+                  "enum": [
+                    "accepted",
+                    "rejected",
+                    "deferred"
+                  ]
+                },
+                "note": {
+                  "description": "One line: what changed, or why not.",
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record. Every workflow step that commits this artifact appends exactly one entry, so the artifact itself carries the step's decision and the agent's reply stays indicative.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "step",
+          "outcome",
+          "date",
+          "note"
+        ],
+        "properties": {
+          "step": {
+            "description": "`<workflow-slug>/<step-slug>` of the step that appended this entry.",
+            "type": "string",
+            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+          },
+          "outcome": {
+            "description": "written (created) | revised (content changed) | confirmed (reviewed, still valid) | no-change (out of scope on this run) | none (not needed; the artifact records that decision).",
+            "enum": [
+              "written",
+              "revised",
+              "confirmed",
+              "no-change",
+              "none"
+            ]
+          },
+          "date": {
+            "description": "YYYY-MM-DD of the step.",
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "description": "One line: what the step decided and why.",
+            "type": "string",
+            "minLength": 1
+          },
+          "friction": {
+            "description": "Optional. Workflow friction the actor observed (raw input for Inspect and Adapt, never a fix).",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

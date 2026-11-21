@@ -4,16 +4,10 @@
 [![Release](https://img.shields.io/github/v/release/poesis-cloud/saf-agentic-organization)](https://github.com/poesis-cloud/saf-agentic-organization/releases/latest)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
-> **SAFe-shaped agentic organization for GitHub Copilot / VS Code and portable agent hosts** —
-> multi-agent orchestration (portfolio/program/iteration orchestrators), a framework-owned
-> specialist bench, skills, instructions, workflows, artifact schemas, and deterministic model routing.
-> Open-source developer tooling from [Poesis Cloud](https://poesis.cloud).
-
----
-
-> **Note — v0.1:** This repository root is the **host-agnostic source** of the framework. The
-> installable artifact is the Copilot plugin `poesis-saf-agentic-organization` rendered from
-> [`builds/plugin/`](builds/plugin/) — see [Installing](#installing).
+> **Full SAFe as an agentic organization** for GitHub Copilot / VS Code and portable agent hosts.
+> Four orchestrators (Portfolio, Large Solution, ART, Team), the SAFe roles that author each
+> artifact, and a bench of experts with real IT jobs who challenge every main artifact before a
+> human decides. Open-source developer tooling from [Poesis Cloud](https://poesis.cloud).
 
 ---
 
@@ -23,30 +17,66 @@ This repository is one of the three products of the Systemic Agentic Framework (
 
 | Product | Repository | Role |
 |---|---|---|
-| Agentic Harness | [`saf-agentic-harness`](https://github.com/poesis-cloud/saf-agentic-harness) | the deterministic execution engine — methodology- and host-agnostic |
-| **SAFe Agentic Organization** | **this repository** | the SAFe-shaped framework application the harness executes |
+| Agentic Harness | [`saf-agentic-harness`](https://github.com/poesis-cloud/saf-agentic-harness) | the deterministic execution engine, methodology- and host-agnostic |
+| **SAFe Agentic Organization** | **this repository** | the SAFe framework application the harness executes |
 | Agentic Workspace | [`saf-agentic-workspace`](https://github.com/poesis-cloud/saf-agentic-workspace) | the shared data plane the harness checks and commits into |
 
 The harness resolves this framework through `FRAMEWORK_DIR` and the workspace through
-`FRAMEWORK_WORKSPACE_DIR` — the three products stay decoupled through environment-anchored paths,
-not through a shared tree.
+`FRAMEWORK_WORKSPACE_DIR`: the three products stay decoupled through environment-anchored paths.
 
-## Overview
+## How it works
 
-The Poesis SAFe Agentic Organization brings SAFe-shaped multi-agent orchestration into
-agent execution environments that support custom agents and skills. It includes:
+You state a concern to the orchestrator of your layer. It maps the concern to one workflow, and
+the workflow brings you one challenged artifact to decide on:
 
-- **Orchestrators**: `@value-management-officer`, `@release-train-engineer`, `@scrum-master`
-- **Specialist bench**: framework-owned author, architecture, development, QA, security, operator, docs, and UX agents
-- **Skills**: SAFe ceremony, practice, authoring, and orchestration playbooks loaded on demand
-- **Agent-adapted ceremonies**: ART Sync, System Demo, Team Sync, Iteration Retrospective, Inspect & Adapt, PI Planning, Iteration Planning/Review (plus portfolio sync/review, Strategic Investment Planning, and Feature/Story refinement)
-- **Model routing**: deterministic LLM tier + capability-score routing — no random model selection
-- **Portable harness**: deterministic artifact, gate-packet, and runtime-trace checks independent of VS Code hooks —
-  methodology- and host-agnostic, so the same familiar agentic work method follows you from host to host as you
-  move between environments (shipped separately as [`saf-agentic-harness`](https://github.com/poesis-cloud/saf-agentic-harness))
+```mermaid
+flowchart LR
+    C([your concern]) --> D[draft<br/>the owner writes]
+    D --> X[challenge<br/>each expert writes a packet]
+    X --> R[revise<br/>the owner answers every finding]
+    R --> G{{human gate<br/>you decide}}
+    G -- accept --> T[record the decision]
+    G -- concerns / reject --> D
+```
 
-How a human talks to the organization (principles, per-workflow purpose, NFR model, splitting
-versus refinement) is in [docs/usage-model.md](docs/usage-model.md).
+- **One step, one agent, one artifact.** The harness resolves every step, authorizes and
+  validates every write, and accepts a step only if it delivered its artifact.
+- **Experts challenge, owners answer, humans decide.** An expert never edits the artifact it
+  challenges; the owner must accept, reject or defer every finding; nothing is approved without
+  your decision, and the harness refuses an acceptance that no expert challenged.
+- **Small contexts.** A worker gets three short instructions, one craft skill and one template.
+
+Start with the [usage model](docs/usage-model.md). The full roster, workflow catalog, challenge
+panels and artifact kinds are in the [catalog](docs/catalog.md); how SAFe maps onto all of it,
+and what was verified against the SAFe knowledge base, is in
+[SAFe conformance](docs/safe-conformance.md).
+
+## The organization at a glance
+
+**38 agents, 50 workflows, 31 artifact kinds, across the four layers of Full SAFe.**
+
+| Layer | Orchestrator you talk to | SAFe roles that author | What reaches your gate |
+|---|---|---|---|
+| Portfolio | `value-management-officer` | `portfolio-manager`, `epic-owner`, `enterprise-architect`, `business-owner` | Strategic Themes, Portfolio Vision, value streams, Epics, Lean Business Cases, Lean Budgets, Portfolio Roadmap, Architecture Vision |
+| Large Solution | `solution-train-engineer` | `solution-manager`, `solution-architect` | Solution Train canvas, Solution Vision, Solution Intent, Capabilities, Solution Roadmap, supplier agreements, Solution Train PI Objectives |
+| ART | `release-train-engineer` | `product-manager`, `system-architect` | ART canvas, Product Vision, PI Roadmap, Features, architecture decisions, NFRs, delivery pipeline, PI Objectives, releases |
+| Team | `scrum-master` | `product-owner` | Team charter, Stories, iteration plans, code changes |
+
+**The expert bench (25 real IT jobs).** Each sits on the panels where its lens matters:
+
+| Family | Experts |
+|---|---|
+| Engineering | `software-engineer`, `quality-engineer`, `devops-engineer`, `platform-engineer`, `database-administrator`, `data-engineer`, `ai-engineer`, `systems-engineer` |
+| Operations | `site-reliability-engineer`, `observability-engineer`, `release-manager` |
+| Security, privacy, compliance, legal | `security-expert`, `data-protection-officer`, `compliance-officer`, `legal-counsel` |
+| Finance and sourcing | `financial-controller`, `finops-engineer`, `procurement-manager` |
+| Product, design and content | `ux-designer`, `accessibility-specialist`, `product-marketing-manager`, `technical-writer` |
+| Business and practice | `business-analyst`, `data-analyst`, `agile-coach` |
+
+For example, a Feature is drafted by the Product Manager and challenged by the System Architect,
+Software Engineer, Quality Engineer, Security Expert, UX Designer and Data Protection Officer; a
+release is drafted by the Release Manager and challenged by the Site Reliability Engineer,
+Observability Engineer, Security Expert, Quality Engineer and Technical Writer.
 
 ## Installing
 
@@ -92,9 +122,10 @@ harness hooks do not run), start a Copilot session, and ask to initialise it as 
 The `init` skill checks Git, writes and commits
 `.saf/workspace.yaml` and `.github/copilot/settings.json` (which recommends the marketplace and
 enables both plugins for everyone who opens the repository). Then start a new Copilot session and
-pick an orchestrator: `value-management-officer`, `release-train-engineer` or `scrum-master`
+pick the orchestrator of your layer: `value-management-officer`, `solution-train-engineer`,
+`release-train-engineer` or `scrum-master`
 (`copilot --agent poesis-saf-agentic-organization:<orchestrator>`). One orchestrator session
-drives one workflow run; the orchestrator names the next workflow at each return. Host details
+drives one workflow run; the orchestrator names the next workflow at each gate. Host details
 are in [docs/hosts/copilot-plugin.md](docs/hosts/copilot-plugin.md).
 
 ## Deterministic harness
@@ -110,13 +141,14 @@ indicative; artifacts are the only evidence.
 
 ## Layout
 
-- [`agents/`](agents/) — the orchestrators and the specialist bench (`<name>.agent.md`)
-- [`skills/`](skills/) — ceremony, practice, authoring, and orchestration playbooks (`<name>.skill.md`)
-- [`instructions/`](instructions/) — step instructions per actor; shared refs in `instructions/shared/`
-- [`workflows/`](workflows/) — ceremony and practice catalogs by layer (`portfolio/`, `program/`, `team/`)
-- [`conf/`](conf/) — harness configuration: `harness`, `model-profiles`, `access-control-list`, `workspace`
-- [`templates/`](templates/) and [`artifacts/`](artifacts/) — artifact templates and JSON Schemas
-- [`builds/plugin/`](builds/plugin/) — the plugin renderer and its inputs
+- [`agents/`](agents/): the 38 agents, one compact identity each (`<slug>.agent.md`)
+- [`skills/`](skills/): one craft skill per agent (`<slug>.skill.md`): its authoring guide and its lens on each artifact it challenges
+- [`instructions/`](instructions/): what the harness injects: the step contract and step patterns in `shared/`, one brief per workflow and one catalog per orchestrator in the layer folders
+- [`workflows/`](workflows/): the 50 workflows by layer (`portfolio/`, `solution/`, `art/`, `team/`)
+- [`artifacts/`](artifacts/) and [`templates/`](templates/): one JSON Schema and one template per artifact kind
+- [`conf/`](conf/): harness configuration: `harness`, `model-profiles`, `access-control-list` (least privilege, one role per agent), `workspace` (where each artifact lives)
+- [`builds/plugin/`](builds/plugin/): the plugin renderer and its inputs
+- [`docs/`](docs/): [usage model](docs/usage-model.md), [catalog](docs/catalog.md), [step artifacts](docs/step-artifacts.md), [SAFe conformance](docs/safe-conformance.md)
 
 ## Verifying
 
@@ -125,8 +157,10 @@ python3 -m pip install -r requirements-dev.txt
 make verify            # harness checkout at ../saf-agentic-harness (override SAF_HARNESS_SRC)
 ```
 
-`make verify` runs the coherence, plugin-contract, and live-load tests against the harness, with
-≥95% coverage on the organization's Python.
+`make verify` loads the organization through the real harness, runs every workflow of the catalog
+to its human gate, proves each refusal (no acceptance without challenge, no unanswered packet, no
+item ready before it was challenged), and checks the context budgets and the plugin contract,
+with ≥95% coverage on the organization's Python.
 
 ## Contributing
 

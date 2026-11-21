@@ -1,0 +1,293 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gsmarc://saf/artifacts/pi-objectives.artifact/v1",
+  "$ref": "gsmarc://saf/contracts/artifact/v1",
+  "title": "PI Objectives artifact schema",
+  "description": "The business and technical goals a train intends to achieve in the upcoming PI, committed or uncommitted, with the plan that supports them.",
+  "type": "object",
+  "additionalProperties": true,
+  "x-artifact": {
+    "kind": "pi-objectives",
+    "layer": "art",
+    "class": "main",
+    "owners": [
+      "release-train-engineer",
+      "solution-train-engineer"
+    ],
+    "templates": [
+      "templates/art/pi-objectives.artifact-template.md"
+    ],
+    "pathPatterns": [
+      "portfolio/solution-trains/*/pis/*/pi-objectives.md",
+      "portfolio/arts/*/pis/*/pi-objectives.md"
+    ],
+    "sections": {
+      "required": [
+        "Business context",
+        "Objectives",
+        "Planning board"
+      ],
+      "optional": [
+        "Capacity and load",
+        "Risks",
+        "Confidence vote"
+      ]
+    }
+  },
+  "required": [
+    "title",
+    "owner",
+    "challengeLedger",
+    "scope",
+    "pi",
+    "confidenceVote",
+    "objectives",
+    "risks",
+    "stepOutcomes"
+  ],
+  "properties": {
+    "title": {
+      "description": "Human-readable title.",
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Agent slug of the owning author. Only the owner writes this artifact."
+    },
+    "challengeLedger": {
+      "description": "The owner's answers to the expert challenge (see the definition).",
+      "$ref": "#/$defs/challengeLedger"
+    },
+    "scope": {
+      "description": "The train planned. One of: art | solution-train.",
+      "enum": [
+        "art",
+        "solution-train"
+      ]
+    },
+    "pi": {
+      "type": "string",
+      "minLength": 1,
+      "description": "PI slug."
+    },
+    "confidenceVote": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Average confidence vote (1 to 5), recorded after the human commitment."
+    },
+    "objectives": {
+      "type": "array",
+      "description": "PI Objectives, per team or per ART.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "team",
+          "objective",
+          "committed"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "O1, O2, …"
+          },
+          "team": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Team or ART slug that owns the objective."
+          },
+          "objective": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The goal, stated as an outcome."
+          },
+          "committed": {
+            "type": "boolean",
+            "description": "False for an uncommitted objective."
+          },
+          "plannedBusinessValue": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "1 to 10, assigned by the Business Owners (proposed until the gate)."
+          },
+          "actualBusinessValue": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "1 to 10, assigned at the end of the PI."
+          }
+        }
+      }
+    },
+    "risks": {
+      "type": "array",
+      "description": "PI risks.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "risk",
+          "roam"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "R1, R2, …"
+          },
+          "risk": {
+            "type": "string",
+            "minLength": 1,
+            "description": "What could prevent meeting the objectives."
+          },
+          "roam": {
+            "description": "ROAM state. One of: open | resolved | owned | accepted | mitigated.",
+            "enum": [
+              "open",
+              "resolved",
+              "owned",
+              "accepted",
+              "mitigated"
+            ]
+          },
+          "owner": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Who owns it."
+          }
+        }
+      }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record: one entry per step that committed this artifact.",
+      "$ref": "#/$defs/stepOutcomes"
+    }
+  },
+  "$defs": {
+    "challengeLedger": {
+      "description": "The owner's answer to the expert challenge. One entry per challenge packet of the latest run, written by the owner in the `revise` step: every finding is accepted, rejected or deferred with a reason. The human gate reads this ledger next to the artifact.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "packet",
+          "challenger",
+          "verdict",
+          "responses"
+        ],
+        "properties": {
+          "packet": {
+            "description": "Workspace-relative path of the challenge packet answered.",
+            "type": "string",
+            "minLength": 1
+          },
+          "challenger": {
+            "description": "Agent slug of the expert who wrote the packet.",
+            "type": "string",
+            "minLength": 1
+          },
+          "verdict": {
+            "description": "The packet's verdict, copied: pass | concerns | blocking | not-applicable.",
+            "enum": [
+              "pass",
+              "concerns",
+              "blocking",
+              "not-applicable"
+            ]
+          },
+          "responses": {
+            "description": "One response per finding of the packet (empty when the packet has no finding).",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "finding",
+                "disposition",
+                "note"
+              ],
+              "properties": {
+                "finding": {
+                  "description": "Finding id in the packet, e.g. F1.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "disposition": {
+                  "description": "accepted (the artifact changed) | rejected (the owner disagrees, with the reason) | deferred (valid, handled later: say where).",
+                  "enum": [
+                    "accepted",
+                    "rejected",
+                    "deferred"
+                  ]
+                },
+                "note": {
+                  "description": "One line: what changed, or why not.",
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record. Every workflow step that commits this artifact appends exactly one entry, so the artifact itself carries the step's decision and the agent's reply stays indicative.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "step",
+          "outcome",
+          "date",
+          "note"
+        ],
+        "properties": {
+          "step": {
+            "description": "`<workflow-slug>/<step-slug>` of the step that appended this entry.",
+            "type": "string",
+            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+          },
+          "outcome": {
+            "description": "written (created) | revised (content changed) | confirmed (reviewed, still valid) | no-change (out of scope on this run) | none (not needed; the artifact records that decision).",
+            "enum": [
+              "written",
+              "revised",
+              "confirmed",
+              "no-change",
+              "none"
+            ]
+          },
+          "date": {
+            "description": "YYYY-MM-DD of the step.",
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "description": "One line: what the step decided and why.",
+            "type": "string",
+            "minLength": 1
+          },
+          "friction": {
+            "description": "Optional. Workflow friction the actor observed (raw input for Inspect and Adapt, never a fix).",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gsmarc://saf/artifacts/release.artifact/v1",
+  "$ref": "gsmarc://saf/contracts/artifact/v1",
+  "title": "Release artifact schema",
+  "description": "The plan and readiness record of one release: what is made available to which customers, when, and with what evidence.",
+  "type": "object",
+  "additionalProperties": true,
+  "x-artifact": {
+    "kind": "release",
+    "layer": "art",
+    "class": "main",
+    "owners": [
+      "release-manager"
+    ],
+    "templates": [
+      "templates/art/release.artifact-template.md"
+    ],
+    "pathPatterns": [
+      "portfolio/arts/*/releases/*/*.release.md"
+    ],
+    "sections": {
+      "required": [
+        "Scope",
+        "Release strategy",
+        "Readiness evidence",
+        "Rollout and rollback"
+      ],
+      "optional": [
+        "Operations readiness",
+        "Communication and enablement",
+        "Measure",
+        "Risks"
+      ]
+    }
+  },
+  "required": [
+    "title",
+    "owner",
+    "challengeLedger",
+    "status",
+    "features",
+    "targetDate",
+    "strategy",
+    "stepOutcomes"
+  ],
+  "properties": {
+    "title": {
+      "description": "Human-readable title.",
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Agent slug of the owning author. Only the owner writes this artifact."
+    },
+    "challengeLedger": {
+      "description": "The owner's answers to the expert challenge (see the definition).",
+      "$ref": "#/$defs/challengeLedger"
+    },
+    "status": {
+      "description": "Release state. One of: planned | ready | released | rolled-back | cancelled.",
+      "enum": [
+        "planned",
+        "ready",
+        "released",
+        "rolled-back",
+        "cancelled"
+      ]
+    },
+    "features": {
+      "type": "array",
+      "description": "Paths of the Features released.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "targetDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "YYYY-MM-DD targeted, or null for on demand."
+    },
+    "strategy": {
+      "type": "string",
+      "minLength": 1,
+      "description": "How the release is exposed (e.g. full, canary, feature toggle, dark launch)."
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record: one entry per step that committed this artifact.",
+      "$ref": "#/$defs/stepOutcomes"
+    }
+  },
+  "$defs": {
+    "challengeLedger": {
+      "description": "The owner's answer to the expert challenge. One entry per challenge packet of the latest run, written by the owner in the `revise` step: every finding is accepted, rejected or deferred with a reason. The human gate reads this ledger next to the artifact.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "packet",
+          "challenger",
+          "verdict",
+          "responses"
+        ],
+        "properties": {
+          "packet": {
+            "description": "Workspace-relative path of the challenge packet answered.",
+            "type": "string",
+            "minLength": 1
+          },
+          "challenger": {
+            "description": "Agent slug of the expert who wrote the packet.",
+            "type": "string",
+            "minLength": 1
+          },
+          "verdict": {
+            "description": "The packet's verdict, copied: pass | concerns | blocking | not-applicable.",
+            "enum": [
+              "pass",
+              "concerns",
+              "blocking",
+              "not-applicable"
+            ]
+          },
+          "responses": {
+            "description": "One response per finding of the packet (empty when the packet has no finding).",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "finding",
+                "disposition",
+                "note"
+              ],
+              "properties": {
+                "finding": {
+                  "description": "Finding id in the packet, e.g. F1.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "disposition": {
+                  "description": "accepted (the artifact changed) | rejected (the owner disagrees, with the reason) | deferred (valid, handled later: say where).",
+                  "enum": [
+                    "accepted",
+                    "rejected",
+                    "deferred"
+                  ]
+                },
+                "note": {
+                  "description": "One line: what changed, or why not.",
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record. Every workflow step that commits this artifact appends exactly one entry, so the artifact itself carries the step's decision and the agent's reply stays indicative.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "step",
+          "outcome",
+          "date",
+          "note"
+        ],
+        "properties": {
+          "step": {
+            "description": "`<workflow-slug>/<step-slug>` of the step that appended this entry.",
+            "type": "string",
+            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+          },
+          "outcome": {
+            "description": "written (created) | revised (content changed) | confirmed (reviewed, still valid) | no-change (out of scope on this run) | none (not needed; the artifact records that decision).",
+            "enum": [
+              "written",
+              "revised",
+              "confirmed",
+              "no-change",
+              "none"
+            ]
+          },
+          "date": {
+            "description": "YYYY-MM-DD of the step.",
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "description": "One line: what the step decided and why.",
+            "type": "string",
+            "minLength": 1
+          },
+          "friction": {
+            "description": "Optional. Workflow friction the actor observed (raw input for Inspect and Adapt, never a fix).",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

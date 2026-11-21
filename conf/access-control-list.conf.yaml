@@ -12,353 +12,486 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Access control list: one role per agent, granting create and update on exactly the artifact
+# kinds its workflow steps deliver. Generated from the workflow catalog; nobody deletes.
+
 actors:
-- roles:
+- slug: value-management-officer
+  roles:
   - value-management-officer
-  - workspace-reader
-  slug: value-management-officer
-- roles:
-  - business-owner
-  - workspace-reader
-  slug: business-owner
-- roles:
-  - enterprise-architect
-  - workspace-reader
-  slug: enterprise-architect
-- roles:
+- slug: solution-train-engineer
+  roles:
+  - solution-train-engineer
+- slug: release-train-engineer
+  roles:
   - release-train-engineer
-  - workspace-reader
-  slug: release-train-engineer
-- roles:
-  - product-manager
-  - workspace-reader
-  slug: product-manager
-- roles:
-  - system-architect
-  - workspace-reader
-  slug: system-architect
-- roles:
+- slug: scrum-master
+  roles:
   - scrum-master
-  - workspace-reader
-  slug: scrum-master
-- roles:
+- slug: portfolio-manager
+  roles:
+  - portfolio-manager
+- slug: epic-owner
+  roles:
+  - epic-owner
+- slug: enterprise-architect
+  roles:
+  - enterprise-architect
+- slug: business-owner
+  roles:
+  - business-owner
+- slug: solution-manager
+  roles:
+  - solution-manager
+- slug: solution-architect
+  roles:
+  - solution-architect
+- slug: product-manager
+  roles:
+  - product-manager
+- slug: system-architect
+  roles:
+  - system-architect
+- slug: product-owner
+  roles:
   - product-owner
-  - workspace-reader
-  slug: product-owner
-- roles:
-  - developer
-  - workspace-reader
-  slug: developer
-- roles:
-  - operator
-  - workspace-reader
-  slug: operator
-- roles:
-  - security-expert
-  - workspace-reader
-  slug: security-expert
-- roles:
-  - ux-designer
-  - workspace-reader
-  slug: ux-designer
-- roles:
+- slug: software-engineer
+  roles:
+  - software-engineer
+- slug: quality-engineer
+  roles:
   - quality-engineer
-  - workspace-reader
-  slug: quality-engineer
-- roles:
-  - workspace-reader
-  slug: tech-writer
+- slug: devops-engineer
+  roles:
+  - devops-engineer
+- slug: platform-engineer
+  roles:
+  - platform-engineer
+- slug: site-reliability-engineer
+  roles:
+  - site-reliability-engineer
+- slug: observability-engineer
+  roles:
+  - observability-engineer
+- slug: database-administrator
+  roles:
+  - database-administrator
+- slug: data-engineer
+  roles:
+  - data-engineer
+- slug: ai-engineer
+  roles:
+  - ai-engineer
+- slug: security-expert
+  roles:
+  - security-expert
+- slug: data-protection-officer
+  roles:
+  - data-protection-officer
+- slug: compliance-officer
+  roles:
+  - compliance-officer
+- slug: legal-counsel
+  roles:
+  - legal-counsel
+- slug: financial-controller
+  roles:
+  - financial-controller
+- slug: finops-engineer
+  roles:
+  - finops-engineer
+- slug: ux-designer
+  roles:
+  - ux-designer
+- slug: accessibility-specialist
+  roles:
+  - accessibility-specialist
+- slug: business-analyst
+  roles:
+  - business-analyst
+- slug: data-analyst
+  roles:
+  - data-analyst
+- slug: systems-engineer
+  roles:
+  - systems-engineer
+- slug: release-manager
+  roles:
+  - release-manager
+- slug: technical-writer
+  roles:
+  - technical-writer
+- slug: product-marketing-manager
+  roles:
+  - product-marketing-manager
+- slug: procurement-manager
+  roles:
+  - procurement-manager
+- slug: agile-coach
+  roles:
+  - agile-coach
 roles:
-- privileges:
-  - artifact: portfolio-manifest
+- slug: value-management-officer
+  privileges:
+  - artifact: event-record
     action: create
-  - artifact: portfolio-manifest
+  - artifact: event-record
     action: update
-  - artifact: portfolio-manifest
-    action: delete
-  - artifact: product-manifest
+  - artifact: gate-decision
     action: create
-  - artifact: product-manifest
+  - artifact: gate-decision
     action: update
-  - artifact: product-manifest
-    action: delete
-  - artifact: portfolio-sync
+  - artifact: kanban
     action: create
-  - artifact: portfolio-sync
+  - artifact: kanban
     action: update
-  - artifact: portfolio-sync
-    action: delete
-  - artifact: portfolio-kanban
+- slug: solution-train-engineer
+  privileges:
+  - artifact: event-record
     action: create
-  - artifact: portfolio-kanban
+  - artifact: event-record
     action: update
-  - artifact: portfolio-kanban
-    action: delete
-  slug: value-management-officer
-- privileges:
-  - artifact: epic
+  - artifact: gate-decision
     action: create
-  - artifact: epic
+  - artifact: gate-decision
     action: update
-  - artifact: epic
-    action: delete
-  - artifact: lean-business-case
+  - artifact: kanban
     action: create
-  - artifact: lean-business-case
+  - artifact: kanban
     action: update
-  - artifact: lean-business-case
-    action: delete
-  - artifact: strategic-themes
+  - artifact: pi-objectives
     action: create
-  - artifact: strategic-themes
+  - artifact: pi-objectives
     action: update
-  - artifact: strategic-themes
-    action: delete
-  - artifact: budget-allocation
+  - artifact: solution-train-canvas
     action: create
-  - artifact: budget-allocation
+  - artifact: solution-train-canvas
     action: update
-  - artifact: budget-allocation
-    action: delete
-  - artifact: portfolio-review-decision
+- slug: release-train-engineer
+  privileges:
+  - artifact: art-canvas
     action: create
-  - artifact: portfolio-review-decision
+  - artifact: art-canvas
     action: update
-  - artifact: portfolio-review-decision
-    action: delete
-  - artifact: portfolio-vision
+  - artifact: event-record
     action: create
-  - artifact: portfolio-vision
+  - artifact: event-record
     action: update
-  - artifact: portfolio-vision
-    action: delete
+  - artifact: gate-decision
+    action: create
+  - artifact: gate-decision
+    action: update
+  - artifact: kanban
+    action: create
+  - artifact: kanban
+    action: update
+  - artifact: pi-objectives
+    action: create
+  - artifact: pi-objectives
+    action: update
+- slug: scrum-master
+  privileges:
+  - artifact: event-record
+    action: create
+  - artifact: event-record
+    action: update
+  - artifact: gate-decision
+    action: create
+  - artifact: gate-decision
+    action: update
+  - artifact: iteration-plan
+    action: create
+  - artifact: iteration-plan
+    action: update
+  - artifact: kanban
+    action: create
+  - artifact: kanban
+    action: update
+  - artifact: team-charter
+    action: create
+  - artifact: team-charter
+    action: update
+- slug: portfolio-manager
+  privileges:
+  - artifact: lean-budgets
+    action: create
+  - artifact: lean-budgets
+    action: update
   - artifact: portfolio-roadmap
     action: create
   - artifact: portfolio-roadmap
     action: update
-  - artifact: portfolio-roadmap
-    action: delete
-  slug: business-owner
-- privileges:
+  - artifact: portfolio-vision
+    action: create
+  - artifact: portfolio-vision
+    action: update
+  - artifact: strategic-themes
+    action: create
+  - artifact: strategic-themes
+    action: update
+  - artifact: value-stream
+    action: create
+  - artifact: value-stream
+    action: update
+- slug: epic-owner
+  privileges:
+  - artifact: epic
+    action: create
+  - artifact: epic
+    action: update
+  - artifact: lean-business-case
+    action: create
+  - artifact: lean-business-case
+    action: update
+- slug: enterprise-architect
+  privileges:
   - artifact: architecture-vision
     action: create
   - artifact: architecture-vision
     action: update
-  - artifact: architecture-vision
-    action: delete
-  - artifact: epic-enabler
+  - artifact: challenge
     action: create
-  - artifact: epic-enabler
+  - artifact: challenge
     action: update
-  - artifact: epic-enabler
-    action: delete
-  slug: enterprise-architect
-- privileges:
-  - artifact: art-manifest
+- slug: business-owner
+  privileges:
+  - artifact: challenge
     action: create
-  - artifact: art-manifest
+  - artifact: challenge
     action: update
-  - artifact: art-manifest
-    action: delete
-  - artifact: pain-point
+- slug: solution-manager
+  privileges:
+  - artifact: capability
     action: create
-  - artifact: pain-point
+  - artifact: capability
     action: update
-  - artifact: pain-point
-    action: delete
-  - artifact: art-sync
+  - artifact: challenge
     action: create
-  - artifact: art-sync
+  - artifact: challenge
     action: update
-  - artifact: art-sync
-    action: delete
-  - artifact: system-demo
+  - artifact: solution-roadmap
     action: create
-  - artifact: system-demo
+  - artifact: solution-roadmap
     action: update
-  - artifact: system-demo
-    action: delete
-  - artifact: inspect-and-adapt
+  - artifact: solution-vision
     action: create
-  - artifact: inspect-and-adapt
+  - artifact: solution-vision
     action: update
-  - artifact: inspect-and-adapt
-    action: delete
-  - artifact: program-kanban
+- slug: solution-architect
+  privileges:
+  - artifact: challenge
     action: create
-  - artifact: program-kanban
+  - artifact: challenge
     action: update
-  - artifact: program-kanban
-    action: delete
-  - artifact: objectives
+  - artifact: solution-intent
     action: create
-  - artifact: objectives
+  - artifact: solution-intent
     action: update
-  - artifact: objectives
-    action: delete
-  slug: release-train-engineer
-- privileges:
+- slug: product-manager
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
   - artifact: feature
     action: create
   - artifact: feature
     action: update
+  - artifact: product-roadmap
+    action: create
+  - artifact: product-roadmap
+    action: update
+  - artifact: product-vision
+    action: create
+  - artifact: product-vision
+    action: update
+- slug: system-architect
+  privileges:
+  - artifact: adr
+    action: create
+  - artifact: adr
+    action: update
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
   - artifact: feature
-    action: delete
-  - artifact: objectives
     action: create
-  - artifact: objectives
+  - artifact: feature
     action: update
-  - artifact: objectives
-    action: delete
-  - artifact: product-roadmap
+  - artifact: nfrs
     action: create
-  - artifact: product-roadmap
+  - artifact: nfrs
     action: update
-  - artifact: product-roadmap
-    action: delete
-  - artifact: product-vision
+- slug: product-owner
+  privileges:
+  - artifact: challenge
     action: create
-  - artifact: product-vision
+  - artifact: challenge
     action: update
-  - artifact: product-vision
-    action: delete
-  - artifact: risks
-    action: create
-  - artifact: risks
-    action: update
-  - artifact: risks
-    action: delete
-  - artifact: release-on-demand
-    action: create
-  - artifact: release-on-demand
-    action: update
-  - artifact: release-on-demand
-    action: delete
-  slug: product-manager
-- privileges:
-  - artifact: adr
-    action: create
-  - artifact: adr
-    action: update
-  - artifact: adr
-    action: delete
-  - artifact: architecture-review
-    action: create
-  - artifact: architecture-review
-    action: update
-  - artifact: architecture-review
-    action: delete
-  - artifact: architecture-runway
-    action: create
-  - artifact: architecture-runway
-    action: update
-  - artifact: architecture-runway
-    action: delete
-  - artifact: feature-enabler
-    action: create
-  - artifact: feature-enabler
-    action: update
-  - artifact: feature-enabler
-    action: delete
-  - artifact: nfr-list
-    action: create
-  - artifact: nfr-list
-    action: update
-  - artifact: nfr-list
-    action: delete
-  - artifact: story-enabler
-    action: create
-  - artifact: story-enabler
-    action: update
-  - artifact: story-enabler
-    action: delete
-  slug: system-architect
-- privileges:
-  - artifact: plan
-    action: create
-  - artifact: plan
-    action: update
-  - artifact: plan
-    action: delete
-  - artifact: team-manifest
-    action: create
-  - artifact: team-manifest
-    action: update
-  - artifact: team-manifest
-    action: delete
-  - artifact: team-sync
-    action: create
-  - artifact: team-sync
-    action: update
-  - artifact: team-sync
-    action: delete
-  - artifact: iteration-retrospective
-    action: create
-  - artifact: iteration-retrospective
-    action: update
-  - artifact: iteration-retrospective
-    action: delete
-  - artifact: iteration-review
-    action: create
-  - artifact: iteration-review
-    action: update
-  - artifact: iteration-review
-    action: delete
-  slug: scrum-master
-- privileges:
   - artifact: story
     action: create
   - artifact: story
     action: update
-  - artifact: story
-    action: delete
-  slug: product-owner
-- privileges:
-  - artifact: code-change
+- slug: software-engineer
+  privileges:
+  - artifact: challenge
     action: create
-  - artifact: code-change
+  - artifact: challenge
     action: update
   - artifact: code-change
-    action: delete
-  - artifact: feasibility-review
     action: create
-  - artifact: feasibility-review
+  - artifact: code-change
     action: update
-  - artifact: feasibility-review
-    action: delete
-  slug: developer
-- privileges:
-  - artifact: operability-review
+- slug: quality-engineer
+  privileges:
+  - artifact: challenge
     action: create
-  - artifact: operability-review
+  - artifact: challenge
     action: update
-  - artifact: operability-review
-    action: delete
-  slug: operator
-- privileges:
-  - artifact: security-review
+- slug: devops-engineer
+  privileges:
+  - artifact: challenge
     action: create
-  - artifact: security-review
+  - artifact: challenge
     action: update
-  - artifact: security-review
-    action: delete
-  slug: security-expert
-- privileges:
-  - artifact: ux-review
+  - artifact: delivery-pipeline
     action: create
-  - artifact: ux-review
+  - artifact: delivery-pipeline
     action: update
-  - artifact: ux-review
-    action: delete
-  slug: ux-designer
-- privileges:
-  - artifact: qa-signoff
+- slug: platform-engineer
+  privileges:
+  - artifact: challenge
     action: create
-  - artifact: qa-signoff
+  - artifact: challenge
     action: update
-  - artifact: qa-signoff
-    action: delete
-  slug: quality-engineer
-# Reads are not gated: the harness authorizes writes only, so this role grants nothing.
-- privileges: []
-  slug: workspace-reader
+- slug: site-reliability-engineer
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: observability-engineer
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: database-administrator
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: data-engineer
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: ai-engineer
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: security-expert
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: data-protection-officer
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: compliance-officer
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: legal-counsel
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: financial-controller
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: finops-engineer
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: ux-designer
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: accessibility-specialist
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: business-analyst
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: data-analyst
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: systems-engineer
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: release-manager
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+  - artifact: release
+    action: create
+  - artifact: release
+    action: update
+- slug: technical-writer
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: product-marketing-manager
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update
+- slug: procurement-manager
+  privileges:
+  - artifact: supplier-agreement
+    action: create
+  - artifact: supplier-agreement
+    action: update
+- slug: agile-coach
+  privileges:
+  - artifact: challenge
+    action: create
+  - artifact: challenge
+    action: update

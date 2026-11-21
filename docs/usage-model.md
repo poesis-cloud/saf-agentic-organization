@@ -1,149 +1,171 @@
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+
 # Usage model
 
-This is how a human talks to the organization. Orchestrators are instructed from this
-document; workflow `description` fields restate each catalog's purpose and mains.
-Catalog rows implement SAFe; they are not themselves usage principles.
+How a human works with the organization. The reference tables (roster, workflows, panels,
+artifact kinds) are in [catalog.md](catalog.md); how SAFe maps onto it is in
+[safe-conformance.md](safe-conformance.md).
 
-## Principles
+## The idea in one minute
 
-1. **SAFe activity purpose constrains usecases.** A human concern is valid here only
-   when it matches an existing catalog purpose at this layer. Orchestrators map
-   speech onto that purpose; they do not invent ceremonies.
-2. **Any concern, any form.** The human states a concern. They do not classify it,
-   name a ceremony, or pick an act. The orchestrator maps it to one workflow, or
-   hands the human the other-layer orchestrator to invoke.
-3. **IT concerns stay inside SAFe grain.** Impact, bug, spike, debt, quality gap,
-   constraint, decision — each maps onto an existing activity at Epic, Feature, or
-   Story grain. Do not add parallel IT rituals.
-4. **Workflows are challenge loops.** Specialists draft, challenge, and rewrite
-   until challengers agree enough. Inner reviews are not the human loop.
-5. **Human gate.** Each workflow delivers its mains to the human. The human reviews
-   those artifacts and accepts, concerns, or rejects them. Challenge packets are
-   evidence, not the thing the human is asked to score.
+You talk to **one orchestrator**, the one of your SAFe layer. You state a concern in your own
+words. The orchestrator maps it to **one workflow**, and the workflow produces **one main
+artifact**: an Epic, a Feature, a PI plan, a release plan, and so on.
 
-## 1. One layer, one grain
+Before that artifact reaches you, it goes through a **challenge loop**:
 
-The human speaks to one layer orchestrator. That hat writes (new or thickens) work
-items of **that layer's grain**, inside the matching SAFe activity:
+```mermaid
+flowchart LR
+    C([your concern]) --> D[draft<br/>the owner writes]
+    D --> X[challenge<br/>each expert writes a packet]
+    X --> R[revise<br/>the owner answers every finding]
+    R --> G{{human gate<br/>you decide}}
+    G -- accept --> T[record the decision<br/>transition or gate decision]
+    G -- concerns / reject --> D
+```
 
-| Hat | Grain |
+- The **owner** is a SAFe role: Epic Owner, Product Manager, System Architect, Product Owner…
+- The **experts** are real IT jobs: Security Expert, Site Reliability Engineer, Data Protection
+  Officer, Financial Controller, UX Designer… Each one reads the draft through its own lens and
+  writes findings. An expert never edits the artifact.
+- The owner must **answer every finding**: accepted, rejected with a reason, or deferred to a
+  named place. The answers are kept in the artifact's `challengeLedger`.
+- **You decide.** The orchestrator shows you the artifact, what the experts found and what the
+  owner answered, and asks one question. Nothing is approved, moved or released without your
+  decision.
+
+## Who you talk to
+
+| You care about | Talk to | It writes, through its workflows |
+|---|---|---|
+| Strategy, budgets, Epics | `value-management-officer` (Portfolio) | Strategic Themes, Portfolio Vision, Lean Budgets, Epics, Lean Business Cases, Portfolio Roadmap, Architecture Vision |
+| A large solution built by several ARTs and suppliers | `solution-train-engineer` (Large Solution) | Solution Vision, Solution Intent, Capabilities, Solution Roadmap, supplier agreements, Solution Train PI plan |
+| A product, its Features, the PI, releases | `release-train-engineer` (ART) | Product Vision, PI Roadmap, Features, architecture decisions, NFRs, the delivery pipeline map, PI Objectives, releases |
+| Stories, iterations, code | `scrum-master` (Team) | Team charter, Stories, iteration plans, code changes |
+
+You never have to name a workflow. If your concern belongs to another layer, the orchestrator
+tells you which one to talk to; it does not squeeze an Epic into a Story or the reverse.
+
+You can start at any layer. Essential SAFe needs only the ART and Team orchestrators; add the
+Large Solution orchestrator when several ARTs build one solution; add the Portfolio orchestrator
+when you fund value streams and steer Epics.
+
+## A first run
+
+Select `release-train-engineer` and write, for example:
+
+```text
+We need customers to be able to export their invoices as PDF.
+```
+
+1. **Proposal.** The orchestrator answers that this is a Feature, proposes the workflow
+   `feature-refinement`, the ART and a slug for the Feature, and waits for your yes.
+2. **Draft.** The Product Manager writes the Feature: description, benefit hypothesis,
+   acceptance criteria, WSJF.
+3. **Challenge.** Six experts each write one packet: System Architect, Software Engineer, Quality
+   Engineer, Security Expert, UX Designer, Data Protection Officer. An expert whose lens does not
+   apply says so in one line.
+4. **Revise.** The Product Manager changes the Feature where the findings are right and answers
+   each one.
+5. **Gate.** The orchestrator shows you the Feature, the verdict of each expert, and the findings
+   the Product Manager rejected or deferred, with both positions. It asks: is this Feature ready
+   for PI Planning?
+6. **Your decision.**
+   - *Accept:* start a new session and say so. The workflow `feature-transition` records the
+     move to `ready` and re-renders the ART Kanban.
+   - *Concerns or reject:* start a new session and state them. `feature-refinement` runs again
+     on the same Feature, with your concerns as its subject.
+
+One orchestrator session runs one workflow. After each gate the orchestrator names the workflow
+that comes next and asks you to start a new session for it.
+
+## Four kinds of workflow
+
+| Kind | Steps | What reaches you |
+|---|---|---|
+| **Loop** (32 workflows) | draft → one challenge per expert → revise | a main artifact with its challenge ledger |
+| **Transition** (4) | the owner records your decision as one state change → the orchestrator re-renders the Kanban | the item in its new state |
+| **Event** (10) | the orchestrator records the SAFe event (and re-renders the Kanban for a sync) | the record: decisions, actions, impediments |
+| **Gate decision** (4) | the orchestrator records your decision on a vision, roadmap, budget, plan… | the decision record |
+
+Every backlog item (Epic, Capability, Feature, Story) moves on its Kanban only through its
+transition workflow, written by its owner. Every other main artifact is accepted through a gate
+decision record. Either way your decision becomes committed evidence.
+
+## From strategy to code
+
+The workflows chain along the SAFe flow. Each arrow is a human gate.
+
+```mermaid
+flowchart TB
+    subgraph Portfolio
+        ST[strategic-themes] --> PV[portfolio-vision] --> EH[epic-hypothesis] --> LBC[lean-business-case] --> ET[epic-transition]
+        ST --> SIP[strategic-investment-planning]
+    end
+    subgraph LS[Large Solution]
+        SV[solution-vision] --> SI[solution-intent]
+        SV --> CR[capability-refinement] --> PP[pre-plan]
+    end
+    subgraph ART
+        PRV[product-vision] --> FR[feature-refinement] --> PI[pi-planning] --> SD[system-demo] --> ROD[release-on-demand] --> IA[inspect-and-adapt]
+        AD[architecture-decision] --> EFR[enabler-feature-refinement] --> PI
+    end
+    subgraph Team
+        SR[story-refinement] --> IP[iteration-planning] --> IMP[story-implementation] --> IR[iteration-review]
+    end
+    ET --> CR
+    ET --> FR
+    PP --> PI
+    PI --> SR
+    IR --> SD
+```
+
+Typical paths:
+
+- **A new initiative:** `epic-hypothesis` → `epic-transition` (to analyzing) →
+  `lean-business-case` → `epic-transition` (go: ready) → `feature-refinement` per Feature →
+  `pi-planning` → `story-refinement` per Story → `iteration-planning` → `story-implementation`
+  → `system-demo` → `release-on-demand` → `epic-mvp-evaluation` (persevere, pivot or stop).
+- **A Feature from the ART's own context:** `feature-refinement` → `feature-transition` →
+  `pi-planning`. No Epic is needed.
+- **A technical concern:** `architecture-decision` for a design choice, `nfr-refinement` for a
+  system quality, `enabler-feature-refinement` for runway or technical debt at Feature size, a
+  Story of type enabler (a spike is an exploration enabler) at team size.
+- **A bug:** a Story (`story-refinement`), or a Feature when it does not fit an iteration.
+
+## What the harness enforces
+
+These rules are conditions checked by the harness on committed state, not advice in a prompt:
+
+| Rule | Where |
 |---|---|
-| `@value-management-officer` | Epic (business or enabler, judged in-workflow) |
-| `@release-train-engineer` | Feature (business or enabler, judged in-workflow) |
-| `@scrum-master` | Story (business or enabler, judged in-workflow) |
+| A challenge packet targets the artifact drafted in the same run | every challenge step |
+| The owner revises the artifact it drafted and answers every packet of the run | every revise step |
+| No acceptance without challenge: a gate decision that accepts needs at least one packet on the artifact | the four gate-decision workflows |
+| A backlog item cannot leave refinement before it was challenged | the four transition workflows |
+| An Epic becomes ready only with a Lean Business Case recommending go | `epic-transition` |
+| A Lean Business Case names an Epic under analysis; an MVP evaluation needs an implementing Epic | `lean-business-case`, `epic-mvp-evaluation` |
+| A Capability, Feature or Story splits only from an approved parent (or has none) | the refinement workflows |
+| PI Planning needs a ready Feature (or Capability); Iteration Planning and implementation need a ready Story; a release needs a built Feature | their first step |
+| Each agent writes only the artifact kinds its steps deliver | the access control list |
 
-The user does not pick business vs enabler. Sibling mains of the owning activity
-are in-workflow writes. Wrong grain is a handoff: tell the human which
-orchestrator to invoke. Do not mint a thinner item to absorb a thicker intent.
+When a rule refuses a step, the orchestrator tells you which state is missing and which workflow
+produces it.
 
-## 2. Workflows are challenge protocols
+## Why it stays small
 
-A workflow is how agents **exchange, collaborate, and challenge** while delivering
-mains. The loop is draft → challenge → owner rewrite; a human KO reiterates the
-workflow as a new instance until agreement is enough to present mains at the gate.
+Each step runs in its own session with a small, fixed context: the step contract, the pattern of
+the step, the workflow brief (three short instructions) and one craft skill. The worker reads the
+one artifact it works on, from a template. Experts do not read each other's packets; only the
+owner reads them all. The orchestrator carries its four duties and its catalog, and relays paths,
+not content.
 
-| Class | Role | Challenged? | Human-gated? |
-|---|---|---|---|
-| **Main** | The work item or decision the activity exists to produce | Yes, before owner commit | **Yes** |
-| **Challenge / mediation** | Required because 1 step = 1 artifact (reviews, minutes, risks, kanban/manifests) | **No** | **No** |
+## What the organization does not do
 
-Owner rewrite absorbs challenge findings. Challengers write no owner content. After the
-challenge, every drafted main gets an owner step (one artifact each), so no main is left
-contradicting the rewritten one: in `epic-lean-business-case`, `update-epic` and
-`update-enabler-epic` align the Epic and the Enabler Epic with the rewritten Lean Business Case.
-
-## 3. Map or hand off
-
-The orchestrator does not require a speech-act label. It:
-
-1. Reads the concern.
-2. Loads the one workflow whose **purpose** matches, or tells the human to invoke
-   another layer's orchestrator.
-3. Dispatches each step the harness resolves exactly once (1 step = 1 session); a
-   failed step comes back through `resolve-step`, never through an ad-hoc re-dispatch.
-4. Returns the **mains** to the human gate and waits.
-
-Humans need not name the ceremony. Purpose still constrains the usecase. The
-harness `resolve-step` walks catalog order; empty preconditions pass. **No valid
-step without artifact:** every step commits a change to exactly one instance of its
-declared artifact kind, whatever the outcome. An out-of-scope sibling main is committed with only a `no-change`
-`stepOutcomes` entry, and an unneeded enabler as a `status: not-needed` file —
-never a silent skip, never an invented sibling, never a redraft of an untouched
-item. Agent replies and reports are indicative; committed artifacts are the
-only evidence (see [step-artifacts.md](step-artifacts.md)).
-
-## 4. Per-workflow purpose
-
-| Workflow | Purpose | Mains presented at the human gate |
-|---|---|---|
-| `epic-lean-business-case` | Write a portfolio bet | `epic`, `lean-business-case`, `epic-enabler` |
-| `architectural-vision` | Portfolio runway + NFR backbone; records its decisions on Epics, writes no Epic | `architecture-vision` |
-| `epic-vision-alignment` | Write the Vision's decisions on ONE Epic into it (one run per Epic the Vision names) | `epic-enabler`, `epic`, `lean-business-case` (owner updates) |
-| `strategic-investment-planning` | Allocate / guardrail ART funding | `budget-allocation` |
-| `strategic-portfolio-review` | Keep / pivot / stop / re-rank | themes, vision, roadmap, `architecture-vision` |
-| `portfolio-sync` | Portfolio snapshot; registers ONE product per run | `portfolio-sync`, `portfolio-manifest`, `product-manifest`, `portfolio-kanban` |
-| `epic-transition` | Move ONE Epic (and its enabler) to a new `status:` | `epic`, `epic-enabler` (owner steps), `portfolio-kanban` |
-| `feature-derivation` | Split an approved Epic into ART Features (refused while no Epic is approved) | `feature`, `feature-enabler` |
-| `feature-backlog-refinement` | Write a PI-ready Feature | `feature`, `feature-enabler` |
-| `architectural-runway-extension` | Extend ART runway (product NFR register before ADR); its decisions written into the Features by their owners | `nfr-list`, `adr`, `architecture-runway`, `feature`, `feature-enabler` (owner updates) |
-| `feature-transition` | Move ONE Feature (and its enabler) to a new `status:` | `feature`, `feature-enabler` (owner steps), `program-kanban` |
-| `pi-planning` | ART PI commit | confirm vision/roadmap/feature/runway; write `objectives` |
-| `art-sync` | Mid-PI impediments | mediation record only |
-| `system-demo` | Inspect the increment; demo gate | mediation / gate record |
-| `inspect-and-adapt` | PI improve | `inspect-and-adapt` record (metrics, then triage). Writes no pain point; a later Feature is a later Feature |
-| `improvement-backlog` | Record or update ONE pain point (one run per friction note) | `pain-point` (mediation) |
-| `release-on-demand` | Ship an accepted increment | `release-on-demand` |
-| `team-backlog-refinement` | Write a ready-enough Story (including Feature→Story split) | `story`, `story-enabler` |
-| `story-transition` | Move ONE Story (and its enabler) to a new `status:` | `story`, `story-enabler` (owner steps) |
-| `iteration-planning` | Commit the iteration | `team-manifest`, `plan` |
-| `pair-programming` | Implement an already-OK Story | `code-change` |
-| `verification` | Is this Story done | `qa-signoff` (challenge of Story/code-change) |
-| `team-sync` / `iteration-review` / `iteration-retrospective` | Daily I&A / increment inspect / team improve | mediation records |
-
-An impediment discovered in sync/demo that is really a Feature is a **later
-Feature**, not a new workflow. Orchestrators hold no Epic/Feature/Story privilege:
-the unit's author creates it in its authoring workflow, and every later `status:`
-change (gate, PI commit, block, roll-up, close) is one `*-transition` run whose
-owner step commits it ([step-artifacts.md](step-artifacts.md#status-transitions)).
-
-## 5. NFR model (catalog, not a usage principle)
-
-SAFe NFRs are enduring system qualities that constrain backlogs. This organization
-encodes that as a **product register** plus traces — not as Feature AC. There is
-no separate relation artifact: the bind lives on existing mains.
-
-| Artifact | Owns | Operated in | Does not own |
-|---|---|---|---|
-| `architecture-vision` | Cross-product NFR **backbone** | `architectural-vision` draft | Measurable product NFRs |
-| `portfolio/products/<product-slug>/nfr-list.md` | Canonical product NFRs | `architectural-runway-extension` / `author-nfrs`, `update-nfrs` | Feature AC, Stories, ADRs |
-| Feature / Feature-enabler | Which NFRs **apply** (optional tightening) | `feature-backlog-refinement` draft + owner rewrite | The canonical set |
-| Story / Story-enabler | Inherit parent Feature applicability; **verify** | `team-backlog-refinement` draft + owner rewrite | The canonical set |
-| ADR | Design that realizes NFRs | `architectural-runway-extension` / `author-adr`, `update-adr` | The NFR register |
-| `architecture-runway` | Enabler work that paves NFRs / ADRs | `architectural-runway-extension` rewrite | The NFR text |
-| `architecture-review` / `security-review` | Missed or invented applicability | Feature and Story refinement challenges | The register or the work item |
-
-Epic / Epic-enabler record **portfolio backbone implications** (EA hat), not product NFR ids.
-`feature-derivation` mints Feature identity only; NFR traces stay deferred until Feature
-refinement. A missing NFR discovered in refinement is a runway handoff, not Feature AC.
-
-## 6. Splitting vs refinement
-
-SAFe names the **work-item hierarchy** (Epic → Feature → Story) and the act of
-**splitting**. It does not name a Feature-to-Story derivation ceremony.
-
-| Split | SAFe concept | This catalog |
-|---|---|---|
-| Epic → Feature | Portfolio Epics split into Features on the ART backlog | `feature-derivation`, then `feature-backlog-refinement` |
-| Feature → Story | Teams split Features into Stories on the Team backlog | `team-backlog-refinement` only — no `story-derivation` |
-
-Derivation **mints** the thinner grain from an approved parent. Refinement **shapes**
-that grain (AC, WSJF, NFR traces, challenges) until it is ready.
-
-Do **not** fold Epic→Feature minting into Feature refinement. That split is
-**cross-layer**: the parent is a portfolio Epic (VMO grain); Feature refinement's
-hat is ART and already refuses Epic grain. Merging would either accept Epic-sized
-intent inside a PI-ready Feature workflow, or silently mint Features inside a
-challenge loop built for shaped items. Derivation has no challenges because the
-minted files are stubs; they enter refinement next. Feature→Story stays inside
-Team grain — the parent Feature already exists on the ART — so mint+shape can
-share `team-backlog-refinement`. Do not invent a Story-derivation workflow.
+- It does not decide for you, and it does not record a decision you did not state.
+- It does not merge code. `story-implementation` works on a branch and records the change; a
+  human reviews and merges the pull request.
+- It does not sign contracts or commit budgets: a supplier agreement and Lean Budgets are working
+  artifacts for the humans who hold that authority.
+- It does not give binding legal, privacy or compliance opinions: the experts flag issues for
+  your accountable officers.

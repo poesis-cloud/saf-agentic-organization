@@ -1,0 +1,229 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: delivery-pipeline
+description: 'Map the ART''s Continuous Delivery Pipeline from ideation to on-demand release, find its bottlenecks and propose the enablers that remove them. Main artifact at the human gate: delivery-pipeline. Use for: How work flows to production; pipeline bottlenecks; DevOps improvements; lead time.'
+orchestrator: release-train-engineer
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- release-train-engineer-catalog
+steps:
+- slug: draft
+  description: 'Main artifact, draft: the DevOps Engineer creates or thickens the Continuous Delivery Pipeline.'
+  actor: devops-engineer
+  skills: devops-engineer
+  artifact: delivery-pipeline
+  instructions:
+  - step-contract
+  - draft-main
+  - delivery-pipeline-brief
+  capabilities:
+    deep-reasoning: 9
+    coding: 4
+    tool-use: 5
+    long-context: 7
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  conditions: []
+- slug: challenge-platform-engineer
+  description: 'Challenge packet: the Platform Engineer challenges the drafted Continuous Delivery Pipeline. Not itself challenged.'
+  actor: platform-engineer
+  skills: platform-engineer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - delivery-pipeline-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-security-expert
+  description: 'Challenge packet: the Security Expert challenges the drafted Continuous Delivery Pipeline. Not itself challenged.'
+  actor: security-expert
+  skills: security-expert
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - delivery-pipeline-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-quality-engineer
+  description: 'Challenge packet: the Quality Engineer challenges the drafted Continuous Delivery Pipeline. Not itself challenged.'
+  actor: quality-engineer
+  skills: quality-engineer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - delivery-pipeline-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-site-reliability-engineer
+  description: 'Challenge packet: the Site Reliability Engineer challenges the drafted Continuous Delivery Pipeline. Not itself challenged.'
+  actor: site-reliability-engineer
+  skills: site-reliability-engineer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - delivery-pipeline-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-finops-engineer
+  description: 'Challenge packet: the FinOps Engineer challenges the drafted Continuous Delivery Pipeline. Not itself challenged.'
+  actor: finops-engineer
+  skills: finops-engineer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - delivery-pipeline-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: revise
+  description: 'Main artifact, owner revision: the DevOps Engineer answers every challenge packet and revises the Continuous Delivery Pipeline for the human gate.'
+  actor: devops-engineer
+  skills: devops-engineer
+  artifact: delivery-pipeline
+  instructions:
+  - step-contract
+  - revise-main
+  - delivery-pipeline-brief
+  capabilities:
+    deep-reasoning: 9
+    coding: 4
+    tool-use: 5
+    long-context: 7
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  conditions:
+  - kind: precondition
+    slug: after-challenge-platform-engineer
+    step: challenge-platform-engineer
+  - kind: precondition
+    slug: after-challenge-security-expert
+    step: challenge-security-expert
+  - kind: precondition
+    slug: after-challenge-quality-engineer
+    step: challenge-quality-engineer
+  - kind: precondition
+    slug: after-challenge-site-reliability-engineer
+    step: challenge-site-reliability-engineer
+  - kind: precondition
+    slug: after-challenge-finops-engineer
+    step: challenge-finops-engineer
+  - kind: postcondition
+    slug: revises-the-drafted-artifact
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == step.artifact.path)
+    setPredicate: selected.size() == 1
+  - kind: postcondition
+    slug: every-packet-is-answered
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
+    setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))

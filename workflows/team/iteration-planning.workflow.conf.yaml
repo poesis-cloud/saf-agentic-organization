@@ -13,88 +13,160 @@
 # limitations under the License.
 
 slug: iteration-planning
-description: >
-  Purpose: commit the iteration. Act: Cadence. Orchestrator: Scrum Master.
-  Dispatch: confirm team-manifest; write plan. Challenge: Developer
-  feasibility-review of the drafted plan (not evaluated). Evaluate: the plan.
-  Not Demand — a new bug or Story is team-backlog-refinement.
-instructions: scrum-master-interpret-speech-acts
-predecessors:
-- team-backlog-refinement
+description: 'Plan one iteration: the iteration goals, the Stories selected and the capacity behind them. Main artifact at the human gate: iteration-plan. Use for: Plan the iteration; what the team commits to; iteration goals.'
 orchestrator: scrum-master
-skills: team-iteration-planning
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- scrum-master-catalog
 steps:
-- slug: confirm-team-manifest
-  description: Main artifact confirm — Scrum Master restates team capacity and membership for this iteration.
-  capabilities:
-    deep-reasoning: 2
-    coding: 3
-    tool-use: 8
-    long-context: 2
-    multimodal: 0
-    writing-quality: 1
-    instruction-following: 9
-    fast-iteration: 8
-    schema-adherence: 8
+- slug: draft
+  description: 'Main artifact, draft: the Scrum Master / Team Coach creates or thickens the Iteration plan.'
   actor: scrum-master
-  artifact: team-manifest
-  conditions: []
-  instructions: team-iteration-planning-confirm-team-manifest
-- slug: draft-plan
-  description: Main artifact draft — Scrum Master proposes Iteration Goals and the selected Story list.
+  skills: scrum-master
+  artifact: iteration-plan
+  instructions:
+  - step-contract
+  - draft-main
+  - iteration-planning-brief
   capabilities:
-    deep-reasoning: 2
-    coding: 3
-    tool-use: 8
-    long-context: 2
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 5
+    long-context: 7
     multimodal: 0
-    writing-quality: 1
-    instruction-following: 9
-    fast-iteration: 8
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 3
     schema-adherence: 8
-  actor: scrum-master
-  artifact: plan
   conditions:
-  - slug: after-confirm-team-manifest
-    kind: precondition
-    step: confirm-team-manifest
-  instructions: team-iteration-planning-draft-iteration-plan
-- slug: challenge-feasibility
-  description: Challenge packet — Developer feasibility-review of the drafted Iteration Plan. Not itself challenged.
+  - kind: precondition
+    slug: a-story-is-ready
+    setSelector:
+      setQuery: workspace.filter(a, a.kind == 'story' && a.data.status in ['ready', 'in-progress'])
+    setPredicate: selected.size() > 0
+- slug: challenge-product-owner
+  description: 'Challenge packet: the Product Owner challenges the drafted Iteration plan. Not itself challenged.'
+  actor: product-owner
+  skills: product-owner
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - iteration-planning-brief
   capabilities:
     deep-reasoning: 8
-    coding: 8
+    coding: 0
     tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-software-engineer
+  description: 'Challenge packet: the Software Engineer challenges the drafted Iteration plan. Not itself challenged.'
+  actor: software-engineer
+  skills: software-engineer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - iteration-planning-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
     long-context: 6
     multimodal: 0
     writing-quality: 6
     instruction-following: 8
-    fast-iteration: 3
-    schema-adherence: 6
-  actor: developer
-  skills: developer
-  artifact: feasibility-review
+    fast-iteration: 4
+    schema-adherence: 7
   conditions:
-  - slug: after-draft-plan
-    kind: precondition
-    step: draft-plan
-  instructions: program-feature-backlog-refinement-challenger-writes-no-owner-content
-- slug: commit-plan
-  description: Owner rewrite — Scrum Master commits the Iteration Plan after the feasibility challenge.
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-quality-engineer
+  description: 'Challenge packet: the Quality Engineer challenges the drafted Iteration plan. Not itself challenged.'
+  actor: quality-engineer
+  skills: quality-engineer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - iteration-planning-brief
   capabilities:
-    deep-reasoning: 2
-    coding: 3
-    tool-use: 8
-    long-context: 2
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
     multimodal: 0
-    writing-quality: 1
-    instruction-following: 9
-    fast-iteration: 8
-    schema-adherence: 8
-  actor: scrum-master
-  artifact: plan
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
   conditions:
-  - slug: after-challenge-feasibility
-    kind: precondition
-    step: challenge-feasibility
-  instructions: team-iteration-planning-commit-iteration-plan
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: revise
+  description: 'Main artifact, owner revision: the Scrum Master / Team Coach answers every challenge packet and revises the Iteration plan for the human gate.'
+  actor: scrum-master
+  skills: scrum-master
+  artifact: iteration-plan
+  instructions:
+  - step-contract
+  - revise-main
+  - iteration-planning-brief
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 5
+    long-context: 7
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 8
+  conditions:
+  - kind: precondition
+    slug: after-challenge-product-owner
+    step: challenge-product-owner
+  - kind: precondition
+    slug: after-challenge-software-engineer
+    step: challenge-software-engineer
+  - kind: precondition
+    slug: after-challenge-quality-engineer
+    step: challenge-quality-engineer
+  - kind: postcondition
+    slug: revises-the-drafted-artifact
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == step.artifact.path)
+    setPredicate: selected.size() == 1
+  - kind: postcondition
+    slug: every-packet-is-answered
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
+    setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))

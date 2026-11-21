@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gsmarc://saf/artifacts/challenge.artifact/v1",
+  "$ref": "gsmarc://saf/contracts/artifact/v1",
+  "title": "Challenge packet artifact schema",
+  "description": "One expert's challenge of one main artifact, written before the human gate. Findings only: the expert never edits the artifact it challenges.",
+  "type": "object",
+  "additionalProperties": true,
+  "x-artifact": {
+    "kind": "challenge",
+    "layer": "shared",
+    "class": "challenge",
+    "owners": [],
+    "templates": [
+      "templates/shared/challenge.artifact-template.md"
+    ],
+    "pathPatterns": [
+      "portfolio/challenges/*.challenge.md",
+      "portfolio/value-streams/*/challenges/*.challenge.md",
+      "portfolio/epics/*/challenges/*.challenge.md",
+      "portfolio/solution-trains/*/challenges/*.challenge.md",
+      "portfolio/solution-trains/*/capabilities/*/challenges/*.challenge.md",
+      "portfolio/solution-trains/*/suppliers/*/challenges/*.challenge.md",
+      "portfolio/solution-trains/*/pis/*/challenges/*.challenge.md",
+      "portfolio/arts/*/challenges/*.challenge.md",
+      "portfolio/arts/*/adrs/*/challenges/*.challenge.md",
+      "portfolio/arts/*/features/*/challenges/*.challenge.md",
+      "portfolio/arts/*/pis/*/challenges/*.challenge.md",
+      "portfolio/arts/*/releases/*/challenges/*.challenge.md",
+      "portfolio/arts/*/teams/*/challenges/*.challenge.md",
+      "portfolio/arts/*/teams/*/stories/*/challenges/*.challenge.md",
+      "portfolio/arts/*/teams/*/iterations/*/challenges/*.challenge.md"
+    ],
+    "sections": {
+      "required": [
+        "Summary"
+      ],
+      "optional": [
+        "Findings",
+        "Questions for the human gate"
+      ]
+    }
+  },
+  "required": [
+    "title",
+    "target",
+    "targetKind",
+    "challenger",
+    "verdict",
+    "findings",
+    "stepOutcomes"
+  ],
+  "properties": {
+    "title": {
+      "description": "Human-readable title.",
+      "type": "string",
+      "minLength": 1
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The main artifact challenged. Workspace-relative path."
+    },
+    "targetKind": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Artifact kind of the target."
+    },
+    "challenger": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Agent slug of the expert."
+    },
+    "verdict": {
+      "description": "pass: no finding. concerns: findings the owner should answer. blocking: the artifact should not pass the gate as is. not-applicable: the lens does not apply, with the reason in `## Summary`. One of: pass | concerns | blocking | not-applicable.",
+      "enum": [
+        "pass",
+        "concerns",
+        "blocking",
+        "not-applicable"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "description": "Findings, most severe first. Empty when the verdict is pass or not-applicable.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "severity",
+          "claim",
+          "evidence",
+          "ask"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "F1, F2, …"
+          },
+          "severity": {
+            "description": "Severity. One of: blocking | major | minor.",
+            "enum": [
+              "blocking",
+              "major",
+              "minor"
+            ]
+          },
+          "claim": {
+            "type": "string",
+            "minLength": 1,
+            "description": "What is wrong or missing, in one sentence."
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Where it shows: the section, field or source that proves the claim."
+          },
+          "ask": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The smallest change that would resolve it."
+          }
+        }
+      }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record: one entry per step that committed this artifact.",
+      "$ref": "#/$defs/stepOutcomes"
+    }
+  },
+  "$defs": {
+    "stepOutcomes": {
+      "description": "Step outcome record. Every workflow step that commits this artifact appends exactly one entry, so the artifact itself carries the step's decision and the agent's reply stays indicative.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "step",
+          "outcome",
+          "date",
+          "note"
+        ],
+        "properties": {
+          "step": {
+            "description": "`<workflow-slug>/<step-slug>` of the step that appended this entry.",
+            "type": "string",
+            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+          },
+          "outcome": {
+            "description": "written (created) | revised (content changed) | confirmed (reviewed, still valid) | no-change (out of scope on this run) | none (not needed; the artifact records that decision).",
+            "enum": [
+              "written",
+              "revised",
+              "confirmed",
+              "no-change",
+              "none"
+            ]
+          },
+          "date": {
+            "description": "YYYY-MM-DD of the step.",
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "description": "One line: what the step decided and why.",
+            "type": "string",
+            "minLength": 1
+          },
+          "friction": {
+            "description": "Optional. Workflow friction the actor observed (raw input for Inspect and Adapt, never a fix).",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

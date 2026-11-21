@@ -1,0 +1,167 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: team-formation
+description: 'Define or revise one Agile team: its mission, members, working agreements, Definition of Done and Kanban. Main artifact at the human gate: team-charter. Use for: Set up a team; change its working agreements, Definition of Done or WIP limits.'
+orchestrator: scrum-master
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- scrum-master-catalog
+steps:
+- slug: draft
+  description: 'Main artifact, draft: the Scrum Master / Team Coach creates or thickens the Team charter.'
+  actor: scrum-master
+  skills: scrum-master
+  artifact: team-charter
+  instructions:
+  - step-contract
+  - draft-main
+  - team-formation-brief
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 5
+    long-context: 7
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 8
+  conditions: []
+- slug: challenge-agile-coach
+  description: 'Challenge packet: the Agile Coach challenges the drafted Team charter. Not itself challenged.'
+  actor: agile-coach
+  skills: agile-coach
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - team-formation-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-product-owner
+  description: 'Challenge packet: the Product Owner challenges the drafted Team charter. Not itself challenged.'
+  actor: product-owner
+  skills: product-owner
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - team-formation-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-quality-engineer
+  description: 'Challenge packet: the Quality Engineer challenges the drafted Team charter. Not itself challenged.'
+  actor: quality-engineer
+  skills: quality-engineer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - team-formation-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: revise
+  description: 'Main artifact, owner revision: the Scrum Master / Team Coach answers every challenge packet and revises the Team charter for the human gate.'
+  actor: scrum-master
+  skills: scrum-master
+  artifact: team-charter
+  instructions:
+  - step-contract
+  - revise-main
+  - team-formation-brief
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 5
+    long-context: 7
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 8
+  conditions:
+  - kind: precondition
+    slug: after-challenge-agile-coach
+    step: challenge-agile-coach
+  - kind: precondition
+    slug: after-challenge-product-owner
+    step: challenge-product-owner
+  - kind: precondition
+    slug: after-challenge-quality-engineer
+    step: challenge-quality-engineer
+  - kind: postcondition
+    slug: revises-the-drafted-artifact
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == step.artifact.path)
+    setPredicate: selected.size() == 1
+  - kind: postcondition
+    slug: every-packet-is-answered
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
+    setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))

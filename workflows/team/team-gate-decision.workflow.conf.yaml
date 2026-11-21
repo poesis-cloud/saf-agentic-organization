@@ -1,0 +1,49 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: team-gate-decision
+description: 'Record the human''s decision on a challenged team-level artifact that is not a backlog item (backlog items move with their transition workflow). Main artifact at the human gate: gate-decision. Use for: "I accept / reject the vision, roadmap, budget, plan…" after a gate.'
+orchestrator: scrum-master
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- scrum-master-catalog
+steps:
+- slug: record-decision
+  description: 'Gate record: the Scrum Master / Team Coach records the human''s decision on one challenged artifact.'
+  actor: scrum-master
+  skills: scrum-master
+  artifact: gate-decision
+  instructions:
+  - step-contract
+  - record-gate-decision
+  - team-gate-decision-brief
+  capabilities:
+    deep-reasoning: 4
+    coding: 0
+    tool-use: 4
+    long-context: 5
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 9
+  conditions:
+  - kind: postcondition
+    slug: accepted-only-if-challenged
+    setSelector:
+      setQuery: workspace.filter(d, d.path == step.artifact.path && d.data.decision in ['accepted', 'accepted-with-concerns'])
+    setPredicate: selected.all(d, workspace.exists(c, c.kind == 'challenge' && c.data.target == d.data.target))

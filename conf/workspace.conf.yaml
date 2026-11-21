@@ -12,383 +12,478 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Workspace structure map.
-#
-# This file is a structural blueprint for the workspace: a recursive tree of
-# `artifact` nodes (a file bound to an artifact schema + template, required
-# cardinality) and `folder` nodes (a container of `children`, no schema/
-# template/required cardinality of its own). Every node's `slug` is its OWN
-# path segment only — the full workspace-relative path is deduced by
-# concatenating ancestor slugs top-down; a `slug` may embed one or more
-# `<name>` variable placeholders (e.g. `<epic-slug>`, or `<epic-slug>.epic.md`
-# mixing a variable with literal text) shared consistently across a node and
-# its descendants.
+# Workspace layout: where every artifact kind lives. Generated from the organization model;
+# a node slug is its own path segment, and `<name>` is a variable shared along the path.
 
 nodes:
-  - slug: portfolio
-    description: Workspace root folder.
+- slug: portfolio
+  description: 'Workspace root: the SAFe portfolio.'
+  children:
+  - slug: strategic-themes.md
+    description: Strategic Themes in OKR format.
+    artifact: strategic-themes
+    template: portfolio/strategic-themes
+    cardinality: 0..1
+  - slug: portfolio-vision.md
+    description: Portfolio Vision and canvas.
+    artifact: portfolio-vision
+    template: portfolio/portfolio-vision
+    cardinality: 0..1
+  - slug: portfolio-roadmap.md
+    description: Portfolio Roadmap.
+    artifact: portfolio-roadmap
+    template: portfolio/portfolio-roadmap
+    cardinality: 0..1
+  - slug: lean-budgets.md
+    description: Lean Budgets and guardrails.
+    artifact: lean-budgets
+    template: portfolio/lean-budgets
+    cardinality: 0..1
+  - slug: architecture-vision.md
+    description: Architecture Vision (technology vision, strategy, roadmap).
+    artifact: architecture-vision
+    template: portfolio/architecture-vision
+    cardinality: 0..1
+  - slug: portfolio-kanban.md
+    description: portfolio Kanban board, rendered from the items' status.
+    artifact: kanban
+    template: kanbans/portfolio-kanban
+    cardinality: 0..1
+  - slug: challenges
+    description: Expert challenge packets.
     children:
-      - slug: portfolio-manifest.yaml
-        description: Portfolio manifest and ART/product registry.
-        artifact: portfolio-manifest
-        template: layers/portfolio/actors/value-management-officer/artifacts/portfolio-manifest
-        cardinality: "1"
-
-      - slug: strategic-themes.md
-        description: Portfolio-level strategic themes.
-        artifact: strategic-themes
-        template: layers/portfolio/actors/business-owner/artifacts/strategic-themes
-        cardinality: "1"
-
-      - slug: portfolio-vision.md
-        description: Portfolio vision.
-        artifact: portfolio-vision
-        template: layers/portfolio/actors/business-owner/artifacts/portfolio-vision
-        cardinality: "1"
-
-      - slug: portfolio-roadmap.md
-        description: Portfolio roadmap.
-        artifact: portfolio-roadmap
-        template: layers/portfolio/actors/business-owner/artifacts/portfolio-roadmap
-        cardinality: "1"
-
-      - slug: budget-allocation.md
-        description: Strategic Investment Planning allocation record.
-        artifact: budget-allocation
-        template: layers/portfolio/actors/value-management-officer/artifacts/budget-allocation
-        cardinality: "1"
-      - slug: budget-allocation.feasibility-review.md
-        description: Feasibility challenge of the Strategic Investment Planning allocation.
-        artifact: feasibility-review
-        template: layers/team/actors/developer/artifacts/feasibility-review
-        cardinality: "0..1"
-
-      - slug: portfolio-kanban.md
-        description: Portfolio Kanban rendered from Epic frontmatter.
-        artifact: portfolio-kanban
-        template: layers/portfolio/actors/value-management-officer/artifacts/portfolio-kanban
-        cardinality: "1"
-
-      - slug: sync
-        description: Portfolio Sync records.
+    - slug: <challenge-slug>.challenge.md
+      description: Expert challenge packets on the portfolio artifacts of this folder.
+      artifact: challenge
+      template: shared/challenge
+      cardinality: 0..*
+  - slug: decisions
+    description: Human gate decisions.
+    children:
+    - slug: <decision-slug>.gate-decision.md
+      description: Human gate decisions on portfolio artifacts.
+      artifact: gate-decision
+      template: shared/gate-decision
+      cardinality: 0..*
+  - slug: events
+    description: SAFe event records.
+    children:
+    - slug: <event-slug>.portfolio-sync.md
+      description: One portfolio sync record.
+      artifact: event-record
+      template: events/portfolio-sync
+      cardinality: 0..*
+    - slug: <event-slug>.strategic-portfolio-review.md
+      description: One strategic portfolio review record.
+      artifact: event-record
+      template: events/strategic-portfolio-review
+      cardinality: 0..*
+  - slug: value-streams
+    description: Development value streams.
+    children:
+    - slug: <value-stream-slug>
+      description: One value stream folder.
+      children:
+      - slug: <value-stream-slug>.value-stream.md
+        description: One development value stream definition.
+        artifact: value-stream
+        template: portfolio/value-stream
+        cardinality: 0..*
+      - slug: challenges
+        description: Expert challenge packets.
         children:
-          - slug: <sync-slug>.portfolio-sync.md
-            description: One Portfolio Sync record.
-            artifact: portfolio-sync
-            template: layers/portfolio/actors/value-management-officer/artifacts/portfolio-sync
-            cardinality: "0..*"
-
-      - slug: reviews
-        description: Strategic Portfolio Review decisions.
+        - slug: <challenge-slug>.challenge.md
+          description: Expert challenge packets on this value-stream.
+          artifact: challenge
+          template: shared/challenge
+          cardinality: 0..*
+  - slug: epics
+    description: 'Portfolio Backlog: one folder per Epic.'
+    children:
+    - slug: <epic-slug>
+      description: One epic folder.
+      children:
+      - slug: <epic-slug>.epic.md
+        description: One Epic (business or enabler).
+        artifact: epic
+        template: portfolio/epic
+        cardinality: 0..*
+      - slug: <epic-slug>.lean-business-case.md
+        description: The Epic's Lean Business Case.
+        artifact: lean-business-case
+        template: portfolio/lean-business-case
+        cardinality: 0..*
+      - slug: challenges
+        description: Expert challenge packets.
         children:
-          - slug: <review-slug>.portfolio-review.md
-            description: One portfolio review decision.
-            artifact: portfolio-review-decision
-            template: layers/portfolio/actors/value-management-officer/artifacts/portfolio-review-decision
-            cardinality: "0..*"
-
-      - slug: portfolio-backlog
-        description: Portfolio-scoped epics backlog.
+        - slug: <challenge-slug>.challenge.md
+          description: Expert challenge packets on this Epic and its Lean Business Case.
+          artifact: challenge
+          template: shared/challenge
+          cardinality: 0..*
+  - slug: solution-trains
+    description: Solution Trains (Large Solution).
+    children:
+    - slug: <solution-train-slug>
+      description: One solution train folder.
+      children:
+      - slug: solution-train-canvas.md
+        description: Solution Train canvas.
+        artifact: solution-train-canvas
+        template: solution/solution-train-canvas
+        cardinality: 0..1
+      - slug: solution-vision.md
+        description: Solution Vision.
+        artifact: solution-vision
+        template: solution/solution-vision
+        cardinality: 0..1
+      - slug: solution-roadmap.md
+        description: Solution Roadmap.
+        artifact: solution-roadmap
+        template: solution/solution-roadmap
+        cardinality: 0..1
+      - slug: solution-intent.md
+        description: Solution Intent.
+        artifact: solution-intent
+        template: solution/solution-intent
+        cardinality: 0..1
+      - slug: solution-train-kanban.md
+        description: Solution Train Kanban board, rendered from the items' status.
+        artifact: kanban
+        template: kanbans/solution-train-kanban
+        cardinality: 0..1
+      - slug: challenges
+        description: Expert challenge packets.
         children:
-          - slug: <epic-slug>
-            description: Epic folder.
+        - slug: <challenge-slug>.challenge.md
+          description: Expert challenge packets on the Solution Train artifacts of this folder.
+          artifact: challenge
+          template: shared/challenge
+          cardinality: 0..*
+      - slug: decisions
+        description: Human gate decisions.
+        children:
+        - slug: <decision-slug>.gate-decision.md
+          description: Human gate decisions on Solution Train artifacts.
+          artifact: gate-decision
+          template: shared/gate-decision
+          cardinality: 0..*
+      - slug: events
+        description: SAFe event records.
+        children:
+        - slug: <event-slug>.pre-plan.md
+          description: One pre plan record.
+          artifact: event-record
+          template: events/pre-plan
+          cardinality: 0..*
+        - slug: <event-slug>.coordinate-and-deliver.md
+          description: One coordinate and deliver record.
+          artifact: event-record
+          template: events/coordinate-and-deliver
+          cardinality: 0..*
+        - slug: <event-slug>.solution-demo.md
+          description: One solution demo record.
+          artifact: event-record
+          template: events/solution-demo
+          cardinality: 0..*
+        - slug: <event-slug>.inspect-and-adapt.md
+          description: One inspect and adapt record.
+          artifact: event-record
+          template: events/inspect-and-adapt
+          cardinality: 0..*
+      - slug: capabilities
+        description: 'Solution Train Backlog: one folder per Capability.'
+        children:
+        - slug: <capability-slug>
+          description: One capability folder.
+          children:
+          - slug: <capability-slug>.capability.md
+            description: One Capability (business or enabler).
+            artifact: capability
+            template: solution/capability
+            cardinality: 0..*
+          - slug: challenges
+            description: Expert challenge packets.
             children:
-              - slug: <epic-slug>.epic.md
-                description: Portfolio-scoped epic.
-                artifact: epic
-                template: layers/portfolio/actors/business-owner/artifacts/epic
-                cardinality: "1"
-              - slug: <epic-slug>.epic-enabler.md
-                description: Portfolio-scoped enabler epic.
-                artifact: epic-enabler
-                template: layers/portfolio/actors/enterprise-architect/artifacts/epic-enabler
-                cardinality: "1"
-              - slug: <epic-slug>.lean-business-case.md
-                description: Lean business case for the epic.
-                artifact: lean-business-case
-                template: layers/portfolio/actors/business-owner/artifacts/lean-business-case
-                cardinality: "1"
-              - slug: <epic-slug>.feasibility-review.md
-                description: Feasibility challenge of the Epic and Lean Business Case.
-                artifact: feasibility-review
-                template: layers/team/actors/developer/artifacts/feasibility-review
-                cardinality: "0..1"
-
-      - slug: art
-        description: Agile Release Train (ART) workspace (one folder per ART slug).
+            - slug: <challenge-slug>.challenge.md
+              description: Expert challenge packets on this capability.
+              artifact: challenge
+              template: shared/challenge
+              cardinality: 0..*
+      - slug: suppliers
+        description: Suppliers of the Solution Train.
         children:
-          - slug: <art-slug>
-            description: ART folder.
+        - slug: <supplier-slug>
+          description: One supplier folder.
+          children:
+          - slug: <supplier-slug>.supplier-agreement.md
+            description: One supplier agreement.
+            artifact: supplier-agreement
+            template: solution/supplier-agreement
+            cardinality: 0..*
+          - slug: challenges
+            description: Expert challenge packets.
             children:
-              - slug: art-manifest.yaml
-                description: ART manifest and registry entry.
-                artifact: art-manifest
-                template: layers/program/actors/release-train-engineer/artifacts/art-manifest
-                cardinality: "1"
-
-              - slug: program-kanban.md
-                description: Program Kanban rendered from Feature frontmatter.
-                artifact: program-kanban
-                template: layers/program/actors/release-train-engineer/artifacts/program-kanban
-                cardinality: "1"
-
-              - slug: releases
-                description: Release on Demand records, decoupled from PI cadence.
-                children:
-                  - slug: <release-slug>
-                    description: One release subject.
-                    children:
-                      - slug: <release-slug>.release-on-demand.md
-                        description: Product Manager release decision.
-                        artifact: release-on-demand
-                        template: layers/program/actors/product-manager/artifacts/release-on-demand
-                        cardinality: "1"
-                      - slug: <release-slug>.operability-review.md
-                        description: Operator Continuous Deployment readiness for this release.
-                        artifact: operability-review
-                        template: layers/team/actors/operator/artifacts/operability-review
-                        cardinality: "1"
-
-              - slug: improvement-backlog
-                description: ART-scoped continuous improvement backlog.
-                children:
-                  - slug: <pain-point-slug>
-                    description: Pain point folder.
-                    children:
-                      - slug: <pain-point-slug>.pain-point.md
-                        description: Improvement pain point.
-                        artifact: pain-point
-                        template: layers/program/actors/release-train-engineer/artifacts/pain-point
-                        cardinality: "1"
-
-              - slug: program-backlog
-                description: ART-scoped program backlog.
-                children:
-                  - slug: <feature-slug>
-                    description: Feature folder.
-                    children:
-                      - slug: <feature-slug>.feature.md
-                        description: Program-scoped feature.
-                        artifact: feature
-                        template: layers/program/actors/product-manager/artifacts/feature
-                        cardinality: "1"
-                      - slug: <feature-slug>.feature-enabler.md
-                        description: Program-scoped enabler feature.
-                        artifact: feature-enabler
-                        template: layers/program/actors/system-architect/artifacts/feature-enabler
-                        cardinality: "1"
-                      - slug: <adr-slug>.adr.md
-                        description: Architecture decision records.
-                        artifact: adr
-                        template: layers/program/actors/system-architect/artifacts/adr
-                        cardinality: "0..*"
-                      - slug: <feature-slug>.feasibility-review.md
-                        description: Feasibility challenge from Feature Backlog Refinement or Architectural Runway Extension.
-                        artifact: feasibility-review
-                        template: layers/team/actors/developer/artifacts/feasibility-review
-                        cardinality: "0..1"
-                      - slug: <feature-slug>.architecture-review.md
-                        description: Architecture challenge from Feature Backlog Refinement (not an ADR).
-                        artifact: architecture-review
-                        template: layers/program/actors/system-architect/artifacts/architecture-review
-                        cardinality: "0..1"
-                      - slug: <feature-slug>.operability-review.md
-                        description: Operability challenge from Architectural Runway Extension.
-                        artifact: operability-review
-                        template: layers/team/actors/operator/artifacts/operability-review
-                        cardinality: "0..1"
-                      - slug: <feature-slug>.security-review.md
-                        description: Security challenge from Feature Backlog Refinement or Architectural Runway Extension.
-                        artifact: security-review
-                        template: layers/team/actors/security-expert/artifacts/security-review
-                        cardinality: "0..1"
-                      - slug: <feature-slug>.ux-review.md
-                        description: UX challenge from Feature Backlog Refinement.
-                        artifact: ux-review
-                        template: layers/team/actors/ux-designer/artifacts/ux-review
-                        cardinality: "0..1"
-
-              - slug: teams
-                description: Teams belonging to the ART.
-                children:
-                  - slug: <team-slug>
-                    description: Team folder.
-                    children:
-                      - slug: team-manifest.yaml
-                        description: Team manifest and registry entry.
-                        artifact: team-manifest
-                        template: layers/team/actors/scrum-master/artifacts/team-manifest
-                        cardinality: "1"
-
-                      - slug: team-backlog
-                        description: Team-scoped backlog.
-                        children:
-                          - slug: <story-slug>
-                            description: Story folder.
-                            children:
-                              - slug: <story-slug>.story.md
-                                description: Team-scoped story.
-                                artifact: story
-                                template: layers/team/actors/product-owner/artifacts/story
-                                cardinality: "1"
-                              - slug: <story-slug>.story-enabler.md
-                                description: Team-scoped enabler story.
-                                artifact: story-enabler
-                                template: layers/program/actors/system-architect/artifacts/story-enabler
-                                cardinality: "1"
-                              - slug: <story-slug>.qa-signoff.md
-                                description: QA signoff.
-                                artifact: qa-signoff
-                                template: layers/team/actors/quality-engineer/artifacts/qa-signoff
-                                cardinality: "1"
-                              - slug: <story-slug>.code-change.md
-                                description: Pair-programming code-change record.
-                                artifact: code-change
-                                template: layers/team/actors/developer/artifacts/code-change
-                                cardinality: "0..1"
-                              - slug: <story-slug>.feasibility-review.md
-                                description: Feasibility challenge from Team Backlog Refinement.
-                                artifact: feasibility-review
-                                template: layers/team/actors/developer/artifacts/feasibility-review
-                                cardinality: "0..1"
-                              - slug: <story-slug>.ux-review.md
-                                description: UX challenge from Team Backlog Refinement.
-                                artifact: ux-review
-                                template: layers/team/actors/ux-designer/artifacts/ux-review
-                                cardinality: "0..1"
-                              - slug: <story-slug>.architecture-review.md
-                                description: Architecture challenge from Team Backlog Refinement (not an ADR).
-                                artifact: architecture-review
-                                template: layers/program/actors/system-architect/artifacts/architecture-review
-                                cardinality: "0..1"
-
-                      - slug: daily
-                        description: Team Sync records.
-                        children:
-                          - slug: <daily-slug>.team-sync.md
-                            description: One Team Sync record.
-                            artifact: team-sync
-                            template: layers/team/actors/scrum-master/artifacts/team-sync
-                            cardinality: "0..*"
-
-                      - slug: iteration-retrospective.md
-                        description: Iteration Retrospective record.
-                        artifact: iteration-retrospective
-                        template: layers/team/actors/scrum-master/artifacts/iteration-retrospective
-                        cardinality: "0..1"
-
-                      - slug: iteration-review.md
-                        description: Iteration Review record.
-                        artifact: iteration-review
-                        template: layers/team/actors/scrum-master/artifacts/iteration-review
-                        cardinality: "0..1"
-
-              - slug: pi-<pi-slug>
-                description: PI folder.
-                children:
-                  - slug: objectives.md
-                    description: PI objectives.
-                    artifact: objectives
-                    template: layers/program/actors/release-train-engineer/artifacts/objectives
-                    cardinality: "1"
-                  - slug: objectives.feasibility-review.md
-                    description: Feasibility challenge of the committed PI Objectives.
-                    artifact: feasibility-review
-                    template: layers/team/actors/developer/artifacts/feasibility-review
-                    cardinality: "0..1"
-                  - slug: risks.md
-                    description: PI risks.
-                    artifact: risks
-                    template: layers/program/actors/release-train-engineer/artifacts/risks
-                    cardinality: "1"
-                  - slug: art-sync.md
-                    description: ART Sync reconcile record.
-                    artifact: art-sync
-                    template: layers/program/actors/release-train-engineer/artifacts/art-sync
-                    cardinality: "0..1"
-                  - slug: system-demo.md
-                    description: System Demo / Demo Gate packet.
-                    artifact: system-demo
-                    template: layers/program/actors/release-train-engineer/artifacts/system-demo
-                    cardinality: "0..1"
-                  - slug: inspect-and-adapt.md
-                    description: Inspect & Adapt record (metrics, pain-point candidates, triage).
-                    artifact: inspect-and-adapt
-                    template: layers/program/actors/release-train-engineer/artifacts/inspect-and-adapt
-                    cardinality: "0..1"
-                  - slug: iterations
-                    description: PI iterations.
-                    children:
-                      - slug: <iteration-slug>
-                        description: Iteration folder.
-                        children:
-                          - slug: plan.md
-                            description: Iteration plan (includes Progress and Done sections directly; there is no separate progress artifact).
-                            artifact: plan
-                            template: layers/team/actors/scrum-master/artifacts/plan
-                            cardinality: "1"
-                          - slug: plan.feasibility-review.md
-                            description: Feasibility challenge of the Iteration Plan.
-                            artifact: feasibility-review
-                            template: layers/team/actors/developer/artifacts/feasibility-review
-                            cardinality: "0..1"
-
-      - slug: products
-        description: Product definitions (not backlogs).
+            - slug: <challenge-slug>.challenge.md
+              description: Expert challenge packets on this supplier-agreement.
+              artifact: challenge
+              template: shared/challenge
+              cardinality: 0..*
+      - slug: pis
+        description: Planning Intervals.
         children:
-          - slug: <product-slug>
-            description: Product folder (one per product slug).
+        - slug: <pi-slug>
+          description: One pi folder.
+          children:
+          - slug: pi-objectives.md
+            description: Solution Train PI Objectives and plan for one PI.
+            artifact: pi-objectives
+            template: art/pi-objectives
+            cardinality: 0..1
+          - slug: challenges
+            description: Expert challenge packets.
             children:
-              - slug: product-manifest.yaml
-                description: Product manifest and registry entry.
-                artifact: product-manifest
-                template: layers/portfolio/actors/value-management-officer/artifacts/product-manifest
-                cardinality: "1"
-
-              - slug: product-vision.md
-                description: Product vision.
-                artifact: product-vision
-                template: layers/program/actors/product-manager/artifacts/product-vision
-                cardinality: "1"
-
-              - slug: product-roadmap.md
-                description: Product roadmap.
-                artifact: product-roadmap
-                template: layers/program/actors/product-manager/artifacts/product-roadmap
-                cardinality: "1"
-
-              - slug: architecture-vision.md
-                description: Architecture vision.
-                artifact: architecture-vision
-                template: layers/portfolio/actors/enterprise-architect/artifacts/architecture-vision
-                cardinality: "1"
-
-              - slug: architecture-vision.security-review.md
-                description: Security challenge of the Architectural Vision NFR backbone.
-                artifact: security-review
-                template: layers/team/actors/security-expert/artifacts/security-review
-                cardinality: "0..1"
-
-              - slug: architecture-vision.operability-review.md
-                description: Operability challenge of the Architectural Vision.
-                artifact: operability-review
-                template: layers/team/actors/operator/artifacts/operability-review
-                cardinality: "0..1"
-
-              - slug: nfr-list.md
-                description: Product Nonfunctional Requirements register. Canonical enduring constraints; Features and Stories only trace.
-                artifact: nfr-list
-                template: layers/program/actors/system-architect/artifacts/nfr-list
-                cardinality: "1"
-
-              - slug: architecture-runway.md
-                description: Architecture runway.
-                artifact: architecture-runway
-                template: layers/program/actors/system-architect/artifacts/architecture-runway
-                cardinality: "1"
-
-              - slug: architecture-runway.operability-review.md
-                description: Operability challenge of Architecture Runway.
-                artifact: operability-review
-                template: layers/team/actors/operator/artifacts/operability-review
-                cardinality: "0..1"
+            - slug: <challenge-slug>.challenge.md
+              description: Expert challenge packets on this PI plan.
+              artifact: challenge
+              template: shared/challenge
+              cardinality: 0..*
+  - slug: arts
+    description: Agile Release Trains.
+    children:
+    - slug: <art-slug>
+      description: One art folder.
+      children:
+      - slug: art-canvas.md
+        description: ART canvas.
+        artifact: art-canvas
+        template: art/art-canvas
+        cardinality: 0..1
+      - slug: product-vision.md
+        description: Product Vision.
+        artifact: product-vision
+        template: art/product-vision
+        cardinality: 0..1
+      - slug: product-roadmap.md
+        description: PI Roadmap.
+        artifact: product-roadmap
+        template: art/product-roadmap
+        cardinality: 0..1
+      - slug: nfrs.md
+        description: Nonfunctional requirements register.
+        artifact: nfrs
+        template: art/nfrs
+        cardinality: 0..1
+      - slug: delivery-pipeline.md
+        description: Continuous Delivery Pipeline map.
+        artifact: delivery-pipeline
+        template: art/delivery-pipeline
+        cardinality: 0..1
+      - slug: art-kanban.md
+        description: ART Kanban board, rendered from the items' status.
+        artifact: kanban
+        template: kanbans/art-kanban
+        cardinality: 0..1
+      - slug: challenges
+        description: Expert challenge packets.
+        children:
+        - slug: <challenge-slug>.challenge.md
+          description: Expert challenge packets on the ART artifacts of this folder.
+          artifact: challenge
+          template: shared/challenge
+          cardinality: 0..*
+      - slug: decisions
+        description: Human gate decisions.
+        children:
+        - slug: <decision-slug>.gate-decision.md
+          description: Human gate decisions on ART artifacts.
+          artifact: gate-decision
+          template: shared/gate-decision
+          cardinality: 0..*
+      - slug: events
+        description: SAFe event records.
+        children:
+        - slug: <event-slug>.art-sync.md
+          description: One art sync record.
+          artifact: event-record
+          template: events/art-sync
+          cardinality: 0..*
+        - slug: <event-slug>.system-demo.md
+          description: One system demo record.
+          artifact: event-record
+          template: events/system-demo
+          cardinality: 0..*
+        - slug: <event-slug>.inspect-and-adapt.md
+          description: One inspect and adapt record.
+          artifact: event-record
+          template: events/inspect-and-adapt
+          cardinality: 0..*
+      - slug: adrs
+        description: Architecture decisions.
+        children:
+        - slug: <adr-slug>
+          description: One adr folder.
+          children:
+          - slug: <adr-slug>.adr.md
+            description: One architecture decision.
+            artifact: adr
+            template: art/adr
+            cardinality: 0..*
+          - slug: challenges
+            description: Expert challenge packets.
+            children:
+            - slug: <challenge-slug>.challenge.md
+              description: Expert challenge packets on this adr.
+              artifact: challenge
+              template: shared/challenge
+              cardinality: 0..*
+      - slug: features
+        description: 'ART Backlog: one folder per Feature.'
+        children:
+        - slug: <feature-slug>
+          description: One feature folder.
+          children:
+          - slug: <feature-slug>.feature.md
+            description: One Feature (business or enabler).
+            artifact: feature
+            template: art/feature
+            cardinality: 0..*
+          - slug: challenges
+            description: Expert challenge packets.
+            children:
+            - slug: <challenge-slug>.challenge.md
+              description: Expert challenge packets on this feature.
+              artifact: challenge
+              template: shared/challenge
+              cardinality: 0..*
+      - slug: pis
+        description: Planning Intervals.
+        children:
+        - slug: <pi-slug>
+          description: One pi folder.
+          children:
+          - slug: pi-objectives.md
+            description: ART PI Objectives and plan for one PI.
+            artifact: pi-objectives
+            template: art/pi-objectives
+            cardinality: 0..1
+          - slug: challenges
+            description: Expert challenge packets.
+            children:
+            - slug: <challenge-slug>.challenge.md
+              description: Expert challenge packets on this PI plan.
+              artifact: challenge
+              template: shared/challenge
+              cardinality: 0..*
+      - slug: releases
+        description: Releases (Release on Demand).
+        children:
+        - slug: <release-slug>
+          description: One release folder.
+          children:
+          - slug: <release-slug>.release.md
+            description: One release plan and readiness record.
+            artifact: release
+            template: art/release
+            cardinality: 0..*
+          - slug: challenges
+            description: Expert challenge packets.
+            children:
+            - slug: <challenge-slug>.challenge.md
+              description: Expert challenge packets on this release.
+              artifact: challenge
+              template: shared/challenge
+              cardinality: 0..*
+      - slug: teams
+        description: Agile teams of the ART.
+        children:
+        - slug: <team-slug>
+          description: One team folder.
+          children:
+          - slug: team-charter.md
+            description: Team charter.
+            artifact: team-charter
+            template: team/team-charter
+            cardinality: 0..1
+          - slug: team-kanban.md
+            description: team Kanban board, rendered from the items' status.
+            artifact: kanban
+            template: kanbans/team-kanban
+            cardinality: 0..1
+          - slug: challenges
+            description: Expert challenge packets.
+            children:
+            - slug: <challenge-slug>.challenge.md
+              description: Expert challenge packets on the team artifacts of this folder.
+              artifact: challenge
+              template: shared/challenge
+              cardinality: 0..*
+          - slug: decisions
+            description: Human gate decisions.
+            children:
+            - slug: <decision-slug>.gate-decision.md
+              description: Human gate decisions on team artifacts.
+              artifact: gate-decision
+              template: shared/gate-decision
+              cardinality: 0..*
+          - slug: events
+            description: SAFe event records.
+            children:
+            - slug: <event-slug>.team-sync.md
+              description: One team sync record.
+              artifact: event-record
+              template: events/team-sync
+              cardinality: 0..*
+            - slug: <event-slug>.iteration-review.md
+              description: One iteration review record.
+              artifact: event-record
+              template: events/iteration-review
+              cardinality: 0..*
+            - slug: <event-slug>.iteration-retrospective.md
+              description: One iteration retrospective record.
+              artifact: event-record
+              template: events/iteration-retrospective
+              cardinality: 0..*
+          - slug: stories
+            description: 'Team Backlog: one folder per Story.'
+            children:
+            - slug: <story-slug>
+              description: One story folder.
+              children:
+              - slug: <story-slug>.story.md
+                description: One Story (user or enabler).
+                artifact: story
+                template: team/story
+                cardinality: 0..*
+              - slug: <story-slug>.code-change.md
+                description: The code change that implements the Story.
+                artifact: code-change
+                template: team/code-change
+                cardinality: 0..*
+              - slug: challenges
+                description: Expert challenge packets.
+                children:
+                - slug: <challenge-slug>.challenge.md
+                  description: Expert challenge packets on this Story and its code change.
+                  artifact: challenge
+                  template: shared/challenge
+                  cardinality: 0..*
+          - slug: iterations
+            description: Iterations.
+            children:
+            - slug: <iteration-slug>
+              description: One iteration folder.
+              children:
+              - slug: iteration-plan.md
+                description: The team's plan for one iteration.
+                artifact: iteration-plan
+                template: team/iteration-plan
+                cardinality: 0..1
+              - slug: challenges
+                description: Expert challenge packets.
+                children:
+                - slug: <challenge-slug>.challenge.md
+                  description: Expert challenge packets on this iteration plan.
+                  artifact: challenge
+                  template: shared/challenge
+                  cardinality: 0..*

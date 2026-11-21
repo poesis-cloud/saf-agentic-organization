@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gsmarc://saf/artifacts/gate-decision.artifact/v1",
+  "$ref": "gsmarc://saf/contracts/artifact/v1",
+  "title": "Gate decision artifact schema",
+  "description": "The human's decision at a gate, recorded by the orchestrator so that human oversight is committed evidence.",
+  "type": "object",
+  "additionalProperties": true,
+  "x-artifact": {
+    "kind": "gate-decision",
+    "layer": "shared",
+    "class": "record",
+    "owners": [],
+    "templates": [
+      "templates/shared/gate-decision.artifact-template.md"
+    ],
+    "pathPatterns": [
+      "portfolio/decisions/*.gate-decision.md",
+      "portfolio/solution-trains/*/decisions/*.gate-decision.md",
+      "portfolio/arts/*/decisions/*.gate-decision.md",
+      "portfolio/arts/*/teams/*/decisions/*.gate-decision.md"
+    ],
+    "sections": {
+      "required": [
+        "Decision"
+      ],
+      "optional": [
+        "Rationale",
+        "Follow-ups"
+      ]
+    }
+  },
+  "required": [
+    "title",
+    "target",
+    "targetKind",
+    "decision",
+    "decidedBy",
+    "date",
+    "concerns",
+    "stepOutcomes"
+  ],
+  "properties": {
+    "title": {
+      "description": "Human-readable title.",
+      "type": "string",
+      "minLength": 1
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The main artifact decided on. Workspace-relative path."
+    },
+    "targetKind": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Artifact kind of the target."
+    },
+    "decision": {
+      "description": "The human's decision. One of: accepted | accepted-with-concerns | rejected.",
+      "enum": [
+        "accepted",
+        "accepted-with-concerns",
+        "rejected"
+      ]
+    },
+    "decidedBy": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The human (name or role) who decided."
+    },
+    "date": {
+      "type": "string",
+      "minLength": 1,
+      "description": "YYYY-MM-DD of the decision."
+    },
+    "concerns": {
+      "type": "array",
+      "description": "The human's concerns or conditions, in their words. Empty when none.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record: one entry per step that committed this artifact.",
+      "$ref": "#/$defs/stepOutcomes"
+    }
+  },
+  "$defs": {
+    "stepOutcomes": {
+      "description": "Step outcome record. Every workflow step that commits this artifact appends exactly one entry, so the artifact itself carries the step's decision and the agent's reply stays indicative.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "step",
+          "outcome",
+          "date",
+          "note"
+        ],
+        "properties": {
+          "step": {
+            "description": "`<workflow-slug>/<step-slug>` of the step that appended this entry.",
+            "type": "string",
+            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+          },
+          "outcome": {
+            "description": "written (created) | revised (content changed) | confirmed (reviewed, still valid) | no-change (out of scope on this run) | none (not needed; the artifact records that decision).",
+            "enum": [
+              "written",
+              "revised",
+              "confirmed",
+              "no-change",
+              "none"
+            ]
+          },
+          "date": {
+            "description": "YYYY-MM-DD of the step.",
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "description": "One line: what the step decided and why.",
+            "type": "string",
+            "minLength": 1
+          },
+          "friction": {
+            "description": "Optional. Workflow friction the actor observed (raw input for Inspect and Adapt, never a fix).",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

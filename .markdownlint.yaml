@@ -30,3 +30,8 @@ MD056: false
 
 # MD058 — blanks around tables: disable (SKILL.md compact style)
 MD058: false
+
+# A craft skill names the same artifact under "Authoring guide" and under "Lens by artifact"
+# when its agent both authors and challenges that kind.
+MD024:
+  siblings_only: true

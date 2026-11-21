@@ -13,54 +13,60 @@
 # limitations under the License.
 
 slug: story-transition
-description: >
-  Purpose: commit ONE Story status transition (or cost snapshot) through its
-  author hats. Act: Transition. Orchestrator: Scrum Master. Dispatch: the
-  Product Owner records the transition on the business Story, then the System
-  Architect on its sibling Enabler Story. Input: one transition request
-  (Story, from and to status, trigger: a gate decision, a pair or QA outcome,
-  a merge, a block or an unblock, or the awaiting-pr cost snapshot). One Story
-  per run. The orchestrator never writes a Story status itself; the Team
-  Kanban is rendered in the next Daily Sync record. Do not Evaluate: the
-  decision was made at the gate or by the practice that emitted it.
-instructions: scrum-master-interpret-speech-acts
+description: 'Record the human''s decision to move one Story to a new Team Kanban state, then re-render the Team Kanban. Main artifact at the human gate: story. Use for: "This story is ready / started / accepted".'
 orchestrator: scrum-master
-skills: scrum
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- scrum-master-catalog
 steps:
-- slug: transition-story
-  description: Owner transition — Product Owner records the requested status change (or no-change) on the business Story.
-  capabilities:
-    deep-reasoning: 5
-    coding: 0
-    tool-use: 4
-    long-context: 4
-    multimodal: 0
-    writing-quality: 5
-    instruction-following: 9
-    fast-iteration: 4
-    schema-adherence: 9
+- slug: record-transition
+  description: 'Owner step: the Product Owner records the human''s decision as one state change of the Story, or refuses it with the reason.'
   actor: product-owner
   skills: product-owner
   artifact: story
-  conditions: []
-  instructions: team-story-transition-transition-story
-- slug: transition-enabler
-  description: Owner transition — System Architect records the requested status change (or no-change) on the sibling Enabler Story.
+  instructions:
+  - step-contract
+  - record-transition
+  - story-transition-brief
   capabilities:
-    deep-reasoning: 5
+    deep-reasoning: 4
     coding: 0
     tool-use: 4
-    long-context: 4
+    long-context: 5
     multimodal: 0
-    writing-quality: 5
+    writing-quality: 6
     instruction-following: 9
-    fast-iteration: 4
+    fast-iteration: 8
     schema-adherence: 9
-  actor: system-architect
-  skills: system-architect
-  artifact: story-enabler
   conditions:
-  - slug: after-transition-story
-    kind: precondition
-    step: transition-story
-  instructions: team-story-transition-transition-enabler
+  - kind: postcondition
+    slug: challenged-before-ready
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path && a.data.status != 'backlog')
+    setPredicate: selected.all(a, size(a.data.challengeLedger) > 0)
+- slug: update-kanban
+  description: 'Flow record: the Scrum Master / Team Coach re-renders the Kanban board from the items'' status.'
+  actor: scrum-master
+  skills: scrum-master
+  artifact: kanban
+  instructions:
+  - step-contract
+  - update-kanban
+  - story-transition-brief
+  capabilities:
+    deep-reasoning: 2
+    coding: 0
+    tool-use: 5
+    long-context: 5
+    multimodal: 0
+    writing-quality: 3
+    instruction-following: 9
+    fast-iteration: 9
+    schema-adherence: 10
+  conditions:
+  - kind: precondition
+    slug: after-record-transition
+    step: record-transition

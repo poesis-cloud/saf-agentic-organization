@@ -1,0 +1,167 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: value-stream-definition
+description: 'Define one development value stream: the operational value streams it supports, its solutions and customers, the trains that realize it, and its KPIs. Main artifact at the human gate: value-stream. Use for: Organize around value; identify a value stream; decide which ARTs or Solution Trains exist.'
+orchestrator: value-management-officer
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- value-management-officer-catalog
+steps:
+- slug: draft
+  description: 'Main artifact, draft: the Portfolio Manager creates or thickens the Development Value Stream.'
+  actor: portfolio-manager
+  skills: portfolio-manager
+  artifact: value-stream
+  instructions:
+  - step-contract
+  - draft-main
+  - value-stream-definition-brief
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 7
+    multimodal: 0
+    writing-quality: 9
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  conditions: []
+- slug: challenge-business-analyst
+  description: 'Challenge packet: the Business Analyst challenges the drafted Development Value Stream. Not itself challenged.'
+  actor: business-analyst
+  skills: business-analyst
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - value-stream-definition-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-enterprise-architect
+  description: 'Challenge packet: the Enterprise Architect challenges the drafted Development Value Stream. Not itself challenged.'
+  actor: enterprise-architect
+  skills: enterprise-architect
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - value-stream-definition-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-agile-coach
+  description: 'Challenge packet: the Agile Coach challenges the drafted Development Value Stream. Not itself challenged.'
+  actor: agile-coach
+  skills: agile-coach
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - value-stream-definition-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: revise
+  description: 'Main artifact, owner revision: the Portfolio Manager answers every challenge packet and revises the Development Value Stream for the human gate.'
+  actor: portfolio-manager
+  skills: portfolio-manager
+  artifact: value-stream
+  instructions:
+  - step-contract
+  - revise-main
+  - value-stream-definition-brief
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 7
+    multimodal: 0
+    writing-quality: 9
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  conditions:
+  - kind: precondition
+    slug: after-challenge-business-analyst
+    step: challenge-business-analyst
+  - kind: precondition
+    slug: after-challenge-enterprise-architect
+    step: challenge-enterprise-architect
+  - kind: precondition
+    slug: after-challenge-agile-coach
+    step: challenge-agile-coach
+  - kind: postcondition
+    slug: revises-the-drafted-artifact
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == step.artifact.path)
+    setPredicate: selected.size() == 1
+  - kind: postcondition
+    slug: every-packet-is-answered
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
+    setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))

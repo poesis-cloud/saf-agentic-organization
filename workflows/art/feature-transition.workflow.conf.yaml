@@ -1,0 +1,72 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: feature-transition
+description: 'Record the human''s decision to move one Feature (business or enabler) to a new ART Kanban state, then re-render the ART Kanban. Main artifact at the human gate: feature. Use for: "Approve / commit / move / accept this Feature" after a gate, PI Planning, a System Demo or a release.'
+orchestrator: release-train-engineer
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- release-train-engineer-catalog
+steps:
+- slug: record-transition
+  description: 'Owner step: the Product Manager records the human''s decision as one state change of the Feature, or refuses it with the reason.'
+  actor: product-manager
+  skills: product-manager
+  artifact: feature
+  instructions:
+  - step-contract
+  - record-transition
+  - feature-transition-brief
+  capabilities:
+    deep-reasoning: 4
+    coding: 0
+    tool-use: 4
+    long-context: 5
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 9
+  conditions:
+  - kind: postcondition
+    slug: challenged-before-ready
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path && !(a.data.status in ['funnel', 'analyzing']))
+    setPredicate: selected.all(a, size(a.data.challengeLedger) > 0)
+- slug: update-kanban
+  description: 'Flow record: the Release Train Engineer re-renders the Kanban board from the items'' status.'
+  actor: release-train-engineer
+  skills: release-train-engineer
+  artifact: kanban
+  instructions:
+  - step-contract
+  - update-kanban
+  - feature-transition-brief
+  capabilities:
+    deep-reasoning: 2
+    coding: 0
+    tool-use: 5
+    long-context: 5
+    multimodal: 0
+    writing-quality: 3
+    instruction-following: 9
+    fast-iteration: 9
+    schema-adherence: 10
+  conditions:
+  - kind: precondition
+    slug: after-record-transition
+    step: record-transition
