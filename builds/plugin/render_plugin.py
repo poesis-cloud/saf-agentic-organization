@@ -47,7 +47,15 @@ NAME_RE = re.compile(r"^(?!.*(?:--|\.\.))[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$")
 SKILL_NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 LINK_RE = re.compile(r"(\]\()([^)\s]+)(\))")
 LEADING_COMMENT_RE = re.compile(r"\A\s*<!--.*?-->\s*", re.DOTALL)
-ROOT_FILES = ("LICENSE", "NOTICE", "README.md", "docs/usage-model.md", "docs/step-artifacts.md")
+ROOT_FILES = (
+    "LICENSE",
+    "NOTICE",
+    "README.md",
+    "docs/usage-model.md",
+    "docs/step-artifacts.md",
+    "docs/catalog.md",
+    "docs/safe-conformance.md",
+)
 FRAMEWORK = "framework"
 EXTENSION = "com.github.copilot"
 AGENTS = f"{EXTENSION}/agents"

@@ -16,21 +16,15 @@ AGENT_SUFFIX = ".agent.md"
 WORKFLOW_SUFFIX = ".workflow.conf.yaml"
 SCHEMA_SUFFIX = ".artifact.schema.json"
 TEMPLATE_SUFFIX = ".artifact-template.md"
-MARKDOWN_LINK = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
-FRONTMATTER = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
-
-CEREMONY_PAIRS = (
-    ("art-sync", "program-art-sync", "release-train-engineer"),
-    ("system-demo", "program-system-demo", "release-train-engineer"),
-    ("team-sync", "team-daily-sync", "scrum-master"),
-    ("iteration-retrospective", "team-retrospective", "scrum-master"),
+FRONTMATTER = re.compile(r"^---\n(.*?)\n---\n", re.DOTALL)
+PLACEHOLDER = re.compile(r"<[a-z0-9-]+>")
+LAYERS = ("portfolio", "solution", "art", "team")
+ORCHESTRATOR_DUTIES = (
+    "workflow-selection-handling",
+    "step-resolution-handling",
+    "no-next-step-handling",
+    "reports-handling",
 )
-
-ORCHESTRATOR_READING = {
-    "value-management-officer": ("value-management-officer.skill.md", "lpm.skill.md"),
-    "release-train-engineer": ("release-train-engineer.skill.md", "art.skill.md"),
-    "scrum-master": ("scrum-master.skill.md", "scrum.skill.md"),
-}
 
 
 def organization_root() -> Path:
@@ -49,49 +43,60 @@ def iter_named(directory: Path, suffix: str) -> Iterator[Path]:
     yield from sorted(path for path in directory.rglob(f"*{suffix}") if path.is_file())
 
 
+def stems(folder: str, suffix: str) -> tuple[str, ...]:
+    return tuple(path.name[: -len(suffix)] for path in iter_named(ORG_ROOT / folder, suffix))
+
+
 def skill_slugs() -> tuple[str, ...]:
-    return tuple(path.name[: -len(SKILL_SUFFIX)] for path in iter_named(ORG_ROOT / "skills", SKILL_SUFFIX))
+    return stems("skills", SKILL_SUFFIX)
 
 
 def instruction_slugs() -> tuple[str, ...]:
-    return tuple(
-        path.name[: -len(INSTRUCTION_SUFFIX)]
-        for path in iter_named(ORG_ROOT / "instructions", INSTRUCTION_SUFFIX)
-    )
+    return stems("instructions", INSTRUCTION_SUFFIX)
 
 
 def agent_slugs() -> tuple[str, ...]:
-    return tuple(path.name[: -len(AGENT_SUFFIX)] for path in iter_named(ORG_ROOT / "agents", AGENT_SUFFIX))
+    return stems("agents", AGENT_SUFFIX)
 
 
-def workflow_paths() -> tuple[Path, ...]:
-    return tuple(iter_named(ORG_ROOT / "workflows", WORKFLOW_SUFFIX))
+def schema_slugs() -> tuple[str, ...]:
+    return stems("artifacts", SCHEMA_SUFFIX)
 
 
 def load_workflows() -> dict[str, Mapping[str, Any]]:
+    """Every workflow configuration, keyed by slug, with its layer folder under `layer`."""
     catalog: dict[str, Mapping[str, Any]] = {}
-    for path in workflow_paths():
-        data = load_yaml(path)
+    for path in iter_named(ORG_ROOT / "workflows", WORKFLOW_SUFFIX):
+        data = dict(load_yaml(path))
+        assert path.name == f"{data['slug']}{WORKFLOW_SUFFIX}", path
+        data["layer"] = path.parent.name
         catalog[str(data["slug"])] = data
     return catalog
 
 
-def schema_slugs() -> tuple[str, ...]:
-    return tuple(
-        path.name[: -len(SCHEMA_SUFFIX)]
-        for path in iter_named(ORG_ROOT / "artifacts", SCHEMA_SUFFIX)
-    )
+def load_schemas() -> dict[str, Mapping[str, Any]]:
+    return {path.name[: -len(SCHEMA_SUFFIX)]: load_json(path) for path in iter_named(ORG_ROOT / "artifacts", SCHEMA_SUFFIX)}
 
 
 def template_slugs() -> set[str]:
     templates = ORG_ROOT / "templates"
-    slugs: set[str] = set()
-    for path in templates.rglob(f"*{TEMPLATE_SUFFIX}"):
-        relative = path.relative_to(templates).with_suffix("").as_posix()
-        if relative.endswith(".artifact-template"):
-            relative = relative[: -len(".artifact-template")]
-        slugs.add(relative)
-    return slugs
+    return {path.relative_to(templates).as_posix()[: -len(TEMPLATE_SUFFIX)] for path in iter_named(templates, TEMPLATE_SUFFIX)}
+
+
+def layout_nodes() -> list[tuple[str, str, str]]:
+    """Every artifact node of the workspace layout as (path, kind, template slug)."""
+    nodes: list[tuple[str, str, str]] = []
+
+    def walk(children: list[Mapping[str, Any]], prefix: str) -> None:
+        for node in children:
+            path = prefix + str(node["slug"])
+            if "children" in node:
+                walk(node["children"], path + "/")
+            else:
+                nodes.append((path, str(node["artifact"]), str(node["template"])))
+
+    walk(load_yaml(ORG_ROOT / "conf" / "workspace.conf.yaml")["nodes"], "")
+    return nodes
 
 
 def load_plugin() -> Mapping[str, Any]:
@@ -122,21 +127,23 @@ def parse_frontmatter(path: Path) -> Mapping[str, Any]:
     return data if isinstance(data, Mapping) else {}
 
 
-def markdown_skill_targets(path: Path) -> tuple[tuple[str, Path], ...]:
+def body_of(path: Path) -> str:
     text = path.read_text(encoding="utf-8")
-    found: list[tuple[str, Path]] = []
-    for _label, target in MARKDOWN_LINK.findall(text):
-        if not target.endswith(SKILL_SUFFIX):
-            continue
-        resolved = (path.parent / target).resolve()
-        found.append((target, resolved))
-    return tuple(found)
+    match = FRONTMATTER.match(text)
+    return text[match.end():] if match else text
 
 
-def required_reading_skill_hrefs(agent_slug: str) -> tuple[str, ...]:
-    text = (ORG_ROOT / "agents" / f"{agent_slug}{AGENT_SUFFIX}").read_text(encoding="utf-8")
-    hrefs: list[str] = []
-    for _label, target in MARKDOWN_LINK.findall(text):
-        if target.endswith(SKILL_SUFFIX):
-            hrefs.append(Path(target).name)
-    return tuple(hrefs)
+def word_count(text: str) -> int:
+    return len(text.split())
+
+
+def is_loop(workflow: Mapping[str, Any]) -> bool:
+    return workflow["steps"][0]["slug"] == "draft"
+
+
+def fill_template(template_slug: str, slug: str, overrides: Mapping[str, Any] | None = None) -> tuple[dict[str, Any], str]:
+    """Fill a template the way an actor does: (frontmatter data, file text)."""
+    path = ORG_ROOT / "templates" / f"{template_slug}{TEMPLATE_SUFFIX}"
+    data = {**dict(parse_frontmatter(path)), "slug": slug, **dict(overrides or {})}
+    text = "---\n" + yaml.safe_dump(data, sort_keys=False, allow_unicode=True) + "---\n" + body_of(path)
+    return data, text

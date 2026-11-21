@@ -1,262 +1,400 @@
-"""Live-tree coherence: slugs, ceremonies, ACL, required-reading, plugin."""
+"""Live-tree coherence: the catalog, the roster, the access control list and the context budgets.
+
+These tests state the organization's design rules:
+
+- four SAFe layers, one orchestrator each;
+- every workflow is one of four patterns (loop, transition, event, gate) with fixed step shapes;
+- every main artifact kind is challenged by an expert panel before the human gate;
+- every agent holds exactly the privileges its steps need;
+- what the harness injects into a session stays small.
+"""
 
 from __future__ import annotations
 
 import re
-from pathlib import Path
+from collections import defaultdict
+
+import pytest
 
 from tests.loaders import (
-    CEREMONY_PAIRS,
-    ORCHESTRATOR_READING,
+    AGENT_SUFFIX,
+    INSTRUCTION_SUFFIX,
+    LAYERS,
+    ORCHESTRATOR_DUTIES,
+    SKILL_SUFFIX,
     agent_slugs,
+    body_of,
     instruction_slugs,
+    is_loop,
+    iter_named,
+    layout_nodes,
     load_acl,
     load_plugin,
+    load_schemas,
     load_tools_map,
     load_workflows,
-    markdown_skill_targets,
     organization_root,
     parse_frontmatter,
-    required_reading_skill_hrefs,
     schema_slugs,
     skill_slugs,
     slug_refs,
     template_slugs,
+    word_count,
 )
 
 ORG = organization_root()
+CATALOG = load_workflows()
+SCHEMAS = load_schemas()
+ORCHESTRATORS = {
+    "portfolio": "value-management-officer",
+    "solution": "solution-train-engineer",
+    "art": "release-train-engineer",
+    "team": "scrum-master",
+}
+PATTERNS = {
+    "draft": "draft-main",
+    "revise": "revise-main",
+    "record-transition": "record-transition",
+    "update-kanban": "update-kanban",
+    "record": "record-event",
+    "record-decision": "record-gate-decision",
+}
+BACKLOG_ITEMS = {"epic", "epic-enabler", "capability", "capability-enabler", "feature", "feature-enabler", "story"}
+LIFECYCLE_MAINS = {"adr", "release", "supplier-agreement", "code-change"}
+COPYRIGHT = "Copyright 2026 Poesis Cloud"
+AGENT_SECTIONS = ("Mission", "You own", "You never", "SAFe anchor")
+MAX_STEPS = 8
+MAX_PANEL = 6
+MAX_INSTRUCTION_WORDS = 420
+MAX_WORKER_CONTEXT_WORDS = 800
+MAX_ORCHESTRATOR_CONTEXT_WORDS = 1600
+MAX_AGENT_WORDS = 450
+MAX_SKILL_WORDS = 1000
+
+
+def _steps() -> list[tuple[str, dict, dict]]:
+    return [(slug, workflow, step) for slug, workflow in CATALOG.items() for step in workflow["steps"]]
+
+
+def _challenged_kinds() -> dict[str, set[str]]:
+    """agent slug -> the artifact kinds it challenges."""
+    seats: dict[str, set[str]] = defaultdict(set)
+    for workflow in CATALOG.values():
+        if is_loop(workflow):
+            for step in workflow["steps"][1:-1]:
+                seats[step["actor"]].add(workflow["steps"][0]["artifact"])
+    return seats
+
+
+def _authored_kinds() -> dict[str, set[str]]:
+    """agent slug -> the main artifact kinds it drafts."""
+    authored: dict[str, set[str]] = defaultdict(set)
+    for workflow in CATALOG.values():
+        if is_loop(workflow):
+            authored[workflow["steps"][0]["actor"]].add(workflow["steps"][0]["artifact"])
+    return authored
+
+
+# --- layers and orchestrators -----------------------------------------------------------------
+
+
+def test_the_four_safe_layers_each_have_one_orchestrator() -> None:
+    by_layer: dict[str, set[str]] = defaultdict(set)
+    for workflow in CATALOG.values():
+        by_layer[workflow["layer"]].add(workflow["orchestrator"])
+    assert {layer: next(iter(names)) for layer, names in by_layer.items() if len(names) == 1} == ORCHESTRATORS
+    assert tuple(sorted(by_layer)) == tuple(sorted(LAYERS))
 
 
 def test_every_workflow_and_step_has_a_description() -> None:
-    for slug, workflow in load_workflows().items():
-        description = workflow.get("description")
-        assert isinstance(description, str) and description.strip(), slug
+    for slug, workflow in CATALOG.items():
+        assert str(workflow.get("description", "")).strip(), slug
         for step in workflow["steps"]:
-            step_description = step.get("description")
-            assert isinstance(step_description, str) and step_description.strip(), (
-                f"{slug}/{step['slug']}"
-            )
+            assert str(step.get("description", "")).strip(), f"{slug}/{step['slug']}"
 
 
-SPEECH_ACT_INSTRUCTION = {
-    "value-management-officer": "value-management-officer-interpret-speech-acts",
-    "release-train-engineer": "release-train-engineer-interpret-speech-acts",
-    "scrum-master": "scrum-master-interpret-speech-acts",
-}
+def test_every_workflow_injects_the_orchestrator_duties_and_its_catalog() -> None:
+    for slug, workflow in CATALOG.items():
+        assert slug_refs(workflow["instructions"]) == (*ORCHESTRATOR_DUTIES, f"{workflow['orchestrator']}-catalog"), slug
+        assert "skills" not in workflow, f"{slug}: the orchestrator's context is its duties and catalog, no skill"
 
 
-def test_every_workflow_loads_orchestrator_speech_act_instruction() -> None:
-    for slug, workflow in load_workflows().items():
-        expected = SPEECH_ACT_INSTRUCTION[workflow["orchestrator"]]
-        assert expected in slug_refs(workflow.get("instructions")), slug
+def test_every_catalog_lists_exactly_the_workflows_of_its_orchestrator() -> None:
+    for layer, orchestrator in ORCHESTRATORS.items():
+        text = (ORG / "instructions" / layer / f"{orchestrator}-catalog{INSTRUCTION_SUFFIX}").read_text(encoding="utf-8")
+        listed = set(re.findall(r"^\| `([a-z0-9-]+)` \|", text, re.MULTILINE))
+        assert listed == {slug for slug, workflow in CATALOG.items() if workflow["orchestrator"] == orchestrator}, layer
+        for other in set(ORCHESTRATORS.values()) - {orchestrator}:
+            assert f"`{other}`" in text, f"{orchestrator} must hand off to {other}"
 
 
-def test_catalog_split_keeps_architecture_out_of_feature_refinement() -> None:
-    catalog = load_workflows()
-    feature_artifacts = {step["artifact"] for step in catalog["feature-backlog-refinement"]["steps"]}
-    assert feature_artifacts == {
-        "feature",
-        "feature-enabler",
-        "feasibility-review",
-        "architecture-review",
-        "security-review",
-        "ux-review",
-    }
-    assert {"adr", "nfr-list", "architecture-runway", "operability-review"}.isdisjoint(feature_artifacts)
-
-    runway_steps = catalog["architectural-runway-extension"]["steps"]
-    runway_slugs = [step["slug"] for step in runway_steps]
-    assert runway_slugs[:2] == ["author-nfrs", "author-adr"]
-    adr = next(step for step in runway_steps if step["slug"] == "author-adr")
-    assert any(condition.get("step") == "author-nfrs" for condition in adr["conditions"])
-    assert {step["artifact"] for step in runway_steps} >= {"nfr-list", "adr", "architecture-runway"}
-
-    vision_artifacts = {step["artifact"] for step in catalog["architectural-vision"]["steps"]}
-    assert "architecture-vision" in vision_artifacts
-    assert "adr" not in vision_artifacts
-
-    derivation_artifacts = {step["artifact"] for step in catalog["feature-derivation"]["steps"]}
-    assert derivation_artifacts == {"feature", "feature-enabler"}
-    assert "story-derivation" not in catalog
-
-    story_artifacts = {step["artifact"] for step in catalog["team-backlog-refinement"]["steps"]}
-    assert {"story", "story-enabler", "architecture-review", "ux-review"} <= story_artifacts
-    assert {"adr", "nfr-list", "architecture-runway"}.isdisjoint(story_artifacts)
-
-    from tests.loaders import load_json
-
-    nfr_schema = load_json(ORG / "artifacts" / "system-architect" / "nfr-list.artifact.schema.json")
-    assert nfr_schema["x-artifact"]["pathPatterns"] == ["portfolio/products/*/nfr-list.md"]
+# --- workflow patterns ------------------------------------------------------------------------
 
 
-def test_every_schema_is_a_workflow_step_artifact() -> None:
-    schemas = set(schema_slugs())
-    used = {
-        step["artifact"]
-        for workflow in load_workflows().values()
-        for step in workflow["steps"]
-    }
-    assert schemas == used, f"unused={sorted(schemas - used)} missing_schema={sorted(used - schemas)}"
+def test_every_step_carries_the_contract_its_pattern_and_the_workflow_brief() -> None:
+    for slug, workflow, step in _steps():
+        contract, pattern, brief = slug_refs(step["instructions"])
+        assert contract == "step-contract" and brief == f"{slug}-brief", f"{slug}/{step['slug']}"
+        expected = "challenge-main" if step["slug"].startswith("challenge-") else PATTERNS[step["slug"]]
+        assert pattern == expected, f"{slug}/{step['slug']}"
+        assert slug_refs(step["skills"]) == (step["actor"],), f"{slug}/{step['slug']}: the step injects its actor's craft skill"
 
 
-def test_every_workflow_skill_and_instruction_slug_resolves() -> None:
-    skills = set(skill_slugs())
-    instructions = set(instruction_slugs())
-    schemas = set(schema_slugs())
-    agents = set(agent_slugs())
-    for slug, workflow in load_workflows().items():
-        assert slug in {
-            path.stem.replace(".workflow.conf", "")
-            for path in (ORG / "workflows").rglob("*.yaml")
-        }
-        assert workflow["orchestrator"] in agents
-        for ref in slug_refs(workflow.get("skills")):
-            assert ref in skills, f"{slug} skill {ref}"
-        for ref in slug_refs(workflow.get("instructions")):
-            assert ref in instructions, f"{slug} instruction {ref}"
+def test_workflows_are_concise() -> None:
+    for slug, workflow in CATALOG.items():
+        assert 1 <= len(workflow["steps"]) <= MAX_STEPS, slug
+
+
+def test_a_loop_is_draft_then_expert_challenges_then_owner_revision() -> None:
+    loops = {slug: workflow for slug, workflow in CATALOG.items() if is_loop(workflow)}
+    assert loops
+    for slug, workflow in loops.items():
+        draft, *panel, revise = workflow["steps"]
+        assert (draft["slug"], revise["slug"]) == ("draft", "revise"), slug
+        assert draft["actor"] == revise["actor"] and draft["artifact"] == revise["artifact"], slug
+        assert 2 <= len(panel) <= MAX_PANEL, slug
+        experts = [step["actor"] for step in panel]
+        assert len(set(experts)) == len(experts) and draft["actor"] not in experts, slug
+        for step in panel:
+            assert step["slug"] == f"challenge-{step['actor']}" and step["artifact"] == "challenge", slug
+            assert {"kind": "precondition", "slug": "after-draft", "step": "draft"} in step["conditions"], slug
+            assert "packet-targets-the-drafted-artifact" in [c["slug"] for c in step["conditions"]], slug
+        gates = {c["step"] for c in revise["conditions"] if c["kind"] == "precondition" and "step" in c}
+        assert gates == {step["slug"] for step in panel}, f"{slug}: the owner revises after every challenge"
+        revise_conditions = {c["slug"] for c in revise["conditions"]}
+        assert {"revises-the-drafted-artifact", "every-packet-is-answered"} <= revise_conditions, slug
+
+
+def test_every_main_artifact_kind_is_challenged_before_the_human_gate() -> None:
+    mains = {slug for slug, schema in SCHEMAS.items() if schema["x-artifact"]["class"] == "main"}
+    challenged = {workflow["steps"][0]["artifact"] for workflow in CATALOG.values() if is_loop(workflow)}
+    assert mains <= challenged, f"never challenged: {sorted(mains - challenged)}"
+    assert challenged - mains == {"event-record"}, "only Inspect and Adapt puts a record through the loop"
+    for slug in mains:
+        assert "challengeLedger" in SCHEMAS[slug]["required"], slug
+
+
+def test_every_item_with_a_state_moves_through_its_owner_transition() -> None:
+    """Backlog items re-render their board; the other mains with a state (decision, release, agreement, change) have none."""
+    transitions = {slug: workflow for slug, workflow in CATALOG.items() if workflow["steps"][0]["slug"] == "record-transition"}
+    kinds = [workflow["steps"][0]["artifact"] for workflow in transitions.values()]
+    assert sorted(kinds) == sorted(BACKLOG_ITEMS | LIFECYCLE_MAINS), "one transition workflow per kind with a state"
+    for slug, workflow in transitions.items():
+        record, *board = workflow["steps"]
+        if record["artifact"] in BACKLOG_ITEMS:
+            assert [(s["slug"], s["artifact"], s["actor"]) for s in board] == [("update-kanban", "kanban", workflow["orchestrator"])], slug
+        else:
+            assert board == [], f"{slug}: only backlog items have a board"
+        assert record["actor"] in SCHEMAS[record["artifact"]]["x-artifact"]["owners"], slug
+        assert any("challenged" in c["slug"] for c in record["conditions"]), f"{slug}: no state past the human's go without a challenge"
+    for kind in BACKLOG_ITEMS | LIFECYCLE_MAINS:
+        assert "transitions" in SCHEMAS[kind]["required"], f"{kind}: its state changes are recorded"
+
+
+def test_a_loop_names_its_author_as_the_owner_of_what_it_writes() -> None:
+    for slug, workflow in CATALOG.items():
+        if not is_loop(workflow) or "owner" not in SCHEMAS[workflow["steps"][0]["artifact"]]["properties"]:
+            continue
+        draft, revise = workflow["steps"][0], workflow["steps"][-1]
+        for step in (draft, revise):
+            owner = [c for c in step["conditions"] if c["slug"] == "owner-is-the-author"]
+            assert len(owner) == 1 and f"a.data.owner == '{draft['actor']}'" in owner[0]["setPredicate"], f"{slug}/{step['slug']}"
+
+
+def test_every_layer_records_human_decisions_and_its_events() -> None:
+    for layer, orchestrator in ORCHESTRATORS.items():
+        mine = [workflow for workflow in CATALOG.values() if workflow["layer"] == layer]
+        gates = [w for w in mine if w["steps"][0]["slug"] == "record-decision"]
+        assert len(gates) == 1 and gates[0]["steps"][0]["actor"] == orchestrator, layer
+        assert [c["slug"] for c in gates[0]["steps"][0]["conditions"]] == ["accepted-only-if-challenged"], layer
+        events = [w for w in mine if w["steps"][0]["slug"] == "record"]
+        assert events and all(w["steps"][0]["actor"] == orchestrator for w in events), layer
+
+
+def test_advisory_predecessors_stay_inside_the_layer() -> None:
+    for slug, workflow in CATALOG.items():
+        for predecessor in workflow.get("predecessors", []):
+            assert CATALOG[predecessor]["layer"] == workflow["layer"], f"{slug} <- {predecessor}"
+
+
+# --- references resolve -----------------------------------------------------------------------
+
+
+def test_every_reference_resolves() -> None:
+    skills, instructions, agents, schemas = set(skill_slugs()), set(instruction_slugs()), set(agent_slugs()), set(schema_slugs())
+    for slug, workflow in CATALOG.items():
+        assert workflow["orchestrator"] in agents, slug
+        assert set(slug_refs(workflow["instructions"])) <= instructions, slug
         for step in workflow["steps"]:
-            assert step["actor"] in agents
-            assert step["artifact"] in schemas
-            for ref in slug_refs(step.get("skills")):
-                assert ref in skills, f"{slug}/{step['slug']} skill {ref}"
-            for ref in slug_refs(step["instructions"]):
-                assert ref in instructions, f"{slug}/{step['slug']} instruction {ref}"
+            where = f"{slug}/{step['slug']}"
+            assert step["actor"] in agents and step["artifact"] in schemas, where
+            assert set(slug_refs(step["skills"])) <= skills, where
+            assert set(slug_refs(step["instructions"])) <= instructions, where
+    assert len(instruction_slugs()) == len(set(instruction_slugs())), "instruction slugs are unique across folders"
 
 
-def test_workspace_templates_resolve() -> None:
-    known = template_slugs()
-    missing: list[str] = []
-
-    def walk(nodes: list[object]) -> None:
-        for node in nodes:
-            if not isinstance(node, dict):
-                continue
-            if "template" in node:
-                if node["template"] not in known:
-                    missing.append(str(node["template"]))
-            walk(list(node.get("children") or []))
-
-    from tests.loaders import load_yaml
-
-    walk(list(load_yaml(ORG / "conf" / "workspace.conf.yaml")["nodes"]))
-    assert missing == []
+def test_every_schema_is_delivered_by_a_step_and_bound_in_the_layout() -> None:
+    delivered = {step["artifact"] for _, _, step in _steps()}
+    assert set(schema_slugs()) == delivered
+    assert {kind for _, kind, _ in layout_nodes()} == delivered
+    assert {template for _, _, template in layout_nodes()} == template_slugs()
 
 
-def test_ceremony_skill_workflow_pairs() -> None:
-    catalog = load_workflows()
-    for workflow_slug, skill_slug, orchestrator in CEREMONY_PAIRS:
-        workflow = catalog[workflow_slug]
-        assert workflow["orchestrator"] == orchestrator
-        assert skill_slug in slug_refs(workflow.get("skills"))
-        assert (ORG / "skills" / f"{skill_slug}.skill.md").is_file()
-        assert len(workflow["steps"]) >= 1
+def test_every_brief_names_real_paths_templates_and_workflows() -> None:
+    paths = {path for path, _, _ in layout_nodes()}
+    for slug, workflow in CATALOG.items():
+        text = (ORG / "instructions" / workflow["layer"] / f"{slug}-brief{INSTRUCTION_SUFFIX}").read_text(encoding="utf-8")
+        for template in re.findall(r"`templates/([a-z0-9/-]+)\.artifact-template\.md`", text):
+            assert template in template_slugs(), f"{slug}: {template}"
+        for path in re.findall(r" at `(portfolio/[^`]+)`", text):
+            assert path in paths, f"{slug}: {path}"
+        for name in re.findall(r"`([a-z0-9]+(?:-[a-z0-9]+)+)`", text):
+            if name.endswith(("-refinement", "-transition", "-planning", "-decision", "-launch")) and name not in SCHEMAS:
+                assert name in CATALOG, f"{slug} names unknown workflow {name}"
 
 
-def test_acl_covers_every_actor_and_orchestrator() -> None:
-    acl_actors = {actor["slug"] for actor in load_acl()["actors"]}
-    for slug in agent_slugs():
-        assert slug in acl_actors
-    for workflow in load_workflows().values():
-        assert workflow["orchestrator"] in acl_actors
-        for step in workflow["steps"]:
-            assert step["actor"] in acl_actors
+# --- access control ---------------------------------------------------------------------------
 
 
-def test_orchestrator_required_reading_is_distinct() -> None:
-    for agent_slug, expected in ORCHESTRATOR_READING.items():
-        hrefs = required_reading_skill_hrefs(agent_slug)
-        for name in expected:
-            assert name in hrefs
-            assert (ORG / "skills" / name).is_file()
-        assert expected[0] != expected[1]
+def test_the_access_control_list_grants_exactly_what_the_steps_deliver() -> None:
+    acl = load_acl()
+    roles = {role["slug"]: {(p["artifact"], p["action"]) for p in role["privileges"]} for role in acl["roles"]}
+    actors = {actor["slug"]: actor["roles"] for actor in acl["actors"]}
+    assert set(actors) == set(agent_slugs()) and all(roles_ == [slug] for slug, roles_ in actors.items())
+    needed: dict[str, set[tuple[str, str]]] = defaultdict(set)
+    for _, _, step in _steps():
+        needed[step["actor"]] |= {(step["artifact"], "create"), (step["artifact"], "update")}
+    assert roles == {slug: needed[slug] for slug in agent_slugs()}, "least privilege: no unused grant, no missing grant"
 
 
-def test_no_broken_markdown_skill_links() -> None:
-    skills_dir = ORG / "skills"
-    broken: list[str] = []
-    for path in (*((ORG / "agents").glob("*.md")), *((ORG / "skills").glob("*.md"))):
-        for target, resolved in markdown_skill_targets(path):
-            stem = Path(target).name
-            if resolved.is_file() or (skills_dir / stem).is_file():
-                continue
-            broken.append(f"{path.name} -> {target}")
-    assert broken == []
+def test_orchestrators_hold_no_backlog_item_and_experts_only_what_they_author() -> None:
+    acl = {role["slug"]: {p["artifact"] for p in role["privileges"]} for role in load_acl()["roles"]}
+    for orchestrator in ORCHESTRATORS.values():
+        assert acl[orchestrator].isdisjoint(BACKLOG_ITEMS | {"code-change"}), orchestrator
+        assert {"event-record", "kanban", "gate-decision"} <= acl[orchestrator], orchestrator
+    for slug, kinds in acl.items():
+        owned = {kind for kind, schema in SCHEMAS.items() if slug in schema["x-artifact"]["owners"]}
+        if slug not in ORCHESTRATORS.values():
+            assert kinds - {"challenge"} == owned & kinds, f"{slug} writes only its own mains and its challenge packets"
 
 
-def test_plugin_skills_are_flat_skill_files() -> None:
-    """Source skills are flat `skills/<stem>.skill.md` files; the Agent Plugins 1.0 manifest is
-    closed (components are discovered by convention, never enumerated) and the tools map binds
-    exactly the source agents."""
+def test_every_backlog_kind_has_exactly_one_writer() -> None:
+    """The harness authorizes by kind, so a business item and its enabler sibling are kinds with distinct owners."""
+    acl = {role["slug"]: {p["artifact"] for p in role["privileges"]} for role in load_acl()["roles"]}
+    for kind in BACKLOG_ITEMS | LIFECYCLE_MAINS:
+        writers = sorted(slug for slug, kinds in acl.items() if kind in kinds)
+        assert writers == SCHEMAS[kind]["x-artifact"]["owners"], f"{kind}: {writers}"
+    enablers = {"epic-enabler": "enterprise-architect", "capability-enabler": "solution-architect", "feature-enabler": "system-architect"}
+    for kind, architect in enablers.items():
+        assert SCHEMAS[kind]["x-artifact"]["owners"] == [architect], kind
+        assert kind[: -len("-enabler")] not in acl[architect], f"{architect} writes enablers, not their business siblings"
+
+
+# --- the roster -------------------------------------------------------------------------------
+
+
+def test_every_agent_acts_a_step_and_has_a_craft_skill() -> None:
+    actors = {step["actor"] for _, _, step in _steps()}
+    assert set(agent_slugs()) == actors == set(skill_slugs())
+
+
+@pytest.mark.parametrize("slug", agent_slugs())
+def test_agent_file_is_a_compact_identity(slug: str) -> None:
+    path = ORG / "agents" / f"{slug}{AGENT_SUFFIX}"
+    meta = parse_frontmatter(path)
+    assert meta.get("name") == slug and 0 < len(meta.get("description", "")) <= 300, slug
+    body = body_of(path)
+    assert COPYRIGHT in body.splitlines()[0], slug
+    headings = re.findall(r"^## (.+)$", body, re.MULTILINE)
+    judge = "How you work" if slug in ORCHESTRATORS.values() else "How you judge"
+    assert headings == ["Mission", "You own", "You never", judge, "SAFe anchor"], slug
+    assert word_count(body) <= MAX_AGENT_WORDS, slug
+    assert "STUB" not in body, slug
+
+
+@pytest.mark.parametrize("slug", skill_slugs())
+def test_skill_covers_every_artifact_its_agent_authors_and_challenges(slug: str) -> None:
+    path = ORG / "skills" / f"{slug}{SKILL_SUFFIX}"
+    meta = parse_frontmatter(path)
+    assert meta.get("name") == slug and 0 < len(meta.get("description", "")) <= 300, slug
+    body = body_of(path)
+    assert COPYRIGHT in body.splitlines()[0] and "STUB" not in body, slug
+    assert word_count(body) <= MAX_SKILL_WORDS, slug
+    sections = re.split(r"^## ", body, flags=re.MULTILINE)
+    by_title = {section.split("\n", 1)[0].strip(): section for section in sections[1:]}
+    assert "Always ask" in by_title, slug
+    challenged, authored = _challenged_kinds()[slug], _authored_kinds()[slug]
+    if challenged:
+        lens = set(re.findall(r"\(`([a-z0-9-]+)`\)", "\n".join(re.findall(r"^### .+$", by_title.get("Lens by artifact", ""), re.MULTILINE))))
+        assert challenged <= lens, f"{slug}: no lens for {sorted(challenged - lens)}"
+    else:
+        assert "Lens by artifact" not in by_title, slug
+    if authored:
+        guide = set(re.findall(r"`([a-z0-9-]+)`", "\n".join(re.findall(r"^### .+$", by_title.get("Authoring guide", ""), re.MULTILINE))))
+        assert authored <= guide, f"{slug}: no authoring guide for {sorted(authored - guide)}"
+
+
+def test_prose_names_only_existing_agents_and_workflows() -> None:
+    agents, workflows = set(agent_slugs()), set(CATALOG)
+    suffixes = ("-engineer", "-officer", "-manager", "-architect", "-owner", "-designer", "-specialist", "-analyst", "-counsel", "-controller", "-writer", "-expert", "-coach", "-administrator", "-master")
+    for folder in ("agents", "skills", "instructions"):
+        for path in iter_named(ORG / folder, ".md"):
+            for name in re.findall(r"`([a-z0-9]+(?:-[a-z0-9]+)+)`", path.read_text(encoding="utf-8")):
+                if name.endswith(suffixes):
+                    assert name in agents, f"{path.name} names unknown agent {name}"
+                if name.endswith(("-refinement", "-transition", "-gate-decision")) and name != "record-transition":
+                    assert name in workflows, f"{path.name} names unknown workflow {name}"
+
+
+def test_no_prose_tells_an_agent_which_skill_to_load_or_to_decide_for_the_human() -> None:
+    for folder in ("agents", "skills", "instructions"):
+        for path in iter_named(ORG / folder, ".md"):
+            assert "load skills/" not in path.read_text(encoding="utf-8"), path.name
+
+
+# --- context budgets --------------------------------------------------------------------------
+
+
+def _instruction_words() -> dict[str, int]:
+    return {path.name[: -len(INSTRUCTION_SUFFIX)]: word_count(body_of(path)) for path in iter_named(ORG / "instructions", INSTRUCTION_SUFFIX)}
+
+
+def test_injected_instructions_fit_their_context_budget() -> None:
+    words = _instruction_words()
+    for slug, count in words.items():
+        assert count <= (900 if slug.endswith("-catalog") else MAX_INSTRUCTION_WORDS), f"{slug}: {count} words"
+    for slug, workflow, step in _steps():
+        injected = sum(words[ref] for ref in slug_refs(step["instructions"]))
+        assert injected <= MAX_WORKER_CONTEXT_WORDS, f"{slug}/{step['slug']}: {injected} words injected"
+    for workflow in CATALOG.values():
+        injected = sum(words[ref] for ref in slug_refs(workflow["instructions"]))
+        assert injected <= MAX_ORCHESTRATOR_CONTEXT_WORDS, f"{workflow['orchestrator']}: {injected} words injected"
+
+
+def test_every_shipped_file_carries_the_copyright_line() -> None:
+    for folder in ("agents", "skills", "instructions", "conf", "workflows", "templates"):
+        for path in sorted((ORG / folder).rglob("*")):
+            if path.suffix in (".md", ".yaml"):
+                assert COPYRIGHT in path.read_text(encoding="utf-8"), path
+
+
+# --- the plugin -------------------------------------------------------------------------------
+
+
+def test_plugin_binds_exactly_the_source_agents() -> None:
     plugin = load_plugin()
     assert "skills" not in plugin and "agents" not in plugin
     assert plugin["name"] == "poesis-saf-agentic-organization"
     assert re.fullmatch(r"\d+\.\d+\.\d+(-[0-9A-Za-z.]+)?", plugin["version"])
-    assert skill_slugs()
-    assert not [path for path in (ORG / "skills").rglob("*.skill.md") if path.parent != ORG / "skills"]
+    assert not [path for path in (ORG / "skills").rglob(f"*{SKILL_SUFFIX}") if path.parent != ORG / "skills"]
     tools = load_tools_map()["agents"]
-    assert set(tools) == {f"agents/{slug}.agent.md" for slug in agent_slugs()}
-
-
-def test_agent_frontmatter_name_matches_filename() -> None:
+    assert set(tools) == {f"agents/{slug}{AGENT_SUFFIX}" for slug in agent_slugs()}
     for slug in agent_slugs():
-        path = ORG / "agents" / f"{slug}.agent.md"
-        frontmatter = parse_frontmatter(path)
-        assert frontmatter.get("name") == slug
+        dispatches = "agent" in tools[f"agents/{slug}{AGENT_SUFFIX}"]
+        assert dispatches is (slug in ORCHESTRATORS.values()), f"{slug}: only orchestrators dispatch"
 
 
-def test_pm_skill_is_safe_feature_authoring() -> None:
-    text = (ORG / "skills" / "product-manager.skill.md").read_text(encoding="utf-8")
-    assert "Feature ∅→funnel" in text
-    assert "funnel→refined" in text
-    assert "DO NOT USE FOR" in text
-    assert "Poesis GitHub Project sync" in text
-    body = text.split("---", 2)[-1]
-    assert "github-sync" not in body.lower()
-
-
-def _actor_skills() -> set[str]:
-    """Actors with an author or bench skill: the skill the harness injects into their step (function 7)."""
-    return {
-        slug
-        for slug in skill_slugs()
-        if str(parse_frontmatter(ORG / "skills" / f"{slug}.skill.md").get("description", "")).startswith(
-            ("**SAFe AUTHOR SKILL", "**SAFe BENCH SKILL")
-        )
-    }
-
-
-def test_actor_skills_are_the_author_and_bench_hats() -> None:
-    assert _actor_skills() == {
-        "business-owner",
-        "developer",
-        "enterprise-architect",
-        "operator",
-        "product-manager",
-        "product-owner",
-        "quality-engineer",
-        "security-expert",
-        "system-architect",
-        "tech-writer",
-        "ux-designer",
-    }
-
-
-def test_every_step_declares_its_actor_authoring_skill() -> None:
-    actor_skills = _actor_skills()
-    missing = [
-        f"{slug}/{step['slug']} ({step['actor']})"
-        for slug, workflow in load_workflows().items()
-        for step in workflow["steps"]
-        if step["actor"] in actor_skills and step["actor"] not in slug_refs(step.get("skills"))
-    ]
-    assert missing == []
-
-
-def test_dispatch_prose_does_not_name_the_skill_to_load() -> None:
-    offenders = [
-        path.name
-        for folder in ("skills", "agents", "instructions")
-        for path in sorted((ORG / folder).rglob("*.md"))
-        if "load skills/" in path.read_text(encoding="utf-8")
-    ]
-    assert offenders == []
+def test_the_catalog_document_lists_every_agent_workflow_and_kind() -> None:
+    text = (ORG / "docs" / "catalog.md").read_text(encoding="utf-8")
+    for name in (*agent_slugs(), *CATALOG, *schema_slugs()):
+        assert f"`{name}`" in text, name

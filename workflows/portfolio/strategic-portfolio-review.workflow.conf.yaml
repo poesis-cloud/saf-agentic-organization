@@ -13,116 +13,32 @@
 # limitations under the License.
 
 slug: strategic-portfolio-review
-description: >
-  Purpose: keep, pivot, stop, or re-rank portfolio bets. Act: Cadence.
-  Orchestrator: Value Management Officer. Dispatch mains: strategic-themes,
-  portfolio-vision, portfolio-roadmap, architecture-vision (EA sibling main).
-  portfolio-review-decision is mediation, not a main and not evaluated.
-  Evaluate: the four mains. Not Demand — kill/pivot of one Epic as a rewrite is
-  epic-lean-business-case Demand.
-instructions: value-management-officer-interpret-speech-acts
+description: 'Review whether the portfolio is achieving its vision and themes, and record the funding and direction decisions Portfolio Leadership takes. Main artifact at the human gate: event-record. Use for: Is the portfolio on strategy; keep, pivot or stop investments; review KPIs and OKRs.'
 orchestrator: value-management-officer
-skills: portfolio-strategic-portfolio-review
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- value-management-officer-catalog
 steps:
-- slug: rerank
-  description: Main artifact rewrite — Business Owner re-ranks Strategic Themes.
+- slug: record
+  description: 'Event record: the Value Management Officer writes the Strategic Portfolio Review record.'
+  actor: value-management-officer
+  skills: value-management-officer
+  artifact: event-record
+  instructions:
+  - step-contract
+  - record-event
+  - strategic-portfolio-review-brief
   capabilities:
-    deep-reasoning: 7
+    deep-reasoning: 4
     coding: 0
     tool-use: 4
-    long-context: 6
+    long-context: 5
     multimodal: 0
-    writing-quality: 8
-    instruction-following: 8
-    fast-iteration: 2
-    schema-adherence: 8
-  actor: business-owner
-  skills: business-owner
-  artifact: strategic-themes
-  instructions: portfolio-strategic-portfolio-review-update-strategic-themes
-- slug: update-portfolio-vision
-  description: Main artifact rewrite — Business Owner updates Portfolio Vision after the theme rerank.
-  capabilities:
-    deep-reasoning: 7
-    coding: 0
-    tool-use: 4
-    long-context: 6
-    multimodal: 0
-    writing-quality: 8
-    instruction-following: 8
-    fast-iteration: 2
-    schema-adherence: 8
-  actor: business-owner
-  skills: business-owner
-  artifact: portfolio-vision
-  conditions:
-  - slug: after-rerank
-    kind: precondition
-    step: rerank
-  instructions: portfolio-strategic-portfolio-review-update-portfolio-vision
-- slug: update-portfolio-roadmap
-  description: Main artifact rewrite — Business Owner updates Portfolio Roadmap after the vision rewrite.
-  capabilities:
-    deep-reasoning: 7
-    coding: 0
-    tool-use: 4
-    long-context: 6
-    multimodal: 0
-    writing-quality: 8
-    instruction-following: 8
-    fast-iteration: 2
-    schema-adherence: 8
-  actor: business-owner
-  skills: business-owner
-  artifact: portfolio-roadmap
-  conditions:
-  - slug: after-update-portfolio-vision
-    kind: precondition
-    step: update-portfolio-vision
-  instructions: portfolio-strategic-portfolio-review-update-portfolio-roadmap
-- slug: update-architecture-vision
-  description: Main artifact challenge-as-sibling — Enterprise Architect restates Architecture Vision against the new Portfolio Vision.
-  capabilities:
-    deep-reasoning: 9
-    coding: 0
-    tool-use: 4
-    long-context: 6
-    multimodal: 0
-    writing-quality: 8
-    instruction-following: 8
-    fast-iteration: 2
-    schema-adherence: 8
-  actor: enterprise-architect
-  skills: enterprise-architect
-  artifact: architecture-vision
-  conditions:
-  - slug: after-update-portfolio-vision
-    kind: precondition
-    step: update-portfolio-vision
-  instructions: portfolio-strategic-portfolio-review-update-architecture-vision
-- slug: decide
-  description: Mediation record — Business Owner records the kill/pivot/continue decision. Not itself challenged.
-  capabilities:
-    deep-reasoning: 2
-    coding: 3
-    tool-use: 8
-    long-context: 2
-    multimodal: 0
-    writing-quality: 1
+    writing-quality: 6
     instruction-following: 9
     fast-iteration: 8
-    schema-adherence: 8
-  actor: business-owner
-  skills: business-owner
-  artifact: portfolio-review-decision
-  conditions:
-  - slug: after-rerank
-    kind: precondition
-    step: rerank
-  - slug: after-update-portfolio-roadmap
-    kind: precondition
-    step: update-portfolio-roadmap
-  - slug: after-update-architecture-vision
-    kind: precondition
-    step: update-architecture-vision
-  instructions: portfolio-strategic-portfolio-review-human-decides-pivots
+    schema-adherence: 9
+  conditions: []

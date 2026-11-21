@@ -13,26 +13,34 @@
 # limitations under the License.
 
 slug: iteration-retrospective
-description: >
-  Purpose: team qualitative improve. Act: Cadence. Orchestrator: Scrum Master.
-  Dispatch: iteration-retrospective mediation record. Evaluate: nothing as a
-  Story. A resulting Story is a later Demand. Do not Evaluate minutes.
-instructions: scrum-master-interpret-speech-acts
+description: 'Review the team''s practices at the end of the iteration and choose the improvements to try next. Main artifact at the human gate: event-record. Use for: How the team can improve; what went well or badly this iteration.'
 orchestrator: scrum-master
-skills: team-retrospective
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- scrum-master-catalog
+predecessors:
+- iteration-review
 steps:
-- slug: facilitate
-  description: Mediation record — Scrum Master records the Iteration Retrospective. Not itself challenged.
+- slug: record
+  description: 'Event record: the Scrum Master / Team Coach writes the Iteration Retrospective record.'
+  actor: scrum-master
+  skills: scrum-master
+  artifact: event-record
+  instructions:
+  - step-contract
+  - record-event
+  - iteration-retrospective-brief
   capabilities:
-    deep-reasoning: 7
+    deep-reasoning: 4
     coding: 0
     tool-use: 4
-    long-context: 6
+    long-context: 5
     multimodal: 0
-    writing-quality: 8
-    instruction-following: 8
-    fast-iteration: 2
-    schema-adherence: 8
-  actor: scrum-master
-  artifact: iteration-retrospective
-  instructions: team-retrospective-facilitator-authors-no-owner-content
+    writing-quality: 6
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 9
+  conditions: []

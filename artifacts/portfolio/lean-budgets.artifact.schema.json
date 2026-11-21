@@ -1,0 +1,232 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gsmarc://saf/artifacts/lean-budgets.artifact/v1",
+  "$ref": "gsmarc://saf/contracts/artifact/v1",
+  "title": "Lean Budgets artifact schema",
+  "description": "The portfolio budget allocated to value streams instead of projects, with the guardrails that govern spending.",
+  "type": "object",
+  "additionalProperties": true,
+  "x-artifact": {
+    "kind": "lean-budgets",
+    "layer": "portfolio",
+    "class": "main",
+    "owners": [
+      "portfolio-manager"
+    ],
+    "templates": [
+      "templates/portfolio/lean-budgets.artifact-template.md"
+    ],
+    "pathPatterns": [
+      "portfolio/lean-budgets.md"
+    ],
+    "sections": {
+      "required": [
+        "Business context",
+        "Value stream budgets",
+        "Guardrails"
+      ],
+      "optional": [
+        "Forum insights",
+        "Changes since the last period"
+      ]
+    }
+  },
+  "required": [
+    "title",
+    "owner",
+    "challengeLedger",
+    "budgetPeriod",
+    "totalBudget",
+    "epicThreshold",
+    "valueStreamBudgets",
+    "stepOutcomes"
+  ],
+  "properties": {
+    "title": {
+      "description": "Human-readable title.",
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Agent slug of the author. Only the owner writes this artifact, its state changes included; the draft names the workflow's author."
+    },
+    "challengeLedger": {
+      "description": "The owner's answers to the expert challenge (see the definition).",
+      "$ref": "#/$defs/challengeLedger"
+    },
+    "budgetPeriod": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The budgeting period (typically updated twice a year, about every two PIs)."
+    },
+    "totalBudget": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The money available to fund the value streams, with its unit."
+    },
+    "epicThreshold": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The portfolio epic threshold: above it, an initiative needs Portfolio Leadership approval."
+    },
+    "valueStreamBudgets": {
+      "type": "array",
+      "description": "One entry per value stream.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "valueStream",
+          "baselineSolutionInvestments",
+          "proposedSolutionInitiatives",
+          "total"
+        ],
+        "properties": {
+          "valueStream": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Path of the value stream."
+          },
+          "baselineSolutionInvestments": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Cost to develop, support and operate what delivers current business capabilities."
+          },
+          "proposedSolutionInitiatives": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Cost, in this period, of the Epics proposed above the threshold."
+          },
+          "total": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Budget of the value stream for the period."
+          }
+        }
+      }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record: one entry per step that committed this artifact.",
+      "$ref": "#/$defs/stepOutcomes"
+    }
+  },
+  "$defs": {
+    "challengeLedger": {
+      "description": "The owner's answer to the expert challenge. One entry per challenge packet of the latest run, written by the owner in the `revise` step: every finding is accepted, rejected or deferred with a reason. The human gate reads this ledger next to the artifact.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "packet",
+          "challenger",
+          "verdict",
+          "responses"
+        ],
+        "properties": {
+          "packet": {
+            "description": "Workspace-relative path of the challenge packet answered.",
+            "type": "string",
+            "minLength": 1
+          },
+          "challenger": {
+            "description": "Agent slug of the expert who wrote the packet.",
+            "type": "string",
+            "minLength": 1
+          },
+          "verdict": {
+            "description": "The packet's verdict, copied: pass | concerns | blocking | not-applicable.",
+            "enum": [
+              "pass",
+              "concerns",
+              "blocking",
+              "not-applicable"
+            ]
+          },
+          "responses": {
+            "description": "One response per finding of the packet (empty when the packet has no finding).",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "finding",
+                "disposition",
+                "note"
+              ],
+              "properties": {
+                "finding": {
+                  "description": "Finding id in the packet, e.g. F1.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "disposition": {
+                  "description": "accepted (the artifact changed) | rejected (the owner disagrees, with the reason) | deferred (valid, handled later: say where).",
+                  "enum": [
+                    "accepted",
+                    "rejected",
+                    "deferred"
+                  ]
+                },
+                "note": {
+                  "description": "One line: what changed, or why not.",
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record. Every workflow step that commits this artifact appends exactly one entry, so the artifact itself carries the step's decision and the agent's reply stays indicative.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "step",
+          "outcome",
+          "date",
+          "note"
+        ],
+        "properties": {
+          "step": {
+            "description": "`<workflow-slug>/<step-slug>` of the step that appended this entry.",
+            "type": "string",
+            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+          },
+          "outcome": {
+            "description": "written (created) | revised (content changed) | confirmed (reviewed, still valid) | no-change (out of scope on this run) | none (not needed; the artifact records that decision).",
+            "enum": [
+              "written",
+              "revised",
+              "confirmed",
+              "no-change",
+              "none"
+            ]
+          },
+          "date": {
+            "description": "YYYY-MM-DD of the step.",
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "description": "One line: what the step decided and why.",
+            "type": "string",
+            "minLength": 1
+          },
+          "friction": {
+            "description": "Optional. Workflow friction the actor observed (raw input for Inspect and Adapt, never a fix).",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

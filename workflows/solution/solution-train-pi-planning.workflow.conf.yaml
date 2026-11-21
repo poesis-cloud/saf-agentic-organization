@@ -1,0 +1,215 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: solution-train-pi-planning
+description: 'Aggregate the ARTs'' PI plans into the Solution Train''s PI Objectives, planning board and risks for one PI. Main artifact at the human gate: pi-objectives. Use for: The Solution Train''s plan and objectives for the PI, after the ARTs planned.'
+orchestrator: solution-train-engineer
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- solution-train-engineer-catalog
+predecessors:
+- pre-plan
+steps:
+- slug: draft
+  description: 'Main artifact, draft: the Solution Train Engineer creates or thickens the PI Objectives.'
+  actor: solution-train-engineer
+  skills: solution-train-engineer
+  artifact: pi-objectives
+  instructions:
+  - step-contract
+  - draft-main
+  - solution-train-pi-planning-brief
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 5
+    long-context: 7
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 8
+  conditions:
+  - kind: precondition
+    slug: a-capability-is-ready
+    setSelector:
+      setQuery: workspace.filter(a, (a.kind == 'capability' && a.data.status in ['ready', 'implementing']) || (a.kind == 'capability-enabler' && a.data.status in ['ready', 'implementing']))
+    setPredicate: selected.size() > 0
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'solution-train-engineer')
+- slug: challenge-solution-manager
+  description: 'Challenge packet: the Solution Manager challenges the drafted PI Objectives. Not itself challenged.'
+  actor: solution-manager
+  skills: solution-manager
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - solution-train-pi-planning-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-solution-architect
+  description: 'Challenge packet: the Solution Architect challenges the drafted PI Objectives. Not itself challenged.'
+  actor: solution-architect
+  skills: solution-architect
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - solution-train-pi-planning-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-systems-engineer
+  description: 'Challenge packet: the Systems Engineer challenges the drafted PI Objectives. Not itself challenged.'
+  actor: systems-engineer
+  skills: systems-engineer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - solution-train-pi-planning-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-business-owner
+  description: 'Challenge packet: the Business Owner challenges the drafted PI Objectives. Not itself challenged.'
+  actor: business-owner
+  skills: business-owner
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - solution-train-pi-planning-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: revise
+  description: 'Main artifact, owner revision: the Solution Train Engineer answers every challenge packet and revises the PI Objectives for the human gate.'
+  actor: solution-train-engineer
+  skills: solution-train-engineer
+  artifact: pi-objectives
+  instructions:
+  - step-contract
+  - revise-main
+  - solution-train-pi-planning-brief
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 5
+    long-context: 7
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 8
+  conditions:
+  - kind: precondition
+    slug: after-challenge-solution-manager
+    step: challenge-solution-manager
+  - kind: precondition
+    slug: after-challenge-solution-architect
+    step: challenge-solution-architect
+  - kind: precondition
+    slug: after-challenge-systems-engineer
+    step: challenge-systems-engineer
+  - kind: precondition
+    slug: after-challenge-business-owner
+    step: challenge-business-owner
+  - kind: postcondition
+    slug: revises-the-drafted-artifact
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == step.artifact.path)
+    setPredicate: selected.size() == 1
+  - kind: postcondition
+    slug: every-packet-is-answered
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
+    setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'solution-train-engineer')

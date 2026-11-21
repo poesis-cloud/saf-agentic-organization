@@ -1,0 +1,77 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: epic-enabler-transition
+description: 'Record the human''s decision to move one enabler Epic to a new Portfolio Kanban state, then re-render the Portfolio Kanban. Main artifact at the human gate: epic-enabler. Use for: "Approve / reject / move / stop this enabler Epic" after a gate.'
+orchestrator: value-management-officer
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- value-management-officer-catalog
+steps:
+- slug: record-transition
+  description: 'Owner step: the Enterprise Architect records the human''s decision as one state change of the Enabler Epic, or refuses it with the reason.'
+  actor: enterprise-architect
+  skills: enterprise-architect
+  artifact: epic-enabler
+  instructions:
+  - step-contract
+  - record-transition
+  - epic-enabler-transition-brief
+  capabilities:
+    deep-reasoning: 4
+    coding: 0
+    tool-use: 4
+    long-context: 5
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 9
+  conditions:
+  - kind: postcondition
+    slug: challenged-before-leaving-the-funnel
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path && a.data.status != 'funnel')
+    setPredicate: selected.all(a, size(a.data.challengeLedger) > 0)
+  - kind: postcondition
+    slug: approved-epic-has-a-go-business-case
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path && a.data.status in ['ready', 'implementing'])
+    setPredicate: selected.all(a, workspace.exists(l, l.kind == 'lean-business-case' && l.data.epic == a.path && l.data.recommendation == 'go'))
+- slug: update-kanban
+  description: 'Flow record: the Value Management Officer re-renders the Kanban board from the items'' status.'
+  actor: value-management-officer
+  skills: value-management-officer
+  artifact: kanban
+  instructions:
+  - step-contract
+  - update-kanban
+  - epic-enabler-transition-brief
+  capabilities:
+    deep-reasoning: 2
+    coding: 0
+    tool-use: 5
+    long-context: 5
+    multimodal: 0
+    writing-quality: 3
+    instruction-following: 9
+    fast-iteration: 9
+    schema-adherence: 10
+  conditions:
+  - kind: precondition
+    slug: after-record-transition
+    step: record-transition

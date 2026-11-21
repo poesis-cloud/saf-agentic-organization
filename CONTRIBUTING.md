@@ -72,6 +72,29 @@ copilot plugin install /tmp/plugin   # try it locally
 `make verify` needs a checkout of [`saf-agentic-harness`](https://github.com/poesis-cloud/saf-agentic-harness)
 at the version `conf/harness.conf.yaml` requires (override the path with `SAF_HARNESS_SRC`).
 
+### Changing the organization
+
+The organization has two kinds of source:
+
+- **Hand-written prose:** `agents/` (one identity per agent), `skills/` (one craft skill per
+  agent), `instructions/shared/` (the step contract, the step patterns and the orchestrator
+  duties) and `docs/`. Edit these directly. They are injected into agent sessions, so keep them
+  short: the tests enforce a word budget.
+- **Generated structure:** the artifact schemas, templates, workflows, workflow briefs,
+  orchestrator catalogs, access control list, workspace layout, tools map and `docs/catalog.md`
+  are written from the model in [`builds/model/`](builds/model/). To add an agent, an artifact
+  kind, a workflow or an expert to a panel, change the model, then:
+
+```bash
+make generate    # rewrite the generated files from builds/model
+make verify      # every workflow is run to its gate through the harness
+```
+
+A hand edit of a generated file fails `tests/unit/test_generated.py`. A new agent also needs its
+`agents/<slug>.agent.md` and `skills/<slug>.skill.md`, with a lens section for every artifact it
+challenges; `python3 builds/model/generate.py . --packs <folder>` writes a digest of who authors
+and challenges what, to write them from.
+
 To release, set `version` in [`builds/plugin/plugin.json`](builds/plugin/plugin.json), merge, then
 push the tag `v<version>` (for example `v0.2.0` or `v0.2.0-rc.1`). The CD workflow refuses a tag
 that differs from the manifest version. It publishes the release, commits the rendered plugin to
@@ -106,8 +129,16 @@ first lines of the file:
 
 The canonical template is at [`license-header-template.txt`](license-header-template.txt) in the repo root.
 
-Use `#` for YAML/Markdown/shell files. For JSON files (which do not support comments),
-embed the copyright in a `"$license"` key at the top level.
+Use `#` for YAML and shell files. Markdown files that the harness injects into agent sessions
+(agents, skills, instructions, templates) carry the compact one-line form instead, so that the
+legal text does not consume agent context on every step:
+
+```text
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+```
+
+In a file with frontmatter the line comes right after the closing `---`. JSON files do not
+support comments and carry no header.
 
 The CI license-header check will enforce this once SHIP content is present. Files that
 do not carry the header will fail CI.

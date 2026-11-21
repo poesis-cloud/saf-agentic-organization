@@ -1,0 +1,251 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: lean-business-case
+description: 'Analyze one Epic in the analyzing state: define its MVP, estimate its cost and projected value, and recommend go or no-go. Main artifact at the human gate: lean-business-case. Use for: Business case, MVP definition, cost estimate, go/no-go for an Epic under analysis.'
+orchestrator: value-management-officer
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- value-management-officer-catalog
+predecessors:
+- epic-hypothesis
+steps:
+- slug: draft
+  description: 'Main artifact, draft: the Epic Owner creates or thickens the Lean Business Case.'
+  actor: epic-owner
+  skills: epic-owner
+  artifact: lean-business-case
+  instructions:
+  - step-contract
+  - draft-main
+  - lean-business-case-brief
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 7
+    multimodal: 0
+    writing-quality: 9
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  conditions:
+  - kind: precondition
+    slug: an-epic-is-under-analysis
+    setSelector:
+      setQuery: workspace.filter(a, a.kind == 'epic' && a.data.status in ['analyzing', 'ready', 'implementing'])
+    setPredicate: selected.size() > 0
+  - kind: postcondition
+    slug: case-names-an-epic-under-analysis
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, workspace.exists(e, e.kind == 'epic' && e.path == a.data.epic && e.data.status in ['analyzing', 'ready', 'implementing']))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'epic-owner')
+- slug: challenge-enterprise-architect
+  description: 'Challenge packet: the Enterprise Architect challenges the drafted Lean Business Case. Not itself challenged.'
+  actor: enterprise-architect
+  skills: enterprise-architect
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - lean-business-case-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-financial-controller
+  description: 'Challenge packet: the Financial Controller challenges the drafted Lean Business Case. Not itself challenged.'
+  actor: financial-controller
+  skills: financial-controller
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - lean-business-case-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-security-expert
+  description: 'Challenge packet: the Security Expert challenges the drafted Lean Business Case. Not itself challenged.'
+  actor: security-expert
+  skills: security-expert
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - lean-business-case-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-data-protection-officer
+  description: 'Challenge packet: the Data Protection Officer challenges the drafted Lean Business Case. Not itself challenged.'
+  actor: data-protection-officer
+  skills: data-protection-officer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - lean-business-case-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-legal-counsel
+  description: 'Challenge packet: the Legal Counsel challenges the drafted Lean Business Case. Not itself challenged.'
+  actor: legal-counsel
+  skills: legal-counsel
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - lean-business-case-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: revise
+  description: 'Main artifact, owner revision: the Epic Owner answers every challenge packet and revises the Lean Business Case for the human gate.'
+  actor: epic-owner
+  skills: epic-owner
+  artifact: lean-business-case
+  instructions:
+  - step-contract
+  - revise-main
+  - lean-business-case-brief
+  capabilities:
+    deep-reasoning: 9
+    coding: 0
+    tool-use: 4
+    long-context: 7
+    multimodal: 0
+    writing-quality: 9
+    instruction-following: 8
+    fast-iteration: 2
+    schema-adherence: 8
+  conditions:
+  - kind: precondition
+    slug: after-challenge-enterprise-architect
+    step: challenge-enterprise-architect
+  - kind: precondition
+    slug: after-challenge-financial-controller
+    step: challenge-financial-controller
+  - kind: precondition
+    slug: after-challenge-security-expert
+    step: challenge-security-expert
+  - kind: precondition
+    slug: after-challenge-data-protection-officer
+    step: challenge-data-protection-officer
+  - kind: precondition
+    slug: after-challenge-legal-counsel
+    step: challenge-legal-counsel
+  - kind: postcondition
+    slug: revises-the-drafted-artifact
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == step.artifact.path)
+    setPredicate: selected.size() == 1
+  - kind: postcondition
+    slug: every-packet-is-answered
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
+    setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'epic-owner')

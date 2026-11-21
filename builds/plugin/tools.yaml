@@ -12,29 +12,50 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# GitHub Copilot app / Copilot CLI tool map — rendered into each agent's `tools:` frontmatter.
-# Names are Copilot CLI tool aliases (case-insensitive): `read` (view), `edit` (create/edit/apply_patch),
-# `search` (grep/glob), `execute` (bash on Linux/macOS, powershell on Windows), `agent` (the
-# `task` subagent-dispatch tool). `skill` and `ask_user` are concrete CLI tool names; the CLI
-# ignores names it does not know. Only the orchestrators get `agent` (dispatch) and `ask_user`
-# (the human gate); the bench never dispatches.
+# GitHub Copilot app / Copilot CLI tool map, rendered into each agent's `tools:` frontmatter.
+# Names are Copilot CLI tool aliases: `read`, `edit`, `search`, `execute`, `agent` (the `task`
+# subagent-dispatch tool), `skill`, `ask_user`. Only the orchestrators dispatch and ask the human.
 
 commonTools: &commonTools [read, edit, search, execute, skill]
 
 dispatchTools: &dispatchTools [read, edit, search, execute, agent, skill, ask_user]
 
 agents:
-  agents/business-owner.agent.md: *commonTools
-  agents/enterprise-architect.agent.md: *commonTools
   agents/value-management-officer.agent.md: *dispatchTools
-  agents/product-manager.agent.md: *commonTools
+  agents/solution-train-engineer.agent.md: *dispatchTools
   agents/release-train-engineer.agent.md: *dispatchTools
-  agents/system-architect.agent.md: *commonTools
-  agents/developer.agent.md: *commonTools
-  agents/operator.agent.md: *commonTools
-  agents/product-owner.agent.md: *commonTools
-  agents/quality-engineer.agent.md: *commonTools
   agents/scrum-master.agent.md: *dispatchTools
+  agents/portfolio-manager.agent.md: *commonTools
+  agents/epic-owner.agent.md: *commonTools
+  agents/enterprise-architect.agent.md: *commonTools
+  agents/business-owner.agent.md: *commonTools
+  agents/solution-manager.agent.md: *commonTools
+  agents/solution-architect.agent.md: *commonTools
+  agents/product-manager.agent.md: *commonTools
+  agents/system-architect.agent.md: *commonTools
+  agents/product-owner.agent.md: *commonTools
+  agents/software-engineer.agent.md: *commonTools
+  agents/quality-engineer.agent.md: *commonTools
+  agents/devops-engineer.agent.md: *commonTools
+  agents/platform-engineer.agent.md: *commonTools
+  agents/site-reliability-engineer.agent.md: *commonTools
+  agents/observability-engineer.agent.md: *commonTools
+  agents/database-administrator.agent.md: *commonTools
+  agents/data-engineer.agent.md: *commonTools
+  agents/ai-engineer.agent.md: *commonTools
   agents/security-expert.agent.md: *commonTools
-  agents/tech-writer.agent.md: *commonTools
+  agents/data-protection-officer.agent.md: *commonTools
+  agents/compliance-officer.agent.md: *commonTools
+  agents/legal-counsel.agent.md: *commonTools
+  agents/financial-controller.agent.md: *commonTools
+  agents/finops-engineer.agent.md: *commonTools
   agents/ux-designer.agent.md: *commonTools
+  agents/accessibility-specialist.agent.md: *commonTools
+  agents/business-analyst.agent.md: *commonTools
+  agents/data-analyst.agent.md: *commonTools
+  agents/systems-engineer.agent.md: *commonTools
+  agents/release-manager.agent.md: *commonTools
+  agents/technical-writer.agent.md: *commonTools
+  agents/product-marketing-manager.agent.md: *commonTools
+  agents/procurement-manager.agent.md: *commonTools
+  agents/agile-coach.agent.md: *commonTools

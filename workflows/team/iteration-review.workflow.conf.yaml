@@ -13,26 +13,32 @@
 # limitations under the License.
 
 slug: iteration-review
-description: >
-  Purpose: inspect the increment at iteration end. Act: Cadence. Orchestrator:
-  Scrum Master. Dispatch: iteration-review mediation record. Evaluate: the
-  increment shown, not the minutes.
-instructions: scrum-master-interpret-speech-acts
+description: 'Inspect the iteration increment with stakeholders, assess progress toward the iteration goals and PI Objectives, and adjust the Team Backlog. Main artifact at the human gate: event-record. Use for: End of iteration: what was done; demo the team''s increment.'
 orchestrator: scrum-master
-skills: team-iteration-review
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- scrum-master-catalog
 steps:
-- slug: review
-  description: Mediation record — Scrum Master records the Iteration Review. Not itself challenged.
+- slug: record
+  description: 'Event record: the Scrum Master / Team Coach writes the Iteration Review record.'
+  actor: scrum-master
+  skills: scrum-master
+  artifact: event-record
+  instructions:
+  - step-contract
+  - record-event
+  - iteration-review-brief
   capabilities:
-    deep-reasoning: 7
+    deep-reasoning: 4
     coding: 0
     tool-use: 4
-    long-context: 6
+    long-context: 5
     multimodal: 0
-    writing-quality: 8
-    instruction-following: 8
-    fast-iteration: 2
-    schema-adherence: 8
-  actor: scrum-master
-  artifact: iteration-review
-  instructions: team-iteration-review-facilitator-authors-no-owner-content
+    writing-quality: 6
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 9
+  conditions: []

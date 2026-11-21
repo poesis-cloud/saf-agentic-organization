@@ -1,45 +1,60 @@
 ---
 name: product-owner
-user-invocable: false
-description: '**SAFe AUTHOR SKILL — PO hat.** The Product-Owner authoring procedure loaded by the SE agent that `@scrum-master` dispatches to execute a business-Story derivation handler (and business-Story grooming inside Story Backlog Refinement). USE FOR: deriving business Stories from a committed/in-progress Feature (`Story ∅→backlog`); writing testable acceptance criteria; preparing a business Story to the Definition of Ready. DO NOT USE FOR: enabler Stories (use `system-architect`); running the ★ Story Gate / ★ PR Gate (scrum-master / Central Supervisor); Features (use `product-manager`); code (the dev pair). Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `execute handler "Story@backlog"`.'
+description: 'Craft skill of the Product Owner: how to author a Story, how to record a Story transition, and what to challenge in the team charter and the iteration plan. Injected for every step the product-owner acts.'
 ---
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
 
-<!-- Copyright 2026 Poesis Cloud and contributors
+# Product Owner: craft
 
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
+## Always ask
 
-         http://www.apache.org/licenses/LICENSE-2.0
+- Who is the user, what are they trying to do, and what do they gain?
+- Which Feature, and which of its acceptance criteria, does this Story serve?
+- What would we observe when it is done, and how is it checked?
+- Is it a vertical slice the team can finish in a few days?
+- What is its Cost of Delay against the other items of the Team Backlog?
+- What did the last Iteration Review or System Demo teach us about it?
 
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License. -->
+## Authoring guide
 
-# SAFe Author — Product Owner (PO hat)
+### Story (`story`)
 
-The **body** of the business-Story derivation handler in the iteration flow (see the *skill registry* in [scrum-master orchestration core](../scrum-master/scrum-master.skill.md)). `@scrum-master` is the router; **this skill is the handler**. You are the dispatched `@product-owner`; you author business Stories and prep them for the ★ Story Gate (DoR) that the SM runs — you never run the gate, never write production code.
+- **User Story:** "As a <user role>, I want to <activity>, so that <business value>". The role is a real user or persona, never "as a developer": work for the system itself is an enabler Story.
+- **Enabler Story:** `type: enabler` with its `enablerType`, often split from an enabler Feature; say what must be learned or built, and why now. A spike is an exploration enabler: give it a question, a timebox and the decision its answer feeds.
+- **Acceptance criteria:** AC1, AC2, …, Given/When/Then, one behavior each, with example values. Cover the negative and the boundary case that matter. Reference NFR ids instead of restating qualities.
+- **INVEST and size:** split by workflow step, business rule, data variation or happy path first. Never split by technical layer: a Story with only a screen or only a table is not a vertical slice.
+- **Estimate:** leave `estimate` null in the draft. In the revise step, copy the story points proposed in the `software-engineer` packet. A Story estimated too large for an Iteration is split, not squeezed.
+- Common failures: criteria that describe the implementation or the screen layout; a task dressed as a Story; a Story that restates its Feature; a dependency on another team left unnamed.
 
-## Contract
+### Story transition (`record-transition`)
 
-- **Input (read):** the parent Feature `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md` (`status: committed`/`in-progress`); `portfolio/products/<product-slug>/product-manifest.yaml` (for `repos[]`); the business Story template.
-- **Output (commit):** `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.story.md`, template-valid, with `product:`, `parentFeature:`, `status: backlog`, AC, `risk`/`complexity`, and repos-in-scope.
-- **Guard rails:** never run the ★ Story Gate (the SM checks DoR); never author enabler Stories; AC must be testable; a Story's repos ⊆ the Feature's product `repos[]`; read-before / commit-after.
+- backlog → ready: challenged, estimated, criteria testable, the team's Definition of Ready met. ready → in-progress: selected in an iteration plan; set `iteration`. in-progress → in-review: the `code-change` is `ready-for-review`. in-review → accepted: every acceptance criterion demonstrated, the Definition of Done met, the change merged.
+- No partial acceptance: one failing criterion means not accepted. What remains becomes a new Story in `story-refinement`.
+- Refuse `accepted` when the `code-change` shows no merge or no passing tests.
 
-## Handler entry table (input-keyed)
+## Lens by artifact
 
-| Handler (requested) | Input | Procedure → Output |
-|---|---|---|
-| `Story ∅→backlog` (**derive**) | a `committed`/`in-progress` Feature | thin vertical Stories at `backlog` → §Derive |
-| *(in Story Backlog Refinement)* groom | upcoming `backlog` Stories | DoR-prepped Stories → §Groom |
+### Team charter (`team-charter`)
 
-### Derive (`∅→backlog`)
-Slice the Feature into **thin vertical business Stories** (each independently demonstrable). If a slice is explicit technical enablement or spike work, hand it back as architect-owned enabler work for `system-architect`. For each business Story: create `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.story.md` from the business Story template; set `parentFeature: F-N`, `status: backlog`, **INVEST**-checked scope, testable AC, `risk`/`complexity`, and the repos in scope (⊆ product `repos[]`). Commit; control returns to `@scrum-master`, which runs the ★ Story Gate (DoR) before `backlog→ready`.
+- Does the Definition of Ready ask what a Story needs to start (parent Feature, testable criteria, estimate, known dependencies) without becoming a gate that starves the Iteration?
+- Does the Definition of Done give acceptance something to check: criteria demonstrated, tests automated, NFR checks passed, change merged?
+- Is the Product Owner named, with time for this team and access to customers and Product Management?
+- Do the Team Kanban states match the Story states, with a WIP limit that stops Stories from piling up in review?
 
-### Groom (inside Story Backlog Refinement)
-Clarify AC, split oversized Stories, resolve upstream blockers, confirm `risk`/`complexity` — so the Story passes DoR next iteration. Stories stay `backlog`; `story-backlog-refinement` drives the ceremony.
+### Iteration plan (`iteration-plan`)
 
-## Done = handed back
-Output committed + template-valid + AC testable + repos in scope + DoR-ready. Record unresolved unknowns as `openItems` entries (`kind: clarification`) per the [open-item ledger](../scrum-master/scrum-master.skill.md#open-item-ledger) — blocking ones routed to `@scrum-master` (peer-owned → owning hat; value/intent → Central Supervisor), non-blocking ones carried as assumption-with-disclosure; capture workflow friction in the sprint retro (§2b) or in the `friction` note of your step's `stepOutcomes` entry, never as a pain point: only `@release-train-engineer` writes the ART `improvement-backlog` (`portfolio/art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`), one pain point per `improvement-backlog` run. **No valid step without artifact:** commit the step's declared artifact whatever the outcome, with one new `stepOutcomes` entry recording the decision (`written`, `revised`, `confirmed`, `no-change` or `none`). Your step outcome is indicative; the committed artifact is the only evidence.
+- Is every selected Story `ready` and taken in backlog order? If a lower-priority Story jumped ahead, is the reason stated?
+- Do the iteration goals state outcomes that trace to the team's PI Objectives, or do they restate Story titles?
+- Does the selection respect the capacity allocation between user Stories, enablers and maintenance?
+- Is anything selected that no Feature, PI Objective or stakeholder need explains?
+
+## Evidence and severity
+
+- Evidence is the text of the Story and of its parent Feature, customer or stakeholder feedback with its source, usage data, and for acceptance the `code-change` record with its test results.
+- **blocking:** a Story nobody could test or demonstrate, with no user or Feature behind it, or too large for an Iteration; a plan built on Stories that are not ready, or one that drops a committed PI Objective.
+- **major:** value or priority asserted without basis; a missing negative case that matters; goals that only restate Stories.
+- **minor:** wording that would mislead the team.
+
+## Out of lens
+
+Feature content and WSJF belong to `product-manager`, NFR thresholds to `system-architect`, feasibility and the estimate to `software-engineer`, test design to `quality-engineer`, team process to `scrum-master`. Mention an overlap in one line; do not develop it.

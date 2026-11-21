@@ -419,15 +419,13 @@ def test_live_manifest_is_a_closed_agent_plugins_manifest() -> None:
 
 
 def test_live_plugin_ships_the_usage_model(live_plugin: Path) -> None:
-    assert (live_plugin / "docs" / "usage-model.md").is_file() and (live_plugin / "docs" / "step-artifacts.md").is_file()
-    for slug in _orchestrators():
-        text = (ORG / "instructions" / slug / f"{slug}-interpret-speech-acts.instructions.md").read_text(encoding="utf-8")
-        assert "`docs/usage-model.md` at the framework root" in text and "README usage model" not in text
+    for name in ("usage-model.md", "step-artifacts.md", "catalog.md", "safe-conformance.md"):
+        assert (live_plugin / "docs" / name).is_file(), name
 
 
 def test_live_plugin_matches_harness_contract(live_plugin: Path) -> None:
     orchestrators = _orchestrators()
-    assert orchestrators == {"value-management-officer", "release-train-engineer", "scrum-master"}
+    assert orchestrators == {"value-management-officer", "solution-train-engineer", "release-train-engineer", "scrum-master"}
     agents = {path.name[: -len(".agent.md")]: parse_frontmatter(path) for path in (live_plugin / AGENTS).glob("*.agent.md")}
     assert set(agents) == {path.name[: -len(".agent.md")] for path in (ORG / "agents").glob("*.agent.md")}
     for slug, meta in agents.items():
@@ -463,6 +461,7 @@ RETIRED_HARNESS_SETUP = ("setx", "$env:FRAMEWORK", "permissions-config")
 
 
 def test_live_plugin_states_only_the_adapter_admitted_harness_command(live_plugin: Path) -> None:
+    """Host specifics live in the binding appended to every agent, never in the source prose."""
     files = [*(live_plugin / AGENTS).glob("*.agent.md"), *(live_plugin / "skills").glob("*/SKILL.md")]
     commands = [span for path in files for span in re.findall(r"`([^`]*harness\.py>? [^`]*)`", path.read_text(encoding="utf-8"))]
     assert commands
@@ -470,27 +469,22 @@ def test_live_plugin_states_only_the_adapter_admitted_harness_command(live_plugi
     for path in files:
         text = path.read_text(encoding="utf-8")
         assert not [word for word in RETIRED_HARNESS_SETUP if word in text], path
+    for path in [*(ORG / "agents").glob("*.agent.md"), *(ORG / "skills").glob("*.skill.md"), *(ORG / "instructions").rglob("*.md")]:
+        assert "harness.py" not in path.read_text(encoding="utf-8"), f"{path.name}: host command in host-agnostic source"
     for slug in _orchestrators():
-        for path in (live_plugin / AGENTS / f"{slug}.agent.md", live_plugin / "skills" / slug / "SKILL.md"):
-            text = path.read_text(encoding="utf-8")
-            assert re.search(rf"`& {CLI_HARNESS_COMMAND}`", text), path
-            assert "resolve-step-model" in text, path
-            assert [phrase for phrase in HOOK_ANSWER_PROSE if phrase not in text] == [], path
-            assert [phrase for phrase in WRITE_TOOL_PROSE if phrase not in text] == [], path
+        text = (live_plugin / AGENTS / f"{slug}.agent.md").read_text(encoding="utf-8")
+        assert re.search(rf"`& {CLI_HARNESS_COMMAND}`", text), slug
+        assert "resolve-step-model" in text, slug
+        assert [phrase for phrase in HOOK_ANSWER_PROSE if phrase not in text] == [], slug
+        assert [phrase for phrase in WRITE_TOOL_PROSE if phrase not in text] == [], slug
 
 
 def test_live_plugin_dispatches_namespaced_agents_once_per_step(live_plugin: Path) -> None:
-    namespaced = f'agent_type: "{PLUGIN}:<'
     for slug in _orchestrators():
-        for path in (live_plugin / AGENTS / f"{slug}.agent.md", live_plugin / "skills" / slug / "SKILL.md"):
-            text = path.read_text(encoding="utf-8")
-            assert namespaced in text, path
-            assert re.findall(r'agent_type: "([^"]+)"', text) == [f"{PLUGIN}:<agent-id>"] * len(re.findall(r'agent_type: "', text)), path
-            assert "--bound-model" not in text and "boundModels" not in text, path
-        skill = (live_plugin / "skills" / slug / "SKILL.md").read_text(encoding="utf-8")
-        assert "step-session-bound" in skill, slug
-        assert "Unknown agent_type" in skill, slug
-    binding = (live_plugin / AGENTS / "developer.agent.md").read_text(encoding="utf-8")
+        text = (live_plugin / AGENTS / f"{slug}.agent.md").read_text(encoding="utf-8")
+        assert "--bound-model" not in text and "boundModels" not in text, slug
+        assert "step-session-bound" in text and "Unknown agent_type" in text, slug
+    binding = (live_plugin / AGENTS / "software-engineer.agent.md").read_text(encoding="utf-8")
     assert f"`agent_type` set to `{PLUGIN}:<actor>`" in binding
     assert f"`{PLUGIN}:release-train-engineer`" in binding and "with the `init` skill" in binding
     assert "exactly once" in binding and "step-session-bound" in binding

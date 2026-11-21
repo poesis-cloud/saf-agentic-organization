@@ -1,0 +1,213 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: story-refinement
+description: 'Write or thicken one Story so it is ready for Iteration Planning: user voice, acceptance criteria and an estimate. Main artifact at the human gate: story. Use for: A new story; split a Feature into stories; a spike; a Story-sized defect or debt item; make a Story ready.'
+orchestrator: scrum-master
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- scrum-master-catalog
+steps:
+- slug: draft
+  description: 'Main artifact, draft: the Product Owner creates or thickens the Story.'
+  actor: product-owner
+  skills: product-owner
+  artifact: story
+  instructions:
+  - step-contract
+  - draft-main
+  - story-refinement-brief
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 8
+  conditions:
+  - kind: postcondition
+    slug: parent-feature-is-approved
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path && a.data.parent != null)
+    setPredicate: selected.all(a, workspace.exists(p, p.kind == 'feature' && p.path == a.data.parent && p.data.status in ['ready', 'implementing']) || workspace.exists(p, p.kind == 'feature-enabler' && p.path == a.data.parent && p.data.status in ['ready', 'implementing']))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'product-owner')
+- slug: challenge-software-engineer
+  description: 'Challenge packet: the Software Engineer challenges the drafted Story. Not itself challenged.'
+  actor: software-engineer
+  skills: software-engineer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - story-refinement-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-quality-engineer
+  description: 'Challenge packet: the Quality Engineer challenges the drafted Story. Not itself challenged.'
+  actor: quality-engineer
+  skills: quality-engineer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - story-refinement-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-security-expert
+  description: 'Challenge packet: the Security Expert challenges the drafted Story. Not itself challenged.'
+  actor: security-expert
+  skills: security-expert
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - story-refinement-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-ux-designer
+  description: 'Challenge packet: the UX Designer challenges the drafted Story. Not itself challenged.'
+  actor: ux-designer
+  skills: ux-designer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - story-refinement-brief
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 4
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: revise
+  description: 'Main artifact, owner revision: the Product Owner answers every challenge packet and revises the Story for the human gate.'
+  actor: product-owner
+  skills: product-owner
+  artifact: story
+  instructions:
+  - step-contract
+  - revise-main
+  - story-refinement-brief
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 8
+  conditions:
+  - kind: precondition
+    slug: after-challenge-software-engineer
+    step: challenge-software-engineer
+  - kind: precondition
+    slug: after-challenge-quality-engineer
+    step: challenge-quality-engineer
+  - kind: precondition
+    slug: after-challenge-security-expert
+    step: challenge-security-expert
+  - kind: precondition
+    slug: after-challenge-ux-designer
+    step: challenge-ux-designer
+  - kind: postcondition
+    slug: revises-the-drafted-artifact
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == step.artifact.path)
+    setPredicate: selected.size() == 1
+  - kind: postcondition
+    slug: every-packet-is-answered
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
+    setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'product-owner')

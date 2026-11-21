@@ -65,7 +65,7 @@ everything absolute is resolved by the harness at run time.
   "Unknown agent_type". The same prefix selects an orchestrator
   (`--agent poesis-saf-agentic-organization:<orchestrator>`), and the harness adapter strips it.
   The renderer fills the binding's namespaced agent list from `plugin.json` `name`, and a test
-  keeps the orchestrator skills' prefix equal to it.
+  keeps the rendered binding free of unfilled placeholders.
 - **One step = one Copilot session.** The harness binds each resolved step to the one Copilot
   session that runs it and refuses a second (`step-session-bound`). Orchestrators dispatch each resolved step
   exactly once; after a failure they ask `resolve-step` again and dispatch the new resolution,
@@ -82,9 +82,9 @@ everything absolute is resolved by the harness at run time.
   skills and the binding state this verbatim, and a test enforces the command form.
 - **Artifact writes.** The host's file-edit tools are `create`, `edit` and `apply_patch`. Which
   ones an actor has depends on its model's tool set: the runtime picks a `task` subagent's tools
-  by model, not only by the agent's `tools:`. The harness authorizes (H3) and checks (H5) all three, never a shell write. So the binding and
-  the orchestrator skills name all three, forbid writing files through the shell, and every
-  dispatch restates the rule to the actor.
+  by model, not only by the agent's `tools:`. The harness authorizes (H3) and checks (H5) all three, never a shell write. So the host binding
+  appended to every agent names all three and forbids writing files through the shell; the
+  step contract injected into every worker session repeats the rule.
 - **Model routing.** `conf/model-profiles.conf.yaml` holds canonical slugs only. The harness
   adapter's `models.yaml` maps them to host model ids; the bundle never hardcodes one.
   `resolve-step-model` ranks the whole catalogue, so the catalogue holds only models this app
@@ -100,15 +100,9 @@ everything absolute is resolved by the harness at run time.
   actor's `create` call failed with "Tool 'create' does not exist" and no Epic was written. The
   binding tells orchestrators to report such a model at the gate instead of dispatching.
 - **Skills.** The CLI loads only `skills/<name>/SKILL.md` and ignores the flat
-  `skills/<name>.skill.md` beside them (verified: `Installed 37 skills`). 20 source skills carry a
-  display `name` that differs from the file stem; the bundle sets `name: <stem>`, so the CLI skill
-  name equals the harness slug.
+  `skills/<name>.skill.md` beside them . Every source skill is named after its file stem
+  (the agent slug); the bundle sets `name: <stem>` again, so the CLI skill name always equals the
+  harness slug.
 - **Links.** `[x.skill.md](x.skill.md)` from an agent becomes `../skills/x/SKILL.md`; skill links
   into the layout (`../workflows/...`) are re-anchored one level deeper. A test asserts that the
   rendered bundle has no more broken links than the source.
-
-## Known source debt (not changed here)
-
-The source agents and skills carry about 240 relative links left over from an older nested
-layout (`../../../../artifacts/…`, `../scrum-master/scrum-master.skill.md`, …). They are broken
-in the source and in the plugin. The plugin reproduces them and adds none.

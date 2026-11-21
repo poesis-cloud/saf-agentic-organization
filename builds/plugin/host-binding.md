@@ -34,8 +34,8 @@ runtime (the Copilot CLI, the GitHub Copilot app, and VS Code with Session Targe
   `resolve-step-model`; the harness refuses an actor with `not-facilitator`. Every step dispatch
   says so, and that the actor never reads the harness source code or tests.
 - **One session, one workflow instance (orchestrators only).** After `no-next-step` this session
-  can run no other instance. Tell the user which workflow comes next toward the gate (or, for
-  example, `portfolio-sync` for the next product) and that it needs a new session:
+  can run no other instance. Tell the user which workflow comes next (for example the
+  `*-transition` or gate-decision workflow that records their decision) and that it needs a new session:
   `copilot --agent {{PLUGIN_NAME}}:<orchestrator>` or the agent picker. Answer a "drive to the
   gate" request with that plan, one session per run, and start only the first run.
 - **Asking the harness (orchestrators only).** Run ONE plain command, alone in its tool call:
@@ -62,7 +62,7 @@ runtime (the Copilot CLI, the GitHub Copilot app, and VS Code with Session Targe
   that entry's `friction` note, never as a pain point. Your reply is indicative; the artifact is
   the only evidence.
 - **Skills.** Load a skill by name with the `skill` tool. The name is the source file stem
-  (`team-verification`, `program-pi-planning`, …). When the harness injects a load directive
+  (`security-expert`, `product-manager`, …). When the harness injects a load directive
   naming a framework file (`<framework root>/framework/skills/<name>.skill.md`), read that file.
 - **Framework paths.** Relative framework paths in this agent and its skills (`workflows/`,
   `templates/`, `artifacts/`, `instructions/`, `skills/`) resolve under `framework/` in the

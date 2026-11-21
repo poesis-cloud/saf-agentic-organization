@@ -1,0 +1,626 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""Generate the structured part of the organization from the model in this folder.
+
+    python3 builds/model/generate.py <organization-root> [--packs <folder>]
+
+Written from the model: `artifacts/` (schemas), `templates/`, `workflows/`, the workflow briefs and
+orchestrator catalogs under `instructions/<layer>/`, `conf/workspace.conf.yaml`,
+`conf/access-control-list.conf.yaml`, `builds/plugin/tools.yaml` and `docs/catalog.md`.
+
+Hand-written, never touched: `agents/`, `skills/`, `instructions/shared/`, the other documents and
+the remaining `conf/` files. `--packs` also writes two digests of the model (who authors and
+challenges what; what each artifact holds) for whoever writes an agent or a skill.
+
+`tests/unit/test_generated.py` fails when a generated file differs from what the model produces:
+change the model, run `make generate`, commit both.
+"""
+import json
+import re
+import shutil
+import sys
+from pathlib import Path
+
+import yaml
+
+sys.path.insert(0, str(Path(__file__).parent))
+from model_agents import AGENT, AGENTS, EXPERT, ORCH, ORCHESTRATORS, ROLE  # noqa: E402
+from model_artifacts import DEFS, EPIC_STATES, EVENTS, FLOW_STATES, KINDS, STORY_STATES  # noqa: E402
+from model_workflows import KANBAN, KANBAN_LEVEL, LAYOUT, SCOPE, WF, WORKFLOWS  # noqa: E402
+
+if len(sys.argv) < 2:
+    sys.exit(__doc__)
+ROOT = Path(sys.argv[1]).resolve()
+SPDX = "Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0"
+MD_HEADER = f"<!-- {SPDX} -->"
+YAML_HEADER = """# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""
+LAYER_TITLE = {"portfolio": "Portfolio", "solution": "Large Solution", "art": "ART", "team": "Team", "shared": "Shared"}
+LAYERS = ["portfolio", "solution", "art", "team"]
+
+def write(rel, text):
+    path = ROOT / rel
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text if text.endswith("\n") else text + "\n", encoding="utf-8")
+
+class _Dumper(yaml.SafeDumper):
+    def ignore_aliases(self, data):
+        return True
+
+def dump_yaml(data):
+    return yaml.dump(data, Dumper=_Dumper, sort_keys=False, allow_unicode=True, width=10_000, default_flow_style=False)
+
+# ---------------------------------------------------------------- capabilities presets
+def caps(deep, coding, tool, long, multi, writing, instr, fast, schema):
+    return {"deep-reasoning": deep, "coding": coding, "tool-use": tool, "long-context": long, "multimodal": multi,
+            "writing-quality": writing, "instruction-following": instr, "fast-iteration": fast, "schema-adherence": schema}
+
+CAPS = {
+    "author-strategy": caps(9, 0, 4, 7, 0, 9, 8, 2, 8),
+    "author-backlog": caps(7, 0, 4, 6, 0, 8, 8, 3, 8),
+    "author-technical": caps(9, 4, 5, 7, 0, 7, 8, 2, 8),
+    "author-code": caps(7, 10, 9, 7, 0, 4, 8, 4, 6),
+    "author-plan": caps(7, 0, 5, 7, 0, 7, 8, 3, 8),
+    "challenge-technical": caps(8, 5, 4, 6, 0, 6, 8, 4, 7),
+    "challenge-governance": caps(8, 0, 3, 6, 0, 7, 8, 4, 7),
+    "challenge-design": caps(7, 0, 3, 6, 4, 7, 8, 4, 7),
+    "challenge-code": caps(8, 9, 7, 7, 0, 5, 8, 4, 7),
+    "record": caps(4, 0, 4, 5, 0, 6, 9, 8, 9),
+    "kanban": caps(2, 0, 5, 5, 0, 3, 9, 9, 10),
+}
+TECH_EXPERTS = {"software-engineer", "quality-engineer", "devops-engineer", "platform-engineer", "site-reliability-engineer",
+                "observability-engineer", "database-administrator", "data-engineer", "ai-engineer", "security-expert",
+                "systems-engineer", "system-architect", "solution-architect", "enterprise-architect", "finops-engineer"}
+DESIGN_EXPERTS = {"ux-designer", "accessibility-specialist"}
+AUTHOR_CAPS = {
+    "strategic-themes": "author-strategy", "portfolio-vision": "author-strategy", "value-stream": "author-strategy",
+    "epic": "author-strategy", "epic-enabler": "author-strategy", "lean-business-case": "author-strategy", "portfolio-roadmap": "author-plan",
+    "lean-budgets": "author-strategy", "architecture-vision": "author-technical", "solution-train-canvas": "author-plan",
+    "solution-vision": "author-strategy", "solution-roadmap": "author-plan", "solution-intent": "author-technical",
+    "capability": "author-backlog", "capability-enabler": "author-backlog", "supplier-agreement": "author-backlog", "pi-objectives": "author-plan",
+    "art-canvas": "author-plan", "product-vision": "author-strategy", "product-roadmap": "author-plan",
+    "feature": "author-backlog", "feature-enabler": "author-backlog", "adr": "author-technical", "nfrs": "author-technical", "delivery-pipeline": "author-technical",
+    "release": "author-plan", "team-charter": "author-plan", "story": "author-backlog", "iteration-plan": "author-plan",
+    "code-change": "author-code", "event-record": "author-plan",
+}
+
+def challenge_caps(wf, expert):
+    if wf["kind"] == "code-change":
+        return CAPS["challenge-design"] if expert in DESIGN_EXPERTS else CAPS["challenge-code"]
+    if expert in DESIGN_EXPERTS:
+        return CAPS["challenge-design"]
+    return CAPS["challenge-technical"] if expert in TECH_EXPERTS else CAPS["challenge-governance"]
+
+# ---------------------------------------------------------------- helpers over the model
+def challenge_dir(wf):
+    if "/events/" in wf["main_path"]:
+        return SCOPE[wf["layer"]] + "/challenges"
+    return wf["main_path"].rsplit("/", 1)[0] + "/challenges"
+
+def template_of(path):
+    for p, kind, template, _ in LAYOUT:
+        if p == path:
+            return template
+    raise KeyError(path)
+
+def owner_condition(wf):
+    """The artifact names the workflow's author as its owner (a kind with two owners needs it most)."""
+    if "owner" not in KINDS[wf["kind"]]["fields"]:
+        return []
+    return [dict(kind="postcondition", slug="owner-is-the-author", setSelector={"setQuery": "workspace.filter(a, a.path == step.artifact.path)"},
+                 setPredicate=f"selected.all(a, a.data.owner == '{wf['author']}')")]
+
+def steps_of(wf):
+    """Yield (slug, actor, artifact, pattern instruction, description, capabilities, conditions)."""
+    orch = ORCHESTRATORS[wf["layer"]]
+    title = KINDS[wf["kind"]]["title"]
+    out = []
+    if wf["pattern"] == "loop":
+        author_caps = CAPS[AUTHOR_CAPS[wf["kind"]]]
+        out.append(("draft", wf["author"], wf["kind"], "draft-main",
+                    f"Main artifact, draft: the {AGENT[wf['author']]['title']} creates or thickens the {title}.",
+                    author_caps, [*[dict(kind=c["kind"], slug=c["slug"], setSelector={"setQuery": c["query"]}, setPredicate=c["predicate"])
+                                    for c in wf["draft_conditions"]], *owner_condition(wf)]))
+        for expert in wf["panel"]:
+            out.append((f"challenge-{expert}", expert, "challenge", "challenge-main",
+                        f"Challenge packet: the {AGENT[expert]['title']} challenges the drafted {title}. Not itself challenged.",
+                        challenge_caps(wf, expert),
+                        [dict(kind="precondition", slug="after-draft", step="draft"),
+                         dict(kind="postcondition", slug="packet-targets-the-drafted-artifact",
+                              setSelector={"setQuery": "workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))"},
+                              setPredicate="selected.size() == 1")]))
+        out.append(("revise", wf["author"], wf["kind"], "revise-main",
+                    f"Main artifact, owner revision: the {AGENT[wf['author']]['title']} answers every challenge packet and revises the {title} for the human gate.",
+                    author_caps,
+                    [*[dict(kind="precondition", slug=f"after-challenge-{e}", step=f"challenge-{e}") for e in wf["panel"]],
+                     dict(kind="postcondition", slug="revises-the-drafted-artifact",
+                          setSelector={"setQuery": "steps.filter(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == step.artifact.path)"},
+                          setPredicate="selected.size() == 1"),
+                     dict(kind="postcondition", slug="every-packet-is-answered",
+                          setSelector={"setQuery": "steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')"},
+                          setPredicate="selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))"),
+                     *owner_condition(wf)]))
+    elif wf["pattern"] == "transition":
+        out.append(("record-transition", wf["author"], wf["kind"], "record-transition",
+                    f"Owner step: the {AGENT[wf['author']]['title']} records the human's decision as one state change of the {title}, or refuses it with the reason.",
+                    CAPS["record"], [dict(kind=c["kind"], slug=c["slug"], setSelector={"setQuery": c["query"]}, setPredicate=c["predicate"])
+                                     for c in wf["conditions"]]))
+        if wf["board"]:
+            out.append(("update-kanban", orch, "kanban", "update-kanban",
+                        f"Flow record: the {AGENT[orch]['title']} re-renders the Kanban board from the items' status.",
+                        CAPS["kanban"], [dict(kind="precondition", slug="after-record-transition", step="record-transition")]))
+    elif wf["pattern"] == "event":
+        out.append(("record", orch, "event-record", "record-event",
+                    f"Event record: the {AGENT[orch]['title']} writes the {wf['title']} record.", CAPS["record"], []))
+        if wf["kanban"]:
+            out.append(("update-kanban", orch, "kanban", "update-kanban",
+                        f"Flow record: the {AGENT[orch]['title']} re-renders the Kanban board from the items' status.",
+                        CAPS["kanban"], [dict(kind="precondition", slug="after-record", step="record")]))
+    elif wf["pattern"] == "gate":
+        out.append(("record-decision", orch, "gate-decision", "record-gate-decision",
+                    f"Gate record: the {AGENT[orch]['title']} records the human's decision on one challenged artifact.", CAPS["record"],
+                    [dict(kind="postcondition", slug="accepted-only-if-challenged",
+                          setSelector={"setQuery": "workspace.filter(d, d.path == step.artifact.path && d.data.decision in ['accepted', 'accepted-with-concerns'])"},
+                          setPredicate="selected.all(d, workspace.exists(c, c.kind == 'challenge' && c.data.target == d.data.target))")]))
+    return out
+
+def mains_of(wf):
+    return {"loop": wf["kind"], "transition": wf["kind"], "event": "event-record", "gate": "gate-decision"}[wf["pattern"]]
+
+# ---------------------------------------------------------------- 1. schemas
+def emit_schemas():
+    shutil.rmtree(ROOT / "artifacts", ignore_errors=True)
+    write("artifacts/framework-definitions.schema.json", json.dumps({
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "gsmarc://saf/artifacts/framework-definitions/v1",
+        "title": "SAFe organization reusable definitions",
+        "description": "Canonical source of the definitions shared by the artifact schemas of this organization. The harness registers its own contracts plus the `*.artifact.schema.json` files, so each artifact schema carries a verbatim copy of the definitions it uses under `$defs`; tests keep the copies identical to this file.",
+        "type": "object",
+        "definitions": DEFS,
+    }, indent=2, ensure_ascii=False))
+    for slug, k in KINDS.items():
+        paths = [p for p, kind, _, _ in LAYOUT if kind == slug]
+        templates = sorted({t for _, kind, t, _ in LAYOUT if kind == slug})
+        props = {
+            "title": {"description": "Human-readable title.", "type": "string", "minLength": 1},
+            **{name: f["schema"] for name, f in k["fields"].items()},
+            "stepOutcomes": {"description": "Step outcome record: one entry per step that committed this artifact.", "$ref": "#/$defs/stepOutcomes"},
+        }
+        required = ["title", *[n for n, f in k["fields"].items()], "stepOutcomes"]
+        schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": f"gsmarc://saf/artifacts/{slug}.artifact/v1",
+            "$ref": "gsmarc://saf/contracts/artifact/v1",
+            "title": f"{k['title']} artifact schema",
+            "description": k["purpose"],
+            "type": "object",
+            "additionalProperties": True,
+            "x-artifact": {
+                "kind": slug, "layer": k["layer"], "class": k["cls"], "owners": k["owners"],
+                "templates": [f"templates/{t}.artifact-template.md" for t in templates],
+                "pathPatterns": [_glob(p) for p in paths],
+                "sections": {"required": [s["title"] for s in k["sections"] if s["required"]],
+                             "optional": [s["title"] for s in k["sections"] if not s["required"]]},
+            },
+            "required": required,
+            "properties": props,
+            "$defs": {name: DEFS[name] for name in sorted(set(k["defs"]))},
+        }
+        write(f"artifacts/{k['layer']}/{slug}.artifact.schema.json", json.dumps(schema, indent=2, ensure_ascii=False))
+
+def _glob(path):
+    return re.sub(r"<[a-z0-9-]+>", "*", path)
+
+# ---------------------------------------------------------------- 2. templates
+def yaml_value(value, indent=0):
+    pad = "  " * indent
+    if isinstance(value, dict):
+        return "\n" + "\n".join(f"{pad}  {key}:{_inline(val, indent + 1)}" for key, val in value.items())
+    return " " + _scalar(value)
+
+def _inline(value, indent):
+    return yaml_value(value, indent) if isinstance(value, dict) else " " + _scalar(value)
+
+def _scalar(value):
+    if value is None:
+        return "null"
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (int, float)):
+        return str(value)
+    if isinstance(value, list):
+        return json.dumps(value, ensure_ascii=False)
+    return json.dumps(value, ensure_ascii=False)
+
+def comment_of(field):
+    options = field.get("options")
+    if options:
+        return " | ".join(str(o) for o in options)
+    desc = field["schema"].get("description", "")
+    first = desc.split(". ")[0].rstrip(".")
+    return first if len(first) <= 110 else ""
+
+def render_template(kind_slug, overrides=None, sections=None, title_hint=None):
+    k = KINDS[kind_slug]
+    overrides = overrides or {}
+    lines = ["---", 'slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path', f'title: "<{title_hint or k["title"]} title>"']
+    for name, field in k["fields"].items():
+        value = overrides.get(name, field["sample"])
+        comment = comment_of(field)
+        rendered = f"{name}:{yaml_value(value)}"
+        if comment and not isinstance(value, dict):
+            rendered += f"   # {comment}"
+        lines.append(rendered)
+    lines.append('stepOutcomes: []   # each step that commits this file appends { step: <workflow>/<step>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <one line> }')
+    lines.append("---")
+    lines.append(f"{MD_HEADER[:-4]}. Template: drop this line and the guidance comments in the artifact. -->")
+    for section in (sections or k["sections"]):
+        lines += ["", f"## {section['title']}", "", f"<!-- {'Required. ' if section['required'] else 'Optional: omit the section when empty. '}{section['guide']} -->"]
+    return "\n".join(lines) + "\n"
+
+EVENT_SECTIONS = {
+    "portfolio-sync": ["Flow of Epics", "Dependencies and impediments", "Backlog refinement", "Signals for the Strategic Portfolio Review"],
+    "strategic-portfolio-review": ["Strategy progress", "Budget and guardrails", "Investment decisions", "Carrying workflows"],
+    "pre-plan": ["Vision and roadmap highlights", "Capabilities and Feature split", "Dependencies and integration points", "Planning context per ART"],
+    "coordinate-and-deliver": ["Product Manager Sync", "Architect Sync", "RTE Sync", "Decisions and actions"],
+    "solution-demo": ["Integration status", "Capabilities demonstrated", "NFR and compliance evidence", "Stakeholder feedback"],
+    "art-sync": ["Coach Sync", "PO Sync", "Risks", "Decisions and actions"],
+    "system-demo": ["Features demonstrated", "Not ready", "NFR verification", "Stakeholder feedback"],
+    "inspect-and-adapt": ["PI System Demo", "Measurement review", "Retrospective and problem-solving", "Improvement backlog items"],
+    "team-sync": ["Progress toward the iteration goals", "Flow", "Impediments", "Meet after"],
+    "iteration-review": ["Stories demonstrated", "Not completed", "Goals and PI Objectives", "Feedback and backlog adjustments"],
+    "iteration-retrospective": ["Quantitative review", "Qualitative review", "Improvements to try"],
+}
+IA_GUIDES = ["What the PI System Demo (or Solution Demo) showed against the PI Objectives.",
+             "Quantitative and qualitative measures: predictability, flow metrics, quality, and what they mean.",
+             "What went well and what did not; the largest problem, its root cause analysis and the countermeasures considered.",
+             "Each improvement, as an action naming the workflow that will write its backlog item."]
+KANBAN_STATES = {"portfolio-kanban": EPIC_STATES, "solution-train-kanban": FLOW_STATES, "art-kanban": FLOW_STATES, "team-kanban": STORY_STATES}
+
+# A kind whose layout paths need other defaults gets a template variant: (kind, overrides).
+TEMPLATE_VARIANTS = {"solution/pi-objectives": ("pi-objectives", {"owner": "solution-train-engineer", "scope": "solution-train"})}
+
+def emit_templates():
+    shutil.rmtree(ROOT / "templates", ignore_errors=True)
+    for slug, k in KINDS.items():
+        if slug in ("event-record", "kanban"):
+            continue
+        write(f"templates/{k['layer']}/{slug}.artifact-template.md", render_template(slug))
+    for template, (slug, overrides) in TEMPLATE_VARIANTS.items():
+        write(f"templates/{template}.artifact-template.md", render_template(slug, overrides))
+    agenda = {w["event"]: w["agenda"] for w in WORKFLOWS if w["pattern"] == "event"}
+    for event in EVENTS:
+        titles = EVENT_SECTIONS[event]
+        guides = IA_GUIDES if event == "inspect-and-adapt" else agenda[event]
+        sections = [dict(title="Summary", guide="What the event inspected and concluded, in a few sentences.", required=True)]
+        for index, title in enumerate(titles):
+            guide = guides[index] if index < len(guides) else "Mirror the `decisions` and `actions` of the frontmatter in one line each."
+            sections.append(dict(title=title, guide=guide, required=False))
+        human = event.replace("-", " ").title().replace("Art ", "ART ").replace("Po ", "PO ").replace("Rte ", "RTE ")
+        write(f"templates/events/{event}.artifact-template.md", render_template("event-record", {"event": event}, sections, human))
+    for layer, name in KANBAN.items():
+        columns = [{"state": state, "wipLimit": None, "items": []} for state in KANBAN_STATES[name]]
+        text = render_template("kanban", {"level": KANBAN_LEVEL[layer]}, None, name.replace("-", " ").title().replace("Art ", "ART "))
+        text = text.replace("columns: []", "columns:\n" + "\n".join(f"  - {{ state: {c['state']}, wipLimit: null, items: [] }}" for c in columns))
+        write(f"templates/kanbans/{name}.artifact-template.md", text)
+
+# ---------------------------------------------------------------- 3. conf
+def emit_workspace_conf():
+    tree = {}
+    for path, kind, template, description in LAYOUT:
+        parts = path.split("/")
+        cursor = tree
+        for part in parts[:-1]:
+            cursor = cursor.setdefault(part, {})
+        cursor[parts[-1]] = (kind, template, description)
+
+    FOLDER_DESC = {"portfolio": "Workspace root: the SAFe portfolio.", "challenges": "Expert challenge packets.", "decisions": "Human gate decisions.",
+                   "events": "SAFe event records.", "value-streams": "Development value streams.", "epics": "Portfolio Backlog: one folder per Epic or enabler Epic.",
+                   "solution-trains": "Solution Trains (Large Solution).", "capabilities": "Solution Train Backlog: one folder per Capability or enabler Capability.",
+                   "suppliers": "Suppliers of the Solution Train.", "pis": "Planning Intervals.", "arts": "Agile Release Trains.",
+                   "adrs": "Architecture decisions.", "features": "ART Backlog: one folder per Feature or enabler Feature.", "releases": "Releases (Release on Demand).",
+                   "teams": "Agile teams of the ART.", "stories": "Team Backlog: one folder per Story.", "iterations": "Iterations."}
+
+    def render(name, value):
+        if isinstance(value, tuple):
+            kind, template, description = value
+            many = "<" in name
+            return {"slug": name, "description": description, "artifact": kind, "template": template, "cardinality": "0..*" if many else "0..1"}
+        desc = FOLDER_DESC.get(name) or f"One {name.strip('<>').replace('-slug', '').replace('-', ' ')} folder."
+        return {"slug": name, "description": desc, "children": [render(n, v) for n, v in value.items()]}
+
+    doc = {"nodes": [render(n, v) for n, v in tree.items()]}
+    write("conf/workspace.conf.yaml", YAML_HEADER + "\n# Workspace layout: where every artifact kind lives. Generated from builds/model (make generate);\n# a node slug is its own path segment, and `<name>` is a variable shared along the path.\n\n" + dump_yaml(doc))
+
+def emit_acl():
+    grants = {a[0]: set() for a in AGENTS}
+    for wf in WORKFLOWS:
+        for slug, actor, artifact, *_ in steps_of(wf):
+            grants[actor].add(artifact)
+    roles, actors = [], []
+    for slug, kinds in grants.items():
+        roles.append({"slug": slug, "privileges": [{"artifact": k, "action": action} for k in sorted(kinds) for action in ("create", "update")]})
+        actors.append({"slug": slug, "roles": [slug]})
+    write("conf/access-control-list.conf.yaml", YAML_HEADER + "\n# Access control list: one role per agent, granting create and update on exactly the artifact\n# kinds its workflow steps deliver. Generated from builds/model (make generate); nobody deletes.\n# The harness authorizes a write by artifact kind, not by path: a layer, train or team folder is\n# not a privilege boundary. Enablers are kinds of their own (`*-enabler`) so that each backlog\n# kind has exactly one writer.\n\n" + dump_yaml({"actors": actors, "roles": roles}))
+    return grants
+
+def emit_tools():
+    lines = [YAML_HEADER, "# GitHub Copilot app / Copilot CLI tool map, rendered into each agent's `tools:` frontmatter.",
+             "# Names are Copilot CLI tool aliases: `read`, `edit`, `search`, `execute`, `agent` (the `task`",
+             "# subagent-dispatch tool), `skill`, `ask_user`. Only the orchestrators dispatch and ask the human.", "",
+             "commonTools: &commonTools [read, edit, search, execute, skill]", "",
+             "dispatchTools: &dispatchTools [read, edit, search, execute, agent, skill, ask_user]", "", "agents:"]
+    for a in AGENTS:
+        lines.append(f"  agents/{a[0]}.agent.md: *{'dispatchTools' if a[2] == ORCH else 'commonTools'}")
+    write("builds/plugin/tools.yaml", "\n".join(lines))
+
+# ---------------------------------------------------------------- 4. workflows + briefs
+ORCH_INSTRUCTIONS = ["workflow-selection-handling", "step-resolution-handling", "no-next-step-handling", "reports-handling"]
+
+def emit_workflows():
+    shutil.rmtree(ROOT / "workflows", ignore_errors=True)
+    for layer in LAYERS:
+        shutil.rmtree(ROOT / "instructions" / layer, ignore_errors=True)
+    for wf in WORKFLOWS:
+        orch = ORCHESTRATORS[wf["layer"]]
+        mains = mains_of(wf)
+        doc = {"slug": wf["slug"],
+               "description": f"{wf['purpose']} Main artifact at the human gate: {mains}. Use for: {wf['concerns']}",
+               "orchestrator": orch,
+               "instructions": [*ORCH_INSTRUCTIONS, f"{orch}-catalog"]}
+        if wf["predecessors"]:
+            doc["predecessors"] = wf["predecessors"]
+        doc["steps"] = []
+        for slug, actor, artifact, pattern, description, capabilities, conditions in steps_of(wf):
+            doc["steps"].append({"slug": slug, "description": description, "actor": actor, "skills": actor, "artifact": artifact,
+                                 "instructions": ["step-contract", pattern, f"{wf['slug']}-brief"],
+                                 "capabilities": capabilities, "conditions": conditions})
+        write(f"workflows/{wf['layer']}/{wf['slug']}.workflow.conf.yaml", YAML_HEADER + "\n" + dump_yaml(doc))
+        write(f"instructions/{wf['layer']}/{wf['slug']}-brief.instructions.md", render_brief(wf))
+
+def bullets(items):
+    return "\n".join(f"- {i}" for i in items)
+
+def render_brief(wf):
+    kind = KINDS[wf["kind"]]
+    head = f"---\ndescription: 'Workflow brief of {wf['slug']}: purpose, artifact paths and the rules of each step.'\n---\n{MD_HEADER}\n\n# {wf['title']} (`{wf['slug']}`)\n\n{wf['purpose']}\n"
+    if wf["pattern"] == "loop":
+        template = template_of(wf["main_path"])
+        return head + f"""
+- **Main artifact:** `{wf['kind']}` at `{wf['main_path']}` (template `templates/{template}.artifact-template.md`), owned by `{wf['author']}`.
+- **Challenge packets:** `{challenge_dir(wf)}/{wf['slug']}-<your-agent-slug>.challenge.md` (template `templates/shared/challenge.artifact-template.md`).
+- **Panel:** {', '.join(f'`{e}`' for e in wf['panel'])}.
+
+## Draft
+
+{bullets(wf['draft'])}
+
+## Challenge
+
+Apply your own lens (your skill has a section for this artifact), and also test:
+
+{bullets(wf['challenge'])}
+
+## Revise
+
+Done when: {' '.join(wf['revise'])} Every packet of this run has its `challengeLedger` entry.
+
+## Human gate
+
+{wf['gate']} Next: {wf['next']}
+"""
+    if wf["pattern"] == "transition":
+        board = f"{SCOPE[wf['layer']]}/{KANBAN[wf['layer']]}.md"
+        board_line = f"- **Board:** `{board}` (template `templates/kanbans/{KANBAN[wf['layer']]}.artifact-template.md`).\n" if wf["board"] else ""
+        return head + f"""
+- **Item:** `{wf['kind']}` at `{wf['main_path']}`, owned by `{wf['author']}`.
+{board_line}- **States:** {wf['states']}.
+
+## Rules
+
+{bullets(wf['rules'])}
+
+## After the run
+
+{wf['next']}
+"""
+    if wf["pattern"] == "event":
+        text = head + f"""
+- **Record:** `event-record` at `{wf['main_path']}` (template `templates/events/{wf['event']}.artifact-template.md`), with `event: {wf['event']}`.
+"""
+        if wf["kanban"]:
+            text += f"- **Board:** `{SCOPE[wf['layer']]}/{KANBAN[wf['layer']]}.md` (template `templates/kanbans/{KANBAN[wf['layer']]}.artifact-template.md`).\n"
+        return text + f"""
+## Agenda
+
+{bullets(wf['agenda'])}
+
+## After the run
+
+{wf['next']}
+"""
+    return head + f"""
+- **Record:** `gate-decision` at `{wf['main_path']}` (template `templates/shared/gate-decision.artifact-template.md`).
+- Name the file `<target-file-stem>-<YYYY-MM-DD>`, for example `product-vision-2026-11-21.gate-decision.md`.
+
+## Rules
+
+- One decision on one artifact per run. An artifact with a state does not come here: Epics, Capabilities, Features (business or enabler), Stories, architecture decisions, supplier agreements, releases and code changes record the decision as a state change in their `*-transition` workflow.
+- `accepted` and `accepted-with-concerns` are refused by the harness while no challenge packet targets the artifact: no acceptance without challenge.
+
+## After the run
+
+{wf['next']}
+"""
+
+def emit_catalogs():
+    for layer in LAYERS:
+        orch = ORCHESTRATORS[layer]
+        rows = []
+        for wf in WORKFLOWS:
+            if wf["layer"] != layer:
+                continue
+            rows.append(f"| `{wf['slug']}` | {wf['concerns']} | `{mains_of(wf)}` | {wf['next']} |")
+        others = "\n".join(f"- {LAYER_TITLE[l]} grain ({GRAIN[l]}): `{ORCHESTRATORS[l]}`." for l in LAYERS if l != layer)
+        text = f"""---
+description: 'Workflow catalog of the {orch}: which concern maps to which workflow, what reaches the human gate, and what comes next.'
+---
+{MD_HEADER}
+
+# Catalog: {LAYER_TITLE[layer]} (`{orch}`)
+
+Your grain is **{GRAIN[layer]}**. Map the human's concern to exactly one row, by purpose. A concern of another grain is a handoff, never a thinner or thicker item minted here:
+
+{others}
+
+| Workflow | The human says something like | Gate artifact | After the gate |
+|---|---|---|---|
+{chr(10).join(rows)}
+
+Workspace scope of this layer: `{SCOPE[layer]}/`. Resolve the slugs in a path (`<art-slug>`, `<feature-slug>`, …) with the human before you dispatch the first step; propose a short kebab-case slug for a new item.
+"""
+        write(f"instructions/{layer}/{orch}-catalog.instructions.md", text)
+
+GRAIN = {"portfolio": "strategy, budgets and Epics", "solution": "the large solution and Capabilities", "art": "the product, Features and the PI", "team": "Stories, iterations and code"}
+
+# ---------------------------------------------------------------- 5. docs + author packs
+def panels_by_agent():
+    seats = {a[0]: [] for a in AGENTS}
+    authored = {a[0]: [] for a in AGENTS}
+    for wf in WORKFLOWS:
+        for slug, actor, artifact, pattern, *_ in steps_of(wf):
+            if pattern == "challenge-main":
+                seats[actor].append((wf["slug"], wf["kind"], wf["title"]))
+            elif pattern in ("draft-main", "record-transition", "record-event", "update-kanban", "record-gate-decision"):
+                if (wf["slug"], artifact, pattern) not in authored[actor]:
+                    authored[actor].append((wf["slug"], artifact, pattern))
+    return seats, authored
+
+def emit_catalog_doc():
+    seats, authored = panels_by_agent()
+    out = [MD_HEADER, "", "# Organization catalog", "",
+           "Reference of the roster, the workflow catalog, the challenge panels and the artifact kinds, generated from [`builds/model/`](../builds/model/) (`make generate`). How to use them is in [usage-model.md](usage-model.md).", ""]
+    out += ["## Roster", "", f"{len(AGENTS)} agents: {sum(1 for a in AGENTS if a[2] == ORCH)} orchestrators, {sum(1 for a in AGENTS if a[2] == ROLE)} SAFe roles, {sum(1 for a in AGENTS if a[2] == EXPERT)} experts.", ""]
+    for group, label in ((ORCH, "Orchestrators: the agents you talk to"), (ROLE, "SAFe roles: the authors"), (EXPERT, "Expert bench: real IT jobs")):
+        out += [f"### {label}", "", "| Agent | Authors | Challenges | SAFe anchor |", "|---|---|---|---|"]
+        for a in AGENTS:
+            if a[2] != group:
+                continue
+            writes = sorted({k for _, k, p in authored[a[0]] if p in ("draft-main",)})
+            records = sorted({k for _, k, p in authored[a[0]] if p not in ("draft-main",)})
+            written = ", ".join(f"`{k}`" for k in writes) or "—"
+            if records:
+                written += " · records: " + ", ".join(f"`{k}`" for k in records)
+            challenged = ", ".join(sorted({f"`{k if k != 'event-record' else 'inspect-and-adapt'}`" for _, k, _ in seats[a[0]]})) or "—"
+            out.append(f"| `{a[0]}` | {written} | {challenged} | {a[5]} |")
+        out.append("")
+    out += ["## Workflow catalog", "", f"{len(WORKFLOWS)} workflows. Every workflow ends at a human gate; a `loop` is draft → expert challenge → owner revision.", ""]
+    for layer in LAYERS:
+        out += [f"### {LAYER_TITLE[layer]}: `{ORCHESTRATORS[layer]}`", "", "| Workflow | Purpose | Gate artifact | Author | Challenge panel | Steps |", "|---|---|---|---|---|---|"]
+        for wf in WORKFLOWS:
+            if wf["layer"] != layer:
+                continue
+            steps = steps_of(wf)
+            author = f"`{steps[0][1]}`"
+            panel = ", ".join(f"`{e}`" for e in wf.get("panel", [])) or "—"
+            out.append(f"| `{wf['slug']}` | {wf['purpose']} | `{mains_of(wf)}` | {author} | {panel} | {len(steps)} |")
+        out.append("")
+    out += ["## Artifact kinds", "", f"{len(KINDS)} kinds. A **main** is owner-authored, challenged by experts and decided by a human; a **challenge** is an expert's packet; a **record** is a flow record.", "",
+            "| Kind | Class | Layer | Owner | Workspace path | Purpose |", "|---|---|---|---|---|---|"]
+    for slug, k in KINDS.items():
+        paths = "<br>".join(f"`{p}`" for p in sorted({p for p, kind, _, _ in LAYOUT if kind == slug}))
+        if slug == "challenge":
+            paths = "`<folder of the challenged artifact>/challenges/<workflow-slug>-<agent-slug>.challenge.md`"
+        if slug == "gate-decision":
+            paths = "`<layer scope>/decisions/<decision-slug>.gate-decision.md`"
+        if slug == "kanban":
+            paths = "<br>".join(f"`{SCOPE[l]}/{KANBAN[l]}.md`" for l in LAYERS)
+        if slug == "event-record":
+            paths = "`<layer scope>/events/<event-slug>.<event>.md`"
+        owners = ", ".join(f"`{o}`" for o in k["owners"]) or {"challenge": "the challenging expert", "gate-decision": "the layer's orchestrator", "event-record": "the layer's orchestrator", "kanban": "the layer's orchestrator"}[slug]
+        out.append(f"| `{slug}` | {k['cls']} | {LAYER_TITLE[k['layer']]} | {owners} | {paths} | {k['purpose']} |")
+    out.append("")
+    write("docs/catalog.md", "\n".join(out))
+
+def emit_author_packs(pack_dir):
+    seats, authored = panels_by_agent()
+    pack_dir.mkdir(parents=True, exist_ok=True)
+    lines = []
+    for a in AGENTS:
+        slug = a[0]
+        lines += [f"## {slug}", f"- title: {a[1]}", f"- group: {a[2]}; home layer: {a[3]}", f"- description: {a[4]}", f"- SAFe anchor: {a[5]}"]
+        drafts = [(w, k) for w, k, p in authored[slug] if p == "draft-main"]
+        if drafts:
+            lines.append("- AUTHORS (draft + revise steps):")
+            for w, k in drafts:
+                lines.append(f"  - workflow `{w}` -> `{k}` ({KINDS[k]['title']}): {WF[w]['purpose']}")
+        others = sorted({(k, p) for w, k, p in authored[slug] if p != "draft-main"})
+        if others:
+            lines.append("- RECORDS: " + ", ".join(f"`{k}` ({p})" for k, p in others))
+        if seats[slug]:
+            lines.append("- CHALLENGES (one packet per run), needs one lens section per distinct artifact below:")
+            for w, k, t in seats[slug]:
+                target = "Inspect and Adapt record" if k == "event-record" else KINDS[k]["title"]
+                lines.append(f"  - workflow `{w}` -> `{k if k != 'event-record' else 'inspect-and-adapt'}` ({target}): {WF[w]['purpose']}")
+        lines.append("")
+    (pack_dir / "roster-pack.md").write_text("\n".join(lines), encoding="utf-8")
+    kinds = []
+    for slug, k in KINDS.items():
+        kinds.append(f"## {slug}: {k['title']} [{k['cls']}, {k['layer']}]\n{k['purpose']}\nSections: " + "; ".join(s["title"] for s in k["sections"]) + "\nFields: " + ", ".join(k["fields"]) + "\n")
+    (pack_dir / "artifact-pack.md").write_text("\n".join(kinds), encoding="utf-8")
+
+def check():
+    slugs = [w["slug"] for w in WORKFLOWS]
+    assert len(slugs) == len(set(slugs))
+    for wf in WORKFLOWS:
+        for p in wf["predecessors"]:
+            assert p in WF, (wf["slug"], p)
+        for e in wf.get("panel", []):
+            assert e in AGENT and e != wf["author"], (wf["slug"], e)
+        assert any(p == wf["main_path"] for p, *_ in LAYOUT), wf["main_path"]
+    used = {artifact for wf in WORKFLOWS for _, _, artifact, *_ in steps_of(wf)}
+    assert used == set(KINDS), (used ^ set(KINDS))
+    seats, authored = panels_by_agent()
+    idle = [a for a in seats if not seats[a] and not authored[a]]
+    assert not idle, idle
+
+GENERATED_FOLDERS = ("artifacts", "templates", "workflows", *(f"instructions/{layer}" for layer in LAYERS))
+GENERATED_FILES = ("conf/workspace.conf.yaml", "conf/access-control-list.conf.yaml", "builds/plugin/tools.yaml", "docs/catalog.md")
+
+if __name__ == "__main__":
+    check()
+    emit_schemas()
+    emit_templates()
+    emit_workspace_conf()
+    emit_acl()
+    emit_tools()
+    emit_workflows()
+    emit_catalogs()
+    emit_catalog_doc()
+    if "--packs" in sys.argv:
+        emit_author_packs(Path(sys.argv[sys.argv.index("--packs") + 1]).resolve())
+    print(f"agents={len(AGENTS)} kinds={len(KINDS)} workflows={len(WORKFLOWS)} steps={sum(len(steps_of(w)) for w in WORKFLOWS)}")
