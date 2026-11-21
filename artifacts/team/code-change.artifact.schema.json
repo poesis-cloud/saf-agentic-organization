@@ -42,6 +42,7 @@
     "pullRequest",
     "status",
     "testsPassing",
+    "transitions",
     "stepOutcomes"
   ],
   "properties": {
@@ -53,7 +54,7 @@
     "owner": {
       "type": "string",
       "minLength": 1,
-      "description": "Agent slug of the owning author. Only the owner writes this artifact."
+      "description": "Agent slug of the author. Only the owner writes this artifact, its state changes included; the draft names the workflow's author."
     },
     "challengeLedger": {
       "description": "The owner's answers to the expert challenge (see the definition).",
@@ -82,7 +83,7 @@
       "description": "Pull request link, or null."
     },
     "status": {
-      "description": "Change state. One of: in-progress | ready-for-review | changes-requested | approved | merged.",
+      "description": "Change state. `in-progress` and `ready-for-review` are set while implementing; the reviewer's decision (`changes-requested`, `approved`, `merged`) only in `code-change-transition`. One of: in-progress | ready-for-review | changes-requested | approved | merged.",
       "enum": [
         "in-progress",
         "ready-for-review",
@@ -94,6 +95,10 @@
     "testsPassing": {
       "type": "boolean",
       "description": "True when the automated tests of the change pass."
+    },
+    "transitions": {
+      "description": "State history.",
+      "$ref": "#/$defs/transitions"
     },
     "stepOutcomes": {
       "description": "Step outcome record: one entry per step that committed this artifact.",
@@ -210,6 +215,48 @@
           "friction": {
             "description": "Optional. Workflow friction the actor observed (raw input for Inspect and Adapt, never a fix).",
             "type": "string"
+          }
+        }
+      }
+    },
+    "transitions": {
+      "description": "State history. One entry per state change, appended by the owner in its `*-transition` workflow after the human decided.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "from",
+          "to",
+          "date",
+          "decidedBy",
+          "reason"
+        ],
+        "properties": {
+          "from": {
+            "description": "State left.",
+            "type": "string",
+            "minLength": 1
+          },
+          "to": {
+            "description": "State entered.",
+            "type": "string",
+            "minLength": 1
+          },
+          "date": {
+            "description": "YYYY-MM-DD.",
+            "type": "string",
+            "minLength": 1
+          },
+          "decidedBy": {
+            "description": "The human (name or role) who decided.",
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "description": "One line: why.",
+            "type": "string",
+            "minLength": 1
           }
         }
       }

@@ -20,7 +20,7 @@ description: 'Craft skill of the Product Owner: how to author a Story, how to re
 ### Story (`story`)
 
 - **User Story:** "As a <user role>, I want to <activity>, so that <business value>". The role is a real user or persona, never "as a developer": work for the system itself is an enabler Story.
-- **Enabler Story:** `type: enabler` with its `enablerType`; say what must be learned or built, and why now. A spike is an exploration enabler: give it a question, a timebox and the decision its answer feeds.
+- **Enabler Story:** `type: enabler` with its `enablerType`, often split from an enabler Feature; say what must be learned or built, and why now. A spike is an exploration enabler: give it a question, a timebox and the decision its answer feeds.
 - **Acceptance criteria:** AC1, AC2, …, Given/When/Then, one behavior each, with example values. Cover the negative and the boundary case that matter. Reference NFR ids instead of restating qualities.
 - **INVEST and size:** split by workflow step, business rule, data variation or happy path first. Never split by technical layer: a Story with only a screen or only a table is not a vertical slice.
 - **Estimate:** leave `estimate` null in the draft. In the revise step, copy the story points proposed in the `software-engineer` packet. A Story estimated too large for an Iteration is split, not squeezed.

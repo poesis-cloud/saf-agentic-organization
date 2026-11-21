@@ -4,7 +4,8 @@ The happy path proves each workflow can actually be completed from its brief and
 paths the brief gives are authorized, the filled templates are schema-valid, every condition
 passes and the run ends on `no-next-step`. The refusals prove the organization's rules are
 enforced by the harness, not by prose: no acceptance without challenge, no unanswered packet,
-no item ready before it was challenged, no Epic approved without a go business case.
+no item ready before it was challenged, no Epic approved without a go business case, no draft that
+names another owner, no Story accepted while its code change is unmerged.
 """
 
 from __future__ import annotations
@@ -25,9 +26,16 @@ GATES = sorted(slug for slug, workflow in CATALOG.items() if workflow["steps"][0
 TEMPLATES = {path: template for path, _, template in layout_nodes()}
 
 EPIC = "portfolio/epics/<epic-slug>/<epic-slug>.epic.md"
+EPIC_ENABLER = "portfolio/epics/<epic-slug>/<epic-slug>.epic-enabler.md"
 CAPABILITY = "portfolio/solution-trains/<solution-train-slug>/capabilities/<capability-slug>/<capability-slug>.capability.md"
+CAPABILITY_ENABLER = CAPABILITY.replace(".capability.md", ".capability-enabler.md")
+SUPPLIER = "portfolio/solution-trains/<solution-train-slug>/suppliers/<supplier-slug>/<supplier-slug>.supplier-agreement.md"
 FEATURE = "portfolio/arts/<art-slug>/features/<feature-slug>/<feature-slug>.feature.md"
+FEATURE_ENABLER = FEATURE.replace(".feature.md", ".feature-enabler.md")
+ADR = "portfolio/arts/<art-slug>/adrs/<adr-slug>/<adr-slug>.adr.md"
+RELEASE = "portfolio/arts/<art-slug>/releases/<release-slug>/<release-slug>.release.md"
 STORY = "portfolio/arts/<art-slug>/teams/<team-slug>/stories/<story-slug>/<story-slug>.story.md"
+CODE_CHANGE = STORY.replace(".story.md", ".code-change.md")
 LEDGER = [{"packet": "portfolio/challenges/x.challenge.md", "challenger": "agile-coach", "verdict": "pass", "responses": []}]
 
 
@@ -52,6 +60,8 @@ def prerequisites(rig: Rig, workflow: str) -> dict[str, Any]:
     """Seed the state a workflow's first step requires; return the overrides its main needs."""
     if workflow == "lean-business-case":
         return {"epic": seed(rig, EPIC, "analyzing")}
+    if workflow == "epic-enabler-lean-business-case":
+        return {"epic": seed(rig, EPIC_ENABLER, "analyzing"), "owner": "enterprise-architect"}
     if workflow == "solution-train-pi-planning":
         seed(rig, CAPABILITY, "ready")
     if workflow == "pi-planning":
@@ -70,6 +80,8 @@ def main_of(rig: Rig, workflow: str) -> tuple[str, str]:
     paths = brief_paths(workflow)
     if workflow == "epic-mvp-evaluation":
         return seed(rig, EPIC, "implementing"), TEMPLATES[EPIC]
+    if workflow == "epic-enabler-mvp-evaluation":
+        return seed(rig, EPIC_ENABLER, "implementing"), TEMPLATES[EPIC_ENABLER]
     return concrete(paths["main"]), TEMPLATES[paths["main"]]
 
 
@@ -146,19 +158,31 @@ def _transition(rig: Rig, workflow: str, item: str, status: str, **fields: Any) 
              "stepOutcomes": [*before["stepOutcomes"], outcome(f"{workflow}/record-transition", "revised")]}
     report = rig.deliver(session, step, item, TEMPLATES[paths["main"]], after)
     if report["outcome"]["status"] == "pass":
-        step = rig.next_step(session, workflow, "update-kanban")
-        board = rig.deliver(session, step, concrete(paths["board"]), paths["boardTemplate"], {"stepOutcomes": [outcome(f"{workflow}/update-kanban", "written")]})
-        assert board["outcome"]["status"] == "pass", board
+        if "board" in paths:
+            step = rig.next_step(session, workflow, "update-kanban")
+            board = rig.deliver(session, step, concrete(paths["board"]), paths["boardTemplate"], {"stepOutcomes": [outcome(f"{workflow}/update-kanban", "written")]})
+            assert board["outcome"]["status"] == "pass", board
         assert rig.resolve(session, workflow)["outcome"]["status"] == "no-next-step"
     return report
 
 
 FIRST_MOVES = {
     "epic-transition": (EPIC, "funnel", "reviewing"),
+    "epic-enabler-transition": (EPIC_ENABLER, "funnel", "reviewing"),
     "capability-transition": (CAPABILITY, "analyzing", "ready"),
+    "capability-enabler-transition": (CAPABILITY_ENABLER, "analyzing", "ready"),
+    "supplier-agreement-transition": (SUPPLIER, "draft", "negotiating"),
     "feature-transition": (FEATURE, "analyzing", "ready"),
+    "feature-enabler-transition": (FEATURE_ENABLER, "analyzing", "ready"),
+    "adr-transition": (ADR, "proposed", "accepted"),
+    "release-transition": (RELEASE, "ready", "released"),
     "story-transition": (STORY, "backlog", "ready"),
+    "code-change-transition": (CODE_CHANGE, "ready-for-review", "approved"),
 }
+
+
+def test_every_transition_has_a_first_move() -> None:
+    assert set(FIRST_MOVES) == set(TRANSITIONS)
 
 
 @pytest.mark.parametrize("workflow", TRANSITIONS)
@@ -190,18 +214,41 @@ def test_a_recorded_refusal_is_a_valid_transition_step(rig: Rig, workflow: str) 
     assert rig.deliver(session, step, item, TEMPLATES[pattern], refused)["outcome"]["status"] == "pass"
 
 
-def test_an_epic_is_approved_only_with_a_go_business_case(rig: Rig) -> None:
-    epic = seed(rig, EPIC, "analyzing", challengeLedger=LEDGER)
-    case = epic.replace(".epic.md", ".lean-business-case.md")
-    rig.seed(case, "portfolio/lean-business-case", {"epic": epic, "recommendation": "pending"})
-    report = _transition(rig, "epic-transition", epic, "ready")
+EPIC_TRANSITIONS = [("epic-transition", EPIC), ("epic-enabler-transition", EPIC_ENABLER)]
+
+
+def _business_case(epic: str) -> str:
+    return epic.rsplit(".", 2)[0] + ".lean-business-case.md"
+
+
+@pytest.mark.parametrize(("workflow", "pattern"), EPIC_TRANSITIONS)
+def test_an_epic_is_approved_only_with_a_go_business_case(rig: Rig, workflow: str, pattern: str) -> None:
+    epic = seed(rig, pattern, "analyzing", challengeLedger=LEDGER)
+    rig.seed(_business_case(epic), "portfolio/lean-business-case", {"epic": epic, "recommendation": "pending"})
+    report = _transition(rig, workflow, epic, "ready")
     assert failed_conditions(report) == ["approved-epic-has-a-go-business-case"]
 
 
-def test_an_epic_with_a_go_business_case_becomes_ready(rig: Rig) -> None:
-    epic = seed(rig, EPIC, "analyzing", challengeLedger=LEDGER)
-    rig.seed(epic.replace(".epic.md", ".lean-business-case.md"), "portfolio/lean-business-case", {"epic": epic, "recommendation": "go"})
-    assert _transition(rig, "epic-transition", epic, "ready")["outcome"]["status"] == "pass"
+@pytest.mark.parametrize(("workflow", "pattern"), EPIC_TRANSITIONS)
+def test_an_epic_with_a_go_business_case_becomes_ready(rig: Rig, workflow: str, pattern: str) -> None:
+    epic = seed(rig, pattern, "analyzing", challengeLedger=LEDGER)
+    rig.seed(_business_case(epic), "portfolio/lean-business-case", {"epic": epic, "recommendation": "go"})
+    assert _transition(rig, workflow, epic, "ready")["outcome"]["status"] == "pass"
+
+
+@pytest.mark.parametrize("change", ["approved", None])
+def test_a_story_is_accepted_only_once_its_code_change_is_merged(rig: Rig, change: str | None) -> None:
+    story = seed(rig, STORY, "in-review", challengeLedger=LEDGER)
+    if change:
+        rig.seed(story.replace(".story.md", ".code-change.md"), "team/code-change", {"story": story, "status": change})
+    report = _transition(rig, "story-transition", story, "accepted")
+    assert failed_conditions(report) == (["accepted-story-has-no-unmerged-change"] if change else [])  # a spike has no change
+
+
+def test_a_story_with_a_merged_code_change_is_accepted(rig: Rig) -> None:
+    story = seed(rig, STORY, "in-review", challengeLedger=LEDGER)
+    rig.seed(story.replace(".story.md", ".code-change.md"), "team/code-change", {"story": story, "status": "merged"})
+    assert _transition(rig, "story-transition", story, "accepted")["outcome"]["status"] == "pass"
 
 
 # --- the human gate record --------------------------------------------------------------------
@@ -266,7 +313,9 @@ def test_the_owner_must_revise_the_artifact_it_drafted(rig: Rig) -> None:
 
 REFUSED_STARTS = {
     "lean-business-case": "an-epic-is-under-analysis",
+    "epic-enabler-lean-business-case": "an-epic-enabler-is-under-analysis",
     "epic-mvp-evaluation": "an-epic-is-implementing",
+    "epic-enabler-mvp-evaluation": "an-epic-enabler-is-implementing",
     "solution-train-pi-planning": "a-capability-is-ready",
     "pi-planning": "a-feature-is-ready",
     "release-on-demand": "a-feature-is-built",
@@ -283,6 +332,14 @@ def test_a_workflow_is_refused_while_its_input_state_is_missing(rig: Rig, workfl
     assert gate["outcome"]["status"] == "fail" and failed_conditions(gate) == [REFUSED_STARTS[workflow]]
 
 
+@pytest.mark.parametrize(("workflow", "enabler"), [("pi-planning", FEATURE_ENABLER), ("solution-train-pi-planning", CAPABILITY_ENABLER)])
+def test_planning_starts_when_only_an_enabler_is_ready(rig: Rig, workflow: str, enabler: str) -> None:
+    seed(rig, enabler, "ready")
+    session = rig.open(workflow)
+    rig.next_step(session, workflow, "draft")
+    assert rig.preconditions(session)["outcome"]["status"] == "pass"
+
+
 def _draft(rig: Rig, workflow: str, overrides: Mapping[str, Any]) -> Mapping[str, Any]:
     main, template = main_of(rig, workflow)
     session = rig.open(workflow)
@@ -293,14 +350,22 @@ def _draft(rig: Rig, workflow: str, overrides: Mapping[str, Any]) -> Mapping[str
 PARENT_CASES = [
     ("capability-refinement", EPIC, "funnel", "parent-epic-is-approved"),
     ("capability-refinement", EPIC, "implementing", None),
+    ("capability-refinement", EPIC_ENABLER, "ready", "parent-epic-is-approved"),  # business work never splits from an enabler
+    ("capability-enabler-refinement", EPIC_ENABLER, "analyzing", "parent-is-approved"),
+    ("capability-enabler-refinement", EPIC_ENABLER, "ready", None),
+    ("capability-enabler-refinement", EPIC, "implementing", None),
     ("feature-refinement", EPIC, "analyzing", "parent-is-approved"),
     ("feature-refinement", EPIC, "ready", None),
     ("feature-refinement", CAPABILITY, "funnel", "parent-is-approved"),
     ("feature-refinement", CAPABILITY, "ready", None),
-    ("enabler-feature-refinement", CAPABILITY, "done", "parent-is-approved"),
-    ("enabler-feature-refinement", EPIC, "implementing", None),
+    ("feature-refinement", CAPABILITY_ENABLER, "ready", "parent-is-approved"),
+    ("feature-enabler-refinement", CAPABILITY, "done", "parent-is-approved"),
+    ("feature-enabler-refinement", EPIC, "implementing", None),
+    ("feature-enabler-refinement", EPIC_ENABLER, "ready", None),
+    ("feature-enabler-refinement", CAPABILITY_ENABLER, "analyzing", None),
     ("story-refinement", FEATURE, "analyzing", "parent-feature-is-approved"),
     ("story-refinement", FEATURE, "implementing", None),
+    ("story-refinement", FEATURE_ENABLER, "ready", None),
 ]
 
 
@@ -310,15 +375,31 @@ def test_an_item_splits_only_from_an_approved_parent(rig: Rig, workflow: str, pa
     assert failed_conditions(report) == ([refusal] if refusal else []), report
 
 
-@pytest.mark.parametrize("workflow", ["capability-refinement", "feature-refinement", "enabler-feature-refinement", "story-refinement"])
+@pytest.mark.parametrize("workflow", ["capability-refinement", "capability-enabler-refinement", "feature-refinement", "feature-enabler-refinement", "story-refinement"])
 def test_an_item_from_the_local_context_needs_no_parent(rig: Rig, workflow: str) -> None:
     assert _draft(rig, workflow, {"parent": None})["outcome"]["status"] == "pass"
 
 
-def test_a_business_case_must_name_an_epic_under_analysis(rig: Rig) -> None:
-    seed(rig, EPIC, "analyzing")
-    report = _draft(rig, "lean-business-case", {"epic": seed(rig, EPIC, "funnel")})
-    assert failed_conditions(report) == ["case-names-an-epic-under-analysis"]
+CASES = [
+    ("lean-business-case", EPIC, EPIC, "epic-owner", "case-names-an-epic-under-analysis"),
+    ("lean-business-case", EPIC, EPIC_ENABLER, "epic-owner", "case-names-an-epic-under-analysis"),
+    ("epic-enabler-lean-business-case", EPIC_ENABLER, EPIC_ENABLER, "enterprise-architect", "case-names-an-epic-enabler-under-analysis"),
+    ("epic-enabler-lean-business-case", EPIC_ENABLER, EPIC, "enterprise-architect", "case-names-an-epic-enabler-under-analysis"),
+]
+
+
+@pytest.mark.parametrize(("workflow", "analyzed", "named", "owner", "refusal"), CASES)
+def test_a_business_case_must_name_an_epic_of_its_kind_under_analysis(rig: Rig, workflow: str, analyzed: str, named: str, owner: str, refusal: str) -> None:
+    seed(rig, analyzed, "analyzing")
+    status = "funnel" if named == analyzed else "analyzing"
+    report = _draft(rig, workflow, {"epic": seed(rig, named, status), "owner": owner})
+    assert failed_conditions(report) == [refusal]
+
+
+@pytest.mark.parametrize(("workflow", "owner"), [("team-formation", "agile-coach"), ("epic-enabler-lean-business-case", "epic-owner")])
+def test_the_draft_must_name_its_author_as_owner(rig: Rig, workflow: str, owner: str) -> None:
+    overrides = {**prerequisites(rig, workflow), "owner": owner}
+    assert failed_conditions(_draft(rig, workflow, overrides)) == ["owner-is-the-author"]
 
 
 def test_a_code_change_must_implement_a_planned_story(rig: Rig) -> None:
@@ -331,8 +412,9 @@ def test_every_declared_state_condition_has_a_refusal_test() -> None:
     declared = {c["slug"] for workflow in CATALOG.values() for step in workflow["steps"] for c in step["conditions"] if "setPredicate" in c}
     refused = {
         "packet-targets-the-drafted-artifact", "every-packet-is-answered", "revises-the-drafted-artifact",
-        "accepted-only-if-challenged", "approved-epic-has-a-go-business-case", "case-names-an-epic-under-analysis",
-        "change-implements-a-planned-story", *REFUSED_STARTS.values(), *(case[3] for case in PARENT_CASES if case[3]),
+        "accepted-only-if-challenged", "approved-epic-has-a-go-business-case", *(case[4] for case in CASES),
+        "change-implements-a-planned-story", "owner-is-the-author", "accepted-story-has-no-unmerged-change",
+        *REFUSED_STARTS.values(), *(case[3] for case in PARENT_CASES if case[3]),
         *(c["slug"] for slug in TRANSITIONS for c in CATALOG[slug]["steps"][0]["conditions"] if "challenged" in c["slug"]),
     }
     assert declared == refused

@@ -98,12 +98,12 @@ TECH_EXPERTS = {"software-engineer", "quality-engineer", "devops-engineer", "pla
 DESIGN_EXPERTS = {"ux-designer", "accessibility-specialist"}
 AUTHOR_CAPS = {
     "strategic-themes": "author-strategy", "portfolio-vision": "author-strategy", "value-stream": "author-strategy",
-    "epic": "author-strategy", "lean-business-case": "author-strategy", "portfolio-roadmap": "author-plan",
+    "epic": "author-strategy", "epic-enabler": "author-strategy", "lean-business-case": "author-strategy", "portfolio-roadmap": "author-plan",
     "lean-budgets": "author-strategy", "architecture-vision": "author-technical", "solution-train-canvas": "author-plan",
     "solution-vision": "author-strategy", "solution-roadmap": "author-plan", "solution-intent": "author-technical",
-    "capability": "author-backlog", "supplier-agreement": "author-backlog", "pi-objectives": "author-plan",
+    "capability": "author-backlog", "capability-enabler": "author-backlog", "supplier-agreement": "author-backlog", "pi-objectives": "author-plan",
     "art-canvas": "author-plan", "product-vision": "author-strategy", "product-roadmap": "author-plan",
-    "feature": "author-backlog", "adr": "author-technical", "nfrs": "author-technical", "delivery-pipeline": "author-technical",
+    "feature": "author-backlog", "feature-enabler": "author-backlog", "adr": "author-technical", "nfrs": "author-technical", "delivery-pipeline": "author-technical",
     "release": "author-plan", "team-charter": "author-plan", "story": "author-backlog", "iteration-plan": "author-plan",
     "code-change": "author-code", "event-record": "author-plan",
 }
@@ -127,6 +127,13 @@ def template_of(path):
             return template
     raise KeyError(path)
 
+def owner_condition(wf):
+    """The artifact names the workflow's author as its owner (a kind with two owners needs it most)."""
+    if "owner" not in KINDS[wf["kind"]]["fields"]:
+        return []
+    return [dict(kind="postcondition", slug="owner-is-the-author", setSelector={"setQuery": "workspace.filter(a, a.path == step.artifact.path)"},
+                 setPredicate=f"selected.all(a, a.data.owner == '{wf['author']}')")]
+
 def steps_of(wf):
     """Yield (slug, actor, artifact, pattern instruction, description, capabilities, conditions)."""
     orch = ORCHESTRATORS[wf["layer"]]
@@ -136,8 +143,8 @@ def steps_of(wf):
         author_caps = CAPS[AUTHOR_CAPS[wf["kind"]]]
         out.append(("draft", wf["author"], wf["kind"], "draft-main",
                     f"Main artifact, draft: the {AGENT[wf['author']]['title']} creates or thickens the {title}.",
-                    author_caps, [dict(kind=c["kind"], slug=c["slug"], setSelector={"setQuery": c["query"]}, setPredicate=c["predicate"])
-                                  for c in wf["draft_conditions"]]))
+                    author_caps, [*[dict(kind=c["kind"], slug=c["slug"], setSelector={"setQuery": c["query"]}, setPredicate=c["predicate"])
+                                    for c in wf["draft_conditions"]], *owner_condition(wf)]))
         for expert in wf["panel"]:
             out.append((f"challenge-{expert}", expert, "challenge", "challenge-main",
                         f"Challenge packet: the {AGENT[expert]['title']} challenges the drafted {title}. Not itself challenged.",
@@ -155,15 +162,17 @@ def steps_of(wf):
                           setPredicate="selected.size() == 1"),
                      dict(kind="postcondition", slug="every-packet-is-answered",
                           setSelector={"setQuery": "steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')"},
-                          setPredicate="selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))")]))
+                          setPredicate="selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))"),
+                     *owner_condition(wf)]))
     elif wf["pattern"] == "transition":
         out.append(("record-transition", wf["author"], wf["kind"], "record-transition",
                     f"Owner step: the {AGENT[wf['author']]['title']} records the human's decision as one state change of the {title}, or refuses it with the reason.",
                     CAPS["record"], [dict(kind=c["kind"], slug=c["slug"], setSelector={"setQuery": c["query"]}, setPredicate=c["predicate"])
                                      for c in wf["conditions"]]))
-        out.append(("update-kanban", orch, "kanban", "update-kanban",
-                    f"Flow record: the {AGENT[orch]['title']} re-renders the Kanban board from the items' status.",
-                    CAPS["kanban"], [dict(kind="precondition", slug="after-record-transition", step="record-transition")]))
+        if wf["board"]:
+            out.append(("update-kanban", orch, "kanban", "update-kanban",
+                        f"Flow record: the {AGENT[orch]['title']} re-renders the Kanban board from the items' status.",
+                        CAPS["kanban"], [dict(kind="precondition", slug="after-record-transition", step="record-transition")]))
     elif wf["pattern"] == "event":
         out.append(("record", orch, "event-record", "record-event",
                     f"Event record: the {AGENT[orch]['title']} writes the {wf['title']} record.", CAPS["record"], []))
@@ -292,12 +301,17 @@ IA_GUIDES = ["What the PI System Demo (or Solution Demo) showed against the PI O
              "Each improvement, as an action naming the workflow that will write its backlog item."]
 KANBAN_STATES = {"portfolio-kanban": EPIC_STATES, "solution-train-kanban": FLOW_STATES, "art-kanban": FLOW_STATES, "team-kanban": STORY_STATES}
 
+# A kind whose layout paths need other defaults gets a template variant: (kind, overrides).
+TEMPLATE_VARIANTS = {"solution/pi-objectives": ("pi-objectives", {"owner": "solution-train-engineer", "scope": "solution-train"})}
+
 def emit_templates():
     shutil.rmtree(ROOT / "templates", ignore_errors=True)
     for slug, k in KINDS.items():
         if slug in ("event-record", "kanban"):
             continue
         write(f"templates/{k['layer']}/{slug}.artifact-template.md", render_template(slug))
+    for template, (slug, overrides) in TEMPLATE_VARIANTS.items():
+        write(f"templates/{template}.artifact-template.md", render_template(slug, overrides))
     agenda = {w["event"]: w["agenda"] for w in WORKFLOWS if w["pattern"] == "event"}
     for event in EVENTS:
         titles = EVENT_SECTIONS[event]
@@ -325,10 +339,10 @@ def emit_workspace_conf():
         cursor[parts[-1]] = (kind, template, description)
 
     FOLDER_DESC = {"portfolio": "Workspace root: the SAFe portfolio.", "challenges": "Expert challenge packets.", "decisions": "Human gate decisions.",
-                   "events": "SAFe event records.", "value-streams": "Development value streams.", "epics": "Portfolio Backlog: one folder per Epic.",
-                   "solution-trains": "Solution Trains (Large Solution).", "capabilities": "Solution Train Backlog: one folder per Capability.",
+                   "events": "SAFe event records.", "value-streams": "Development value streams.", "epics": "Portfolio Backlog: one folder per Epic or enabler Epic.",
+                   "solution-trains": "Solution Trains (Large Solution).", "capabilities": "Solution Train Backlog: one folder per Capability or enabler Capability.",
                    "suppliers": "Suppliers of the Solution Train.", "pis": "Planning Intervals.", "arts": "Agile Release Trains.",
-                   "adrs": "Architecture decisions.", "features": "ART Backlog: one folder per Feature.", "releases": "Releases (Release on Demand).",
+                   "adrs": "Architecture decisions.", "features": "ART Backlog: one folder per Feature or enabler Feature.", "releases": "Releases (Release on Demand).",
                    "teams": "Agile teams of the ART.", "stories": "Team Backlog: one folder per Story.", "iterations": "Iterations."}
 
     def render(name, value):
@@ -351,7 +365,7 @@ def emit_acl():
     for slug, kinds in grants.items():
         roles.append({"slug": slug, "privileges": [{"artifact": k, "action": action} for k in sorted(kinds) for action in ("create", "update")]})
         actors.append({"slug": slug, "roles": [slug]})
-    write("conf/access-control-list.conf.yaml", YAML_HEADER + "\n# Access control list: one role per agent, granting create and update on exactly the artifact\n# kinds its workflow steps deliver. Generated from builds/model (make generate); nobody deletes.\n\n" + dump_yaml({"actors": actors, "roles": roles}))
+    write("conf/access-control-list.conf.yaml", YAML_HEADER + "\n# Access control list: one role per agent, granting create and update on exactly the artifact\n# kinds its workflow steps deliver. Generated from builds/model (make generate); nobody deletes.\n# The harness authorizes a write by artifact kind, not by path: a layer, train or team folder is\n# not a privilege boundary. Enablers are kinds of their own (`*-enabler`) so that each backlog\n# kind has exactly one writer.\n\n" + dump_yaml({"actors": actors, "roles": roles}))
     return grants
 
 def emit_tools():
@@ -421,10 +435,10 @@ Done when: {' '.join(wf['revise'])} Every packet of this run has its `challengeL
 """
     if wf["pattern"] == "transition":
         board = f"{SCOPE[wf['layer']]}/{KANBAN[wf['layer']]}.md"
+        board_line = f"- **Board:** `{board}` (template `templates/kanbans/{KANBAN[wf['layer']]}.artifact-template.md`).\n" if wf["board"] else ""
         return head + f"""
 - **Item:** `{wf['kind']}` at `{wf['main_path']}`, owned by `{wf['author']}`.
-- **Board:** `{board}` (template `templates/kanbans/{KANBAN[wf['layer']]}.artifact-template.md`).
-- **States:** {wf['states']}.
+{board_line}- **States:** {wf['states']}.
 
 ## Rules
 
@@ -455,7 +469,7 @@ Done when: {' '.join(wf['revise'])} Every packet of this run has its `challengeL
 
 ## Rules
 
-- One decision on one artifact per run. Backlog items (Epic, Capability, Feature, Story) do not come here: their decision is a state change in their `*-transition` workflow.
+- One decision on one artifact per run. An artifact with a state does not come here: Epics, Capabilities, Features (business or enabler), Stories, architecture decisions, supplier agreements, releases and code changes record the decision as a state change in their `*-transition` workflow.
 - `accepted` and `accepted-with-concerns` are refused by the harness while no challenge packet targets the artifact: no acceptance without challenge.
 
 ## After the run

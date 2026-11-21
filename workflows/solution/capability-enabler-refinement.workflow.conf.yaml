@@ -12,25 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-slug: enabler-feature-refinement
-description: 'Write or thicken one enabler Feature that extends the architectural runway or improves the delivery pipeline. Main artifact at the human gate: feature. Use for: Technical work the ART needs: exploration, architecture, infrastructure or compliance enablers; technical debt at Feature size.'
-orchestrator: release-train-engineer
+slug: capability-enabler-refinement
+description: 'Write or thicken one enabler Capability that extends the runway of the large solution, so it is ready for Pre-Plan. Main artifact at the human gate: capability-enabler. Use for: Technical work across ARTs: exploration, architecture, infrastructure or compliance enablers at Capability size; closing variable intent; an enabler named by the Solution Intent.'
+orchestrator: solution-train-engineer
 instructions:
 - workflow-selection-handling
 - step-resolution-handling
 - no-next-step-handling
 - reports-handling
-- release-train-engineer-catalog
+- solution-train-engineer-catalog
+predecessors:
+- solution-intent
 steps:
 - slug: draft
-  description: 'Main artifact, draft: the System Architect creates or thickens the Feature.'
-  actor: system-architect
-  skills: system-architect
-  artifact: feature
+  description: 'Main artifact, draft: the Solution Architect creates or thickens the Enabler Capability.'
+  actor: solution-architect
+  skills: solution-architect
+  artifact: capability-enabler
   instructions:
   - step-contract
   - draft-main
-  - enabler-feature-refinement-brief
+  - capability-enabler-refinement-brief
   capabilities:
     deep-reasoning: 7
     coding: 0
@@ -46,16 +48,49 @@ steps:
     slug: parent-is-approved
     setSelector:
       setQuery: workspace.filter(a, a.path == step.artifact.path && a.data.parent != null)
-    setPredicate: selected.all(a, workspace.exists(p, p.kind == 'epic' && p.path == a.data.parent && p.data.status in ['ready', 'implementing']) || workspace.exists(p, p.kind == 'capability' && p.path == a.data.parent && p.data.status in ['analyzing', 'ready', 'implementing']))
-- slug: challenge-software-engineer
-  description: 'Challenge packet: the Software Engineer challenges the drafted Feature. Not itself challenged.'
-  actor: software-engineer
-  skills: software-engineer
+    setPredicate: selected.all(a, workspace.exists(p, p.kind == 'epic' && p.path == a.data.parent && p.data.status in ['ready', 'implementing']) || workspace.exists(p, p.kind == 'epic-enabler' && p.path == a.data.parent && p.data.status in ['ready', 'implementing']))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'solution-architect')
+- slug: challenge-solution-manager
+  description: 'Challenge packet: the Solution Manager challenges the drafted Enabler Capability. Not itself challenged.'
+  actor: solution-manager
+  skills: solution-manager
   artifact: challenge
   instructions:
   - step-contract
   - challenge-main
-  - enabler-feature-refinement-brief
+  - capability-enabler-refinement-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-systems-engineer
+  description: 'Challenge packet: the Systems Engineer challenges the drafted Enabler Capability. Not itself challenged.'
+  actor: systems-engineer
+  skills: systems-engineer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - capability-enabler-refinement-brief
   capabilities:
     deep-reasoning: 8
     coding: 5
@@ -63,6 +98,62 @@ steps:
     long-context: 6
     multimodal: 0
     writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-security-expert
+  description: 'Challenge packet: the Security Expert challenges the drafted Enabler Capability. Not itself challenged.'
+  actor: security-expert
+  skills: security-expert
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - capability-enabler-refinement-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-compliance-officer
+  description: 'Challenge packet: the Compliance Officer challenges the drafted Enabler Capability. Not itself challenged.'
+  actor: compliance-officer
+  skills: compliance-officer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - capability-enabler-refinement-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
     instruction-following: 8
     fast-iteration: 4
     schema-adherence: 7
@@ -76,98 +167,14 @@ steps:
       setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
     setPredicate: selected.size() == 1
 - slug: challenge-platform-engineer
-  description: 'Challenge packet: the Platform Engineer challenges the drafted Feature. Not itself challenged.'
+  description: 'Challenge packet: the Platform Engineer challenges the drafted Enabler Capability. Not itself challenged.'
   actor: platform-engineer
   skills: platform-engineer
   artifact: challenge
   instructions:
   - step-contract
   - challenge-main
-  - enabler-feature-refinement-brief
-  capabilities:
-    deep-reasoning: 8
-    coding: 5
-    tool-use: 4
-    long-context: 6
-    multimodal: 0
-    writing-quality: 6
-    instruction-following: 8
-    fast-iteration: 4
-    schema-adherence: 7
-  conditions:
-  - kind: precondition
-    slug: after-draft
-    step: draft
-  - kind: postcondition
-    slug: packet-targets-the-drafted-artifact
-    setSelector:
-      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
-    setPredicate: selected.size() == 1
-- slug: challenge-devops-engineer
-  description: 'Challenge packet: the DevOps Engineer challenges the drafted Feature. Not itself challenged.'
-  actor: devops-engineer
-  skills: devops-engineer
-  artifact: challenge
-  instructions:
-  - step-contract
-  - challenge-main
-  - enabler-feature-refinement-brief
-  capabilities:
-    deep-reasoning: 8
-    coding: 5
-    tool-use: 4
-    long-context: 6
-    multimodal: 0
-    writing-quality: 6
-    instruction-following: 8
-    fast-iteration: 4
-    schema-adherence: 7
-  conditions:
-  - kind: precondition
-    slug: after-draft
-    step: draft
-  - kind: postcondition
-    slug: packet-targets-the-drafted-artifact
-    setSelector:
-      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
-    setPredicate: selected.size() == 1
-- slug: challenge-site-reliability-engineer
-  description: 'Challenge packet: the Site Reliability Engineer challenges the drafted Feature. Not itself challenged.'
-  actor: site-reliability-engineer
-  skills: site-reliability-engineer
-  artifact: challenge
-  instructions:
-  - step-contract
-  - challenge-main
-  - enabler-feature-refinement-brief
-  capabilities:
-    deep-reasoning: 8
-    coding: 5
-    tool-use: 4
-    long-context: 6
-    multimodal: 0
-    writing-quality: 6
-    instruction-following: 8
-    fast-iteration: 4
-    schema-adherence: 7
-  conditions:
-  - kind: precondition
-    slug: after-draft
-    step: draft
-  - kind: postcondition
-    slug: packet-targets-the-drafted-artifact
-    setSelector:
-      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
-    setPredicate: selected.size() == 1
-- slug: challenge-observability-engineer
-  description: 'Challenge packet: the Observability Engineer challenges the drafted Feature. Not itself challenged.'
-  actor: observability-engineer
-  skills: observability-engineer
-  artifact: challenge
-  instructions:
-  - step-contract
-  - challenge-main
-  - enabler-feature-refinement-brief
+  - capability-enabler-refinement-brief
   capabilities:
     deep-reasoning: 8
     coding: 5
@@ -188,14 +195,14 @@ steps:
       setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
     setPredicate: selected.size() == 1
 - slug: revise
-  description: 'Main artifact, owner revision: the System Architect answers every challenge packet and revises the Feature for the human gate.'
-  actor: system-architect
-  skills: system-architect
-  artifact: feature
+  description: 'Main artifact, owner revision: the Solution Architect answers every challenge packet and revises the Enabler Capability for the human gate.'
+  actor: solution-architect
+  skills: solution-architect
+  artifact: capability-enabler
   instructions:
   - step-contract
   - revise-main
-  - enabler-feature-refinement-brief
+  - capability-enabler-refinement-brief
   capabilities:
     deep-reasoning: 7
     coding: 0
@@ -208,20 +215,20 @@ steps:
     schema-adherence: 8
   conditions:
   - kind: precondition
-    slug: after-challenge-software-engineer
-    step: challenge-software-engineer
+    slug: after-challenge-solution-manager
+    step: challenge-solution-manager
+  - kind: precondition
+    slug: after-challenge-systems-engineer
+    step: challenge-systems-engineer
+  - kind: precondition
+    slug: after-challenge-security-expert
+    step: challenge-security-expert
+  - kind: precondition
+    slug: after-challenge-compliance-officer
+    step: challenge-compliance-officer
   - kind: precondition
     slug: after-challenge-platform-engineer
     step: challenge-platform-engineer
-  - kind: precondition
-    slug: after-challenge-devops-engineer
-    step: challenge-devops-engineer
-  - kind: precondition
-    slug: after-challenge-site-reliability-engineer
-    step: challenge-site-reliability-engineer
-  - kind: precondition
-    slug: after-challenge-observability-engineer
-    step: challenge-observability-engineer
   - kind: postcondition
     slug: revises-the-drafted-artifact
     setSelector:
@@ -232,3 +239,8 @@ steps:
     setSelector:
       setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
     setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'solution-architect')

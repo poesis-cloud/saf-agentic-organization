@@ -46,7 +46,12 @@ steps:
     slug: parent-feature-is-approved
     setSelector:
       setQuery: workspace.filter(a, a.path == step.artifact.path && a.data.parent != null)
-    setPredicate: selected.all(a, workspace.exists(p, p.kind == 'feature' && p.path == a.data.parent && p.data.status in ['ready', 'implementing']))
+    setPredicate: selected.all(a, workspace.exists(p, p.kind == 'feature' && p.path == a.data.parent && p.data.status in ['ready', 'implementing']) || workspace.exists(p, p.kind == 'feature-enabler' && p.path == a.data.parent && p.data.status in ['ready', 'implementing']))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'product-owner')
 - slug: challenge-software-engineer
   description: 'Challenge packet: the Software Engineer challenges the drafted Story. Not itself challenged.'
   actor: software-engineer
@@ -201,3 +206,8 @@ steps:
     setSelector:
       setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
     setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'product-owner')

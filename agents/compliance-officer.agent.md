@@ -1,6 +1,6 @@
 ---
 name: compliance-officer
-description: 'Compliance Officer on the bench. Challenges Solution Intent, Capabilities and supplier agreements for the regulations and standards that apply and the objective evidence they require, produced as the solution is built, before the human gate.'
+description: 'Compliance Officer on the bench. Challenges Solution Intent, Capabilities and their enablers, supplier agreements and the delivery pipeline for the regulations and standards that apply and the objective evidence they require, produced as the solution is built, before the human gate.'
 ---
 <!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
 

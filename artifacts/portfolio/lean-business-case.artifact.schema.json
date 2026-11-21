@@ -3,7 +3,7 @@
   "$id": "gsmarc://saf/artifacts/lean-business-case.artifact/v1",
   "$ref": "gsmarc://saf/contracts/artifact/v1",
   "title": "Lean Business Case artifact schema",
-  "description": "The case for an Epic in the analyzing state: its MVP, cost estimate and projected value, ending in a go or no-go recommendation.",
+  "description": "The case for an Epic or enabler Epic in the analyzing state: its MVP, cost estimate and projected value, ending in a go or no-go recommendation. Written by the owner of the Epic it analyzes.",
   "type": "object",
   "additionalProperties": true,
   "x-artifact": {
@@ -11,7 +11,8 @@
     "layer": "portfolio",
     "class": "main",
     "owners": [
-      "epic-owner"
+      "epic-owner",
+      "enterprise-architect"
     ],
     "templates": [
       "templates/portfolio/lean-business-case.artifact-template.md"
@@ -54,7 +55,7 @@
     "owner": {
       "type": "string",
       "minLength": 1,
-      "description": "Agent slug of the owning author. Only the owner writes this artifact."
+      "description": "Agent slug of the author. Only the owner writes this artifact, its state changes included; the draft names the workflow's author."
     },
     "challengeLedger": {
       "description": "The owner's answers to the expert challenge (see the definition).",
@@ -63,10 +64,10 @@
     "epic": {
       "type": "string",
       "minLength": 1,
-      "description": "The Epic analyzed. Workspace-relative path."
+      "description": "The Epic or enabler Epic analyzed. Workspace-relative path."
     },
     "recommendation": {
-      "description": "The Epic Owner's recommendation to Portfolio Leadership. One of: pending | go | no-go.",
+      "description": "The owner's recommendation to Portfolio Leadership. One of: pending | go | no-go.",
       "enum": [
         "pending",
         "go",

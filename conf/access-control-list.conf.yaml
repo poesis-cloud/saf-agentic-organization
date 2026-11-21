@@ -14,6 +14,9 @@
 
 # Access control list: one role per agent, granting create and update on exactly the artifact
 # kinds its workflow steps deliver. Generated from builds/model (make generate); nobody deletes.
+# The harness authorizes a write by artifact kind, not by path: a layer, train or team folder is
+# not a privilege boundary. Enablers are kinds of their own (`*-enabler`) so that each backlog
+# kind has exactly one writer.
 
 actors:
 - slug: value-management-officer
@@ -253,6 +256,14 @@ roles:
     action: create
   - artifact: challenge
     action: update
+  - artifact: epic-enabler
+    action: create
+  - artifact: epic-enabler
+    action: update
+  - artifact: lean-business-case
+    action: create
+  - artifact: lean-business-case
+    action: update
 - slug: business-owner
   privileges:
   - artifact: challenge
@@ -279,6 +290,10 @@ roles:
     action: update
 - slug: solution-architect
   privileges:
+  - artifact: capability-enabler
+    action: create
+  - artifact: capability-enabler
+    action: update
   - artifact: challenge
     action: create
   - artifact: challenge
@@ -315,9 +330,9 @@ roles:
     action: create
   - artifact: challenge
     action: update
-  - artifact: feature
+  - artifact: feature-enabler
     action: create
-  - artifact: feature
+  - artifact: feature-enabler
     action: update
   - artifact: nfrs
     action: create

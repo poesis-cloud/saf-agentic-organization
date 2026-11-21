@@ -1,7 +1,7 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Portfolio Roadmap title>"
-owner: "portfolio-manager"   # Agent slug of the owning author
+owner: "portfolio-manager"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 horizon: "<e.g. 2027-2029>"   # The time horizon covered
 lastReviewed: "YYYY-MM-DD"   # YYYY-MM-DD of the last review

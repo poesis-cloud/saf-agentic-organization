@@ -1,7 +1,7 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Team charter title>"
-owner: "scrum-master"   # Agent slug of the owning author
+owner: "scrum-master"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 topology: "stream-aligned"   # stream-aligned | complicated-subsystem | platform | enabling
 method: "safe-scrum"   # safe-scrum | safe-team-kanban

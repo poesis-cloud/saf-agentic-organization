@@ -24,7 +24,13 @@ description: 'Craft skill of the Platform Engineer: what to ask of each artifact
 - Does the runway order platform capabilities before the Epics that need them, counting their lead times: procurement, landing zones, connectivity?
 - Do the standards allow self-service on a paved road, or do they require a ticket per environment?
 
-### Feature (`feature`)
+### Enabler Epic (`epic-enabler`) and enabler Capability (`capability-enabler`)
+
+- Which platform capabilities does it add or retire, and is the platform's own lead time (landing zones, procurement, connectivity) inside the MVP and the PI it targets?
+- Is it one shared platform with a named owner and a self-service path, or one more platform per train?
+- Who runs it after delivery, and is that run cost in the case?
+
+### Enabler Feature (`feature-enabler`)
 
 - Which environments does this enabler Feature need, from development to production, and is provisioning them from code an acceptance criterion?
 - Does it reuse a platform capability, or add a technology someone must patch, upgrade and back up? Who runs it after the PI?

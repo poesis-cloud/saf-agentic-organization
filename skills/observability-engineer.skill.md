@@ -17,7 +17,7 @@ description: 'Craft skill of the Observability Engineer: what to ask of each art
 
 ## Lens by artifact
 
-### Feature (`feature`)
+### Enabler Feature (`feature-enabler`)
 
 - Does this enabler Feature state the telemetry it emits as acceptance criteria (metrics, structured logs, traces), or is observability left for later?
 - If it adds a component or a dependency, how are its health and saturation seen from the first deployment, and does it use the same telemetry pipeline and naming conventions as the rest?

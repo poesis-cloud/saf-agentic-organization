@@ -9,7 +9,7 @@ Define or revise one Agile Release Train: its mission, teams, roles and PI caden
 
 - **Main artifact:** `art-canvas` at `portfolio/arts/<art-slug>/art-canvas.md` (template `templates/art/art-canvas.artifact-template.md`), owned by `release-train-engineer`.
 - **Challenge packets:** `portfolio/arts/<art-slug>/challenges/art-launch-<your-agent-slug>.challenge.md` (template `templates/shared/challenge.artifact-template.md`).
-- **Panel:** `agile-coach`, `system-architect`, `product-manager`.
+- **Panel:** `agile-coach`, `system-architect`, `product-manager`, `business-analyst`.
 
 ## Draft
 

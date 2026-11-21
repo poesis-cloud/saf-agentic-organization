@@ -40,6 +40,7 @@
     "decisionDate",
     "supersedes",
     "features",
+    "transitions",
     "stepOutcomes"
   ],
   "properties": {
@@ -51,14 +52,14 @@
     "owner": {
       "type": "string",
       "minLength": 1,
-      "description": "Agent slug of the owning author. Only the owner writes this artifact."
+      "description": "Agent slug of the author. Only the owner writes this artifact, its state changes included; the draft names the workflow's author."
     },
     "challengeLedger": {
       "description": "The owner's answers to the expert challenge (see the definition).",
       "$ref": "#/$defs/challengeLedger"
     },
     "status": {
-      "description": "Decision state. One of: proposed | accepted | superseded | rejected.",
+      "description": "Decision state. `proposed` is set while writing; `accepted`, `rejected` and `superseded` only in `adr-transition`, after the human decided. One of: proposed | accepted | superseded | rejected.",
       "enum": [
         "proposed",
         "accepted",
@@ -83,11 +84,15 @@
     },
     "features": {
       "type": "array",
-      "description": "Paths of the Features that need or implement this decision.",
+      "description": "Paths of the Features and enabler Features that need or implement this decision.",
       "items": {
         "type": "string",
         "minLength": 1
       }
+    },
+    "transitions": {
+      "description": "State history.",
+      "$ref": "#/$defs/transitions"
     },
     "stepOutcomes": {
       "description": "Step outcome record: one entry per step that committed this artifact.",
@@ -204,6 +209,48 @@
           "friction": {
             "description": "Optional. Workflow friction the actor observed (raw input for Inspect and Adapt, never a fix).",
             "type": "string"
+          }
+        }
+      }
+    },
+    "transitions": {
+      "description": "State history. One entry per state change, appended by the owner in its `*-transition` workflow after the human decided.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "from",
+          "to",
+          "date",
+          "decidedBy",
+          "reason"
+        ],
+        "properties": {
+          "from": {
+            "description": "State left.",
+            "type": "string",
+            "minLength": 1
+          },
+          "to": {
+            "description": "State entered.",
+            "type": "string",
+            "minLength": 1
+          },
+          "date": {
+            "description": "YYYY-MM-DD.",
+            "type": "string",
+            "minLength": 1
+          },
+          "decidedBy": {
+            "description": "The human (name or role) who decided.",
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "description": "One line: why.",
+            "type": "string",
+            "minLength": 1
           }
         }
       }

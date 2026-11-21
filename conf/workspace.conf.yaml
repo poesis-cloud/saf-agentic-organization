@@ -98,18 +98,23 @@ nodes:
           template: shared/challenge
           cardinality: 0..*
   - slug: epics
-    description: 'Portfolio Backlog: one folder per Epic.'
+    description: 'Portfolio Backlog: one folder per Epic or enabler Epic.'
     children:
     - slug: <epic-slug>
       description: One epic folder.
       children:
       - slug: <epic-slug>.epic.md
-        description: One Epic (business or enabler).
+        description: One business Epic.
         artifact: epic
         template: portfolio/epic
         cardinality: 0..*
+      - slug: <epic-slug>.epic-enabler.md
+        description: One enabler Epic, led by the Enterprise Architect.
+        artifact: epic-enabler
+        template: portfolio/epic-enabler
+        cardinality: 0..*
       - slug: <epic-slug>.lean-business-case.md
-        description: The Epic's Lean Business Case.
+        description: The Lean Business Case of the Epic or enabler Epic of this folder.
         artifact: lean-business-case
         template: portfolio/lean-business-case
         cardinality: 0..*
@@ -117,7 +122,7 @@ nodes:
         description: Expert challenge packets.
         children:
         - slug: <challenge-slug>.challenge.md
-          description: Expert challenge packets on this Epic and its Lean Business Case.
+          description: Expert challenge packets on this Epic or enabler Epic and its Lean Business Case.
           artifact: challenge
           template: shared/challenge
           cardinality: 0..*
@@ -192,21 +197,26 @@ nodes:
           template: events/inspect-and-adapt
           cardinality: 0..*
       - slug: capabilities
-        description: 'Solution Train Backlog: one folder per Capability.'
+        description: 'Solution Train Backlog: one folder per Capability or enabler Capability.'
         children:
         - slug: <capability-slug>
           description: One capability folder.
           children:
           - slug: <capability-slug>.capability.md
-            description: One Capability (business or enabler).
+            description: One business Capability.
             artifact: capability
             template: solution/capability
+            cardinality: 0..*
+          - slug: <capability-slug>.capability-enabler.md
+            description: One enabler Capability, written by the Solution Architect.
+            artifact: capability-enabler
+            template: solution/capability-enabler
             cardinality: 0..*
           - slug: challenges
             description: Expert challenge packets.
             children:
             - slug: <challenge-slug>.challenge.md
-              description: Expert challenge packets on this capability.
+              description: Expert challenge packets on this capability or enabler capability.
               artifact: challenge
               template: shared/challenge
               cardinality: 0..*
@@ -238,7 +248,7 @@ nodes:
           - slug: pi-objectives.md
             description: Solution Train PI Objectives and plan for one PI.
             artifact: pi-objectives
-            template: art/pi-objectives
+            template: solution/pi-objectives
             cardinality: 0..1
           - slug: challenges
             description: Expert challenge packets.
@@ -338,21 +348,26 @@ nodes:
               template: shared/challenge
               cardinality: 0..*
       - slug: features
-        description: 'ART Backlog: one folder per Feature.'
+        description: 'ART Backlog: one folder per Feature or enabler Feature.'
         children:
         - slug: <feature-slug>
           description: One feature folder.
           children:
           - slug: <feature-slug>.feature.md
-            description: One Feature (business or enabler).
+            description: One business Feature.
             artifact: feature
             template: art/feature
+            cardinality: 0..*
+          - slug: <feature-slug>.feature-enabler.md
+            description: One enabler Feature, written by the System Architect.
+            artifact: feature-enabler
+            template: art/feature-enabler
             cardinality: 0..*
           - slug: challenges
             description: Expert challenge packets.
             children:
             - slug: <challenge-slug>.challenge.md
-              description: Expert challenge packets on this feature.
+              description: Expert challenge packets on this feature or enabler feature.
               artifact: challenge
               template: shared/challenge
               cardinality: 0..*

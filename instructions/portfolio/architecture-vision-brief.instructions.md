@@ -15,7 +15,7 @@ Establish or revise the portfolio's technology vision, strategy and roadmap, and
 
 - Read the Strategic Themes, Portfolio Vision and the Epics.
 - Describe intentional architecture and a few principles; leave room for emergent design in the trains.
-- Name the enabler Epics the runway needs; they are written in `epic-hypothesis`, not here.
+- Name the enabler Epics the runway needs and list those that exist in `enablerEpics`; you write each one in `epic-enabler-hypothesis`, not here.
 
 ## Challenge
 
@@ -30,4 +30,4 @@ Done when: Target, principles and the ordered runway are stated; each enabler Ep
 
 ## Human gate
 
-Portfolio Leadership and the lead architects decide whether this is the technical direction. Next: `portfolio-gate-decision`; then `epic-hypothesis` for each enabler Epic.
+Portfolio Leadership and the lead architects decide whether this is the technical direction. Next: `portfolio-gate-decision`; then `epic-enabler-hypothesis` for each enabler Epic.

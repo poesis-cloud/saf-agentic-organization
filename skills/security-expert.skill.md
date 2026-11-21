@@ -34,11 +34,12 @@ description: 'Craft skill of the Security Expert: what to ask of each artifact k
 - Is each interface between ARTs and suppliers described with its authentication and its trust assumption?
 - Does verification include security tests that produce evidence, not a one-time audit?
 
-### Capability (`capability`) and Feature (`feature`)
+### Capability (`capability`), enabler Capability (`capability-enabler`), Feature (`feature`) and enabler Feature (`feature-enabler`)
 
 - Which acceptance criterion would an abuse case break? Name the missing negative criterion.
 - Does it change who can do what? Then authorization needs its own criterion.
 - Does it introduce a dependency, an integration or an input that is trusted without reason?
+- For an enabler: does it move a trust boundary, an identity path or where secrets live, and is the hardening an acceptance criterion?
 
 ### Supplier agreement (`supplier-agreement`)
 

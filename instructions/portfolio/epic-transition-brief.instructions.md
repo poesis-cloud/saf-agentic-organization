@@ -19,4 +19,4 @@ Record the human's decision to move one Epic to a new Portfolio Kanban state, th
 
 ## After the run
 
-On `analyzing`: `lean-business-case`. On `ready`: the trains pull the Epic (`capability-refinement`, `feature-refinement`).
+On `analyzing`: `lean-business-case`. On `ready`: the trains pull the Epic (`capability-refinement`, `feature-refinement` and their enabler siblings).

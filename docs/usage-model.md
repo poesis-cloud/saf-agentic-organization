@@ -38,9 +38,9 @@ flowchart LR
 
 | You care about | Talk to | It writes, through its workflows |
 |---|---|---|
-| Strategy, budgets, Epics | `value-management-officer` (Portfolio) | Strategic Themes, Portfolio Vision, Lean Budgets, Epics, Lean Business Cases, Portfolio Roadmap, Architecture Vision |
-| A large solution built by several ARTs and suppliers | `solution-train-engineer` (Large Solution) | Solution Vision, Solution Intent, Capabilities, Solution Roadmap, supplier agreements, Solution Train PI plan |
-| A product, its Features, the PI, releases | `release-train-engineer` (ART) | Product Vision, PI Roadmap, Features, architecture decisions, NFRs, the delivery pipeline map, PI Objectives, releases |
+| Strategy, budgets, Epics | `value-management-officer` (Portfolio) | Strategic Themes, Portfolio Vision, Lean Budgets, Epics and enabler Epics, Lean Business Cases, Portfolio Roadmap, Architecture Vision |
+| A large solution built by several ARTs and suppliers | `solution-train-engineer` (Large Solution) | Solution Vision, Solution Intent, Capabilities and enabler Capabilities, Solution Roadmap, supplier agreements, Solution Train PI plan |
+| A product, its Features, the PI, releases | `release-train-engineer` (ART) | Product Vision, PI Roadmap, Features and enabler Features, architecture decisions, NFRs, the delivery pipeline map, PI Objectives, releases |
 | Stories, iterations, code | `scrum-master` (Team) | Team charter, Stories, iteration plans, code changes |
 
 You never have to name a workflow. If your concern belongs to another layer, the orchestrator
@@ -83,14 +83,16 @@ that comes next and asks you to start a new session for it.
 
 | Kind | Steps | What reaches you |
 |---|---|---|
-| **Loop** (32 workflows) | draft → one challenge per expert → revise | a main artifact with its challenge ledger |
-| **Transition** (4) | the owner records your decision as one state change → the orchestrator re-renders the Kanban | the item in its new state |
+| **Loop** (36 workflows) | draft → one challenge per expert → revise | a main artifact with its challenge ledger |
+| **Transition** (11) | the owner records your decision as one state change → for a backlog item, the orchestrator re-renders the Kanban | the item in its new state |
 | **Event** (10) | the orchestrator records the SAFe event (and re-renders the Kanban for a sync) | the record: decisions, actions, impediments |
 | **Gate decision** (4) | the orchestrator records your decision on a vision, roadmap, budget, plan… | the decision record |
 
-Every backlog item (Epic, Capability, Feature, Story) moves on its Kanban only through its
-transition workflow, written by its owner. Every other main artifact is accepted through a gate
-decision record. Either way your decision becomes committed evidence.
+Every backlog item (Epic, Capability, Feature, their enablers, Story) moves on its Kanban only
+through its transition workflow, written by its owner. So does every other artifact with a state:
+an architecture decision, a release, a supplier agreement, a code change. Every other main
+artifact is accepted through a gate decision record. Either way your decision becomes committed
+evidence.
 
 ## From strategy to code
 
@@ -101,20 +103,24 @@ flowchart TB
     subgraph Portfolio
         ST[strategic-themes] --> PV[portfolio-vision] --> EH[epic-hypothesis] --> LBC[lean-business-case] --> ET[epic-transition]
         ST --> SIP[strategic-investment-planning]
+        AV[architecture-vision] --> EEH[epic-enabler-hypothesis] --> EET[epic-enabler-transition]
     end
     subgraph LS[Large Solution]
         SV[solution-vision] --> SI[solution-intent]
         SV --> CR[capability-refinement] --> PP[pre-plan]
+        SI --> CER[capability-enabler-refinement] --> PP
     end
     subgraph ART
         PRV[product-vision] --> FR[feature-refinement] --> PI[pi-planning] --> SD[system-demo] --> ROD[release-on-demand] --> IA[inspect-and-adapt]
-        AD[architecture-decision] --> EFR[enabler-feature-refinement] --> PI
+        AD[architecture-decision] --> EFR[feature-enabler-refinement] --> PI
     end
     subgraph Team
         SR[story-refinement] --> IP[iteration-planning] --> IMP[story-implementation] --> IR[iteration-review]
     end
     ET --> CR
     ET --> FR
+    EET --> CER
+    EET --> EFR
     PP --> PI
     PI --> SR
     IR --> SD
@@ -129,8 +135,10 @@ Typical paths:
 - **A Feature from the ART's own context:** `feature-refinement` → `feature-transition` →
   `pi-planning`. No Epic is needed.
 - **A technical concern:** `architecture-decision` for a design choice, `nfr-refinement` for a
-  system quality, `enabler-feature-refinement` for runway or technical debt at Feature size, a
-  Story of type enabler (a spike is an exploration enabler) at team size.
+  system quality, `feature-enabler-refinement` for runway or technical debt at Feature size,
+  `capability-enabler-refinement` across ARTs, `epic-enabler-hypothesis` at portfolio size (the
+  Enterprise Architect is its Epic Owner), a Story of type enabler (a spike is an exploration
+  enabler) at team size.
 - **A bug:** a Story (`story-refinement`), or a Feature when it does not fit an iteration.
 
 ## What the harness enforces
@@ -142,12 +150,14 @@ These rules are conditions checked by the harness on committed state, not advice
 | A challenge packet targets the artifact drafted in the same run | every challenge step |
 | The owner revises the artifact it drafted and answers every packet of the run | every revise step |
 | No acceptance without challenge: a gate decision that accepts needs at least one packet on the artifact | the four gate-decision workflows |
-| A backlog item cannot leave refinement before it was challenged | the four transition workflows |
-| An Epic becomes ready only with a Lean Business Case recommending go | `epic-transition` |
-| A Lean Business Case names an Epic under analysis; an MVP evaluation needs an implementing Epic | `lean-business-case`, `epic-mvp-evaluation` |
-| A Capability, Feature or Story splits only from an approved parent (or has none) | the refinement workflows |
-| PI Planning needs a ready Feature (or Capability); Iteration Planning and implementation need a ready Story; a release needs a built Feature | their first step |
-| Each agent writes only the artifact kinds its steps deliver | the access control list |
+| A draft names its author as owner | every draft and revise step |
+| No item moves past the human's go before it was challenged | the eleven transition workflows |
+| An Epic or enabler Epic becomes ready only with a Lean Business Case recommending go | `epic-transition`, `epic-enabler-transition` |
+| A Lean Business Case names an Epic of its own kind under analysis; an MVP evaluation needs an implementing Epic | the business case and MVP evaluation workflows |
+| A Capability, Feature or Story splits only from an approved parent (or has none); business work never splits from an enabler | the refinement workflows |
+| PI Planning needs a ready Feature or enabler Feature (Capability or enabler Capability); Iteration Planning and implementation need a ready Story; a release needs a built Feature | their first step |
+| A Story is accepted only when its code change, if it has one, is recorded `merged` | `story-transition` |
+| Each agent writes only the artifact kinds its steps deliver; each backlog kind has one writer | the access control list |
 
 When a rule refuses a step, the orchestrator tells you which state is missing and which workflow
 produces it.

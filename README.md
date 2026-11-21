@@ -53,13 +53,13 @@ and what was verified against the SAFe knowledge base, is in
 
 ## The organization at a glance
 
-**38 agents, 50 workflows, 31 artifact kinds, across the four layers of Full SAFe.**
+**38 agents, 61 workflows, 34 artifact kinds, across the four layers of Full SAFe.**
 
 | Layer | Orchestrator you talk to | SAFe roles that author | What reaches your gate |
 |---|---|---|---|
-| Portfolio | `value-management-officer` | `portfolio-manager`, `epic-owner`, `enterprise-architect`, `business-owner` | Strategic Themes, Portfolio Vision, value streams, Epics, Lean Business Cases, Lean Budgets, Portfolio Roadmap, Architecture Vision |
-| Large Solution | `solution-train-engineer` | `solution-manager`, `solution-architect` | Solution Train canvas, Solution Vision, Solution Intent, Capabilities, Solution Roadmap, supplier agreements, Solution Train PI Objectives |
-| ART | `release-train-engineer` | `product-manager`, `system-architect` | ART canvas, Product Vision, PI Roadmap, Features, architecture decisions, NFRs, delivery pipeline, PI Objectives, releases |
+| Portfolio | `value-management-officer` | `portfolio-manager`, `epic-owner`, `enterprise-architect`, `business-owner` | Strategic Themes, Portfolio Vision, value streams, Epics and enabler Epics, Lean Business Cases, Lean Budgets, Portfolio Roadmap, Architecture Vision |
+| Large Solution | `solution-train-engineer` | `solution-manager`, `solution-architect` | Solution Train canvas, Solution Vision, Solution Intent, Capabilities and enabler Capabilities, Solution Roadmap, supplier agreements, Solution Train PI Objectives |
+| ART | `release-train-engineer` | `product-manager`, `system-architect` | ART canvas, Product Vision, PI Roadmap, Features and enabler Features, architecture decisions, NFRs, delivery pipeline, PI Objectives, releases |
 | Team | `scrum-master` | `product-owner` | Team charter, Stories, iteration plans, code changes |
 
 **The expert bench (25 real IT jobs).** Each sits on the panels where its lens matters:
@@ -144,9 +144,9 @@ indicative; artifacts are the only evidence.
 - [`agents/`](agents/): the 38 agents, one compact identity each (`<slug>.agent.md`)
 - [`skills/`](skills/): one craft skill per agent (`<slug>.skill.md`): its authoring guide and its lens on each artifact it challenges
 - [`instructions/`](instructions/): what the harness injects: the step contract and step patterns in `shared/`, one brief per workflow and one catalog per orchestrator in the layer folders
-- [`workflows/`](workflows/): the 50 workflows by layer (`portfolio/`, `solution/`, `art/`, `team/`)
-- [`artifacts/`](artifacts/) and [`templates/`](templates/): one JSON Schema and one template per artifact kind
-- [`conf/`](conf/): harness configuration: `harness`, `model-profiles`, `access-control-list` (least privilege, one role per agent), `workspace` (where each artifact lives)
+- [`workflows/`](workflows/): the 61 workflows by layer (`portfolio/`, `solution/`, `art/`, `team/`)
+- [`artifacts/`](artifacts/) and [`templates/`](templates/): one JSON Schema per artifact kind and its templates
+- [`conf/`](conf/): harness configuration: `harness`, `model-profiles`, `access-control-list` (least privilege by artifact kind, one role per agent, one writer per backlog kind), `workspace` (where each artifact lives)
 - [`builds/model/`](builds/model/): the organization model (roster, artifact kinds, workflows, panels) and the generator of the structured files above (`make generate`); agents, skills and shared instructions are hand-written
 - [`builds/plugin/`](builds/plugin/): the plugin renderer and its inputs
 - [`docs/`](docs/): [usage model](docs/usage-model.md), [catalog](docs/catalog.md), [step artifacts](docs/step-artifacts.md), [SAFe conformance](docs/safe-conformance.md)

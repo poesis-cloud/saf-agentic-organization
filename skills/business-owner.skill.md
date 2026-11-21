@@ -28,12 +28,13 @@ description: 'Craft skill of the Business Owner agent: what to ask of each artif
 - Which current revenue stream, customer segment or partner does the future state put at risk?
 - Are the licenses, market rules and governance constraints that bound the future state named?
 
-### Epic (`epic`)
+### Epic (`epic`) and enabler Epic (`epic-enabler`)
 
 - Hypothesis: is the outcome stated in money, customers or risk, at a size that justifies an Epic?
 - Hypothesis: which human sponsor answers for the outcome, and would the business recognize the value and time criticality scored in the WSJF?
 - MVP evaluation: do the results justify the next investment on their own, past spend ignored?
 - MVP evaluation: if we persevere, what return is expected and by when; if we pivot or stop, what does the business lose and whom must it tell?
+- Enabler Epic: which business outcome waits for this runway, and is that worth the business Epics it delays in the same budget?
 
 ### Lean Budgets (`lean-budgets`)
 
@@ -49,7 +50,7 @@ description: 'Craft skill of the Business Owner agent: what to ask of each artif
 
 ### PI Objectives (`pi-objectives`)
 
-- Per objective: can a Business Owner value it as written, and does the proposed business value (1 to 10) hold? If not, give your number and one reason, as a proposal.
+- Per objective: can a Business Owner value it as written? Propose its business value (1 to 10) with one reason, marked as a proposal: the owner copies it, the humans assign it.
 - Do the committed objectives cover what the business needs most this PI, and what was left uncommitted or out?
 - Is a risk marked accepted or owned on behalf of the business without a human having said so?
 - Solution Train scope: do the objectives add up to Capabilities a customer can see at the Solution Demo, or only to ART outputs?

@@ -55,7 +55,7 @@
     "owner": {
       "type": "string",
       "minLength": 1,
-      "description": "Agent slug of the owning author. Only the owner writes this artifact."
+      "description": "Agent slug of the author. Only the owner writes this artifact, its state changes included; the draft names the workflow's author."
     },
     "challengeLedger": {
       "description": "The owner's answers to the expert challenge (see the definition).",
@@ -105,7 +105,7 @@
         "string",
         "null"
       ],
-      "description": "The Feature this Story splits from; null for a Story from the team's local context. Workspace-relative path, or null."
+      "description": "The Feature or enabler Feature this Story splits from; null for a Story from the team's local context. Workspace-relative path, or null."
     },
     "estimate": {
       "type": [
@@ -241,7 +241,7 @@
       }
     },
     "transitions": {
-      "description": "Kanban history. One entry per state change, appended by the owner in a `*-transition` workflow after the human decided.",
+      "description": "State history. One entry per state change, appended by the owner in its `*-transition` workflow after the human decided.",
       "type": "array",
       "items": {
         "type": "object",

@@ -1,9 +1,9 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Lean Business Case title>"
-owner: "epic-owner"   # Agent slug of the owning author
+owner: "epic-owner"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
-epic: "portfolio/epics/<epic-slug>/<epic-slug>.epic.md"   # The Epic analyzed
+epic: "portfolio/epics/<epic-slug>/<epic-slug>.epic.md"   # The Epic or enabler Epic analyzed
 recommendation: "pending"   # pending | go | no-go
 mvpCostEstimate: null   # Estimated cost of the MVP, with its unit
 implementationCostEstimate: null   # Forecast cost of the full implementation if the hypothesis is proven, with its unit

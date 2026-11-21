@@ -1,7 +1,7 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<ART canvas title>"
-owner: "release-train-engineer"   # Agent slug of the owning author
+owner: "release-train-engineer"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 valueStream: null   # The development value stream served
 solutionTrain: null   # The Solution Train folder, when the ART belongs to one

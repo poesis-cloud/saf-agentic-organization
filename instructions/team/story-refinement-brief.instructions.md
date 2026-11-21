@@ -15,7 +15,7 @@ Write or thicken one Story so it is ready for Iteration Planning: user voice, ac
 
 - One Story per run, a vertical slice that fits in an iteration. Create it with `status: backlog`, or thicken it without changing its status.
 - User stories use the user-voice form; an enabler Story (a spike is an exploration enabler) says what must be learned or built.
-- Write Given/When/Then acceptance criteria and the NFR ids that apply. Set `parent` to the Feature it splits from. Leave `estimate` to the team's challenge.
+- Write Given/When/Then acceptance criteria and the NFR ids that apply. Set `parent` to the Feature or enabler Feature it splits from. Leave `estimate` to the team's challenge.
 
 ## Challenge
 

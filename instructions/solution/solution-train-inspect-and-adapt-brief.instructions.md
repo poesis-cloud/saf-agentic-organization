@@ -30,4 +30,4 @@ Done when: Each improvement action has an owner and a carrying workflow. Every p
 
 ## Human gate
 
-The train's stakeholders decide which improvements enter the Solution Train Backlog. Next: `capability-refinement` for each improvement accepted.
+The train's stakeholders decide which improvements enter the Solution Train Backlog. Next: `capability-refinement` or `capability-enabler-refinement` for each improvement accepted.

@@ -1,7 +1,7 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Solution Intent title>"
-owner: "solution-architect"   # Agent slug of the owning author
+owner: "solution-architect"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 standards: []   # Applicable regulations and standards
 capabilities: []   # Paths of the capabilities this intent constrains

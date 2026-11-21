@@ -15,10 +15,10 @@ description: 'Craft skill of the System Architect: how to author enabler Feature
 
 ## Authoring guide
 
-### Feature (`feature`)
+### Enabler Feature (`feature-enabler`)
 
-- Enabler Features only: `type: enabler` and one `enablerType`. Exploration: learn or reduce risk. Architecture: extend the runway. Infrastructure: environments and the pipeline. Compliance: the evidence a standard demands.
-- **Benefit hypothesis:** the business Features it makes possible or faster, and the PI in which they need it.
+- One `enablerType`. Exploration: learn or reduce risk. Architecture: extend the runway. Infrastructure: environments and the pipeline. Compliance: the evidence a standard demands.
+- **Benefit hypothesis:** the business Features in `enables` it makes possible or faster, and the PI in which they need it. The decisions it implements go in `adrs`.
 - **Acceptance criteria:** demonstrable on a working system: a measured threshold, a passing pipeline stage, a question answered with evidence. Never "framework installed".
 - **WSJF:** the value sits in risk reduction, opportunity enablement and the time criticality of the dependent Features.
 - Common failures: runway nobody waits for; an exploration enabler with no question and no decision it feeds; a business Feature disguised as an enabler.

@@ -40,6 +40,12 @@ def item(base, folder, var, kind, layer, label):
     node(f"{base}/{folder}/<{var}>/<{var}>.{kind}.md", kind, f"{layer}/{kind}", label)
     node(f"{base}/{folder}/<{var}>/challenges/<challenge-slug>.challenge.md", "challenge", "shared/challenge", f"Expert challenge packets on this {kind}.")
 
+def backlog_item(base, folder, var, kind, layer, label, enabler_label):
+    """A backlog folder holds one item: a business item or its enabler sibling (`<kind>-enabler`)."""
+    node(f"{base}/{folder}/<{var}>/<{var}>.{kind}.md", kind, f"{layer}/{kind}", label)
+    node(f"{base}/{folder}/<{var}>/<{var}>.{kind}-enabler.md", f"{kind}-enabler", f"{layer}/{kind}-enabler", enabler_label)
+    node(f"{base}/{folder}/<{var}>/challenges/<challenge-slug>.challenge.md", "challenge", "shared/challenge", f"Expert challenge packets on this {kind} or enabler {kind}.")
+
 def events(base, names):
     for name in names:
         node(f"{base}/events/<event-slug>.{name}.md", "event-record", f"events/{name}", f"One {name.replace('-', ' ')} record.")
@@ -52,18 +58,19 @@ for k, d in (("strategic-themes", "Strategic Themes in OKR format."), ("portfoli
 scope_common(P, "portfolio", "portfolio-kanban")
 events(P, ["portfolio-sync", "strategic-portfolio-review"])
 item(P, "value-streams", "value-stream-slug", "value-stream", "portfolio", "One development value stream definition.")
-node(f"{P}/epics/<epic-slug>/<epic-slug>.epic.md", "epic", "portfolio/epic", "One Epic (business or enabler).")
-node(f"{P}/epics/<epic-slug>/<epic-slug>.lean-business-case.md", "lean-business-case", "portfolio/lean-business-case", "The Epic's Lean Business Case.")
-node(f"{P}/epics/<epic-slug>/challenges/<challenge-slug>.challenge.md", "challenge", "shared/challenge", "Expert challenge packets on this Epic and its Lean Business Case.")
+node(f"{P}/epics/<epic-slug>/<epic-slug>.epic.md", "epic", "portfolio/epic", "One business Epic.")
+node(f"{P}/epics/<epic-slug>/<epic-slug>.epic-enabler.md", "epic-enabler", "portfolio/epic-enabler", "One enabler Epic, led by the Enterprise Architect.")
+node(f"{P}/epics/<epic-slug>/<epic-slug>.lean-business-case.md", "lean-business-case", "portfolio/lean-business-case", "The Lean Business Case of the Epic or enabler Epic of this folder.")
+node(f"{P}/epics/<epic-slug>/challenges/<challenge-slug>.challenge.md", "challenge", "shared/challenge", "Expert challenge packets on this Epic or enabler Epic and its Lean Business Case.")
 # large solution
 for k, d in (("solution-train-canvas", "Solution Train canvas."), ("solution-vision", "Solution Vision."),
              ("solution-roadmap", "Solution Roadmap."), ("solution-intent", "Solution Intent.")):
     node(f"{ST}/{k}.md", k, f"solution/{k}", d)
 scope_common(ST, "Solution Train", "solution-train-kanban")
 events(ST, ["pre-plan", "coordinate-and-deliver", "solution-demo", "inspect-and-adapt"])
-item(ST, "capabilities", "capability-slug", "capability", "solution", "One Capability (business or enabler).")
+backlog_item(ST, "capabilities", "capability-slug", "capability", "solution", "One business Capability.", "One enabler Capability, written by the Solution Architect.")
 item(ST, "suppliers", "supplier-slug", "supplier-agreement", "solution", "One supplier agreement.")
-node(f"{ST}/pis/<pi-slug>/pi-objectives.md", "pi-objectives", "art/pi-objectives", "Solution Train PI Objectives and plan for one PI.")
+node(f"{ST}/pis/<pi-slug>/pi-objectives.md", "pi-objectives", "solution/pi-objectives", "Solution Train PI Objectives and plan for one PI.")
 node(f"{ST}/pis/<pi-slug>/challenges/<challenge-slug>.challenge.md", "challenge", "shared/challenge", "Expert challenge packets on this PI plan.")
 # ART
 for k, d in (("art-canvas", "ART canvas."), ("product-vision", "Product Vision."), ("product-roadmap", "PI Roadmap."),
@@ -72,7 +79,7 @@ for k, d in (("art-canvas", "ART canvas."), ("product-vision", "Product Vision."
 scope_common(ART, "ART", "art-kanban")
 events(ART, ["art-sync", "system-demo", "inspect-and-adapt"])
 item(ART, "adrs", "adr-slug", "adr", "art", "One architecture decision.")
-item(ART, "features", "feature-slug", "feature", "art", "One Feature (business or enabler).")
+backlog_item(ART, "features", "feature-slug", "feature", "art", "One business Feature.", "One enabler Feature, written by the System Architect.")
 node(f"{ART}/pis/<pi-slug>/pi-objectives.md", "pi-objectives", "art/pi-objectives", "ART PI Objectives and plan for one PI.")
 node(f"{ART}/pis/<pi-slug>/challenges/<challenge-slug>.challenge.md", "challenge", "shared/challenge", "Expert challenge packets on this PI plan.")
 item(ART, "releases", "release-slug", "release", "art", "One release plan and readiness record.")
@@ -95,8 +102,11 @@ WORKFLOWS = []
 def _cond(kind, slug, query, predicate):
     return dict(kind=kind, slug=slug, query=query, predicate=predicate)
 
-def exists_pre(slug, kind, states):
-    return _cond("precondition", slug, f"workspace.filter(a, a.kind == '{kind}' && a.data.status in {states})", "selected.size() > 0")
+def exists_pre(slug, kinds, states):
+    """kinds: one kind, or a list of kinds any of which satisfies the precondition."""
+    kinds = [kinds] if isinstance(kinds, str) else kinds
+    match = " || ".join(f"(a.kind == '{kind}' && a.data.status in {states})" for kind in kinds)  # the harness wants one kind per guard
+    return _cond("precondition", slug, f"workspace.filter(a, {match[1:-1] if len(kinds) == 1 else match})", "selected.size() > 0")
 
 def parent_post(slug, options):
     """options: [(kind, states)] the parent may be, when set."""
@@ -109,10 +119,16 @@ def loop(slug, layer, title, kind, main_path, author, panel, purpose, concerns, 
                           panel=list(panel), purpose=purpose, concerns=concerns, draft=draft, challenge=challenge, revise=revise,
                           gate=gate, next=nxt, predecessors=list(predecessors), draft_conditions=list(draft_conditions)))
 
-def transition(slug, layer, title, kind, main_path, owner, states, purpose, concerns, rules, nxt, predecessors=(), conditions=()):
+def transition(slug, layer, title, kind, main_path, owner, states, purpose, concerns, rules, nxt, predecessors=(), conditions=(), board=True):
+    """board: a backlog item re-renders its layer's Kanban; another artifact with a lifecycle has no board."""
     WORKFLOWS.append(dict(pattern="transition", slug=slug, layer=layer, title=title, kind=kind, main_path=main_path, author=owner,
-                          states=states, purpose=purpose, concerns=concerns, rules=rules, next=nxt,
+                          states=states, purpose=purpose, concerns=concerns, rules=rules, next=nxt, board=board,
                           predecessors=list(predecessors), conditions=list(conditions)))
+
+def challenged_before(slug, states):
+    """No state past the human's go without an answered expert challenge (rejecting needs none)."""
+    return _cond("postcondition", slug, f"workspace.filter(a, a.path == step.artifact.path && a.data.status in {states})",
+                 "selected.all(a, size(a.data.challengeLedger) > 0)")
 
 def event(slug, layer, title, event_name, purpose, concerns, agenda, nxt, kanban=False, predecessors=()):
     WORKFLOWS.append(dict(pattern="event", slug=slug, layer=layer, title=title, event=event_name, kind="event-record",
@@ -122,12 +138,27 @@ def event(slug, layer, title, event_name, purpose, concerns, agenda, nxt, kanban
 def gate(slug, layer, title):
     WORKFLOWS.append(dict(pattern="gate", slug=slug, layer=layer, title=title, kind="gate-decision",
                           main_path=f"{SCOPE[layer]}/decisions/<decision-slug>.gate-decision.md",
-                          purpose=f"Record the human's decision on a challenged {KANBAN_LEVEL[layer].replace('-', ' ')}-level artifact that is not a backlog item (backlog items move with their transition workflow).",
+                          purpose=f"Record the human's decision on a challenged {KANBAN_LEVEL[layer].replace('-', ' ')}-level artifact that has no state of its own (an artifact with a state moves with its transition workflow).",
                           concerns="\"I accept / reject the vision, roadmap, budget, plan…\" after a gate.",
                           next="On a rejection or concerns: rerun the authoring workflow of the artifact.", predecessors=[]))
 
 APPROVED_EPIC = "['ready', 'implementing']"
 OPEN_FLOW = "['analyzing', 'ready', 'implementing']"
+UNDER_ANALYSIS = "['analyzing', 'ready', 'implementing']"
+
+def case_names(slug, kind):
+    return _cond("postcondition", slug, "workspace.filter(a, a.path == step.artifact.path)",
+                 f"selected.all(a, workspace.exists(e, e.kind == '{kind}' && e.path == a.data.epic && e.data.status in {UNDER_ANALYSIS}))")
+
+def epic_conditions():
+    return [_cond("postcondition", "challenged-before-leaving-the-funnel", "workspace.filter(a, a.path == step.artifact.path && a.data.status != 'funnel')",
+                  "selected.all(a, size(a.data.challengeLedger) > 0)"),
+            _cond("postcondition", "approved-epic-has-a-go-business-case", "workspace.filter(a, a.path == step.artifact.path && a.data.status in ['ready', 'implementing'])",
+                  "selected.all(a, workspace.exists(l, l.kind == 'lean-business-case' && l.data.epic == a.path && l.data.recommendation == 'go'))")]
+
+def flow_conditions():
+    return [_cond("postcondition", "challenged-before-ready", "workspace.filter(a, a.path == step.artifact.path && !(a.data.status in ['funnel', 'analyzing']))",
+                  "selected.all(a, size(a.data.challengeLedger) > 0)")]
 
 # =============================== PORTFOLIO ===============================================
 
@@ -174,16 +205,30 @@ loop("value-stream-definition", "portfolio", "Value stream definition", "value-s
 
 loop("epic-hypothesis", "portfolio", "Epic hypothesis", "epic", f"{P}/epics/<epic-slug>/<epic-slug>.epic.md", "epic-owner",
      ["enterprise-architect", "business-owner", "data-analyst"],
-     "Capture or thicken one Epic as an Epic hypothesis statement, ready for Portfolio Leadership to review.",
-     "A new big initiative or idea; an enabler Epic; thicken an Epic in the funnel or under review.",
+     "Capture or thicken one business Epic as an Epic hypothesis statement, ready for Portfolio Leadership to review.",
+     "A new big business initiative or idea; thicken an Epic in the funnel or under review.",
      ["One Epic per run. Create it with `status: funnel`, or thicken the existing one without changing its status.",
-      "Write the hypothesis statement, the business outcomes hypothesis and leading indicators; set `type` (an enabler Epic extends the runway or improves the value stream).",
+      "Write the hypothesis statement, the business outcomes hypothesis and leading indicators. Runway, platform, exploration or compliance work is an enabler Epic, written by `enterprise-architect` in `epic-enabler-hypothesis`.",
       "Estimate WSJF relatively against the other Epics. Outline the MVP in one paragraph; the Lean Business Case details it later."],
      ["Is the hypothesis falsifiable: could the leading indicators prove it wrong early?",
       "Is this an Epic, or a Capability or Feature that fits in a PI and belongs to another layer?"],
      ["Hypothesis, outcomes, leading indicators, scope and WSJF are filled; unknowns sit under Open questions with an assumption."],
      "Portfolio Leadership decides whether the Epic is worth reviewing, then analyzing.",
      "`epic-transition` to record the move (funnel → reviewing → analyzing); once analyzing, `lean-business-case`.")
+
+loop("epic-enabler-hypothesis", "portfolio", "Enabler Epic hypothesis", "epic-enabler", f"{P}/epics/<epic-slug>/<epic-slug>.epic-enabler.md", "enterprise-architect",
+     ["solution-architect", "platform-engineer", "business-owner", "finops-engineer", "data-analyst"],
+     "Capture or thicken one enabler Epic (runway, platform, exploration or compliance) as an Epic hypothesis ready for Portfolio Leadership to review.",
+     "Runway or platform work at portfolio size; an enabler Epic the Architecture Vision names; a replatforming, migration or compliance programme; thicken an enabler Epic in the funnel or under review.",
+     ["One enabler Epic per run, with its `enablerType`. Create it with `status: funnel`, or thicken the existing one without changing its status.",
+      "Write the hypothesis and outcomes as what the business Epics listed in `enables` gain; name leading indicators that show the runway is used.",
+      "Estimate WSJF against all Epics, business ones included: they compete for the same budget. Outline the MVP in one paragraph; the Lean Business Case details it later."],
+     ["Does a named business Epic need this runway soon, or is it built ahead of need?",
+      "Is this an Epic, or enabler work that fits in a PI and belongs to a train?"],
+     ["Hypothesis, outcomes, enabled work, leading indicators, `enablerType` and WSJF are filled; unknowns sit under Open questions with an assumption."],
+     "Portfolio Leadership decides whether the enabler Epic is worth reviewing, then analyzing.",
+     "`epic-enabler-transition` to record the move (funnel → reviewing → analyzing); once analyzing, `epic-enabler-lean-business-case`.",
+     predecessors=["architecture-vision"])
 
 loop("lean-business-case", "portfolio", "Lean Business Case", "lean-business-case",
      f"{P}/epics/<epic-slug>/<epic-slug>.lean-business-case.md", "epic-owner",
@@ -199,10 +244,24 @@ loop("lean-business-case", "portfolio", "Lean Business Case", "lean-business-cas
      "Portfolio Leadership decides go or no-go.",
      "`epic-transition` to record it (analyzing → ready on go; → done with resolution no-go otherwise).",
      predecessors=["epic-hypothesis"],
-     draft_conditions=[
-         exists_pre("an-epic-is-under-analysis", "epic", "['analyzing', 'ready', 'implementing']"),
-         _cond("postcondition", "case-names-an-epic-under-analysis", "workspace.filter(a, a.path == step.artifact.path)",
-               "selected.all(a, workspace.exists(e, e.kind == 'epic' && e.path == a.data.epic && e.data.status in ['analyzing', 'ready', 'implementing']))")])
+     draft_conditions=[exists_pre("an-epic-is-under-analysis", "epic", UNDER_ANALYSIS), case_names("case-names-an-epic-under-analysis", "epic")])
+
+loop("epic-enabler-lean-business-case", "portfolio", "Enabler Epic Lean Business Case", "lean-business-case",
+     f"{P}/epics/<epic-slug>/<epic-slug>.lean-business-case.md", "enterprise-architect",
+     ["solution-architect", "financial-controller", "finops-engineer", "security-expert", "legal-counsel"],
+     "Analyze one enabler Epic under analysis: its MVP, its cost and the value it unlocks for the Epics it enables, ending in go or no-go.",
+     "Business case, MVP definition, cost estimate, go/no-go for an enabler Epic under analysis.",
+     ["Read the enabler Epic, the Architecture Vision, the business Epics it enables and the Lean Budgets. One case per run; set `owner: enterprise-architect`.",
+      "Define the MVP as the smallest runway that proves or disproves the hypothesis on one enabled Epic. Estimate MVP, implementation and run costs separately.",
+      "End with a recommendation: `go`, `no-go`, or `pending` with the missing fact. Do not change the enabler Epic: its status moves in `epic-enabler-transition`."],
+     ["Is the return stated as what the enabled Epics gain, and by when they need it?",
+      "Are build, run and exit costs explained, and the full cost uncommitted until the MVP proves the hypothesis?"],
+     ["The recommendation is `go` or `no-go`, or `pending` names the fact missing; cost and return are stated with their assumptions."],
+     "Portfolio Leadership decides go or no-go.",
+     "`epic-enabler-transition` to record it (analyzing → ready on go; → done with resolution no-go otherwise).",
+     predecessors=["epic-enabler-hypothesis"],
+     draft_conditions=[exists_pre("an-epic-enabler-is-under-analysis", "epic-enabler", UNDER_ANALYSIS),
+                       case_names("case-names-an-epic-enabler-under-analysis", "epic-enabler")])
 
 loop("epic-mvp-evaluation", "portfolio", "Epic MVP evaluation", "epic", f"{P}/epics/<epic-slug>/<epic-slug>.epic.md", "epic-owner",
      ["data-analyst", "business-owner", "financial-controller"],
@@ -218,6 +277,21 @@ loop("epic-mvp-evaluation", "portfolio", "Epic MVP evaluation", "epic", f"{P}/ep
      "`epic-transition` to record it; a pivot starts a new `epic-hypothesis`.",
      predecessors=["lean-business-case"],
      draft_conditions=[exists_pre("an-epic-is-implementing", "epic", "['implementing']")])
+
+loop("epic-enabler-mvp-evaluation", "portfolio", "Enabler Epic MVP evaluation", "epic-enabler", f"{P}/epics/<epic-slug>/<epic-slug>.epic-enabler.md", "enterprise-architect",
+     ["data-analyst", "business-owner", "financial-controller"],
+     "Evaluate the MVP of one implementing enabler Epic against its hypothesis and recommend to persevere, pivot or stop.",
+     "Enabler MVP results are in; is the runway used; pivot or persevere; stop an enabler Epic.",
+     ["Read the enabler Epic, its Lean Business Case, and the evidence the human or the trains provide (enabled Features delivered, platform or pipeline measures).",
+      "Under `## MVP`, record the evidence against each leading indicator, then the recommendation: persevere, pivot (to which new hypothesis) or stop.",
+      "Do not change `status`, `implementationStage` or `resolution`: they move in `epic-enabler-transition` after the human decided."],
+     ["Does the evidence show the enabled Epics using the runway, or only that it was built?",
+      "Is the recommendation free of sunk-cost reasoning?"],
+     ["Each leading indicator has a result or an explicit gap; the recommendation follows from the evidence."],
+     "Portfolio Leadership decides to persevere, pivot or stop.",
+     "`epic-enabler-transition` to record it; a pivot starts a new `epic-enabler-hypothesis`.",
+     predecessors=["epic-enabler-lean-business-case"],
+     draft_conditions=[exists_pre("an-epic-enabler-is-implementing", "epic-enabler", "['implementing']")])
 
 loop("portfolio-roadmap", "portfolio", "Portfolio Roadmap", "portfolio-roadmap", f"{P}/portfolio-roadmap.md", "portfolio-manager",
      ["enterprise-architect", "financial-controller", "product-marketing-manager"],
@@ -252,12 +326,12 @@ loop("architecture-vision", "portfolio", "Architecture Vision", "architecture-vi
      "Technology strategy; target architecture; portfolio-level runway; which enabler Epics are needed.",
      ["Read the Strategic Themes, Portfolio Vision and the Epics.",
       "Describe intentional architecture and a few principles; leave room for emergent design in the trains.",
-      "Name the enabler Epics the runway needs; they are written in `epic-hypothesis`, not here."],
+      "Name the enabler Epics the runway needs and list those that exist in `enablerEpics`; you write each one in `epic-enabler-hypothesis`, not here."],
      ["Is the runway just enough for the near-term Epics, or built far ahead of need?",
       "Which decision must be taken now, and which can wait for learning?"],
      ["Target, principles and the ordered runway are stated; each enabler Epic is named by intent."],
      "Portfolio Leadership and the lead architects decide whether this is the technical direction.",
-     "`portfolio-gate-decision`; then `epic-hypothesis` for each enabler Epic.")
+     "`portfolio-gate-decision`; then `epic-enabler-hypothesis` for each enabler Epic.")
 
 transition("epic-transition", "portfolio", "Epic transition", "epic", f"{P}/epics/<epic-slug>/<epic-slug>.epic.md", "epic-owner", "funnel → reviewing → analyzing → ready → implementing (mvp, then persevere) → done",
      "Record the human's decision to move one Epic to a new Portfolio Kanban state, then re-render the Portfolio Kanban.",
@@ -265,26 +339,32 @@ transition("epic-transition", "portfolio", "Epic transition", "epic", f"{P}/epic
      ["`ready` and `implementing` need a Lean Business Case recommending `go`.",
       "Entering `implementing` sets `implementationStage: mvp`; a persevere decision sets `persevere`.",
       "`done` sets `resolution`: delivered, no-go, pivoted or stopped."],
-     "On `analyzing`: `lean-business-case`. On `ready`: the trains pull the Epic (`capability-refinement`, `feature-refinement`).",
-     conditions=[
-         _cond("postcondition", "challenged-before-leaving-the-funnel", "workspace.filter(a, a.path == step.artifact.path && a.data.status != 'funnel')",
-               "selected.all(a, size(a.data.challengeLedger) > 0)"),
-         _cond("postcondition", "approved-epic-has-a-go-business-case", "workspace.filter(a, a.path == step.artifact.path && a.data.status in ['ready', 'implementing'])",
-               "selected.all(a, workspace.exists(l, l.kind == 'lean-business-case' && l.data.epic == a.path && l.data.recommendation == 'go'))")])
+     "On `analyzing`: `lean-business-case`. On `ready`: the trains pull the Epic (`capability-refinement`, `feature-refinement` and their enabler siblings).",
+     conditions=epic_conditions())
+
+transition("epic-enabler-transition", "portfolio", "Enabler Epic transition", "epic-enabler", f"{P}/epics/<epic-slug>/<epic-slug>.epic-enabler.md", "enterprise-architect",
+     "funnel → reviewing → analyzing → ready → implementing (mvp, then persevere) → done",
+     "Record the human's decision to move one enabler Epic to a new Portfolio Kanban state, then re-render the Portfolio Kanban.",
+     "\"Approve / reject / move / stop this enabler Epic\" after a gate.",
+     ["`ready` and `implementing` need a Lean Business Case recommending `go`.",
+      "Entering `implementing` sets `implementationStage: mvp`; a persevere decision sets `persevere`.",
+      "`done` sets `resolution`: delivered, no-go, pivoted or stopped."],
+     "On `analyzing`: `epic-enabler-lean-business-case`. On `ready`: the trains pull it (`capability-enabler-refinement`, `feature-enabler-refinement`).",
+     conditions=epic_conditions())
 
 event("portfolio-sync", "portfolio", "Portfolio Sync", "portfolio-sync",
       "Inspect the flow of Epics and the portfolio's operations between Strategic Portfolio Reviews, and re-render the Portfolio Kanban.",
       "Portfolio status; where the Epics are; impediments and dependencies across value streams.",
-      ["Epics by state, WIP against limits, aged and blocked Epics.", "Dependencies and impediments across value streams.",
+      ["Epics and enabler Epics by state, WIP against limits, aged and blocked items.", "Dependencies and impediments across value streams.",
        "Backlog refinement: new Epics to capture, priorities to revisit, Epics to remove.", "Budget and guardrail signals worth a Strategic Portfolio Review."],
-      "A backlog change is its own workflow: `epic-hypothesis`, `epic-transition`.", kanban=True)
+      "A backlog change is its own workflow: `epic-hypothesis`, `epic-enabler-hypothesis`, `epic-transition`, `epic-enabler-transition`.", kanban=True)
 
 event("strategic-portfolio-review", "portfolio", "Strategic Portfolio Review", "strategic-portfolio-review",
       "Review whether the portfolio is achieving its vision and themes, and record the funding and direction decisions Portfolio Leadership takes.",
       "Is the portfolio on strategy; keep, pivot or stop investments; review KPIs and OKRs.",
       ["Progress of the Strategic Themes' key results and value stream KPIs.", "Budget against guardrails; Strategic Investment Planning insights.",
        "Epics: which to accelerate, pivot or stop.", "Decisions, each with the workflow that will carry it."],
-      "Each decision is carried by its workflow: `strategic-themes`, `strategic-investment-planning`, `epic-transition`, `portfolio-roadmap`.")
+      "Each decision is carried by its workflow: `strategic-themes`, `strategic-investment-planning`, `epic-transition`, `epic-enabler-transition`, `portfolio-roadmap`.")
 
 gate("portfolio-gate-decision", "portfolio", "Portfolio gate decision")
 
@@ -342,16 +422,31 @@ loop("solution-intent", "solution", "Solution Intent", "solution-intent", f"{ST}
 loop("capability-refinement", "solution", "Capability refinement", "capability",
      f"{ST}/capabilities/<capability-slug>/<capability-slug>.capability.md", "solution-manager",
      ["solution-architect", "systems-engineer", "security-expert", "compliance-officer"],
-     "Write or thicken one Capability so it is ready for Pre-Plan: benefit hypothesis, acceptance criteria, WSJF and the Features each ART would take.",
-     "A new capability; split an Epic into capabilities; an enabler capability; make a capability ready.",
+     "Write or thicken one business Capability so it is ready for Pre-Plan: benefit hypothesis, acceptance criteria, WSJF and the Features each ART would take.",
+     "A new capability; split an Epic into capabilities; make a capability ready.",
      ["One Capability per run, sized to fit a PI. Create it with `status: funnel`, or thicken it without changing its status.",
       "Write the benefit hypothesis and testable acceptance criteria; estimate WSJF against the other capabilities.",
-      "Outline the Feature split per ART and the cross-ART and supplier dependencies. Set `parent` when it splits from an Epic."],
+      "Outline the Feature split per ART and the cross-ART and supplier dependencies. Set `parent` when it splits from an Epic. Enabler Capabilities are not written here: name them under Dependencies."],
      ["Does it fit one PI, and can its acceptance be demonstrated at a Solution Demo?", "Which Solution Intent constraints apply?"],
      ["Benefit hypothesis, acceptance criteria, WSJF and the candidate Feature split are filled."],
      "Solution Management's human lead decides whether the Capability is ready.",
      "`capability-transition` to record the move; then `pre-plan`.",
      draft_conditions=[parent_post("parent-epic-is-approved", [("epic", APPROVED_EPIC)])])
+
+loop("capability-enabler-refinement", "solution", "Enabler Capability refinement", "capability-enabler",
+     f"{ST}/capabilities/<capability-slug>/<capability-slug>.capability-enabler.md", "solution-architect",
+     ["solution-manager", "systems-engineer", "security-expert", "compliance-officer", "platform-engineer"],
+     "Write or thicken one enabler Capability that extends the runway of the large solution, so it is ready for Pre-Plan.",
+     "Technical work across ARTs: exploration, architecture, infrastructure or compliance enablers at Capability size; closing variable intent; an enabler named by the Solution Intent.",
+     ["One enabler Capability per run, sized to fit a PI, with its `enablerType`. Create it with `status: funnel`, or thicken it without changing its status.",
+      "State the benefit as what it makes possible or faster for the Capabilities listed in `enables`; write acceptance criteria demonstrable at a Solution Demo.",
+      "Estimate WSJF against all Capabilities, business ones included. Outline the enabler Feature split per ART; set `parent` when it splits from an Epic or enabler Epic."],
+     ["Is the runway built just in time for the Capabilities that need it, and which variable intent does it close?",
+      "Can completion be demonstrated on the integrated solution?"],
+     ["`enablerType`, the Capabilities enabled, acceptance criteria, WSJF and the candidate split are filled."],
+     "Solution Management's human lead and the solution's architects decide whether the enabler Capability is ready.",
+     "`capability-enabler-transition` to record the move; then `pre-plan`.", predecessors=["solution-intent"],
+     draft_conditions=[parent_post("parent-is-approved", [("epic", APPROVED_EPIC), ("epic-enabler", APPROVED_EPIC)])])
 
 loop("supplier-engagement", "solution", "Supplier engagement", "supplier-agreement",
      f"{ST}/suppliers/<supplier-slug>/<supplier-slug>.supplier-agreement.md", "procurement-manager",
@@ -360,16 +455,25 @@ loop("supplier-engagement", "solution", "Supplier engagement", "supplier-agreeme
      "Onboard or change a supplier; contract terms for a component or service.",
      ["Read the Solution Intent, the capabilities the supplier contributes to, and the terms the human provides.",
       "Prefer terms that tolerate variable scope and base acceptance on objective evaluation of working deliverables.",
-      "State how the supplier joins Pre-Plan, PI Planning, the syncs and the Solution Demo."],
+      "State how the supplier joins Pre-Plan, PI Planning, the syncs and the Solution Demo. Keep `status: draft`: it moves in `supplier-agreement-transition`."],
      ["Do the terms let scope evolve without renegotiation at every PI?", "Which obligations (security, privacy, compliance) pass to the supplier, and how are they evidenced?"],
      ["Scope, collaboration model and acceptance are filled; obligations passed to the supplier are explicit."],
      "The human owner of the supplier relationship decides whether to proceed on these terms.",
-     "`solution-gate-decision`. This artifact is a working agreement, not the signed contract; a later run records `active` once the humans signed.")
+     "`supplier-agreement-transition` to record it (draft → negotiating), then `active` once the humans signed. This artifact is a working agreement, not the signed contract.")
+
+transition("supplier-agreement-transition", "solution", "Supplier agreement transition", "supplier-agreement",
+     f"{ST}/suppliers/<supplier-slug>/<supplier-slug>.supplier-agreement.md", "procurement-manager", "draft → negotiating → active → ended",
+     "Record the human's decision on one supplier agreement as a state change.",
+     "\"Proceed with / sign / end this supplier agreement\".",
+     ["`negotiating` follows the decision to proceed on these terms; `active` follows the signature by the humans; both need a challenged agreement.",
+      "`ended` follows termination or the end of the term; say the continuity measures in the reason."],
+     "On `active`: the supplier joins `pre-plan` and `solution-train-pi-planning`.",
+     conditions=[challenged_before("challenged-before-leaving-draft", "['negotiating', 'active', 'ended']")], board=False)
 
 event("pre-plan", "solution", "Pre-Plan", "pre-plan",
       "Align and prepare the ARTs and suppliers of the Solution Train for PI Planning.",
       "Prepare the next PI across ARTs; which capabilities go to which ART.",
-      ["Solution Vision and roadmap highlights for the PI.", "The ready capabilities, in WSJF order, and their split into Features per ART.",
+      ["Solution Vision and roadmap highlights for the PI.", "The ready Capabilities and enabler Capabilities, in WSJF order, and their split into Features per ART.",
        "Cross-ART and supplier dependencies, and the integration points of the PI.", "Planning context each ART takes into its own PI Planning."],
       "Each ART runs `pi-planning` with its Release Train Engineer; then `solution-train-pi-planning`.")
 
@@ -384,21 +488,21 @@ loop("solution-train-pi-planning", "solution", "Solution Train PI Planning", "pi
      ["Objectives are split committed and uncommitted; every committed capability is on the board."],
      "The solution's Business Owners assign business value and the train commits.",
      "`solution-gate-decision` (record the commitment); then `coordinate-and-deliver` during the PI.",
-     predecessors=["pre-plan"], draft_conditions=[exists_pre("a-capability-is-ready", "capability", "['ready', 'implementing']")])
+     predecessors=["pre-plan"], draft_conditions=[exists_pre("a-capability-is-ready", ["capability", "capability-enabler"], "['ready', 'implementing']")])
 
 event("coordinate-and-deliver", "solution", "Coordinate and Deliver", "coordinate-and-deliver",
       "Keep the ARTs and suppliers aligned during the PI (Product Manager Sync, Architect Sync, RTE Sync) and re-render the Solution Train Kanban.",
       "Cross-ART status during the PI; dependencies, design trade-offs or impediments between ARTs.",
       ["Product Manager Sync: scope and priority issues raised by the ARTs.", "Architect Sync: emerging designs and trade-offs kept consistent across the train.",
        "RTE Sync: progress, dependencies and impediments the ARTs cannot resolve alone.", "Decisions and actions, each with its owner."],
-      "A backlog change is its own workflow: `capability-refinement`, `capability-transition`.", kanban=True)
+      "A backlog change is its own workflow: `capability-refinement`, `capability-enabler-refinement`, `capability-transition`, `capability-enabler-transition`.", kanban=True)
 
 event("solution-demo", "solution", "Solution Demo", "solution-demo",
       "Give stakeholders an integrated view of what the ARTs and suppliers built in the PI, as objective evidence, and collect their feedback.",
       "Demonstrate the integrated solution at the end of the PI.",
       ["What was integrated across the whole Solution Train, and what was not.", "Each capability demonstrated against its acceptance criteria.",
        "NFR and compliance evidence; overall fitness for purpose.", "Stakeholder feedback, recorded in their words."],
-      "`capability-transition` for capabilities accepted; feedback feeds `capability-refinement` and the portfolio's investment decisions.")
+      "`capability-transition` and `capability-enabler-transition` for the items accepted; feedback feeds `capability-refinement`, `capability-enabler-refinement` and the portfolio's investment decisions.")
 
 loop("solution-train-inspect-and-adapt", "solution", "Solution Train Inspect and Adapt", "event-record", f"{ST}/events/<event-slug>.inspect-and-adapt.md", "solution-train-engineer",
      ["agile-coach", "data-analyst"],
@@ -410,23 +514,29 @@ loop("solution-train-inspect-and-adapt", "solution", "Solution Train Inspect and
      ["Do the measures support the conclusions?", "Does the root cause analysis reach a cause the train can act on?"],
      ["Each improvement action has an owner and a carrying workflow."],
      "The train's stakeholders decide which improvements enter the Solution Train Backlog.",
-     "`capability-refinement` for each improvement accepted.", predecessors=["solution-demo"])
+     "`capability-refinement` or `capability-enabler-refinement` for each improvement accepted.", predecessors=["solution-demo"])
 
 transition("capability-transition", "solution", "Capability transition", "capability", f"{ST}/capabilities/<capability-slug>/<capability-slug>.capability.md", "solution-manager",
      "funnel → analyzing → ready → implementing → validating-on-staging → deploying-to-production → releasing → done",
      "Record the human's decision to move one Capability to a new Solution Train Kanban state, then re-render the Solution Train Kanban.",
      "\"Approve / move / accept this capability\" after a gate or a Solution Demo.",
      ["A Capability leaves `analyzing` only after it was challenged.", "`implementing` follows the PI commitment; `done` follows acceptance at a Solution Demo."],
-     "On `ready`: `pre-plan`.",
-     conditions=[_cond("postcondition", "challenged-before-ready", "workspace.filter(a, a.path == step.artifact.path && !(a.data.status in ['funnel', 'analyzing']))",
-                       "selected.all(a, size(a.data.challengeLedger) > 0)")])
+     "On `ready`: `pre-plan`.", conditions=flow_conditions())
+
+transition("capability-enabler-transition", "solution", "Enabler Capability transition", "capability-enabler",
+     f"{ST}/capabilities/<capability-slug>/<capability-slug>.capability-enabler.md", "solution-architect",
+     "funnel → analyzing → ready → implementing → validating-on-staging → deploying-to-production → releasing → done",
+     "Record the human's decision to move one enabler Capability to a new Solution Train Kanban state, then re-render the Solution Train Kanban.",
+     "\"Approve / move / accept this enabler capability\" after a gate or a Solution Demo.",
+     ["An enabler Capability leaves `analyzing` only after it was challenged.", "`implementing` follows the PI commitment; `done` follows acceptance at a Solution Demo."],
+     "On `ready`: `pre-plan`.", conditions=flow_conditions())
 
 gate("solution-gate-decision", "solution", "Solution gate decision")
 
 # =============================== ART =====================================================
 
 loop("art-launch", "art", "ART launch", "art-canvas", f"{ART}/art-canvas.md", "release-train-engineer",
-     ["agile-coach", "system-architect", "product-manager"],
+     ["agile-coach", "system-architect", "product-manager", "business-analyst"],
      "Define or revise one Agile Release Train: its mission, teams, roles and PI cadence.",
      "Set up an ART; change its teams, roles or cadence.",
      ["Read the value stream definition and, when the ART belongs to one, the Solution Train canvas.",
@@ -462,30 +572,32 @@ loop("product-roadmap", "art", "PI Roadmap", "product-roadmap", f"{ART}/product-
      "`art-gate-decision`.", predecessors=["product-vision"])
 
 FEATURE_PARENT = parent_post("parent-is-approved", [("epic", APPROVED_EPIC), ("capability", OPEN_FLOW)])
+FEATURE_ENABLER_PARENT = parent_post("parent-is-approved", [("epic", APPROVED_EPIC), ("epic-enabler", APPROVED_EPIC),
+                                                            ("capability", OPEN_FLOW), ("capability-enabler", OPEN_FLOW)])
 
 loop("feature-refinement", "art", "Feature refinement", "feature", f"{ART}/features/<feature-slug>/<feature-slug>.feature.md", "product-manager",
      ["system-architect", "software-engineer", "quality-engineer", "security-expert", "ux-designer", "data-protection-officer"],
      "Write or thicken one business Feature so it is ready for PI Planning: benefit hypothesis, acceptance criteria and WSJF.",
      "A new feature; split an Epic or Capability into features; a Feature-sized change, defect or gap; make a Feature ready.",
-     ["One Feature per run, sized to fit a PI (generally under two months of total effort). Create it with `status: funnel` and `type: business`, or thicken it without changing its status.",
+     ["One Feature per run, sized to fit a PI (generally under two months of total effort). Create it with `status: funnel`, or thicken it without changing its status.",
       "Write the benefit hypothesis and independently testable acceptance criteria; list the NFR ids that apply; estimate WSJF against the other Features.",
-      "Set `parent` when it splits from an Epic or Capability. Architecture decisions and new NFRs are not written here: name them under Dependencies."],
+      "Set `parent` when it splits from an Epic or Capability. Architecture decisions, new NFRs and enabler Features are not written here: name them under Dependencies."],
      ["Could a team demonstrate each acceptance criterion at a System Demo?", "Does it fit one PI, or should it be split?"],
      ["Benefit hypothesis, acceptance criteria, NFR applicability and WSJF are filled; unknowns sit under Open questions."],
      "Product Management's human lead decides whether the Feature is ready for PI Planning.",
      "`feature-transition` to record the move; then `pi-planning`.", draft_conditions=[FEATURE_PARENT])
 
-loop("enabler-feature-refinement", "art", "Enabler Feature refinement", "feature", f"{ART}/features/<feature-slug>/<feature-slug>.feature.md", "system-architect",
-     ["software-engineer", "platform-engineer", "devops-engineer", "site-reliability-engineer", "observability-engineer"],
+loop("feature-enabler-refinement", "art", "Enabler Feature refinement", "feature-enabler", f"{ART}/features/<feature-slug>/<feature-slug>.feature-enabler.md", "system-architect",
+     ["product-manager", "software-engineer", "platform-engineer", "devops-engineer", "observability-engineer", "security-expert"],
      "Write or thicken one enabler Feature that extends the architectural runway or improves the delivery pipeline.",
      "Technical work the ART needs: exploration, architecture, infrastructure or compliance enablers; technical debt at Feature size.",
-     ["One enabler Feature per run, with `type: enabler` and its `enablerType`. Create it with `status: funnel`, or thicken it without changing its status.",
-      "State the benefit as what it makes possible or faster for named business Features; write acceptance criteria that are demonstrable.",
-      "Estimate WSJF so it competes fairly within the capacity allocated to enablers. Link the architecture decisions it implements."],
+     ["One enabler Feature per run, with its `enablerType`. Create it with `status: funnel`, or thicken it without changing its status.",
+      "State the benefit as what it makes possible or faster for the Features listed in `enables`; write acceptance criteria that are demonstrable.",
+      "Estimate WSJF so it competes fairly within the capacity allocated to enablers. List the architecture decisions it implements in `adrs`."],
      ["Is the runway built just in time for the Features that need it?", "Can completion be demonstrated on a working system?"],
      ["`enablerType`, the Features enabled, acceptance criteria and WSJF are filled."],
      "The ART's lead architect and Product Management decide whether the enabler is ready.",
-     "`feature-transition` to record the move; then `pi-planning`.", draft_conditions=[FEATURE_PARENT])
+     "`feature-enabler-transition` to record the move; then `pi-planning`.", draft_conditions=[FEATURE_ENABLER_PARENT])
 
 loop("architecture-decision", "art", "Architecture decision", "adr", f"{ART}/adrs/<adr-slug>/<adr-slug>.adr.md", "system-architect",
      ["software-engineer", "security-expert", "platform-engineer", "data-engineer", "ai-engineer"],
@@ -493,11 +605,20 @@ loop("architecture-decision", "art", "Architecture decision", "adr", f"{ART}/adr
      "A design choice with lasting consequences; a technology selection; how to meet an NFR.",
      ["One decision per run. Read the Features that need it, the NFR register and the Architecture Vision.",
       "Describe at least two real options with trade-offs; decide at the last responsible moment and say what would reopen the decision.",
-      "Set `status: proposed`. List the enabler Features the decision requires; they are written in `enabler-feature-refinement`."],
+      "Set `status: proposed`. List the enabler Features the decision requires; they are written in `feature-enabler-refinement`."],
      ["Is this decision needed now, and is a cheaper reversible option available?", "How will a working system prove the decision right?"],
      ["Options, decision, consequences and validation are filled; `status` is `proposed`."],
      "The ART's lead architect (human) accepts or rejects the decision.",
-     "`art-gate-decision`; then `enabler-feature-refinement` for the runway it requires.")
+     "`adr-transition` to record it (proposed → accepted or rejected); then `feature-enabler-refinement` for the runway it requires.")
+
+transition("adr-transition", "art", "Architecture decision transition", "adr", f"{ART}/adrs/<adr-slug>/<adr-slug>.adr.md", "system-architect",
+     "proposed → accepted or rejected; accepted → superseded",
+     "Record the human's decision on one architecture decision as a state change.",
+     "\"Accept / reject this architecture decision\"; a newer decision replaces it.",
+     ["`accepted` sets `decisionDate` and needs a challenged decision; `rejected` needs no challenge.",
+      "`superseded` follows the acceptance of a newer decision that lists this one under `supersedes`."],
+     "On `accepted`: `feature-enabler-refinement` for the runway the decision requires.",
+     conditions=[challenged_before("challenged-before-accepted", "['accepted', 'superseded']")], board=False)
 
 loop("nfr-refinement", "art", "NFR refinement", "nfrs", f"{ART}/nfrs.md", "system-architect",
      ["site-reliability-engineer", "observability-engineer", "security-expert", "quality-engineer", "accessibility-specialist", "ai-engineer"],
@@ -512,32 +633,32 @@ loop("nfr-refinement", "art", "NFR refinement", "nfrs", f"{ART}/nfrs.md", "syste
      "`art-gate-decision`; Features and Stories then reference NFR ids.")
 
 loop("delivery-pipeline", "art", "Continuous Delivery Pipeline", "delivery-pipeline", f"{ART}/delivery-pipeline.md", "devops-engineer",
-     ["platform-engineer", "security-expert", "quality-engineer", "site-reliability-engineer", "finops-engineer"],
+     ["platform-engineer", "security-expert", "quality-engineer", "site-reliability-engineer", "finops-engineer", "compliance-officer"],
      "Map the ART's Continuous Delivery Pipeline from ideation to on-demand release, find its bottlenecks and propose the enablers that remove them.",
      "How work flows to production; pipeline bottlenecks; DevOps improvements; lead time.",
      ["Map what actually happens today, step by step, with lead time, process time and percent complete and accurate.",
       "Cover the four aspects: Continuous Exploration, Continuous Integration (Develop, Build, Test end-to-end, Stage), Continuous Deployment (Deploy, Verify, Monitor, Respond), Release on Demand.",
-      "Name the largest delays and the enabler Features that would remove them; they are written in `enabler-feature-refinement`."],
+      "Name the largest delays and the enabler Features that would remove them; they are written in `feature-enabler-refinement`."],
      ["Where does work wait the longest, and is that where the improvement is aimed?", "Which quality, security or compliance check is still manual?"],
      ["The four aspects are mapped; the top bottlenecks each have a proposed enabler."],
      "The ART's leaders decide which pipeline improvements to fund.",
-     "`art-gate-decision`; then `enabler-feature-refinement`.")
+     "`art-gate-decision`; then `feature-enabler-refinement`.")
 
 loop("pi-planning", "art", "PI Planning", "pi-objectives", f"{ART}/pis/<pi-slug>/pi-objectives.md", "release-train-engineer",
      ["product-manager", "system-architect", "software-engineer", "business-owner"],
      "Plan one PI for the ART: team and ART PI Objectives, the planning board and the PI risks.",
      "Plan the next PI; commit Features; PI Objectives; dependencies and risks.",
-     ["Read the Product Vision, PI Roadmap, the ready Features in WSJF order, the ART canvas and team charters. Set `scope: art`.",
+     ["Read the Product Vision, PI Roadmap, the ready Features and enabler Features in WSJF order, the ART canvas and team charters. Set `scope: art`.",
       "Per team: objectives stated as outcomes, committed or uncommitted, within capacity; plan no work in the IP iteration.",
-      "Place Features and dependencies on the planning board and list the PI risks. Propose business value; the Business Owners assign it at the gate."],
+      "Place Features and dependencies on the planning board and list the PI risks. Leave `plannedBusinessValue` to the Business Owners: their packet proposes it, the humans assign it at the gate."],
      ["Is each team's load within its capacity, with uncommitted objectives absorbing the uncertainty?", "Is every cross-team dependency placed before the iteration that needs it?"],
      ["Objectives are split committed and uncommitted per team; risks are listed with a ROAM state."],
      "The Business Owners assign business value and the ART commits with a confidence vote.",
-     "`art-gate-decision` (record the commitment and the vote); `feature-transition` for each committed Feature; then `iteration-planning` with each team.",
-     draft_conditions=[exists_pre("a-feature-is-ready", "feature", "['ready', 'implementing']")])
+     "`art-gate-decision` (record the commitment and the vote); `feature-transition` or `feature-enabler-transition` for each committed item; then `iteration-planning` with each team.",
+     draft_conditions=[exists_pre("a-feature-is-ready", ["feature", "feature-enabler"], "['ready', 'implementing']")])
 
 loop("release-on-demand", "art", "Release on Demand", "release", f"{ART}/releases/<release-slug>/<release-slug>.release.md", "release-manager",
-     ["site-reliability-engineer", "observability-engineer", "security-expert", "quality-engineer", "technical-writer"],
+     ["site-reliability-engineer", "observability-engineer", "security-expert", "quality-engineer", "technical-writer", "product-marketing-manager"],
      "Plan one release and assemble its readiness evidence: what is made available to which customers, how, and how its outcome will be measured.",
      "Ship to customers; release readiness; rollout and rollback plan.",
      ["Read the Features released, their acceptance evidence, the NFR register and the pipeline map.",
@@ -546,22 +667,31 @@ loop("release-on-demand", "art", "Release on Demand", "release", f"{ART}/release
      ["Is the rollback tested, and who decides to trigger it?", "Can the benefit hypothesis be measured after release?"],
      ["Scope, strategy, evidence links, rollout and rollback are filled; `status` is `ready` or says what is missing."],
      "Product Management's human lead and the Business Owners decide to release.",
-     "`art-gate-decision`; then `feature-transition` (releasing → done) for each Feature released. A later run of this workflow records the result (`released` or `rolled-back`) and the measured outcomes.",
+     "`release-transition` to record the decision (ready → released or cancelled) and later a rollback; then `feature-transition` (releasing → done) for each Feature released.",
      draft_conditions=[exists_pre("a-feature-is-built", "feature", "['implementing', 'validating-on-staging', 'deploying-to-production', 'releasing']")])
+
+transition("release-transition", "art", "Release transition", "release", f"{ART}/releases/<release-slug>/<release-slug>.release.md", "release-manager",
+     "planned → ready → released → rolled-back; planned or ready → cancelled",
+     "Record the human's decision on one release as a state change: released, rolled back or cancelled.",
+     "\"Release it / roll it back / cancel it\" after the release gate or an incident.",
+     ["`released` and `rolled-back` need a challenged release; `released` sets `targetDate` to the release date.",
+      "`rolled-back` follows a released release, triggered as its rollback plan says; `cancelled` needs no challenge."],
+     "On `released`: `feature-transition` (releasing → done) once each Feature's benefit hypothesis is evaluated.",
+     conditions=[challenged_before("challenged-before-release", "['released', 'rolled-back']")], board=False)
 
 event("art-sync", "art", "ART Sync", "art-sync",
       "Inspect the ART's progress toward its PI Objectives (Coach Sync and PO Sync combined), handle dependencies and impediments, and re-render the ART Kanban.",
       "ART status during the PI; dependencies, impediments or scope adjustments between teams.",
       ["Coach Sync: progress, dependencies and impediments across teams.", "PO Sync: progress toward the PI Objectives and scope adjustments.",
        "Risks to revisit (ROAM).", "Decisions and actions, each with its owner."],
-      "A backlog change is its own workflow: `feature-refinement`, `feature-transition`.", kanban=True)
+      "A backlog change is its own workflow: `feature-refinement`, `feature-enabler-refinement`, `feature-transition`, `feature-enabler-transition`.", kanban=True)
 
 event("system-demo", "art", "System Demo", "system-demo",
       "Show the integrated work of all teams for the iteration from a production-like environment, as an objective measure of progress, and collect feedback.",
       "Demonstrate the integrated increment; what the ART built this iteration.",
       ["What was integrated and demonstrated, per Feature and acceptance criterion.", "What was not ready and why.",
        "NFR verification results.", "Feedback from Business Owners and stakeholders, recorded in their words."],
-      "`feature-transition` for Features accepted; feedback feeds `feature-refinement`.")
+      "`feature-transition` and `feature-enabler-transition` for the items accepted; feedback feeds `feature-refinement` and `feature-enabler-refinement`.")
 
 loop("inspect-and-adapt", "art", "Inspect and Adapt", "event-record", f"{ART}/events/<event-slug>.inspect-and-adapt.md", "release-train-engineer",
      ["agile-coach", "data-analyst"],
@@ -573,17 +703,23 @@ loop("inspect-and-adapt", "art", "Inspect and Adapt", "event-record", f"{ART}/ev
      ["Do the measures support the conclusions?", "Does the root cause analysis reach a cause the ART can act on?"],
      ["Each improvement action has an owner and a carrying workflow."],
      "The ART's stakeholders decide which improvements enter the ART Backlog.",
-     "`enabler-feature-refinement` or `feature-refinement` for each improvement accepted.", predecessors=["system-demo"])
+     "`feature-enabler-refinement` or `feature-refinement` for each improvement accepted.", predecessors=["system-demo"])
 
 transition("feature-transition", "art", "Feature transition", "feature", f"{ART}/features/<feature-slug>/<feature-slug>.feature.md", "product-manager",
      "funnel → analyzing → ready → implementing → validating-on-staging → deploying-to-production → releasing → done",
-     "Record the human's decision to move one Feature (business or enabler) to a new ART Kanban state, then re-render the ART Kanban.",
+     "Record the human's decision to move one business Feature to a new ART Kanban state, then re-render the ART Kanban.",
      "\"Approve / commit / move / accept this Feature\" after a gate, PI Planning, a System Demo or a release.",
      ["A Feature leaves `analyzing` only after it was challenged.", "`implementing` follows the PI commitment and sets `targetPi`.",
       "`done` follows release and the evaluation of the benefit hypothesis."],
-     "On `ready`: `pi-planning`. On `implementing`: `story-refinement` with the team's Scrum Master.",
-     conditions=[_cond("postcondition", "challenged-before-ready", "workspace.filter(a, a.path == step.artifact.path && !(a.data.status in ['funnel', 'analyzing']))",
-                       "selected.all(a, size(a.data.challengeLedger) > 0)")])
+     "On `ready`: `pi-planning`. On `implementing`: `story-refinement` with the team's Scrum Master.", conditions=flow_conditions())
+
+transition("feature-enabler-transition", "art", "Enabler Feature transition", "feature-enabler", f"{ART}/features/<feature-slug>/<feature-slug>.feature-enabler.md", "system-architect",
+     "funnel → analyzing → ready → implementing → validating-on-staging → deploying-to-production → releasing → done",
+     "Record the human's decision to move one enabler Feature to a new ART Kanban state, then re-render the ART Kanban.",
+     "\"Approve / commit / move / accept this enabler Feature\" after a gate, PI Planning or a System Demo.",
+     ["An enabler Feature leaves `analyzing` only after it was challenged.", "`implementing` follows the PI commitment and sets `targetPi`.",
+      "`done` follows its demonstration on a working system and the evaluation of what it enables."],
+     "On `ready`: `pi-planning`. On `implementing`: `story-refinement` with the team's Scrum Master.", conditions=flow_conditions())
 
 gate("art-gate-decision", "art", "ART gate decision")
 
@@ -607,12 +743,12 @@ loop("story-refinement", "team", "Story refinement", "story", f"{TEAM}/stories/<
      "A new story; split a Feature into stories; a spike; a Story-sized defect or debt item; make a Story ready.",
      ["One Story per run, a vertical slice that fits in an iteration. Create it with `status: backlog`, or thicken it without changing its status.",
       "User stories use the user-voice form; an enabler Story (a spike is an exploration enabler) says what must be learned or built.",
-      "Write Given/When/Then acceptance criteria and the NFR ids that apply. Set `parent` to the Feature it splits from. Leave `estimate` to the team's challenge."],
+      "Write Given/When/Then acceptance criteria and the NFR ids that apply. Set `parent` to the Feature or enabler Feature it splits from. Leave `estimate` to the team's challenge."],
      ["Is it independent, negotiable, valuable, estimable, small and testable?", "Does each acceptance criterion describe an observable outcome?"],
      ["The Story statement and acceptance criteria are filled; `estimate` is set from the Software Engineer's packet."],
      "The Product Owner (human) decides whether the Story is ready.",
      "`story-transition` to record the move; then `iteration-planning`.",
-     draft_conditions=[parent_post("parent-feature-is-approved", [("feature", "['ready', 'implementing']")])])
+     draft_conditions=[parent_post("parent-feature-is-approved", [("feature", "['ready', 'implementing']"), ("feature-enabler", "['ready', 'implementing']")])])
 
 loop("iteration-planning", "team", "Iteration Planning", "iteration-plan", f"{TEAM}/iterations/<iteration-slug>/iteration-plan.md", "scrum-master",
      ["product-owner", "software-engineer", "quality-engineer"],
@@ -637,7 +773,7 @@ loop("story-implementation", "team", "Story implementation", "code-change", f"{T
      ["Do the tests pin down each acceptance criterion, and do they pass?", "Is the change the smallest one that satisfies the Story?"],
      ["Review findings are fixed in the code or answered; tests pass; `status` is `ready-for-review`."],
      "The human reviewer approves and merges the pull request.",
-     "`story-transition` (in-review → accepted, by the Product Owner).",
+     "`code-change-transition` to record the reviewer's decision (approved, then merged); then `story-transition` (in-review → accepted, by the Product Owner).",
      draft_conditions=[
          exists_pre("a-story-is-ready", "story", "['ready', 'in-progress']"),
          _cond("postcondition", "change-implements-a-planned-story", "workspace.filter(a, a.path == step.artifact.path)",
@@ -669,10 +805,21 @@ transition("story-transition", "team", "Story transition", "story", f"{TEAM}/sto
      "Record the human's decision to move one Story to a new Team Kanban state, then re-render the Team Kanban.",
      "\"This story is ready / started / accepted\".",
      ["A Story leaves `backlog` only after it was challenged.", "`in-progress` sets `iteration`.",
-      "`accepted` means the acceptance criteria and the Definition of Done are met and the change is merged."],
+      "`accepted` means the acceptance criteria and the Definition of Done are met and the Story's code change, when it has one, is `merged`."],
      "On `ready`: `iteration-planning`. On `in-progress`: `story-implementation`.",
      conditions=[_cond("postcondition", "challenged-before-ready", "workspace.filter(a, a.path == step.artifact.path && a.data.status != 'backlog')",
-                       "selected.all(a, size(a.data.challengeLedger) > 0)")])
+                       "selected.all(a, size(a.data.challengeLedger) > 0)"),
+                 _cond("postcondition", "accepted-story-has-no-unmerged-change", "workspace.filter(a, a.path == step.artifact.path && a.data.status == 'accepted')",
+                       "selected.all(a, !workspace.exists(c, c.kind == 'code-change' && c.data.story == a.path && c.data.status != 'merged'))")])
+
+transition("code-change-transition", "team", "Code change transition", "code-change", f"{TEAM}/stories/<story-slug>/<story-slug>.code-change.md", "software-engineer",
+     "ready-for-review → changes-requested or approved → merged",
+     "Record the human reviewer's decision on one code change as a state change.",
+     "\"The pull request is approved / merged / needs changes\".",
+     ["`approved` and `merged` need a challenged change; `merged` follows `approved` and the human's merge.",
+      "`changes-requested` sends the Story back to `story-implementation`, which sets `ready-for-review` again."],
+     "On `merged`: `story-transition` (in-review → accepted).",
+     conditions=[challenged_before("challenged-before-approval", "['approved', 'merged']")], board=False)
 
 gate("team-gate-decision", "team", "Team gate decision")
 

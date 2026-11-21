@@ -24,6 +24,13 @@ description: 'Craft skill of the Solution Architect: how to author the Solution 
 - Compliance and verification: per standard, what is evidenced, to whom, and how the evidence is produced while the solution is built; per fixed requirement, the test that verifies it, traced from need to Capability to test.
 - Common failures: everything fixed up front; an interface without owner; an NFR without measure; verification deferred to a final test phase.
 
+### Enabler Capability (`capability-enabler`)
+
+- One `enablerType`; the benefit is what the Capabilities in `enables` gain, and the variable intent it closes, if any.
+- Acceptance criteria are demonstrable on the integrated solution at a Solution Demo: an interface in service, a model validated, an environment provisioned.
+- Split it into the enabler Features each ART takes, along subsystem ownership. WSJF competes with business Capabilities.
+- Common failures: runway no Capability waits for; an exploration with no decision it feeds; a business Capability disguised as an enabler.
+
 ## Lens by artifact
 
 ### Architecture Vision (`architecture-vision`)
@@ -31,6 +38,15 @@ description: 'Craft skill of the Solution Architect: how to author the Solution 
 - Can this large solution be built within the target architecture and principles, or does one conflict with fixed intent (a certified component, a supplier's technology)?
 - Does the runway arrive before the PI in which the Solution Train needs it?
 - Which portfolio standard would force rework of an interface in service, and is that migration acknowledged?
+
+### Enabler Epic (`epic-enabler`)
+
+- Which Solution Trains and ARTs must build this runway, and does it fit their interfaces and fixed intent?
+- Is it an Epic, or enabler Capabilities one train can deliver within a PI?
+
+### Lean Business Case of an enabler Epic (`lean-business-case`)
+
+- Does the MVP run on the integrated solution, and do the costs include the interface changes it forces on each ART and supplier?
 
 ### Solution Train canvas (`solution-train-canvas`)
 

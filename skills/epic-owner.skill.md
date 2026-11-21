@@ -19,7 +19,7 @@ description: 'Craft skill of the Epic Owner: how to author the Epic hypothesis s
 
 - Hypothesis statement: keep the template's form (for whom, the solution, the value, unlike which alternative). Name the customer segment and the alternative they use today; state value, not design.
 - Business outcomes hypothesis: the measurable benefits (revenue, cost, retention, risk), each with unit, baseline and target. Leading indicators: early measures that predict those outcomes and can be observed during the MVP, with how they are collected; mirror them in `leadingIndicators`.
-- Set `type`: business, or enabler when the Epic extends the Architectural Runway or improves the value stream. Fill `strategicThemes` with theme ids and `valueStreams` with paths.
+- Fill `strategicThemes` with theme ids and `valueStreams` with paths. Runway, platform, exploration or compliance work is an enabler Epic: `enterprise-architect` writes it; name the ones your Epic needs under Scope.
 - WSJF: user and business value, time criticality, risk reduction and opportunity enablement, and job size, each relative to the other Epics on the modified Fibonacci scale. Leave zeros when there is nothing to compare against.
 - Scope says what is out. The MVP is one paragraph here; the Lean Business Case details it.
 - Common failures: a solution named where a hypothesis is due; outcomes without baseline; indicators that only lag (annual revenue); an initiative that fits one PI.

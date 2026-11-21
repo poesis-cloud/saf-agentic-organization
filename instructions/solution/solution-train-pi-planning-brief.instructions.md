@@ -7,7 +7,7 @@ description: 'Workflow brief of solution-train-pi-planning: purpose, artifact pa
 
 Aggregate the ARTs' PI plans into the Solution Train's PI Objectives, planning board and risks for one PI.
 
-- **Main artifact:** `pi-objectives` at `portfolio/solution-trains/<solution-train-slug>/pis/<pi-slug>/pi-objectives.md` (template `templates/art/pi-objectives.artifact-template.md`), owned by `solution-train-engineer`.
+- **Main artifact:** `pi-objectives` at `portfolio/solution-trains/<solution-train-slug>/pis/<pi-slug>/pi-objectives.md` (template `templates/solution/pi-objectives.artifact-template.md`), owned by `solution-train-engineer`.
 - **Challenge packets:** `portfolio/solution-trains/<solution-train-slug>/pis/<pi-slug>/challenges/solution-train-pi-planning-<your-agent-slug>.challenge.md` (template `templates/shared/challenge.artifact-template.md`).
 - **Panel:** `solution-manager`, `solution-architect`, `systems-engineer`, `business-owner`.
 

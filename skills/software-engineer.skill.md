@@ -26,7 +26,7 @@ description: 'Craft skill of the Software Engineer: how to implement a Story tes
 
 ## Lens by artifact
 
-### Feature (`feature`)
+### Feature (`feature`) and enabler Feature (`feature-enabler`)
 
 - Can teams build and demonstrate every acceptance criterion within one PI on today's code base? Name the part that is larger than it looks, and where you would cut.
 - Is the WSJF job size credible against comparable Features already delivered?

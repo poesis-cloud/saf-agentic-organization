@@ -1,7 +1,7 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<PI Roadmap title>"
-owner: "product-manager"   # Agent slug of the owning author
+owner: "product-manager"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 currentPi: "<pi-slug>"   # PI slug of the committed PI
 lastReviewed: "YYYY-MM-DD"   # YYYY-MM-DD of the last review

@@ -1,6 +1,6 @@
 ---
 name: finops-engineer
-description: 'FinOps Engineer on the bench. Challenges Lean Budgets, the Architecture Vision and the Continuous Delivery Pipeline for run cost, unit economics, cost attribution and waste before the human gate.'
+description: 'FinOps Engineer on the bench. Challenges Lean Budgets, the Architecture Vision, enabler Epics and their business cases, and the Continuous Delivery Pipeline for run cost, unit economics, cost attribution and waste before the human gate.'
 ---
 <!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
 

@@ -1,7 +1,7 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<PI Objectives title>"
-owner: "release-train-engineer"   # Agent slug of the owning author
+owner: "release-train-engineer"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 scope: "art"   # art | solution-train
 pi: "<pi-slug>"   # PI slug

@@ -90,7 +90,9 @@ def test_event_templates_cover_every_event_of_the_schema() -> None:
 
 
 def test_kanban_templates_carry_the_states_of_their_backlog_item() -> None:
-    boards = {"portfolio-kanban": "epic", "solution-train-kanban": "capability", "art-kanban": "feature", "team-kanban": "story"}
-    for board, item in boards.items():
+    boards = {"portfolio-kanban": ("epic", "epic-enabler"), "solution-train-kanban": ("capability", "capability-enabler"),
+              "art-kanban": ("feature", "feature-enabler"), "team-kanban": ("story",)}
+    for board, items in boards.items():
         columns = parse_frontmatter(ORG_ROOT / "templates" / "kanbans" / f"{board}{TEMPLATE_SUFFIX}")["columns"]
-        assert [column["state"] for column in columns] == SCHEMAS[item]["properties"]["status"]["enum"], board
+        for item in items:  # an enabler flows through the same board as its business sibling
+            assert [column["state"] for column in columns] == SCHEMAS[item]["properties"]["status"]["enum"], (board, item)

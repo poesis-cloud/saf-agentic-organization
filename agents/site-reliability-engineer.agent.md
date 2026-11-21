@@ -1,6 +1,6 @@
 ---
 name: site-reliability-engineer
-description: 'Site Reliability Engineer on the bench. Challenges the Solution Intent, enabler Features, NFRs, the pipeline map and releases for service level objectives, failure modes, capacity, rollback and incident readiness before the human gate.'
+description: 'Site Reliability Engineer on the bench. Challenges the Solution Intent, NFRs, the pipeline map and releases for service level objectives, failure modes, capacity, rollback and incident readiness before the human gate.'
 ---
 <!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
 

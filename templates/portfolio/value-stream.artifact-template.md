@@ -1,7 +1,7 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Development Value Stream title>"
-owner: "portfolio-manager"   # Agent slug of the owning author
+owner: "portfolio-manager"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 operationalValueStreams: []   # Operational value streams this development value stream supports
 trains: []   # The Solution Trains and ARTs that realize the value stream

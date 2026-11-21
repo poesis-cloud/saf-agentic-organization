@@ -9,7 +9,7 @@ Plan one release and assemble its readiness evidence: what is made available to 
 
 - **Main artifact:** `release` at `portfolio/arts/<art-slug>/releases/<release-slug>/<release-slug>.release.md` (template `templates/art/release.artifact-template.md`), owned by `release-manager`.
 - **Challenge packets:** `portfolio/arts/<art-slug>/releases/<release-slug>/challenges/release-on-demand-<your-agent-slug>.challenge.md` (template `templates/shared/challenge.artifact-template.md`).
-- **Panel:** `site-reliability-engineer`, `observability-engineer`, `security-expert`, `quality-engineer`, `technical-writer`.
+- **Panel:** `site-reliability-engineer`, `observability-engineer`, `security-expert`, `quality-engineer`, `technical-writer`, `product-marketing-manager`.
 
 ## Draft
 
@@ -30,4 +30,4 @@ Done when: Scope, strategy, evidence links, rollout and rollback are filled; `st
 
 ## Human gate
 
-Product Management's human lead and the Business Owners decide to release. Next: `art-gate-decision`; then `feature-transition` (releasing → done) for each Feature released. A later run of this workflow records the result (`released` or `rolled-back`) and the measured outcomes.
+Product Management's human lead and the Business Owners decide to release. Next: `release-transition` to record the decision (ready → released or cancelled) and later a rollback; then `feature-transition` (releasing → done) for each Feature released.

@@ -1,12 +1,13 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Architecture decision title>"
-owner: "system-architect"   # Agent slug of the owning author
+owner: "system-architect"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 status: "proposed"   # proposed | accepted | superseded | rejected
 decisionDate: null   # YYYY-MM-DD the human accepted the decision, or null
 supersedes: []   # Paths of the decisions this one replaces
-features: []   # Paths of the Features that need or implement this decision
+features: []   # Paths of the Features and enabler Features that need or implement this decision
+transitions: []   # State history
 stepOutcomes: []   # each step that commits this file appends { step: <workflow>/<step>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <one line> }
 ---
 <!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Template: drop this line and the guidance comments in the artifact. -->

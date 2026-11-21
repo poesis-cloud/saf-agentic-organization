@@ -1,7 +1,7 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Continuous Delivery Pipeline title>"
-owner: "devops-engineer"   # Agent slug of the owning author
+owner: "devops-engineer"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 leadTime: null   # Total lead time from idea to release, with its unit
 stages: []   # Pipeline steps in order

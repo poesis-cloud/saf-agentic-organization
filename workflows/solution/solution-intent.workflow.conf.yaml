@@ -43,7 +43,12 @@ steps:
     instruction-following: 8
     fast-iteration: 2
     schema-adherence: 8
-  conditions: []
+  conditions:
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'solution-architect')
 - slug: challenge-systems-engineer
   description: 'Challenge packet: the Systems Engineer challenges the drafted Solution Intent. Not itself challenged.'
   actor: systems-engineer
@@ -229,3 +234,8 @@ steps:
     setSelector:
       setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
     setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'solution-architect')

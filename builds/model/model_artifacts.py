@@ -116,7 +116,7 @@ DEFS = {
         },
     },
     "transitions": {
-        "description": "Kanban history. One entry per state change, appended by the owner in a `*-transition` workflow after the human decided.",
+        "description": "State history. One entry per state change, appended by the owner in its `*-transition` workflow after the human decided.",
         "type": "array",
         "items": {
             "type": "object", "additionalProperties": True,
@@ -140,7 +140,7 @@ STORY_STATES = ["backlog", "ready", "in-progress", "in-review", "accepted"]
 
 def main_fields(owner):
     return {
-        "owner": s("Agent slug of the owning author. Only the owner writes this artifact.", owner),
+        "owner": s("Agent slug of the author. Only the owner writes this artifact, its state changes included; the draft names the workflow's author.", owner),
         "challengeLedger": ref("challengeLedger", "The owner's answers to the expert challenge (see the definition).", []),
     }
 
@@ -277,10 +277,9 @@ kind("value-stream", "Development Value Stream", "portfolio", "main", ["portfoli
      defs=("challengeLedger",))
 
 kind("epic", "Epic", "portfolio", "main", ["epic-owner"],
-     "A significant solution development initiative, stated as a hypothesis and steered through the Portfolio Kanban with an MVP.",
+     "A significant business initiative that delivers customer value, stated as a hypothesis and steered through the Portfolio Kanban with an MVP. Enabler work is an `epic-enabler`.",
      {
          **main_fields("epic-owner"),
-         "type": e("business: delivers customer value. enabler: extends the architectural runway or improves the value stream.", ["business", "enabler"]),
          **work_item_fields(EPIC_STATES, "funnel"),
          "implementationStage": opt_e("While implementing: mvp (testing the hypothesis) or persevere (hypothesis proven).", ["mvp", "persevere"]),
          "resolution": opt_e("Once done: how the Epic ended.", ["delivered", "no-go", "pivoted", "stopped"]),
@@ -297,12 +296,35 @@ kind("epic", "Epic", "portfolio", "main", ["epic-owner"],
       S("Open questions", "What is still unknown, who can answer, and the assumption taken meanwhile.")],
      defs=("challengeLedger", "wsjf", "transitions"))
 
-kind("lean-business-case", "Lean Business Case", "portfolio", "main", ["epic-owner"],
-     "The case for an Epic in the analyzing state: its MVP, cost estimate and projected value, ending in a go or no-go recommendation.",
+kind("epic-enabler", "Enabler Epic", "portfolio", "main", ["enterprise-architect"],
+     "A significant enabler initiative (exploration, architecture, infrastructure or compliance) that extends the Architectural Runway or improves the value stream, stated as a hypothesis and steered through the Portfolio Kanban with an MVP. The Enterprise Architect is its Epic Owner.",
+     {
+         **main_fields("enterprise-architect"),
+         "enablerType": e("The enabler category.", ENABLER_TYPES),
+         **work_item_fields(EPIC_STATES, "funnel"),
+         "implementationStage": opt_e("While implementing: mvp (testing the hypothesis) or persevere (hypothesis proven).", ["mvp", "persevere"]),
+         "resolution": opt_e("Once done: how the enabler Epic ended.", ["delivered", "no-go", "pivoted", "stopped"]),
+         "strategicThemes": strs("Ids of the Strategic Themes the enabler Epic serves."),
+         "valueStreams": strs("Paths of the value streams impacted."),
+         "enables": strs("Paths of the business Epics this enabler makes possible or faster."),
+         "leadingIndicators": strs("Early measures that predict the outcome."),
+     },
+     [S("Epic hypothesis statement", "For <the value streams or trains> who <need something>, the <enabler> is a <runway, platform, exploration or compliance change> that <makes this possible or faster>. Unlike <the alternative>, it <does something better: the why>.", True),
+      S("Outcomes hypothesis", "The measurable benefits expected if the hypothesis holds: what the enabled Epics gain in speed, cost, risk or compliance.", True),
+      S("Enabled work", "The business Epics, Capabilities or Features that need this enabler, and by when."),
+      S("Leading indicators", "The early measures and how they will be collected."),
+      S("Nonfunctional requirements", "Qualities and constraints the enabler Epic imposes or must respect."),
+      S("Scope", "In scope, out of scope."),
+      S("MVP", "The minimal version sufficient to prove or disprove the hypothesis; once run, the evidence and the pivot-or-persevere recommendation."),
+      S("Open questions", "What is still unknown, who can answer, and the assumption taken meanwhile.")],
+     defs=("challengeLedger", "wsjf", "transitions"))
+
+kind("lean-business-case", "Lean Business Case", "portfolio", "main", ["epic-owner", "enterprise-architect"],
+     "The case for an Epic or enabler Epic in the analyzing state: its MVP, cost estimate and projected value, ending in a go or no-go recommendation. Written by the owner of the Epic it analyzes.",
      {
          **main_fields("epic-owner"),
-         "epic": path("The Epic analyzed.", "portfolio/epics/<epic-slug>/<epic-slug>.epic.md"),
-         "recommendation": e("The Epic Owner's recommendation to Portfolio Leadership.", ["pending", "go", "no-go"]),
+         "epic": path("The Epic or enabler Epic analyzed.", "portfolio/epics/<epic-slug>/<epic-slug>.epic.md"),
+         "recommendation": e("The owner's recommendation to Portfolio Leadership.", ["pending", "go", "no-go"]),
          "mvpCostEstimate": opt_s("Estimated cost of the MVP, with its unit.", None),
          "implementationCostEstimate": opt_s("Forecast cost of the full implementation if the hypothesis is proven, with its unit.", None),
          "sponsors": strs("The human sponsors and Business Owners consulted."),
@@ -417,11 +439,9 @@ kind("solution-intent", "Solution Intent", "solution", "main", ["solution-archit
      defs=("challengeLedger",))
 
 kind("capability", "Capability", "solution", "main", ["solution-manager"],
-     "Large solution functionality whose implementation often spans multiple ARTs and is sized to be delivered within a PI.",
+     "Large solution functionality that delivers business value, whose implementation often spans multiple ARTs and is sized to be delivered within a PI. Enabler work is a `capability-enabler`.",
      {
          **main_fields("solution-manager"),
-         "type": e("business or enabler.", ["business", "enabler"]),
-         "enablerType": opt_e("For an enabler: its category.", ENABLER_TYPES),
          **work_item_fields(FLOW_STATES, "funnel"),
          "parent": opt_path("The portfolio Epic this capability splits from."),
          "targetPi": opt_s("PI slug the capability is planned for, or null."),
@@ -436,13 +456,34 @@ kind("capability", "Capability", "solution", "main", ["solution-manager"],
       S("Open questions", "What is still unknown, who can answer, and the assumption taken meanwhile.")],
      defs=("challengeLedger", "wsjf", "transitions"))
 
+kind("capability-enabler", "Enabler Capability", "solution", "main", ["solution-architect"],
+     "Enabler work of a Solution Train (exploration, architecture, infrastructure or compliance) that extends the runway of the large solution, often spans multiple ARTs and is sized to be delivered within a PI.",
+     {
+         **main_fields("solution-architect"),
+         "enablerType": e("The enabler category.", ENABLER_TYPES),
+         **work_item_fields(FLOW_STATES, "funnel"),
+         "parent": opt_path("The Epic or enabler Epic this enabler Capability splits from."),
+         "enables": strs("Paths of the Capabilities this enabler makes possible or faster."),
+         "targetPi": opt_s("PI slug the enabler Capability is planned for, or null."),
+         "arts": strs("Paths of the ART folders expected to contribute."),
+     },
+     [S("Description", "What the enabler builds or must learn, in one paragraph.", True),
+      S("Benefit hypothesis", "What it makes possible or faster for the named Capabilities, and how that will be observed.", True),
+      S("Acceptance criteria", "Criteria demonstrable on the integrated solution at a Solution Demo, covering the relevant NFRs.", True),
+      S("Nonfunctional requirements", "Solution Intent constraints that apply, and any tightening."),
+      S("Feature split", "The enabler Features each ART would take, as candidates."),
+      S("Dependencies and suppliers", "Cross-ART and supplier dependencies, and the variable intent it closes."),
+      S("Open questions", "What is still unknown, who can answer, and the assumption taken meanwhile.")],
+     defs=("challengeLedger", "wsjf", "transitions"))
+
 kind("supplier-agreement", "Supplier agreement", "solution", "main", ["procurement-manager"],
      "The working agreement with a supplier of solution components, subsystems or services: scope, collaboration on the train's cadence, acceptance and terms.",
      {
          **main_fields("procurement-manager"),
          "supplier": s("The supplier organization.", "<supplier name>"),
-         "status": e("Agreement state.", ["draft", "negotiating", "active", "ended"]),
+         "status": e("Agreement state. `draft` and `negotiating` are set while writing; `active` and `ended` only in `supplier-agreement-transition`, after the human decided.", ["draft", "negotiating", "active", "ended"]),
          "capabilities": strs("Paths of the capabilities the supplier contributes to."),
+         "transitions": ref("transitions", "State history.", []),
      },
      [S("Scope and deliverables", "The components, subsystems or services supplied.", True),
       S("Collaboration model", "How the supplier joins the cadence: Pre-Plan, PI Planning, syncs, Solution Demo, integration points.", True),
@@ -452,7 +493,7 @@ kind("supplier-agreement", "Supplier agreement", "solution", "main", ["procureme
       S("Intellectual property and licensing", "Ownership, licenses, open-source obligations."),
       S("Exit and continuity", "Termination, transition, continuity of service."),
       S("Risks", "Dependency and delivery risks.")],
-     defs=("challengeLedger",))
+     defs=("challengeLedger", "transitions"))
 
 kind("pi-objectives", "PI Objectives", "art", "main", ["release-train-engineer", "solution-train-engineer"],
      "The business and technical goals a train intends to achieve in the upcoming PI, committed or uncommitted, with the plan that supports them.",
@@ -520,12 +561,10 @@ kind("product-roadmap", "PI Roadmap", "art", "main", ["product-manager"],
       S("Assumptions and risks", "What the forecast depends on.")],
      defs=("challengeLedger",))
 
-kind("feature", "Feature", "art", "main", ["product-manager", "system-architect"],
-     "Solution functionality that delivers business value, fulfills a stakeholder need, and is sized to be delivered by an ART within a PI.",
+kind("feature", "Feature", "art", "main", ["product-manager"],
+     "Solution functionality that delivers business value, fulfills a stakeholder need, and is sized to be delivered by an ART within a PI. Enabler work is a `feature-enabler`.",
      {
          **main_fields("product-manager"),
-         "type": e("business: authored by the Product Manager. enabler: authored by the System Architect.", ["business", "enabler"]),
-         "enablerType": opt_e("For an enabler: its category.", ENABLER_TYPES),
          **work_item_fields(FLOW_STATES, "funnel"),
          "parent": opt_path("The Epic or Capability this Feature splits from; null for a Feature from the ART's local context."),
          "targetPi": opt_s("PI slug the Feature is planned for, or null."),
@@ -539,14 +578,35 @@ kind("feature", "Feature", "art", "main", ["product-manager", "system-architect"
       S("Open questions", "What is still unknown, who can answer, and the assumption taken meanwhile.")],
      defs=("challengeLedger", "wsjf", "transitions"))
 
+kind("feature-enabler", "Enabler Feature", "art", "main", ["system-architect"],
+     "Enabler work of an ART (exploration, architecture, infrastructure or compliance) that extends the architectural runway or improves the delivery pipeline, sized to be delivered by an ART within a PI.",
+     {
+         **main_fields("system-architect"),
+         "enablerType": e("The enabler category.", ENABLER_TYPES),
+         **work_item_fields(FLOW_STATES, "funnel"),
+         "parent": opt_path("The Epic, enabler Epic, Capability or enabler Capability this enabler Feature splits from; null for one from the ART's local context."),
+         "enables": strs("Paths of the Features this enabler makes possible or faster."),
+         "adrs": strs("Paths of the architecture decisions it implements."),
+         "targetPi": opt_s("PI slug the enabler Feature is planned for, or null."),
+     },
+     [S("Description", "What the enabler builds or must learn, in one paragraph.", True),
+      S("Benefit hypothesis", "What it makes possible or faster for the named Features, and how that will be observed.", True),
+      S("Acceptance criteria", "One bullet per criterion (AC1, AC2, …), demonstrable on a working system, covering the relevant NFRs.", True),
+      S("Nonfunctional requirements", "The NFR ids from the ART's register that apply, and any tightening."),
+      S("Stories", "Candidate split into enabler Stories (a spike is an exploration enabler)."),
+      S("Dependencies", "Other Features, teams, ARTs, suppliers, architecture decisions."),
+      S("Open questions", "What is still unknown, who can answer, and the assumption taken meanwhile.")],
+     defs=("challengeLedger", "wsjf", "transitions"))
+
 kind("adr", "Architecture decision", "art", "main", ["system-architect"],
      "One architecture decision that extends the architectural runway: the context, the options kept open, the decision and its consequences.",
      {
          **main_fields("system-architect"),
-         "status": e("Decision state.", ["proposed", "accepted", "superseded", "rejected"]),
+         "status": e("Decision state. `proposed` is set while writing; `accepted`, `rejected` and `superseded` only in `adr-transition`, after the human decided.", ["proposed", "accepted", "superseded", "rejected"]),
          "decisionDate": opt_s("YYYY-MM-DD the human accepted the decision, or null."),
          "supersedes": strs("Paths of the decisions this one replaces."),
-         "features": strs("Paths of the Features that need or implement this decision."),
+         "features": strs("Paths of the Features and enabler Features that need or implement this decision."),
+         "transitions": ref("transitions", "State history.", []),
      },
      [S("Context", "The forces at play: the Features that need the decision, the NFRs, the constraints.", True),
       S("Options considered", "At least two real options with their trade-offs. Prefer keeping options open until the last responsible moment.", True),
@@ -554,7 +614,7 @@ kind("adr", "Architecture decision", "art", "main", ["system-architect"],
       S("Consequences", "What becomes easier, what becomes harder, what must now be true.", True),
       S("Runway impact", "The enabler Features and Stories this decision requires."),
       S("Validation", "How the decision will be proven on a working system, and what would reopen it.")],
-     defs=("challengeLedger",))
+     defs=("challengeLedger", "transitions"))
 
 kind("nfrs", "Nonfunctional requirements", "art", "main", ["system-architect"],
      "The ART's register of system qualities that constrain the backlog: each one measurable and verifiable.",
@@ -595,10 +655,11 @@ kind("release", "Release", "art", "main", ["release-manager"],
      "The plan and readiness record of one release: what is made available to which customers, when, and with what evidence.",
      {
          **main_fields("release-manager"),
-         "status": e("Release state.", ["planned", "ready", "released", "rolled-back", "cancelled"]),
+         "status": e("Release state. `planned` and `ready` are set while planning; `released`, `rolled-back` and `cancelled` only in `release-transition`, after the human decided.", ["planned", "ready", "released", "rolled-back", "cancelled"]),
          "features": strs("Paths of the Features released."),
          "targetDate": opt_s("YYYY-MM-DD targeted, or null for on demand."),
          "strategy": s("How the release is exposed (e.g. full, canary, feature toggle, dark launch).", "<release strategy>"),
+         "transitions": ref("transitions", "State history.", []),
      },
      [S("Scope", "The Features released and the customers who get them.", True),
       S("Release strategy", "How release is decoupled from deployment, the audience, and the order of exposure.", True),
@@ -608,7 +669,7 @@ kind("release", "Release", "art", "main", ["release-manager"],
       S("Communication and enablement", "Release notes, documentation, training, customer messaging."),
       S("Measure", "The outcomes to observe after release to evaluate each Feature's benefit hypothesis."),
       S("Risks", "What could go wrong and who decides to stop.")],
-     defs=("challengeLedger",))
+     defs=("challengeLedger", "transitions"))
 
 # -- team -----------------------------------------------------------------------------------
 
@@ -637,7 +698,7 @@ kind("story", "Story", "team", "main", ["product-owner"],
          "type": e("user: end-user value. enabler: exploration, architecture, infrastructure or compliance work.", ["user", "enabler"]),
          "enablerType": opt_e("For an enabler: its category (a spike is an exploration enabler).", ENABLER_TYPES),
          **work_item_fields(STORY_STATES, "backlog"),
-         "parent": opt_path("The Feature this Story splits from; null for a Story from the team's local context."),
+         "parent": opt_path("The Feature or enabler Feature this Story splits from; null for a Story from the team's local context."),
          "estimate": opt_num("Story points (modified Fibonacci), set by the team."),
          "iteration": opt_s("Iteration slug the Story is planned in, or null."),
      },
@@ -673,8 +734,9 @@ kind("code-change", "Code change", "team", "main", ["software-engineer"],
          "repository": s("The code repository changed.", "<repository>"),
          "branch": s("The branch that holds the change.", "<branch>"),
          "pullRequest": opt_s("Pull request link, or null."),
-         "status": e("Change state.", ["in-progress", "ready-for-review", "changes-requested", "approved", "merged"]),
+         "status": e("Change state. `in-progress` and `ready-for-review` are set while implementing; the reviewer's decision (`changes-requested`, `approved`, `merged`) only in `code-change-transition`.", ["in-progress", "ready-for-review", "changes-requested", "approved", "merged"]),
          "testsPassing": b("True when the automated tests of the change pass."),
+         "transitions": ref("transitions", "State history.", []),
      },
      [S("Summary", "What changed and why, in a few lines a reviewer can check against the diff.", True),
       S("Design notes", "The approach, the alternatives dropped, and any deviation from an architecture decision."),
@@ -682,4 +744,4 @@ kind("code-change", "Code change", "team", "main", ["software-engineer"],
       S("Definition of Done", "Each item of the team's Definition of Done, checked or explained.", True),
       S("How to verify", "The steps for a human to see the acceptance criteria met."),
       S("Risks and rollback", "What could break and how to undo the change.")],
-     defs=("challengeLedger",))
+     defs=("challengeLedger", "transitions"))

@@ -15,7 +15,7 @@ Take one architecture decision that Features need: context, options kept open, t
 
 - One decision per run. Read the Features that need it, the NFR register and the Architecture Vision.
 - Describe at least two real options with trade-offs; decide at the last responsible moment and say what would reopen the decision.
-- Set `status: proposed`. List the enabler Features the decision requires; they are written in `enabler-feature-refinement`.
+- Set `status: proposed`. List the enabler Features the decision requires; they are written in `feature-enabler-refinement`.
 
 ## Challenge
 
@@ -30,4 +30,4 @@ Done when: Options, decision, consequences and validation are filled; `status` i
 
 ## Human gate
 
-The ART's lead architect (human) accepts or rejects the decision. Next: `art-gate-decision`; then `enabler-feature-refinement` for the runway it requires.
+The ART's lead architect (human) accepts or rejects the decision. Next: `adr-transition` to record it (proposed → accepted or rejected); then `feature-enabler-refinement` for the runway it requires.

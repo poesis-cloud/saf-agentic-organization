@@ -23,12 +23,13 @@ description: 'Craft skill of the Data Analyst: the measurement questions to ask 
 - Do the two to five key results of a theme together indicate its objective, with at least one that moves early enough to steer within the horizon?
 - Could a key result be reached while the objective fails, and does it then need a counter-metric?
 
-### Epic (`epic`)
+### Epic (`epic`) and enabler Epic (`epic-enabler`)
 
 - In `epic-hypothesis`: is each entry of `leadingIndicators` a measure with a threshold and a collection method, observable during the MVP, and able to prove the hypothesis wrong?
 - In `epic-hypothesis`: is the business outcomes hypothesis quantified against a baseline, so that "proven" and "not proven" are defined before any work starts?
 - In `epic-mvp-evaluation`: is each result given with its sample size, period and comparison (control group, before and after, cohort), against the threshold set before the MVP?
 - In `epic-mvp-evaluation`: does the evidence measure customer behavior, or only delivery, opinions and vanity metrics? Are unfavorable or missing indicators reported as gaps instead of dropped?
+- For an enabler Epic, the same tests apply to what the enabled Epics gain (lead time, cost, incidents, audit findings), measured as use of the runway, not as its delivery.
 
 ### Inspect and Adapt record (`event-record`)
 

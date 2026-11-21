@@ -12,7 +12,7 @@ Align and prepare the ARTs and suppliers of the Solution Train for PI Planning.
 ## Agenda
 
 - Solution Vision and roadmap highlights for the PI.
-- The ready capabilities, in WSJF order, and their split into Features per ART.
+- The ready Capabilities and enabler Capabilities, in WSJF order, and their split into Features per ART.
 - Cross-ART and supplier dependencies, and the integration points of the PI.
 - Planning context each ART takes into its own PI Planning.
 

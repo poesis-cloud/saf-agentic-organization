@@ -1,6 +1,6 @@
 ---
 name: platform-engineer
-description: 'Platform Engineer on the bench. Challenges the Architecture Vision, enabler Features, architecture decisions and the pipeline map for environments, infrastructure as code, capacity, tenancy and platform reuse before the human gate.'
+description: 'Platform Engineer on the bench. Challenges the Architecture Vision, enabler Epics, Capabilities and Features, architecture decisions and the pipeline map for environments, infrastructure as code, capacity, tenancy and platform reuse before the human gate.'
 ---
 <!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
 

@@ -37,6 +37,12 @@ description: 'Craft skill of the Product Marketing Manager: the market timing, p
 - Could the key features carry a launch: is there a story a customer would retell, or only a list of parity items?
 - Do the measures of success include market outcomes (acquisition, activation, win rate, expansion, retention) with a baseline?
 
+### Release (`release`)
+
+- Is the release date aligned with the market moment it serves (an event, a season, a competitor launch, a contract renewal), and is a later date costlier than a smaller scope?
+- Are sales, support and customers told what changes, for whom and when, with messaging and enablement ready before exposure?
+- Does the staged exposure (cohort, region, toggle) match what was promised to customers, and who tells them about a rollback?
+
 ## Evidence and severity
 
 - Evidence is customer or win/loss interviews, competitor material, sales and pipeline data, market or analyst research with its date, a dated external event, or the quoted text of the artifact. "The market wants" is not evidence.

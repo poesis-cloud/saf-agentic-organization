@@ -36,7 +36,7 @@ description: 'Craft skill of the Solution Manager: how to author the Solution Vi
 - **Acceptance criteria:** AC1, AC2, …, each independently testable and demonstrable on the integrated solution; reference Solution Intent NFR ids instead of restating qualities.
 - **Size:** it must fit one PI across the contributing ARTs. If it does not, split by workflow step, by customer segment, by variant or by happy path first.
 - **Feature split:** candidate Features per ART, one line each, with `arts` set; each ART's Product Manager writes them in `feature-refinement`. Under Dependencies and suppliers, say which ART or supplier must deliver first.
-- **WSJF:** relative to the other Capabilities on the modified Fibonacci scale; leave zeros rather than guess. Set `enablerType` for an enabler Capability, and `parent` to the Epic path when it splits from one.
+- **WSJF:** relative to the other Capabilities on the modified Fibonacci scale; leave zeros rather than guess. Set `parent` to the Epic path when it splits from one. Enabler Capabilities are the Solution Architect's: name the ones you need under Dependencies.
 - Common failures: a Capability only one ART builds (it is a Feature); acceptance criteria no Solution Demo could show; a hidden interface decision (name it, it goes to `solution-intent`).
 
 ### Capability transition (`record-transition`)
@@ -45,6 +45,12 @@ description: 'Craft skill of the Solution Manager: how to author the Solution Vi
 - `done` needs acceptance at a Solution Demo and the benefit hypothesis evaluated, not only its Features released.
 
 ## Lens by artifact
+
+### Enabler Capability (`capability-enabler`)
+
+- Which Capabilities in `enables` are on the Solution Roadmap, and does the enabler land before the PI that needs it?
+- Does it fit the capacity the Solution Train reserves for enablers, and does its WSJF compete fairly with the business Capabilities it delays?
+- Is customer-visible behavior hidden in it that should be a business Capability with its own benefit hypothesis?
 
 ### PI Objectives (`pi-objectives`)
 

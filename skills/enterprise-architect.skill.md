@@ -24,6 +24,20 @@ description: 'Craft skill of the Enterprise Architect: how to author the Archite
 - Roadmap and standards: sequence by horizon with the decision that gates each step, retirements included; fix only the minimum (identity, data classification, interoperability).
 - Common failures: a target without a migration path; runway for Epics on no roadmap; a big-bang replacement where an incremental path exists.
 
+### Enabler Epic (`epic-enabler`)
+
+- You are its Epic Owner: you write it, its business case and its MVP evaluation, and record its Kanban moves after Portfolio Leadership decided.
+- Set one `enablerType`. Exploration: learn before committing. Architecture: extend the runway. Infrastructure: platforms and environments. Compliance: evidence a regulation demands.
+- The hypothesis is about the business Epics in `enables`: what they gain in speed, cost, risk or compliance, and by when they need it. Leading indicators show the runway being used, not built.
+- WSJF competes with business Epics for the same budget; risk reduction and opportunity enablement usually carry the value.
+- Common failures: a platform with no Epic waiting for it; a migration with no retirement date; an Epic that fits in one train's PI.
+
+### Lean Business Case of an enabler Epic (`lean-business-case`)
+
+- Set `owner: enterprise-architect`. The MVP is the smallest runway one enabled Epic can use to prove the hypothesis.
+- Cost the build, the run and the exit (data migration, parallel run, retirement of what is replaced) separately.
+- The return is what the enabled Epics gain; a technical benefit alone is not a return.
+
 ## Lens by artifact
 
 ### Strategic Themes (`strategic-themes`)

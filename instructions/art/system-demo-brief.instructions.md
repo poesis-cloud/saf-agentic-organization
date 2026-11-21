@@ -18,4 +18,4 @@ Show the integrated work of all teams for the iteration from a production-like e
 
 ## After the run
 
-`feature-transition` for Features accepted; feedback feeds `feature-refinement`.
+`feature-transition` and `feature-enabler-transition` for the items accepted; feedback feeds `feature-refinement` and `feature-enabler-refinement`.

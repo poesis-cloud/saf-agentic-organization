@@ -47,6 +47,11 @@ steps:
     setSelector:
       setQuery: workspace.filter(a, a.path == step.artifact.path && a.data.status != 'backlog')
     setPredicate: selected.all(a, size(a.data.challengeLedger) > 0)
+  - kind: postcondition
+    slug: accepted-story-has-no-unmerged-change
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path && a.data.status == 'accepted')
+    setPredicate: selected.all(a, !workspace.exists(c, c.kind == 'code-change' && c.data.story == a.path && c.data.status != 'merged'))
 - slug: update-kanban
   description: 'Flow record: the Scrum Master / Team Coach re-renders the Kanban board from the items'' status.'
   actor: scrum-master

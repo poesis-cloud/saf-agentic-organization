@@ -1,7 +1,7 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Strategic Themes title>"
-owner: "portfolio-manager"   # Agent slug of the owning author
+owner: "portfolio-manager"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 horizon: "<e.g. FY2027>"   # The period the themes cover
 themes: []   # Strategic themes in OKR format: one objective, two to five key results each

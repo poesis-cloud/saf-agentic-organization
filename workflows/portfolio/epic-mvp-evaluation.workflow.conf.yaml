@@ -49,6 +49,11 @@ steps:
     setSelector:
       setQuery: workspace.filter(a, a.kind == 'epic' && a.data.status in ['implementing'])
     setPredicate: selected.size() > 0
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'epic-owner')
 - slug: challenge-data-analyst
   description: 'Challenge packet: the Data Analyst challenges the drafted Epic. Not itself challenged.'
   actor: data-analyst
@@ -172,3 +177,8 @@ steps:
     setSelector:
       setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
     setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'epic-owner')

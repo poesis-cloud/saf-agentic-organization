@@ -30,12 +30,13 @@ description: 'Craft skill of the Systems Engineer: what to ask of large solution
 - For each variable intent item: are several options really kept alive, with trade study criteria, the experiment or enabler that produces the knowledge, and a convergence date?
 - Does every fixed requirement have a verification method (test, analysis, inspection, demonstration) and a level (component, subsystem, integrated solution), and does traceability run from need to requirement to element to test with no orphan in either direction?
 
-### Capability (`capability`)
+### Capability (`capability`) and enabler Capability (`capability-enabler`)
 
 - Does the Feature split allocate the behavior cleanly to ARTs and suppliers, and are the interfaces it creates or changes named and defined before the Features that use them?
 - Can the acceptance criteria, with the NFRs the Solution Intent allocates to this Capability, be demonstrated on the integrated solution at the Solution Demo, or only inside each ART?
 - Does it depend on a design option still open in variable intent, and does it then need an exploration enabler or a model update first?
 - Which shared test assets does it need (integration environment, simulators, test data, supplier deliveries), and are they under Dependencies and suppliers?
+- For an enabler: which variable intent item or integration risk does it retire, and is that retirement the acceptance criterion?
 
 ### PI Objectives (`pi-objectives`)
 

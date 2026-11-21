@@ -18,4 +18,4 @@ Review whether the portfolio is achieving its vision and themes, and record the 
 
 ## After the run
 
-Each decision is carried by its workflow: `strategic-themes`, `strategic-investment-planning`, `epic-transition`, `portfolio-roadmap`.
+Each decision is carried by its workflow: `strategic-themes`, `strategic-investment-planning`, `epic-transition`, `epic-enabler-transition`, `portfolio-roadmap`.

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 slug: portfolio-gate-decision
-description: 'Record the human''s decision on a challenged portfolio-level artifact that is not a backlog item (backlog items move with their transition workflow). Main artifact at the human gate: gate-decision. Use for: "I accept / reject the vision, roadmap, budget, plan…" after a gate.'
+description: 'Record the human''s decision on a challenged portfolio-level artifact that has no state of its own (an artifact with a state moves with its transition workflow). Main artifact at the human gate: gate-decision. Use for: "I accept / reject the vision, roadmap, budget, plan…" after a gate.'
 orchestrator: value-management-officer
 instructions:
 - workflow-selection-handling

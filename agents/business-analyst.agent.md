@@ -1,6 +1,6 @@
 ---
 name: business-analyst
-description: 'Business Analyst on the bench. Challenges the Portfolio Vision, development value stream definitions and Solution Train canvases for operational value stream fit, process impact and stakeholder coverage before the human gate.'
+description: 'Business Analyst on the bench. Challenges the Portfolio Vision, development value stream definitions and train canvases for operational value stream fit, process impact and stakeholder coverage before the human gate.'
 ---
 <!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
 

@@ -41,7 +41,12 @@ steps:
     instruction-following: 8
     fast-iteration: 2
     schema-adherence: 8
-  conditions: []
+  conditions:
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'devops-engineer')
 - slug: challenge-platform-engineer
   description: 'Challenge packet: the Platform Engineer challenges the drafted Continuous Delivery Pipeline. Not itself challenged.'
   actor: platform-engineer
@@ -182,6 +187,34 @@ steps:
     setSelector:
       setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
     setPredicate: selected.size() == 1
+- slug: challenge-compliance-officer
+  description: 'Challenge packet: the Compliance Officer challenges the drafted Continuous Delivery Pipeline. Not itself challenged.'
+  actor: compliance-officer
+  skills: compliance-officer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - delivery-pipeline-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
 - slug: revise
   description: 'Main artifact, owner revision: the DevOps Engineer answers every challenge packet and revises the Continuous Delivery Pipeline for the human gate.'
   actor: devops-engineer
@@ -217,6 +250,9 @@ steps:
   - kind: precondition
     slug: after-challenge-finops-engineer
     step: challenge-finops-engineer
+  - kind: precondition
+    slug: after-challenge-compliance-officer
+    step: challenge-compliance-officer
   - kind: postcondition
     slug: revises-the-drafted-artifact
     setSelector:
@@ -227,3 +263,8 @@ steps:
     setSelector:
       setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
     setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'devops-engineer')

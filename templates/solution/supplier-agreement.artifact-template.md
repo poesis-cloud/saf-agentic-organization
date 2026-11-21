@@ -1,11 +1,12 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Supplier agreement title>"
-owner: "procurement-manager"   # Agent slug of the owning author
+owner: "procurement-manager"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 supplier: "<supplier name>"   # The supplier organization
 status: "draft"   # draft | negotiating | active | ended
 capabilities: []   # Paths of the capabilities the supplier contributes to
+transitions: []   # State history
 stepOutcomes: []   # each step that commits this file appends { step: <workflow>/<step>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <one line> }
 ---
 <!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Template: drop this line and the guidance comments in the artifact. -->

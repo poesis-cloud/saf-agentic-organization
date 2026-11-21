@@ -19,4 +19,4 @@ Keep the ARTs and suppliers aligned during the PI (Product Manager Sync, Archite
 
 ## After the run
 
-A backlog change is its own workflow: `capability-refinement`, `capability-transition`.
+A backlog change is its own workflow: `capability-refinement`, `capability-enabler-refinement`, `capability-transition`, `capability-enabler-transition`.

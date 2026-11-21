@@ -18,4 +18,4 @@ Give stakeholders an integrated view of what the ARTs and suppliers built in the
 
 ## After the run
 
-`capability-transition` for capabilities accepted; feedback feeds `capability-refinement` and the portfolio's investment decisions.
+`capability-transition` and `capability-enabler-transition` for the items accepted; feedback feeds `capability-refinement`, `capability-enabler-refinement` and the portfolio's investment decisions.

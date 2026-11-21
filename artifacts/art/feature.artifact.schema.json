@@ -3,7 +3,7 @@
   "$id": "gsmarc://saf/artifacts/feature.artifact/v1",
   "$ref": "gsmarc://saf/contracts/artifact/v1",
   "title": "Feature artifact schema",
-  "description": "Solution functionality that delivers business value, fulfills a stakeholder need, and is sized to be delivered by an ART within a PI.",
+  "description": "Solution functionality that delivers business value, fulfills a stakeholder need, and is sized to be delivered by an ART within a PI. Enabler work is a `feature-enabler`.",
   "type": "object",
   "additionalProperties": true,
   "x-artifact": {
@@ -11,8 +11,7 @@
     "layer": "art",
     "class": "main",
     "owners": [
-      "product-manager",
-      "system-architect"
+      "product-manager"
     ],
     "templates": [
       "templates/art/feature.artifact-template.md"
@@ -38,8 +37,6 @@
     "title",
     "owner",
     "challengeLedger",
-    "type",
-    "enablerType",
     "status",
     "blocked",
     "wsjf",
@@ -57,28 +54,11 @@
     "owner": {
       "type": "string",
       "minLength": 1,
-      "description": "Agent slug of the owning author. Only the owner writes this artifact."
+      "description": "Agent slug of the author. Only the owner writes this artifact, its state changes included; the draft names the workflow's author."
     },
     "challengeLedger": {
       "description": "The owner's answers to the expert challenge (see the definition).",
       "$ref": "#/$defs/challengeLedger"
-    },
-    "type": {
-      "description": "business: authored by the Product Manager. enabler: authored by the System Architect. One of: business | enabler.",
-      "enum": [
-        "business",
-        "enabler"
-      ]
-    },
-    "enablerType": {
-      "description": "For an enabler: its category. One of: exploration | architecture | infrastructure | compliance, or null.",
-      "enum": [
-        "exploration",
-        "architecture",
-        "infrastructure",
-        "compliance",
-        null
-      ]
     },
     "status": {
       "description": "Kanban state. Changed only by the owner in the `*-transition` workflow, after the human decided. One of: funnel | analyzing | ready | implementing | validating-on-staging | deploying-to-production | releasing | done.",
@@ -239,7 +219,7 @@
       }
     },
     "transitions": {
-      "description": "Kanban history. One entry per state change, appended by the owner in a `*-transition` workflow after the human decided.",
+      "description": "State history. One entry per state change, appended by the owner in its `*-transition` workflow after the human decided.",
       "type": "array",
       "items": {
         "type": "object",

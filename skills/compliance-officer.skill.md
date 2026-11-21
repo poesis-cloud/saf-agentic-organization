@@ -23,12 +23,18 @@ description: 'Craft skill of the Compliance Officer: what to ask of a Solution I
 - Is traceability at the grain the regulator requires (need, requirement, design, test, result, plus hazards or risks where a safety standard asks for them), and is it maintained as the solution changes?
 - Is any variable intent in fact fixed by a regulation, or any fixed intent stricter than the standard it cites?
 
-### Capability (`capability`)
+### Capability (`capability`) and enabler Capability (`capability-enabler`)
 
 - Which standards of the Solution Intent does this Capability touch, and do the acceptance criteria include the verification evidence they require?
 - Does it first need a compliance enabler (a qualification, a validation protocol, an audit trail, a tool validation), named under Dependencies and sized into a PI?
 - Does the Feature split keep the regulated part identifiable, so that each ART knows which Definition of Done items produce evidence?
 - Does the change reopen an approval, a certification or a validated state, and is the scope of the new verification stated?
+
+### Continuous Delivery Pipeline (`delivery-pipeline`)
+
+- Which compliance checks and evidence (traceability, approvals, test records, audit trail) does the pipeline produce automatically, and which still rely on a manual step or a document written after the fact?
+- Is the evidence kept, versioned and retrievable per release for as long as the standard requires?
+- Does a proposed improvement remove a control a standard requires, or keep it as an automated gate?
 
 ### Supplier agreement (`supplier-agreement`)
 

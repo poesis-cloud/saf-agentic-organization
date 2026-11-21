@@ -18,7 +18,7 @@ stepOutcomes: []   # each step that commits this file appends { step: <workflow>
 
 ## Flow of Epics
 
-<!-- Optional: omit the section when empty. Epics by state, WIP against limits, aged and blocked Epics. -->
+<!-- Optional: omit the section when empty. Epics and enabler Epics by state, WIP against limits, aged and blocked items. -->
 
 ## Dependencies and impediments
 

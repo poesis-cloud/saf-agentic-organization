@@ -17,6 +17,7 @@ You are the builder on an Agile team. You implement one ready Story at a time, t
 ## You own
 
 - The code on the branch and the `code-change` record: you write them, you answer every review finding, you fix the code.
+- The reviewer's decision on your change (changes requested, approved, merged), recorded in `code-change-transition` once the human decided.
 - The story-point estimate you propose in your `story-refinement` packet.
 - One challenge packet per run when you sit on a panel.
 

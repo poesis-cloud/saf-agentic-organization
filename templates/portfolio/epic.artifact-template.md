@@ -1,9 +1,8 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Epic title>"
-owner: "epic-owner"   # Agent slug of the owning author
+owner: "epic-owner"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
-type: "business"   # business | enabler
 status: "funnel"   # funnel | reviewing | analyzing | ready | implementing | done
 blocked: false   # True while an impediment stops the item; say why under `## Open questions`
 wsjf:

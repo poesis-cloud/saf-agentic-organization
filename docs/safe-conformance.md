@@ -54,16 +54,16 @@ reference a parent only when one exists.
 |---|---|---|
 | Value Management Office (VMO) | `value-management-officer` | facilitates Lean Portfolio Management; decides nothing |
 | Lean Portfolio Management / Portfolio Leadership | `portfolio-manager` drafts; **the human decides** | Portfolio Leadership "approves epics, funds value streams": always a human gate |
-| Epic Owner | `epic-owner` | Epic, Lean Business Case, MVP |
-| Enterprise Architect | `enterprise-architect` | technology vision, strategy, roadmap; challenges Epics |
+| Epic Owner | `epic-owner` (business Epics), `enterprise-architect` (enabler Epics) | Epic, Lean Business Case, MVP. SAFe: "Enterprise Architects typically act as Epic Owners for Enabler epics." |
+| Enterprise Architect | `enterprise-architect` | technology vision, strategy, roadmap; leads enabler Epics through the Portfolio Kanban; challenges Epics |
 | Business Owners | `business-owner` prepares; **the human decides** | proposed business value, ROI, governance view |
 | Solution Train Engineer | `solution-train-engineer` | |
 | Solution Management | `solution-manager` | Solution Vision, Roadmap, Capabilities |
-| Solution Architect | `solution-architect` | Solution Intent |
+| Solution Architect | `solution-architect` | Solution Intent, enabler Capabilities |
 | Supplier | counterpart of `procurement-manager` | the supplier is outside the organization; its agreement is inside |
 | Release Train Engineer | `release-train-engineer` | |
 | Product Management | `product-manager` | Vision, PI Roadmap, Features |
-| System Architect | `system-architect` | enablers, architecture decisions, NFRs |
+| System Architect | `system-architect` | enabler Features, architecture decisions, NFRs (SAFe: "defining enablers") |
 | Product Owner | `product-owner` | Stories, acceptance |
 | Scrum Master/Team Coach | `scrum-master` | |
 | Agile Team | `software-engineer`, `quality-engineer` and the experts a Story needs | |
@@ -80,30 +80,33 @@ reference a parent only when one exists.
 | Portfolio Vision, portfolio canvas | `portfolio-vision` | `portfolio-vision` |
 | Development value stream, Value Stream KPIs | `value-stream` | `value-stream-definition` |
 | Epic, Epic hypothesis statement, MVP | `epic` | `epic-hypothesis`, `epic-mvp-evaluation` |
-| Lean Business Case | `lean-business-case` | `lean-business-case` |
-| Portfolio Backlog / Portfolio Kanban | `kanban` (portfolio) | `epic-transition`, `portfolio-sync` |
+| Enabler Epic | `epic-enabler` | `epic-enabler-hypothesis`, `epic-enabler-mvp-evaluation` |
+| Lean Business Case | `lean-business-case` | `lean-business-case`, `epic-enabler-lean-business-case` |
+| Portfolio Backlog / Portfolio Kanban | `kanban` (portfolio) | `epic-transition`, `epic-enabler-transition`, `portfolio-sync` |
 | Lean Budgets, guardrails, BSIs and PSIs | `lean-budgets` | `strategic-investment-planning` |
 | Portfolio Roadmap | `portfolio-roadmap` | `portfolio-roadmap` |
 | Enterprise architecture runway | `architecture-vision` | `architecture-vision` |
 | Solution Vision, Solution Context | `solution-vision` | `solution-vision` |
 | Solution Roadmap | `solution-roadmap` | `solution-roadmap` |
 | Solution Intent (fixed, variable), compliance | `solution-intent` | `solution-intent` |
-| Capability, enabler Capability | `capability` | `capability-refinement` |
-| Solution Train Backlog / Kanban | `kanban` (solution-train) | `capability-transition`, `coordinate-and-deliver` |
-| Supplier relationship | `supplier-agreement` | `supplier-engagement` |
+| Capability | `capability` | `capability-refinement` |
+| Enabler Capability | `capability-enabler` | `capability-enabler-refinement` |
+| Solution Train Backlog / Kanban | `kanban` (solution-train) | `capability-transition`, `capability-enabler-transition`, `coordinate-and-deliver` |
+| Supplier relationship | `supplier-agreement` | `supplier-engagement`, `supplier-agreement-transition` |
 | Vision (ART) | `product-vision` | `product-vision` |
 | PI Roadmap | `product-roadmap` | `product-roadmap` |
-| Feature, enabler Feature, benefit hypothesis, acceptance criteria, WSJF | `feature` | `feature-refinement`, `enabler-feature-refinement` |
-| ART Backlog / ART Kanban | `kanban` (art) | `feature-transition`, `art-sync` |
-| Architectural Runway decisions | `adr` | `architecture-decision` |
+| Feature, benefit hypothesis, acceptance criteria, WSJF | `feature` | `feature-refinement` |
+| Enabler Feature | `feature-enabler` | `feature-enabler-refinement` |
+| ART Backlog / ART Kanban | `kanban` (art) | `feature-transition`, `feature-enabler-transition`, `art-sync` |
+| Architectural Runway decisions | `adr` | `architecture-decision`, `adr-transition` |
 | Nonfunctional Requirements | `nfrs` | `nfr-refinement` |
 | Continuous Delivery Pipeline | `delivery-pipeline` | `delivery-pipeline` |
 | PI Objectives, ART planning board, ART PI risks, confidence vote | `pi-objectives` | `pi-planning`, `solution-train-pi-planning` |
-| Release | `release` | `release-on-demand` |
+| Release | `release` | `release-on-demand`, `release-transition` |
 | Agile team, Definition of Done, Team Kanban | `team-charter`, `kanban` (team) | `team-formation`, `story-transition`, `team-sync` |
 | Story, enabler Story, spike | `story` | `story-refinement` |
 | Iteration Goals, iteration backlog | `iteration-plan` | `iteration-planning` |
-| Working, tested increment | `code-change` (the record; the code lives in its repository) | `story-implementation` |
+| Working, tested increment | `code-change` (the record; the code lives in its repository) | `story-implementation`, `code-change-transition` |
 
 ## Events
 
@@ -131,8 +134,8 @@ reference a parent only when one exists.
 
 | Backlog | States |
 |---|---|
-| Portfolio Kanban (Epic) | funnel → reviewing → analyzing → ready → implementing (MVP, then persevere) → done |
-| Solution Train Kanban (Capability) and ART Kanban (Feature) | funnel → analyzing → ready → implementing → validating-on-staging → deploying-to-production → releasing → done |
+| Portfolio Kanban (Epic, enabler Epic) | funnel → reviewing → analyzing → ready → implementing (MVP, then persevere) → done |
+| Solution Train Kanban (Capability, enabler Capability) and ART Kanban (Feature, enabler Feature) | funnel → analyzing → ready → implementing → validating-on-staging → deploying-to-production → releasing → done |
 | Team Kanban (Story) | backlog → ready → in-progress → in-review → accepted (a team may refine these in its charter) |
 
 ## SAFe principles in the design
@@ -179,12 +182,17 @@ outcomes, and *Managing and Exploiting AI Risk* by the gates.
   what was inspected, decided and assigned. A backlog change found in an event is carried by its
   own workflow.
 - **Business value and commitment stay human.** In `pi-planning` the agents propose objectives,
-  a planning board and risks; the Business Owners assign business value and the confidence vote is
-  recorded at the gate.
-- **Acceptance is explicit.** A backlog item moves through an owner-written transition; every
+  a planning board and risks, and the `business-owner` agent proposes business value in its
+  packet; the human Business Owners assign it and the confidence vote is recorded at the gate.
+- **Acceptance is explicit.** An item with a state (a backlog item, an architecture decision, a
+  release, a supplier agreement, a code change) moves through a transition its owner writes; every
   other artifact through a gate decision record. SAFe leaves this to tooling.
-- **Enabler items share the kind of their business sibling** (`type: enabler` with one of the four
-  enabler types), as in the SAFe requirements model. Enabler Features are authored by the System
-  Architect in their own workflow.
+- **Enablers are kinds of their own:** `epic-enabler`, `capability-enabler`, `feature-enabler`.
+  As in SAFe they live in the same backlog as their business sibling: same folder, same Kanban,
+  same states, WSJF against each other. They are separate kinds because the harness authorizes a
+  write by kind and their authors differ: the Enterprise Architect (Epic Owner of enabler Epics),
+  the Solution Architect and the System Architect. Each backlog kind has one writer, its states
+  included. Enabler Stories stay `story` with `type: enabler`: SAFe has the team write all its
+  Stories, through its Product Owner.
 - **The code repository is outside the workspace.** `story-implementation` works on a branch
   there; the workspace holds the record of the change and its evidence. A human merges.

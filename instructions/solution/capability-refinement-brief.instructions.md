@@ -5,7 +5,7 @@ description: 'Workflow brief of capability-refinement: purpose, artifact paths a
 
 # Capability refinement (`capability-refinement`)
 
-Write or thicken one Capability so it is ready for Pre-Plan: benefit hypothesis, acceptance criteria, WSJF and the Features each ART would take.
+Write or thicken one business Capability so it is ready for Pre-Plan: benefit hypothesis, acceptance criteria, WSJF and the Features each ART would take.
 
 - **Main artifact:** `capability` at `portfolio/solution-trains/<solution-train-slug>/capabilities/<capability-slug>/<capability-slug>.capability.md` (template `templates/solution/capability.artifact-template.md`), owned by `solution-manager`.
 - **Challenge packets:** `portfolio/solution-trains/<solution-train-slug>/capabilities/<capability-slug>/challenges/capability-refinement-<your-agent-slug>.challenge.md` (template `templates/shared/challenge.artifact-template.md`).
@@ -15,7 +15,7 @@ Write or thicken one Capability so it is ready for Pre-Plan: benefit hypothesis,
 
 - One Capability per run, sized to fit a PI. Create it with `status: funnel`, or thicken it without changing its status.
 - Write the benefit hypothesis and testable acceptance criteria; estimate WSJF against the other capabilities.
-- Outline the Feature split per ART and the cross-ART and supplier dependencies. Set `parent` when it splits from an Epic.
+- Outline the Feature split per ART and the cross-ART and supplier dependencies. Set `parent` when it splits from an Epic. Enabler Capabilities are not written here: name them under Dependencies.
 
 ## Challenge
 

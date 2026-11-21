@@ -15,7 +15,8 @@
       "solution-train-engineer"
     ],
     "templates": [
-      "templates/art/pi-objectives.artifact-template.md"
+      "templates/art/pi-objectives.artifact-template.md",
+      "templates/solution/pi-objectives.artifact-template.md"
     ],
     "pathPatterns": [
       "portfolio/solution-trains/*/pis/*/pi-objectives.md",
@@ -54,7 +55,7 @@
     "owner": {
       "type": "string",
       "minLength": 1,
-      "description": "Agent slug of the owning author. Only the owner writes this artifact."
+      "description": "Agent slug of the author. Only the owner writes this artifact, its state changes included; the draft names the workflow's author."
     },
     "challengeLedger": {
       "description": "The owner's answers to the expert challenge (see the definition).",

@@ -1,7 +1,7 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Iteration plan title>"
-owner: "scrum-master"   # Agent slug of the owning author
+owner: "scrum-master"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 iteration: "<iteration-slug>"   # Iteration slug
 capacity: null   # Team capacity in story points

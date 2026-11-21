@@ -1,7 +1,7 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Story title>"
-owner: "product-owner"   # Agent slug of the owning author
+owner: "product-owner"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 type: "user"   # user | enabler
 enablerType: null   # exploration | architecture | infrastructure | compliance | null
@@ -14,7 +14,7 @@ wsjf:
   jobSize: 0
   score: 0
 transitions: []   # Kanban history
-parent: null   # The Feature this Story splits from; null for a Story from the team's local context
+parent: null   # The Feature or enabler Feature this Story splits from; null for a Story from the team's local context
 estimate: null   # Story points (modified Fibonacci), set by the team
 iteration: null   # Iteration slug the Story is planned in, or null
 stepOutcomes: []   # each step that commits this file appends { step: <workflow>/<step>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <one line> }

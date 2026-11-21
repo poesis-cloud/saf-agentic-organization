@@ -22,7 +22,7 @@ stepOutcomes: []   # each step that commits this file appends { step: <workflow>
 
 ## Capabilities and Feature split
 
-<!-- Optional: omit the section when empty. The ready capabilities, in WSJF order, and their split into Features per ART. -->
+<!-- Optional: omit the section when empty. The ready Capabilities and enabler Capabilities, in WSJF order, and their split into Features per ART. -->
 
 ## Dependencies and integration points
 

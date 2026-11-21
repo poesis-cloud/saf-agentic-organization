@@ -13,7 +13,7 @@
 # limitations under the License.
 
 slug: feature-transition
-description: 'Record the human''s decision to move one Feature (business or enabler) to a new ART Kanban state, then re-render the ART Kanban. Main artifact at the human gate: feature. Use for: "Approve / commit / move / accept this Feature" after a gate, PI Planning, a System Demo or a release.'
+description: 'Record the human''s decision to move one business Feature to a new ART Kanban state, then re-render the ART Kanban. Main artifact at the human gate: feature. Use for: "Approve / commit / move / accept this Feature" after a gate, PI Planning, a System Demo or a release.'
 orchestrator: release-train-engineer
 instructions:
 - workflow-selection-handling

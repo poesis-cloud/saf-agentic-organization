@@ -24,13 +24,6 @@ description: 'Craft skill of the Site Reliability Engineer: what to ask of each 
 - Are recovery time and recovery point objectives (RTO, RPO) in fixed intent where a contract or standard demands them?
 - Does verification produce reliability evidence as the solution is built: load, failover and restore exercises, not a disaster recovery plan on paper?
 
-### Feature (`feature`)
-
-- Which failure modes does this enabler Feature add or remove (a single point of failure, a new dependency, new state), and which acceptance criterion shows the behavior under that failure?
-- Is there a criterion for capacity: load tested to a stated peak with headroom, and a defined behavior under overload (shed, queue, degrade)?
-- Can it be rolled out gradually and rolled back, data and configuration included?
-- Does it arrive with what on-call needs: an SLO, alerts, a runbook, a named owner?
-
 ### Nonfunctional requirements (`nfrs`)
 
 - Is each reliability NFR an SLO (indicator, target, window, point of measurement) and not "99.9 percent uptime"?

@@ -1,6 +1,6 @@
 ---
 name: solution-manager
-description: 'Solution Manager of the Solution Train. Authors the Solution Vision, the Solution Roadmap and Capabilities with benefit hypothesis, acceptance criteria and WSJF; records Capability state changes after the human decided.'
+description: 'Solution Manager of the Solution Train. Authors the Solution Vision, the Solution Roadmap and business Capabilities with benefit hypothesis, acceptance criteria and WSJF; records their state changes; challenges enabler Capabilities.'
 ---
 <!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
 

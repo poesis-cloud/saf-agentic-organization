@@ -13,7 +13,7 @@
 # limitations under the License.
 
 slug: epic-hypothesis
-description: 'Capture or thicken one Epic as an Epic hypothesis statement, ready for Portfolio Leadership to review. Main artifact at the human gate: epic. Use for: A new big initiative or idea; an enabler Epic; thicken an Epic in the funnel or under review.'
+description: 'Capture or thicken one business Epic as an Epic hypothesis statement, ready for Portfolio Leadership to review. Main artifact at the human gate: epic. Use for: A new big business initiative or idea; thicken an Epic in the funnel or under review.'
 orchestrator: value-management-officer
 instructions:
 - workflow-selection-handling
@@ -41,7 +41,12 @@ steps:
     instruction-following: 8
     fast-iteration: 2
     schema-adherence: 8
-  conditions: []
+  conditions:
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'epic-owner')
 - slug: challenge-enterprise-architect
   description: 'Challenge packet: the Enterprise Architect challenges the drafted Epic. Not itself challenged.'
   actor: enterprise-architect
@@ -165,3 +170,8 @@ steps:
     setSelector:
       setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
     setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'epic-owner')

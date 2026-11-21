@@ -1,7 +1,7 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Lean Budgets title>"
-owner: "portfolio-manager"   # Agent slug of the owning author
+owner: "portfolio-manager"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 budgetPeriod: "<e.g. 2027-H1>"   # The budgeting period (typically updated twice a year, about every two PIs)
 totalBudget: "<amount and unit>"   # The money available to fund the value streams, with its unit

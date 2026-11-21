@@ -30,4 +30,4 @@ Done when: Each improvement action has an owner and a carrying workflow. Every p
 
 ## Human gate
 
-The ART's stakeholders decide which improvements enter the ART Backlog. Next: `enabler-feature-refinement` or `feature-refinement` for each improvement accepted.
+The ART's stakeholders decide which improvements enter the ART Backlog. Next: `feature-enabler-refinement` or `feature-refinement` for each improvement accepted.

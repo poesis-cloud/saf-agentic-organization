@@ -13,9 +13,9 @@ Plan one PI for the ART: team and ART PI Objectives, the planning board and the 
 
 ## Draft
 
-- Read the Product Vision, PI Roadmap, the ready Features in WSJF order, the ART canvas and team charters. Set `scope: art`.
+- Read the Product Vision, PI Roadmap, the ready Features and enabler Features in WSJF order, the ART canvas and team charters. Set `scope: art`.
 - Per team: objectives stated as outcomes, committed or uncommitted, within capacity; plan no work in the IP iteration.
-- Place Features and dependencies on the planning board and list the PI risks. Propose business value; the Business Owners assign it at the gate.
+- Place Features and dependencies on the planning board and list the PI risks. Leave `plannedBusinessValue` to the Business Owners: their packet proposes it, the humans assign it at the gate.
 
 ## Challenge
 
@@ -30,4 +30,4 @@ Done when: Objectives are split committed and uncommitted per team; risks are li
 
 ## Human gate
 
-The Business Owners assign business value and the ART commits with a confidence vote. Next: `art-gate-decision` (record the commitment and the vote); `feature-transition` for each committed Feature; then `iteration-planning` with each team.
+The Business Owners assign business value and the ART commits with a confidence vote. Next: `art-gate-decision` (record the commitment and the vote); `feature-transition` or `feature-enabler-transition` for each committed item; then `iteration-planning` with each team.

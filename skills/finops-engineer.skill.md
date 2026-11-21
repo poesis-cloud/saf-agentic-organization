@@ -30,6 +30,12 @@ description: 'Craft skill of the FinOps Engineer: what to ask of Lean Budgets, t
 - Is the runway sized just enough: are shared platforms, multi-region and always-on capacity bought for near-term Epics or for a hypothetical scale, and what does the runway itself cost to run?
 - Does retiring what is replaced end its cost at a date, or will old and new run in parallel without limit?
 
+### Enabler Epic (`epic-enabler`) and its Lean Business Case (`lean-business-case`)
+
+- What will the runway cost to run per month once live, at the load the enabled Epics forecast, and who is billed for it?
+- Is the unit cost it promises (per transaction, tenant or build) stated with a baseline, so that the MVP can show it?
+- Do the costs cover parallel run with what it replaces, egress and data migration, and a date when the old cost ends?
+
 ### Continuous Delivery Pipeline (`delivery-pipeline`)
 
 - What does the pipeline itself cost (build minutes, runners, artifact and log storage, test and staging environments), and what is the cost per build or per deployment?

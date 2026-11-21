@@ -31,7 +31,7 @@ This skill serves you as the **actor of a step**. Orchestrating a run is covered
 - Objectives: outcomes of the integrated solution, each traceable to Capabilities and to the ART objectives that carry it. **Committed** only when every contributing ART committed its part; otherwise **uncommitted**.
 - Planning board: the delivery iteration of each Capability, cross-ART and supplier dependencies placed before the iteration that needs them, integration points, the Solution Demo.
 - Risks: only those an ART cannot resolve alone, each with a ROAM state: resolved, owned, accepted, mitigated; `open` until the humans address them.
-- Leave `plannedBusinessValue` as a proposal and `confidenceVote` null: the solution's Business Owners assign value and the train commits at the gate.
+- Leave `plannedBusinessValue` and `confidenceVote` null in the draft: the `business-owner` packet proposes values, you copy them in revision marked as proposals, the solution's Business Owners assign value and the train commits at the gate.
 
 ### Inspect and Adapt (`event-record`, `event: inspect-and-adapt`)
 

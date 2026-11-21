@@ -30,7 +30,7 @@ description: 'Craft skill of the Business Analyst: the process, operational valu
 - Are internal customers and the people who operate the solutions (back office, support, field staff) named along with the end customers?
 - Is each KPI defined well enough to compute: formula, baseline, data source, owner, and the business objective it evaluates?
 
-### Solution Train canvas (`solution-train-canvas`)
+### Solution Train canvas (`solution-train-canvas`) and ART canvas (`art-canvas`)
 
 - Does the mission name the customers and the operational value stream the large solution serves, in terms a business stakeholder would confirm?
 - Do the ARTs and suppliers map to parts of the solution along the business flow, and is every hand-off between them named with what crosses it?

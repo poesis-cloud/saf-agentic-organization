@@ -9,13 +9,13 @@ Map the ART's Continuous Delivery Pipeline from ideation to on-demand release, f
 
 - **Main artifact:** `delivery-pipeline` at `portfolio/arts/<art-slug>/delivery-pipeline.md` (template `templates/art/delivery-pipeline.artifact-template.md`), owned by `devops-engineer`.
 - **Challenge packets:** `portfolio/arts/<art-slug>/challenges/delivery-pipeline-<your-agent-slug>.challenge.md` (template `templates/shared/challenge.artifact-template.md`).
-- **Panel:** `platform-engineer`, `security-expert`, `quality-engineer`, `site-reliability-engineer`, `finops-engineer`.
+- **Panel:** `platform-engineer`, `security-expert`, `quality-engineer`, `site-reliability-engineer`, `finops-engineer`, `compliance-officer`.
 
 ## Draft
 
 - Map what actually happens today, step by step, with lead time, process time and percent complete and accurate.
 - Cover the four aspects: Continuous Exploration, Continuous Integration (Develop, Build, Test end-to-end, Stage), Continuous Deployment (Deploy, Verify, Monitor, Respond), Release on Demand.
-- Name the largest delays and the enabler Features that would remove them; they are written in `enabler-feature-refinement`.
+- Name the largest delays and the enabler Features that would remove them; they are written in `feature-enabler-refinement`.
 
 ## Challenge
 
@@ -30,4 +30,4 @@ Done when: The four aspects are mapped; the top bottlenecks each have a proposed
 
 ## Human gate
 
-The ART's leaders decide which pipeline improvements to fund. Next: `art-gate-decision`; then `enabler-feature-refinement`.
+The ART's leaders decide which pipeline improvements to fund. Next: `art-gate-decision`; then `feature-enabler-refinement`.

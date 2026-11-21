@@ -49,6 +49,12 @@ description: 'Craft skill of the Product Manager: how to author the Product Visi
 - Can the teams as designed deliver the Features of the vision without every Feature crossing every team?
 - Is there someone accountable for the product content, with access to customers?
 
+### Enabler Feature (`feature-enabler`)
+
+- Which Features in `enables` are on the PI Roadmap, and does the enabler land before they need it?
+- Does it fit the capacity allocated to enablers, and does its WSJF compete fairly with the business Features it delays?
+- Is it a business Feature disguised as an enabler, or an enabler hiding customer-visible change that needs a benefit hypothesis of its own?
+
 ### PI Objectives (`pi-objectives`)
 
 - Do the committed objectives cover the top WSJF Features, and is anything committed that was not prioritized?

@@ -59,6 +59,8 @@ PATTERNS = {
     "record": "record-event",
     "record-decision": "record-gate-decision",
 }
+BACKLOG_ITEMS = {"epic", "epic-enabler", "capability", "capability-enabler", "feature", "feature-enabler", "story"}
+LIFECYCLE_MAINS = {"adr", "release", "supplier-agreement", "code-change"}
 COPYRIGHT = "Copyright 2026 Poesis Cloud"
 AGENT_SECTIONS = ("Mission", "You own", "You never", "SAFe anchor")
 MAX_STEPS = 8
@@ -172,14 +174,31 @@ def test_every_main_artifact_kind_is_challenged_before_the_human_gate() -> None:
         assert "challengeLedger" in SCHEMAS[slug]["required"], slug
 
 
-def test_every_backlog_item_moves_through_its_owner_transition_and_a_board() -> None:
+def test_every_item_with_a_state_moves_through_its_owner_transition() -> None:
+    """Backlog items re-render their board; the other mains with a state (decision, release, agreement, change) have none."""
     transitions = {slug: workflow for slug, workflow in CATALOG.items() if workflow["steps"][0]["slug"] == "record-transition"}
-    assert {workflow["steps"][0]["artifact"] for workflow in transitions.values()} == {"epic", "capability", "feature", "story"}
+    kinds = [workflow["steps"][0]["artifact"] for workflow in transitions.values()]
+    assert sorted(kinds) == sorted(BACKLOG_ITEMS | LIFECYCLE_MAINS), "one transition workflow per kind with a state"
     for slug, workflow in transitions.items():
-        record, board = workflow["steps"]
-        assert board["slug"] == "update-kanban" and board["artifact"] == "kanban" and board["actor"] == workflow["orchestrator"], slug
+        record, *board = workflow["steps"]
+        if record["artifact"] in BACKLOG_ITEMS:
+            assert [(s["slug"], s["artifact"], s["actor"]) for s in board] == [("update-kanban", "kanban", workflow["orchestrator"])], slug
+        else:
+            assert board == [], f"{slug}: only backlog items have a board"
         assert record["actor"] in SCHEMAS[record["artifact"]]["x-artifact"]["owners"], slug
-        assert any("challenged" in c["slug"] for c in record["conditions"]), f"{slug}: no ready item without a challenge"
+        assert any("challenged" in c["slug"] for c in record["conditions"]), f"{slug}: no state past the human's go without a challenge"
+    for kind in BACKLOG_ITEMS | LIFECYCLE_MAINS:
+        assert "transitions" in SCHEMAS[kind]["required"], f"{kind}: its state changes are recorded"
+
+
+def test_a_loop_names_its_author_as_the_owner_of_what_it_writes() -> None:
+    for slug, workflow in CATALOG.items():
+        if not is_loop(workflow) or "owner" not in SCHEMAS[workflow["steps"][0]["artifact"]]["properties"]:
+            continue
+        draft, revise = workflow["steps"][0], workflow["steps"][-1]
+        for step in (draft, revise):
+            owner = [c for c in step["conditions"] if c["slug"] == "owner-is-the-author"]
+            assert len(owner) == 1 and f"a.data.owner == '{draft['actor']}'" in owner[0]["setPredicate"], f"{slug}/{step['slug']}"
 
 
 def test_every_layer_records_human_decisions_and_its_events() -> None:
@@ -251,12 +270,24 @@ def test_the_access_control_list_grants_exactly_what_the_steps_deliver() -> None
 def test_orchestrators_hold_no_backlog_item_and_experts_only_what_they_author() -> None:
     acl = {role["slug"]: {p["artifact"] for p in role["privileges"]} for role in load_acl()["roles"]}
     for orchestrator in ORCHESTRATORS.values():
-        assert acl[orchestrator].isdisjoint({"epic", "capability", "feature", "story", "code-change"}), orchestrator
+        assert acl[orchestrator].isdisjoint(BACKLOG_ITEMS | {"code-change"}), orchestrator
         assert {"event-record", "kanban", "gate-decision"} <= acl[orchestrator], orchestrator
     for slug, kinds in acl.items():
         owned = {kind for kind, schema in SCHEMAS.items() if slug in schema["x-artifact"]["owners"]}
         if slug not in ORCHESTRATORS.values():
             assert kinds - {"challenge"} == owned & kinds, f"{slug} writes only its own mains and its challenge packets"
+
+
+def test_every_backlog_kind_has_exactly_one_writer() -> None:
+    """The harness authorizes by kind, so a business item and its enabler sibling are kinds with distinct owners."""
+    acl = {role["slug"]: {p["artifact"] for p in role["privileges"]} for role in load_acl()["roles"]}
+    for kind in BACKLOG_ITEMS | LIFECYCLE_MAINS:
+        writers = sorted(slug for slug, kinds in acl.items() if kind in kinds)
+        assert writers == SCHEMAS[kind]["x-artifact"]["owners"], f"{kind}: {writers}"
+    enablers = {"epic-enabler": "enterprise-architect", "capability-enabler": "solution-architect", "feature-enabler": "system-architect"}
+    for kind, architect in enablers.items():
+        assert SCHEMAS[kind]["x-artifact"]["owners"] == [architect], kind
+        assert kind[: -len("-enabler")] not in acl[architect], f"{architect} writes enablers, not their business siblings"
 
 
 # --- the roster -------------------------------------------------------------------------------

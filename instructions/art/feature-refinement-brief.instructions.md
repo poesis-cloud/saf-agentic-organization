@@ -13,9 +13,9 @@ Write or thicken one business Feature so it is ready for PI Planning: benefit hy
 
 ## Draft
 
-- One Feature per run, sized to fit a PI (generally under two months of total effort). Create it with `status: funnel` and `type: business`, or thicken it without changing its status.
+- One Feature per run, sized to fit a PI (generally under two months of total effort). Create it with `status: funnel`, or thicken it without changing its status.
 - Write the benefit hypothesis and independently testable acceptance criteria; list the NFR ids that apply; estimate WSJF against the other Features.
-- Set `parent` when it splits from an Epic or Capability. Architecture decisions and new NFRs are not written here: name them under Dependencies.
+- Set `parent` when it splits from an Epic or Capability. Architecture decisions, new NFRs and enabler Features are not written here: name them under Dependencies.
 
 ## Challenge
 

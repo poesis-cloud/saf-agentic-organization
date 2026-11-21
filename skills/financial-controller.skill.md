@@ -29,11 +29,12 @@ description: 'Craft skill of the Financial Controller: the finance questions to 
 - Is the return stated with its timing and assumptions, and is the full implementation cost left uncommitted until the MVP proves the hypothesis?
 - Is the Epic above the portfolio epic threshold, and which value stream budgets carry which share of its cost?
 
-### Epic (`epic`)
+### Epic (`epic`) and enabler Epic (`epic-enabler`)
 
 - What did the MVP cost against the estimate of the Lean Business Case, and what does the variance say about the implementation forecast?
 - Does the recommendation ignore the money already spent and compare only remaining cost with remaining expected value?
 - To persevere: is the remaining cost forecast again and fundable in the coming budget period? To pivot or stop: which spending ends, and when?
+- For an enabler Epic: is the run cost of what it builds counted, and is the saving it promises the enabled Epics visible in their forecasts?
 
 ### Portfolio Roadmap (`portfolio-roadmap`)
 

@@ -15,7 +15,7 @@ Write or revise the agreement that brings one supplier into the Solution Train's
 
 - Read the Solution Intent, the capabilities the supplier contributes to, and the terms the human provides.
 - Prefer terms that tolerate variable scope and base acceptance on objective evaluation of working deliverables.
-- State how the supplier joins Pre-Plan, PI Planning, the syncs and the Solution Demo.
+- State how the supplier joins Pre-Plan, PI Planning, the syncs and the Solution Demo. Keep `status: draft`: it moves in `supplier-agreement-transition`.
 
 ## Challenge
 
@@ -30,4 +30,4 @@ Done when: Scope, collaboration model and acceptance are filled; obligations pas
 
 ## Human gate
 
-The human owner of the supplier relationship decides whether to proceed on these terms. Next: `solution-gate-decision`. This artifact is a working agreement, not the signed contract; a later run records `active` once the humans signed.
+The human owner of the supplier relationship decides whether to proceed on these terms. Next: `supplier-agreement-transition` to record it (draft → negotiating), then `active` once the humans signed. This artifact is a working agreement, not the signed contract.

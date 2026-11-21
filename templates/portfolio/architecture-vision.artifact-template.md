@@ -1,7 +1,7 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Architecture Vision title>"
-owner: "enterprise-architect"   # Agent slug of the owning author
+owner: "enterprise-architect"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
 horizon: "<e.g. 3 years>"   # The time horizon covered
 enablerEpics: []   # Paths of the enabler Epics this vision asks for

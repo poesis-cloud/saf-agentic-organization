@@ -25,18 +25,18 @@ This skill serves you as the **actor of a step**. Orchestrating a run is covered
 
 ### PI Objectives (`pi-objectives`)
 
-- Inputs: Product Vision, PI Roadmap, ready Features in WSJF order, team charters and capacity.
+- Inputs: Product Vision, PI Roadmap, ready Features and enabler Features in WSJF order, team charters and capacity.
 - Per team: objectives stated as outcomes, each traceable to Features; **committed** within capacity, **uncommitted** for real uncertainty. Nothing is planned in the IP iteration.
 - Planning board: the iteration each Feature lands in, every dependency placed before the iteration that needs it, milestones.
 - Risks: list them with a ROAM state: resolved, owned, accepted, mitigated; `open` until the humans address them.
-- Leave `plannedBusinessValue` as a proposal and `confidenceVote` null: the Business Owners assign value and the ART votes at the gate.
+- Leave `plannedBusinessValue` and `confidenceVote` null in the draft: the `business-owner` packet proposes values, you copy them in revision marked as proposals, the humans assign value and the ART votes at the gate.
 
 ### Inspect and Adapt (`event-record`, `event: inspect-and-adapt`)
 
 - Part 1, PI System Demo: what the PI delivered against each objective; actual business value when the humans gave it.
 - Part 2, measurement: ART predictability (actual over planned business value), flow (velocity, time, load, efficiency, distribution, predictability), quality signals; say what each number means.
 - Part 3, retrospective and problem-solving: pick the largest problem, find its root cause (five whys, Pareto), list countermeasures.
-- Each improvement is an action naming `enabler-feature-refinement` or `feature-refinement`: improvement items enter the ART Backlog there.
+- Each improvement is an action naming `feature-enabler-refinement` or `feature-refinement`: improvement items enter the ART Backlog there.
 - Read the `friction` notes of the PI's artifacts: they are the workers' retrospective input.
 
 ### ART Sync and System Demo (`event-record`)

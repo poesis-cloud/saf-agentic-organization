@@ -12,11 +12,11 @@ Inspect the flow of Epics and the portfolio's operations between Strategic Portf
 
 ## Agenda
 
-- Epics by state, WIP against limits, aged and blocked Epics.
+- Epics and enabler Epics by state, WIP against limits, aged and blocked items.
 - Dependencies and impediments across value streams.
 - Backlog refinement: new Epics to capture, priorities to revisit, Epics to remove.
 - Budget and guardrail signals worth a Strategic Portfolio Review.
 
 ## After the run
 
-A backlog change is its own workflow: `epic-hypothesis`, `epic-transition`.
+A backlog change is its own workflow: `epic-hypothesis`, `epic-enabler-hypothesis`, `epic-transition`, `epic-enabler-transition`.

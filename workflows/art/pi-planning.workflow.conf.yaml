@@ -45,8 +45,13 @@ steps:
   - kind: precondition
     slug: a-feature-is-ready
     setSelector:
-      setQuery: workspace.filter(a, a.kind == 'feature' && a.data.status in ['ready', 'implementing'])
+      setQuery: workspace.filter(a, (a.kind == 'feature' && a.data.status in ['ready', 'implementing']) || (a.kind == 'feature-enabler' && a.data.status in ['ready', 'implementing']))
     setPredicate: selected.size() > 0
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'release-train-engineer')
 - slug: challenge-product-manager
   description: 'Challenge packet: the Product Manager challenges the drafted PI Objectives. Not itself challenged.'
   actor: product-manager
@@ -201,3 +206,8 @@ steps:
     setSelector:
       setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
     setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'release-train-engineer')

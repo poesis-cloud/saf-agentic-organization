@@ -30,4 +30,4 @@ Done when: Review findings are fixed in the code or answered; tests pass; `statu
 
 ## Human gate
 
-The human reviewer approves and merges the pull request. Next: `story-transition` (in-review → accepted, by the Product Owner).
+The human reviewer approves and merges the pull request. Next: `code-change-transition` to record the reviewer's decision (approved, then merged); then `story-transition` (in-review → accepted, by the Product Owner).

@@ -15,7 +15,7 @@ Record the human's decision to move one Story to a new Team Kanban state, then r
 
 - A Story leaves `backlog` only after it was challenged.
 - `in-progress` sets `iteration`.
-- `accepted` means the acceptance criteria and the Definition of Done are met and the change is merged.
+- `accepted` means the acceptance criteria and the Definition of Done are met and the Story's code change, when it has one, is `merged`.
 
 ## After the run
 

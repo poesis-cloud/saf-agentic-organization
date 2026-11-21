@@ -19,4 +19,4 @@ Inspect the ART's progress toward its PI Objectives (Coach Sync and PO Sync comb
 
 ## After the run
 
-A backlog change is its own workflow: `feature-refinement`, `feature-transition`.
+A backlog change is its own workflow: `feature-refinement`, `feature-enabler-refinement`, `feature-transition`, `feature-enabler-transition`.

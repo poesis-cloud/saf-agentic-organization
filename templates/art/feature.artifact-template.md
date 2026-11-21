@@ -1,10 +1,8 @@
 ---
 slug: "<artifact-slug>"   # lowercase letters, digits and hyphens: the slug used in the file path
 title: "<Feature title>"
-owner: "product-manager"   # Agent slug of the owning author
+owner: "product-manager"   # Agent slug of the author
 challengeLedger: []   # The owner's answers to the expert challenge (see the definition)
-type: "business"   # business | enabler
-enablerType: null   # exploration | architecture | infrastructure | compliance | null
 status: "funnel"   # funnel | analyzing | ready | implementing | validating-on-staging | deploying-to-production | releasing | done
 blocked: false   # True while an impediment stops the item; say why under `## Open questions`
 wsjf:

@@ -27,7 +27,7 @@ description: 'Craft skill of the DevOps Engineer: how to map the Continuous Deli
 
 ## Lens by artifact
 
-### Feature (`feature`)
+### Enabler Feature (`feature-enabler`)
 
 - Can this enabler Feature be delivered in small increments that deploy on their own, or does it need a big-bang cutover or a pipeline freeze?
 - Does it change how the system is built, tested or deployed (a new artifact type, environment or tool), and is that pipeline work inside the acceptance criteria and the job size?

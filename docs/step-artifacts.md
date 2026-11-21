@@ -26,7 +26,7 @@ The rule is injected into every worker session as the
 
 | Class | What it is | Who writes it | Challenged | Human-gated |
 |---|---|---|---|---|
-| **main** | The SAFe artifact a workflow exists to produce (27 kinds: Epic, Feature, PI Objectives, release…) | its owner, a SAFe role or the expert whose job it is | yes, by its expert panel | yes |
+| **main** | The SAFe artifact a workflow exists to produce (30 kinds: Epic, enabler Epic, Feature, PI Objectives, release…) | its owner, a SAFe role or the expert whose job it is | yes, by its expert panel | yes |
 | **challenge** | One expert's findings on one main artifact | the expert | no | no: it is evidence at the gate |
 | **record** | A flow record: event record, Kanban board, gate decision | the layer's orchestrator | no (Inspect and Adapt records are) | it records the gate |
 
@@ -95,10 +95,12 @@ the history.
 
 ## How a human decision is recorded
 
-- **Backlog items** (Epic, Capability, Feature, Story): the owner appends an entry to
-  `transitions` and sets `status`, in the item's `*-transition` workflow. The orchestrator then
-  re-renders the Kanban board from the items; the items stay the source of truth. An owner who
-  finds the move illegal records a refusal (`no-change`), which is a valid step.
+- **Items with a state:** backlog items (Epic, Capability, Feature, their enablers, Story) and
+  architecture decisions, releases, supplier agreements and code changes. The owner appends an
+  entry to `transitions` and sets `status`, in the item's `*-transition` workflow. For a backlog
+  item the orchestrator then re-renders the Kanban board from the items; the items stay the
+  source of truth. An owner who finds the move illegal records a refusal (`no-change`), which is
+  a valid step.
 - **Every other main artifact:** the orchestrator writes a `gate-decision` record in its layer's
   gate-decision workflow, with the decision and the human's concerns in their words.
 

@@ -153,7 +153,7 @@
       }
     },
     "transitions": {
-      "description": "Kanban history. One entry per state change, appended by the owner in a `*-transition` workflow after the human decided.",
+      "description": "State history. One entry per state change, appended by the owner in its `*-transition` workflow after the human decided.",
       "type": "array",
       "items": {
         "type": "object",
