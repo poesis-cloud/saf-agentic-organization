@@ -1,10 +1,10 @@
-# Poesis SAFe Agentic Organization
+# SAF Agentic Organization
 
 [![CI](https://github.com/poesis-cloud/saf-agentic-organization/actions/workflows/ci.yml/badge.svg)](https://github.com/poesis-cloud/saf-agentic-organization/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/poesis-cloud/saf-agentic-organization)](https://github.com/poesis-cloud/saf-agentic-organization/releases/latest)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
-> **Full SAFe as an agentic organization** for GitHub Copilot / VS Code and portable agent hosts.
+> **Full SAFe® as an agentic organization** for GitHub Copilot / VS Code and portable agent hosts.
 > Four orchestrators (Portfolio, Large Solution, ART, Team), the SAFe roles that author each
 > artifact, and a bench of experts with real IT jobs who challenge every main artifact before a
 > human decides. Open-source developer tooling from [Poesis Cloud](https://poesis.cloud).
@@ -18,7 +18,7 @@ This repository is one of the three products of the Systemic Agentic Framework (
 | Product | Repository | Role |
 |---|---|---|
 | Agentic Harness | [`saf-agentic-harness`](https://github.com/poesis-cloud/saf-agentic-harness) | the deterministic execution engine, methodology- and host-agnostic |
-| **SAFe Agentic Organization** | **this repository** | the SAFe framework application the harness executes |
+| **SAF Agentic Organization** | **this repository** | the SAFe framework application the harness executes |
 | Agentic Workspace | [`saf-agentic-workspace`](https://github.com/poesis-cloud/saf-agentic-workspace) | the shared data plane the harness checks and commits into |
 
 The harness resolves this framework through `FRAMEWORK_DIR` and the workspace through
@@ -173,6 +173,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). All contributions are accepted under Apa
 Apache License, Version 2.0. See [LICENSE](LICENSE).
 
 Copyright 2026 Poesis Cloud and contributors.
+
+SAFe® and Scaled Agile Framework® are registered trademarks of Scaled Agile, Inc. This project
+applies the framework; it is not affiliated with or endorsed by Scaled Agile, Inc. Third-party
+content is listed in [NOTICE](NOTICE).
 
 <!-- roadmap:start -->
 ## Roadmap

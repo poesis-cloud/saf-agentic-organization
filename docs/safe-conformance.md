@@ -13,8 +13,8 @@ at <https://framework.scaledagile.com>.
 
 The organization was derived from the SAFe knowledge base as read on 2026-11-21:
 
-- **Read in full:** the [glossary](https://framework.scaledagile.com/glossary) (every definition
-  quoted in the agents' "SAFe anchor" comes from it),
+- **Read in full:** the [glossary](https://framework.scaledagile.com/glossary) (the agents' "SAFe anchor"
+  sections restate its definitions in our own words; they do not quote it),
   [Essential SAFe](https://framework.scaledagile.com/essential-safe),
   [Large Solution SAFe](https://framework.scaledagile.com/large-solution),
   [Strategic Investment Planning](https://framework.scaledagile.com/strategic-investment-planning),

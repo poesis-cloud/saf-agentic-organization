@@ -1,4 +1,4 @@
-SAFe Agentic Organization — part of the Systemic Agentic Framework (SAF)
+SAF Agentic Organization — part of the Systemic Agentic Framework (SAF)
 Copyright 2026 Poesis Cloud and contributors
 
 This product is distributed under the Apache License, Version 2.0.
@@ -24,6 +24,16 @@ of each upstream component independently.
 
 -------------------------------------------------------------------------------
 
+THIRD-PARTY CONTENT — NOT COVERED BY THIS LICENSE
+-------------------------------------------------------------------------------
+
+docs/safe-conformance.md quotes short passages from the Scaled Agile Framework
+knowledge base (https://framework.scaledagile.com), © Scaled Agile, Inc., to
+show how this organization maps onto SAFe. Those quotations remain the property
+of Scaled Agile, Inc. and are NOT licensed under the Apache License, Version 2.0.
+
+-------------------------------------------------------------------------------
+
 TRADEMARKS
 -------------------------------------------------------------------------------
 
@@ -32,5 +42,9 @@ Organizational Intelligence Platform (OIP), Systemic Intelligence Sourcing (SIS)
 Systemic Agentic Framework (SAF), and Systemic Intelligence Model (SIM) are
 trademarks of Clément Cazaud. They are NOT licensed under the Apache License,
 Version 2.0 (see Section 6 of the License).
+
+SAFe® and Scaled Agile Framework® are registered trademarks of Scaled Agile,
+Inc. This product applies the framework; it is not affiliated with or endorsed
+by Scaled Agile, Inc.
 
 -------------------------------------------------------------------------------
