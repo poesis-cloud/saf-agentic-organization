@@ -1,0 +1,239 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: supplier-engagement
+description: 'Write or revise the agreement that brings one supplier into the Solution Train''s cadence, quality expectations and compliance obligations. Main artifact at the human gate: supplier-agreement. Use for: Onboard or change a supplier; contract terms for a component or service.'
+orchestrator: solution-train-engineer
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- solution-train-engineer-catalog
+steps:
+- slug: draft
+  description: 'Main artifact, draft: the Procurement Manager creates or thickens the Supplier agreement.'
+  actor: procurement-manager
+  skills: procurement-manager
+  artifact: supplier-agreement
+  instructions:
+  - step-contract
+  - draft-main
+  - supplier-engagement-brief
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 8
+  conditions:
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'procurement-manager')
+- slug: challenge-legal-counsel
+  description: 'Challenge packet: the Legal Counsel challenges the drafted Supplier agreement. Not itself challenged.'
+  actor: legal-counsel
+  skills: legal-counsel
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - supplier-engagement-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-security-expert
+  description: 'Challenge packet: the Security Expert challenges the drafted Supplier agreement. Not itself challenged.'
+  actor: security-expert
+  skills: security-expert
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - supplier-engagement-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-compliance-officer
+  description: 'Challenge packet: the Compliance Officer challenges the drafted Supplier agreement. Not itself challenged.'
+  actor: compliance-officer
+  skills: compliance-officer
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - supplier-engagement-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-financial-controller
+  description: 'Challenge packet: the Financial Controller challenges the drafted Supplier agreement. Not itself challenged.'
+  actor: financial-controller
+  skills: financial-controller
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - supplier-engagement-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-solution-architect
+  description: 'Challenge packet: the Solution Architect challenges the drafted Supplier agreement. Not itself challenged.'
+  actor: solution-architect
+  skills: solution-architect
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - supplier-engagement-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: revise
+  description: 'Main artifact, owner revision: the Procurement Manager answers every challenge packet and revises the Supplier agreement for the human gate.'
+  actor: procurement-manager
+  skills: procurement-manager
+  artifact: supplier-agreement
+  instructions:
+  - step-contract
+  - revise-main
+  - supplier-engagement-brief
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 8
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 8
+  conditions:
+  - kind: precondition
+    slug: after-challenge-legal-counsel
+    step: challenge-legal-counsel
+  - kind: precondition
+    slug: after-challenge-security-expert
+    step: challenge-security-expert
+  - kind: precondition
+    slug: after-challenge-compliance-officer
+    step: challenge-compliance-officer
+  - kind: precondition
+    slug: after-challenge-financial-controller
+    step: challenge-financial-controller
+  - kind: precondition
+    slug: after-challenge-solution-architect
+    step: challenge-solution-architect
+  - kind: postcondition
+    slug: revises-the-drafted-artifact
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == step.artifact.path)
+    setPredicate: selected.size() == 1
+  - kind: postcondition
+    slug: every-packet-is-answered
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
+    setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'procurement-manager')

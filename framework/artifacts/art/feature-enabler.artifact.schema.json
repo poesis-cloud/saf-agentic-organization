@@ -1,0 +1,326 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gsmarc://saf/artifacts/feature-enabler.artifact/v1",
+  "$ref": "gsmarc://saf/contracts/artifact/v1",
+  "title": "Enabler Feature artifact schema",
+  "description": "Enabler work of an ART (exploration, architecture, infrastructure or compliance) that extends the architectural runway or improves the delivery pipeline, sized to be delivered by an ART within a PI.",
+  "type": "object",
+  "additionalProperties": true,
+  "x-artifact": {
+    "kind": "feature-enabler",
+    "layer": "art",
+    "class": "main",
+    "owners": [
+      "system-architect"
+    ],
+    "templates": [
+      "templates/art/feature-enabler.artifact-template.md"
+    ],
+    "pathPatterns": [
+      "portfolio/arts/*/features/*/*.feature-enabler.md"
+    ],
+    "sections": {
+      "required": [
+        "Description",
+        "Benefit hypothesis",
+        "Acceptance criteria"
+      ],
+      "optional": [
+        "Nonfunctional requirements",
+        "Stories",
+        "Dependencies",
+        "Open questions"
+      ]
+    }
+  },
+  "required": [
+    "title",
+    "owner",
+    "challengeLedger",
+    "enablerType",
+    "status",
+    "blocked",
+    "wsjf",
+    "transitions",
+    "parent",
+    "enables",
+    "adrs",
+    "targetPi",
+    "stepOutcomes"
+  ],
+  "properties": {
+    "title": {
+      "description": "Human-readable title.",
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Agent slug of the author. Only the owner writes this artifact, its state changes included; the draft names the workflow's author."
+    },
+    "challengeLedger": {
+      "description": "The owner's answers to the expert challenge (see the definition).",
+      "$ref": "#/$defs/challengeLedger"
+    },
+    "enablerType": {
+      "description": "The enabler category. One of: exploration | architecture | infrastructure | compliance.",
+      "enum": [
+        "exploration",
+        "architecture",
+        "infrastructure",
+        "compliance"
+      ]
+    },
+    "status": {
+      "description": "Kanban state. Changed only by the owner in the `*-transition` workflow, after the human decided. One of: funnel | analyzing | ready | implementing | validating-on-staging | deploying-to-production | releasing | done.",
+      "enum": [
+        "funnel",
+        "analyzing",
+        "ready",
+        "implementing",
+        "validating-on-staging",
+        "deploying-to-production",
+        "releasing",
+        "done"
+      ]
+    },
+    "blocked": {
+      "type": "boolean",
+      "description": "True while an impediment stops the item; say why under `## Open questions`."
+    },
+    "wsjf": {
+      "description": "WSJF prioritization block.",
+      "$ref": "#/$defs/wsjf"
+    },
+    "transitions": {
+      "description": "Kanban history.",
+      "$ref": "#/$defs/transitions"
+    },
+    "parent": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The Epic, enabler Epic, Capability or enabler Capability this enabler Feature splits from; null for one from the ART's local context. Workspace-relative path, or null."
+    },
+    "enables": {
+      "type": "array",
+      "description": "Paths of the Features this enabler makes possible or faster.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "adrs": {
+      "type": "array",
+      "description": "Paths of the architecture decisions it implements.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "targetPi": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "PI slug the enabler Feature is planned for, or null."
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record: one entry per step that committed this artifact.",
+      "$ref": "#/$defs/stepOutcomes"
+    }
+  },
+  "$defs": {
+    "challengeLedger": {
+      "description": "The owner's answer to the expert challenge. One entry per challenge packet of the latest run, written by the owner in the `revise` step: every finding is accepted, rejected or deferred with a reason. The human gate reads this ledger next to the artifact.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "packet",
+          "challenger",
+          "verdict",
+          "responses"
+        ],
+        "properties": {
+          "packet": {
+            "description": "Workspace-relative path of the challenge packet answered.",
+            "type": "string",
+            "minLength": 1
+          },
+          "challenger": {
+            "description": "Agent slug of the expert who wrote the packet.",
+            "type": "string",
+            "minLength": 1
+          },
+          "verdict": {
+            "description": "The packet's verdict, copied: pass | concerns | blocking | not-applicable.",
+            "enum": [
+              "pass",
+              "concerns",
+              "blocking",
+              "not-applicable"
+            ]
+          },
+          "responses": {
+            "description": "One response per finding of the packet (empty when the packet has no finding).",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "finding",
+                "disposition",
+                "note"
+              ],
+              "properties": {
+                "finding": {
+                  "description": "Finding id in the packet, e.g. F1.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "disposition": {
+                  "description": "accepted (the artifact changed) | rejected (the owner disagrees, with the reason) | deferred (valid, handled later: say where).",
+                  "enum": [
+                    "accepted",
+                    "rejected",
+                    "deferred"
+                  ]
+                },
+                "note": {
+                  "description": "One line: what changed, or why not.",
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "stepOutcomes": {
+      "description": "Step outcome record. Every workflow step that commits this artifact appends exactly one entry, so the artifact itself carries the step's decision and the agent's reply stays indicative.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "step",
+          "outcome",
+          "date",
+          "note"
+        ],
+        "properties": {
+          "step": {
+            "description": "`<workflow-slug>/<step-slug>` of the step that appended this entry.",
+            "type": "string",
+            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+          },
+          "outcome": {
+            "description": "written (created) | revised (content changed) | confirmed (reviewed, still valid) | no-change (out of scope on this run) | none (not needed; the artifact records that decision).",
+            "enum": [
+              "written",
+              "revised",
+              "confirmed",
+              "no-change",
+              "none"
+            ]
+          },
+          "date": {
+            "description": "YYYY-MM-DD of the step.",
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "description": "One line: what the step decided and why.",
+            "type": "string",
+            "minLength": 1
+          },
+          "friction": {
+            "description": "Optional. Workflow friction the actor observed (raw input for Inspect and Adapt, never a fix).",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "transitions": {
+      "description": "State history. One entry per state change, appended by the owner in its `*-transition` workflow after the human decided.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "from",
+          "to",
+          "date",
+          "decidedBy",
+          "reason"
+        ],
+        "properties": {
+          "from": {
+            "description": "State left.",
+            "type": "string",
+            "minLength": 1
+          },
+          "to": {
+            "description": "State entered.",
+            "type": "string",
+            "minLength": 1
+          },
+          "date": {
+            "description": "YYYY-MM-DD.",
+            "type": "string",
+            "minLength": 1
+          },
+          "decidedBy": {
+            "description": "The human (name or role) who decided.",
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "description": "One line: why.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "wsjf": {
+      "description": "Weighted Shortest Job First: relative cost of delay divided by relative job size. Each component is a relative estimate on the modified Fibonacci scale (1, 2, 3, 5, 8, 13, 20, 40, 100); 0 means not estimated yet.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "userBusinessValue",
+        "timeCriticality",
+        "riskReductionOpportunityEnablement",
+        "jobSize",
+        "score"
+      ],
+      "properties": {
+        "userBusinessValue": {
+          "description": "Relative user and business value.",
+          "type": "number"
+        },
+        "timeCriticality": {
+          "description": "How the value decays with delay.",
+          "type": "number"
+        },
+        "riskReductionOpportunityEnablement": {
+          "description": "Risk reduction and/or opportunity enablement.",
+          "type": "number"
+        },
+        "jobSize": {
+          "description": "Relative job size (duration proxy), the denominator.",
+          "type": "number"
+        },
+        "score": {
+          "description": "(userBusinessValue + timeCriticality + riskReductionOpportunityEnablement) / jobSize; 0 while not estimated.",
+          "type": "number"
+        }
+      }
+    }
+  }
+}

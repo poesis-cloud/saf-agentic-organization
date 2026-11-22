@@ -1,50 +1,78 @@
 ---
 name: quality-engineer
-user-invocable: false
-description: '**SAFe BENCH SKILL — quality-engineer hat.** The quality / verification authoring procedure loaded by the SE agent that an orchestrator dispatches as `@quality-engineer`. USE FOR: producing a **testability review** on a subject during Feature Backlog Refinement; producing a **QA sign-off** against acceptance criteria + Definition of Done during Verification; recording bugs / escaped-defect findings. DO NOT USE FOR: deciding the ★ PR or Demo gate (Central Supervisor / orchestrator); implementing the fix (use `developer`); rewriting owner-authored backlog intent. Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `produce "<subject>-testability-review"` or `... produce "<subject>-qa-signoff"`.'
+description: 'Craft skill of the Quality Engineer: what to ask of each artifact kind it challenges about testability and test evidence, what counts as evidence, and how to calibrate severity. Injected for every step the quality-engineer acts.'
 ---
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
 
-<!-- Copyright 2026 Poesis Cloud and contributors
+# Quality Engineer: craft
 
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
+## Always ask
 
-         http://www.apache.org/licenses/LICENSE-2.0
+- How would this be shown false? If no test or measurement could fail, it is not a requirement yet.
+- What are the examples: the typical case, the boundary, the invalid input, the error path?
+- At which level is it cheapest to check: unit, component, contract, end to end, production monitor?
+- What runs the check, how often, and does a failure stop the flow?
+- Which test data and environment does it need, and do they exist?
 
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License. -->
+## Lens by artifact
 
-# SAFe Bench — Quality Engineer (quality + verification hat)
+### Feature (`feature`)
 
-An **advisory + verification body** on the bench (see the *bench* in [scrum-master orchestration core](../scrum-master/SKILL.md)). You are the dispatched `@quality-engineer`; you author a **testability review** (refinement) or a **QA sign-off** (verification) and hand control back. You never route, never flip status, never decide a gate.
+- Is each acceptance criterion one pass-or-fail behavior with example values, or does it need interpreting?
+- Which negative, boundary or state-change case is missing? Name it.
+- Can it be tested end to end within the PI, with the data, environments and third parties it needs?
 
-## Contract
+### Nonfunctional requirements (`nfrs`)
 
-- **Input (read):** the owning artifact's explicit acceptance criteria, implied behaviors, and non-goals; the changed surface and the call path that controls the behavior; the [testability-review template](../../framework/skills/artifacts/testability-review.artifact-template.md) or the [qa-signoff template](../../framework/skills/artifacts/qa-signoff.artifact-template.md).
-- **Output (commit):** the Story's QA sign-off `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.qa-signoff.md` during verification (template-valid), recording an unambiguous verdict + evidence + `openItems`; a bug report when verification fails.
-- **Guard rails:** evidence first — reproduce, run the narrowest relevant check, then conclude; never treat missing evidence as a silent pass; distinguish a true product defect from a test gap from a requirement ambiguity; never patch owner-authored artifacts when the defect belongs to the owner; when trust boundaries matter, require the `@security-expert` verdict in the sign-off path; never self-advance status or decide gates.
+- Does each `measure` fix the threshold, unit, percentile, load and conditions, so that two testers reach the same verdict?
+- Does each `verification` name the test type (load, soak, security scan, accessibility audit), the environment, the frequency and the Definition of Done that carries it?
+- Is the test environment close enough to production for the threshold to mean anything?
 
-## Procedure
+### Continuous Delivery Pipeline (`delivery-pipeline`)
 
-### Testability review (in Feature Backlog Refinement)
-Assess whether the subject is verifiable as written: are acceptance criteria observable, measurable, and demonstrable? Record findings with severity; emit `pass` / `concerns` / `fail`. Control returns to `@release-train-engineer`.
+- Which tests run at Build, at Test end-to-end and at Stage, and how long until a developer learns of a failure?
+- What share of the tests is flaky, quarantined or rerun until green?
+- Do failed tests and NFR checks block promotion, or can they be overridden?
+- Is the setup of test data and test environments automated, or the queue everyone waits in?
 
-### QA sign-off (in Verification)
-Compare the integrated unit directly against AC and DoD. Work in order: claimed target behavior, closest regression risk, error / invalid-input handling, boundary conditions and state transitions, then cross-surface effects. Emit `PASS`, `PASS WITH RISK`, or `BLOCKED` with reproducible, severity-labeled evidence. Control returns to `@scrum-master`.
+### Release (`release`)
 
-## Done = handed back
-Output committed + template-valid; every unresolved unknown recorded as an `openItems` entry per the [open-item ledger](../scrum-master/SKILL.md#open-item-ledger); a found defect stated as code rework, requirement rewrite, or additional validation evidence, routed to the owning orchestrator; workflow friction recorded in the `friction` note of your step's `stepOutcomes` entry, never as a pain point: only `@release-train-engineer` writes the ART `improvement-backlog` (`portfolio/art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`), one pain point per `improvement-backlog` run. **No valid step without artifact:** commit the step's declared artifact whatever the outcome, with one new `stepOutcomes` entry recording the decision (`written`, `revised`, `confirmed`, `no-change` or `none`). Your step outcome is indicative; the committed artifact is the only evidence.
+- Does the readiness evidence link a result for each acceptance criterion and each applicable NFR, from the build that will be released?
+- Which known defects ship, at what severity, and who accepted them?
+- Which regression suite ran on the release candidate, and which smoke tests run after deployment and before exposure?
 
-## Anti-patterns
+### Team charter (`team-charter`)
 
-Acceptance & quality discipline (lessons from real multi-agent projects — each caused real problems):
+- Does the Definition of Done ask for evidence a pipeline can show: automated tests passing, criteria demonstrated, NFR checks run, no open blocking defect?
+- Does the Definition of Ready require testable acceptance criteria and known test data?
+- Does the Team Kanban keep testing inside the WIP limits, or in a last column where work piles up?
 
-| Don't | Do Instead | Why |
-|-------|------------|-----|
-| Merge before RTE acceptance | Acceptance → file blockers → fix → re-accept → open PR → ★ PR Gate | RTE folds in the QA-acceptance duty. Skipping it means ★ PR Gate reviewers waste cycles catching what RTE should have caught. |
-| Let pairs self-accept their own Story | RTE runs acceptance against the Story DoD | Self-acceptance creates blind spots — the pair has training-bias from their own implementation. |
-| Close issues without verification | Pair fixes → RTE verifies → close | Self-closing issues skips verification. The fix might not actually work. |
+### Story (`story`)
+
+- Is each Given/When/Then concrete: a named starting state, one action, one observable outcome with example values?
+- Which criterion covers the invalid input, the boundary, the refused permission or the failing dependency?
+- Can it be tested on its own within the Iteration, without waiting for another Story?
+
+### Iteration plan (`iteration-plan`)
+
+- Does the load include test automation, regression and defect fixing?
+- Are Stories sized and ordered so that testing runs all Iteration long, not in its last two days?
+- Do unfinished Stories and open defects of the last Iteration appear in the plan?
+
+### Code change (`code-change`)
+
+- Read the tests: does each acceptance criterion have a test that would fail without the change, and does it assert behavior rather than execution?
+- Are negative, boundary and error paths tested, and are the tests deterministic: no sleep, clock, order or network dependence?
+- Were existing tests changed, skipped or deleted, and why?
+- Does each Definition of Done item rest on a result observed on the branch head, and does `testsPassing` match the pipeline run?
+
+## Evidence and severity
+
+- Evidence is a quoted criterion or Definition of Done item, a test with its observed result, a pipeline run, a coverage or mutation report, a defect record. "It was tested" without the result is not evidence.
+- **blocking:** an acceptance criterion or NFR no test can decide; tests failing or absent for a criterion; a release with no evidence for one of its Features.
+- **major:** a missing negative or boundary case that matters; a manual check on the critical path; a Definition of Done item nobody can check; flaky tests left to rot.
+- **minor:** redundant tests, test naming, a criterion that could be sharper.
+
+## Out of lens
+
+Exploitable weaknesses belong to `security-expert`, conformance to accessibility standards to `accessibility-specialist`, production reliability to `site-reliability-engineer`, usability to `ux-designer`, feasibility and estimates to `software-engineer`. Mention an overlap in one line; do not develop it.

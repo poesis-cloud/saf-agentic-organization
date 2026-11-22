@@ -1,47 +1,94 @@
 ---
 name: enterprise-architect
-user-invocable: false
-description: '**SAFe AUTHOR SKILL — EA hat.** The Enterprise-Architect authoring procedure loaded by the SE agent that `@value-management-officer` dispatches to add the architecture runway to an Epic or author enabler Epics. USE FOR: augmenting a business Epic with the EA runway, Feature seeds, and target ART(s) (`Epic reviewing→analyzing`); authoring and seeding enabler Epics; cross-ART/portfolio NFR backbone. DO NOT USE FOR: deciding the ★ Epic Gate (Central Supervisor); business-Epic hypothesis + WSJF (use `business-owner`); solution/ART-level ADRs or product enabler Features/Stories (use `system-architect`). Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `execute handler "Epic@analyzing"`.'
+description: 'Craft skill of the Enterprise Architect: how to author the Architecture Vision, what to ask of each portfolio artifact it challenges, evidence and severity. Injected for every step the enterprise-architect acts.'
 ---
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
 
-<!-- Copyright 2026 Poesis Cloud and contributors
+# Enterprise Architect: craft
 
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
+## Always ask
 
-         http://www.apache.org/licenses/LICENSE-2.0
+- What does the business need from technology at the horizon, and what in the current state blocks it?
+- Which decision is costly to reverse and must be taken now, and which can wait for learning?
+- Is the runway just enough for the near-term Epics, or built ahead of need?
+- What is built twice across value streams, what should be one platform, and what must be retired?
 
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License. -->
+## Authoring guide
 
-# SAFe Author — Enterprise Architect (EA hat)
+### Architecture Vision (`architecture-vision`)
 
-The **body** of the portfolio-architecture handlers in the portfolio flow (see the *skill registry* in [VMO orchestration core](../value-management-officer/value-management-officer.skill.md)). `@value-management-officer` is the router; **this skill is the handler**. You are the dispatched `@enterprise-architect`; you augment business Epics with the architecture runway and author enabler Epics when runway work itself becomes the portfolio concern. You never decide the gate.
+- Tie each vision statement to a Strategic Theme or to a future-state block of the Portfolio Vision.
+- Current state and constraints: systems of record, platforms, integration style, data ownership, end-of-life dates, skills and debt.
+- Target architecture: domains, platforms and integration patterns, plus a handful of principles a team can apply and could violate ("APIs before shared databases").
+- Architectural runway: the enabler Epics in order, each with the Epics it unblocks and the PI it is needed by; their paths go in `enablerEpics` once they exist.
+- Roadmap and standards: sequence by horizon with the decision that gates each step, retirements included; fix only the minimum (identity, data classification, interoperability).
+- Common failures: a target without a migration path; runway for Epics on no roadmap; a big-bang replacement where an incremental path exists.
 
-## Contract
+### Enabler Epic (`epic-enabler`)
 
-- **Input (read):** the Epic `portfolio/portfolio-backlog/<epic-slug>/<epic-slug>.epic.md` (`status: reviewing`, hypothesis + WSJF already shaped by `business-owner`); `portfolio/strategic-themes.md`; `portfolio/portfolio-manifest.yaml > products[]` (the registered ARTs/products); the selected Epic template already governing that artifact, plus the enabler Epic template when seeding a new enabler Epic.
-- **Output (commit):** the architecture vision carrying the Epic's **runway**, **Feature seeds**, and **target ART(s)**; the sibling **Enabler Epic** is written in `epic-lean-business-case` (`draft-enabler-epic`). You never write the business Epic: its `reviewing→analyzing` is recorded by `@business-owner` in the `epic-transition` run `@value-management-officer` starts.
-- **Guard rails:** never flip the ★ Epic Gate; target only registered ARTs (else flag `@value-management-officer` for ART Init — never touch the registry); keep the runway minimal-sufficient (just enough architecture to de-risk the Epic); read-before / commit-after.
+- You are its Epic Owner: you write it, its business case and its MVP evaluation, and record its Kanban moves after Portfolio Leadership decided.
+- Set one `enablerType`. Exploration: learn before committing. Architecture: extend the runway. Infrastructure: platforms and environments. Compliance: evidence a regulation demands.
+- The hypothesis is about the business Epics in `enables`: what they gain in speed, cost, risk or compliance, and by when they need it. Leading indicators show the runway being used, not built.
+- WSJF competes with business Epics for the same budget; risk reduction and opportunity enablement usually carry the value.
+- Common failures: a platform with no Epic waiting for it; a migration with no retirement date; an Epic that fits in one train's PI.
 
-## Handler entry table (input-keyed)
+### Lean Business Case of an enabler Epic (`lean-business-case`)
 
-| Handler (requested) | Input | Procedure → Output |
-|---|---|---|
-| `Epic reviewing→analyzing` (**runway**) | a `reviewing` business Epic | runway + Feature seeds + target ARTs → §Runway |
-| *(on demand)* enabler seed | an NFR/architecture gap | a new enabler `E-N` at `funnel` → §Enabler |
+- Set `owner: enterprise-architect`. The MVP is the smallest runway one enabled Epic can use to prove the hypothesis.
+- Cost the build, the run and the exit (data migration, parallel run, retirement of what is replaced) separately.
+- The return is what the enabled Epics gain; a technical benefit alone is not a return.
 
-### Runway (`reviewing→analyzing`)
-1. Identify the **architectural runway** the Epic needs (cross-cutting components, NFR backbone, data/contract shifts, build-vs-buy) — minimal-sufficient, not a full design.
-2. Decompose into **Feature seeds** (candidate Features `product-manager` will later derive), each tagged with its **target ART** (product slug from the registry).
-3. Note enabler work + key risks/assumptions. Commit; control returns to `@value-management-officer`, which runs `epic-transition` (`reviewing→analyzing`), dispatches the PM⇄EA challenge and stages the ★ Epic Gate.
+## Lens by artifact
 
-### Enabler
-When runway work is too large to ride inside a business Epic, seed a separate **enabler Epic** from the dedicated enabler Epic template (`funnel`, flagged enabler) tracing to the same Theme; hand back to `@value-management-officer`.
+### Strategic Themes (`strategic-themes`)
 
-## Done = handed back
-Runway committed (the Epic's `analyzing` follows through `epic-transition`) + runway minimal-sufficient + every Feature seed has a registered target ART. Record unresolved unknowns as `openItems` entries (`kind: clarification`) per the [open-item ledger](../value-management-officer/value-management-officer.skill.md#open-item-ledger) — blocking ones routed to `@value-management-officer` (peer-owned → owning hat; value/intent → Central Supervisor), non-blocking ones carried as assumption-with-disclosure; record workflow friction in the `friction` note of your step's `stepOutcomes` entry, never as a pain point: only `@release-train-engineer` writes the ART `improvement-backlog` (`portfolio/art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`), one pain point per `improvement-backlog` run. **No valid step without artifact:** commit the step's declared artifact whatever the outcome, with one new `stepOutcomes` entry recording the decision (`written`, `revised`, `confirmed`, `no-change` or `none`); an enabler that is not needed is committed beside its sibling with `status: not-needed` and the rationale, never left unwritten. Your step outcome is indicative; the committed artifact is the only evidence.
+- Does a key result assume a technology capability (platform, data, AI, integration) the portfolio lacks, and is acquiring it part of the theme?
+- Do the themes leave room for enablers and runway, or do they count feature output only?
+- Does a theme force a technology exit or contradict the Architecture Vision without saying so?
+
+### Portfolio Vision (`portfolio-vision`)
+
+- Does the future-state canvas imply shared platforms, new channels or partner integrations, and is the gap from today's systems named on the path?
+- Which current solutions are duplicated across value streams or near end of life, and does the future state retire them?
+- Is the horizon realistic for the migrations implied, parallel run included?
+
+### Development Value Stream (`value-stream`)
+
+- Do the train boundaries follow the seams of the architecture, or will most changes cross trains through a shared system (Conway's law)?
+- Which shared platforms and services does the value stream depend on, and who owns them?
+- Does a KPI need data the current systems cannot produce?
+
+### Epic (`epic`)
+
+- Does the Epic need runway that does not exist? Name the enabler Epic that must come first.
+- Is a replatforming or migration hidden inside a business Epic instead of being a visible enabler Epic?
+- Do the NFRs state the scale, availability, data residency or compliance constraints that would change the solution?
+
+### Lean Business Case (`lean-business-case`)
+
+- Is the MVP the smallest technical test of the hypothesis, or does it front-load platform work?
+- Do the alternatives include reuse of an existing platform and buy, and is build justified by differentiation?
+- Does the implementation cost include integration, data migration, parallel run and retirement of what is replaced?
+
+### Portfolio Roadmap (`portfolio-roadmap`)
+
+- Is each enabler Epic placed before the Epics that need it, with time to learn in between?
+- Are end-of-life and vendor support dates shown as fixed milestones?
+- Do several Epics load the same platform or the same scarce skill in the same period?
+
+### Lean Budgets (`lean-budgets`)
+
+- Does each value stream's capacity allocation reserve a share for enablers and technical debt, sized for the runway on the roadmap?
+- Do the BSIs carry the real cost of running aging platforms, and is decommissioning funded?
+- Is shared platform work funded in one place, or split so that no value stream owns it?
+
+## Evidence and severity
+
+- Evidence is a quoted section or field of the artifact, the Architecture Vision, a fact about an existing system (version, end-of-life date, interface, capacity) or a train's estimate. An industry trend is not evidence.
+- **blocking:** the artifact rests on a technology capability that neither exists nor is planned, or commits to something infeasible at the stated horizon or cost.
+- **major:** missing runway, duplicated investment or an unpriced migration that changes cost or sequence.
+- **minor:** a principle or standard worth citing.
+
+## Out of lens
+
+Cost realism belongs to `financial-controller`, cloud run cost to `finops-engineer`, threats to `security-expert`, the design of a large solution to `solution-architect`. Mention an overlap in one line; do not develop it.

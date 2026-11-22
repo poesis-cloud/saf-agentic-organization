@@ -112,4 +112,4 @@ If the commit fails (a pre-commit hook, for example), report its output and stop
 
 Tell the user the workspace is initialised and that the harness reads the marker when a
 session opens: they must **start a new session** in this folder and select an orchestrator
-again (`poesis-saf-agentic-organization:release-train-engineer, poesis-saf-agentic-organization:scrum-master, poesis-saf-agentic-organization:value-management-officer`).
+again (`poesis-saf-agentic-organization:release-train-engineer, poesis-saf-agentic-organization:scrum-master, poesis-saf-agentic-organization:solution-train-engineer, poesis-saf-agentic-organization:value-management-officer`).

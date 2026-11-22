@@ -13,28 +13,55 @@
 # limitations under the License.
 
 slug: team-sync
-description: >
-  Purpose: daily inspect-and-adapt of the iteration. Act: Cadence. Orchestrator:
-  Scrum Master. Dispatch: team-sync mediation record. Evaluate: nothing as a
-  Story. Fallout Demand goes to team-backlog-refinement. Do not Evaluate minutes.
-instructions: scrum-master-interpret-speech-acts
+description: 'Inspect progress toward the iteration goals, adjust the plan for the coming day, and re-render the Team Kanban. Main artifact at the human gate: event-record. Use for: Daily status of the team; what is blocked; progress toward the iteration goals.'
 orchestrator: scrum-master
-skills: team-daily-sync
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- scrum-master-catalog
 steps:
-- slug: facilitate
-  description: Mediation record — Scrum Master records the Team Sync. Not itself challenged.
+- slug: record
+  description: 'Event record: the Scrum Master / Team Coach writes the Team Sync record.'
+  actor: scrum-master
+  skills: scrum-master
+  artifact: event-record
+  instructions:
+  - step-contract
+  - record-event
+  - team-sync-brief
   capabilities:
-    deep-reasoning: 7
+    deep-reasoning: 4
     coding: 0
     tool-use: 4
-    long-context: 6
+    long-context: 5
     multimodal: 0
-    writing-quality: 8
-    instruction-following: 8
-    fast-iteration: 2
-    schema-adherence: 8
+    writing-quality: 6
+    instruction-following: 9
+    fast-iteration: 8
+    schema-adherence: 9
+  conditions: []
+- slug: update-kanban
+  description: 'Flow record: the Scrum Master / Team Coach re-renders the Kanban board from the items'' status.'
   actor: scrum-master
-  artifact: team-sync
+  skills: scrum-master
+  artifact: kanban
   instructions:
-  - team-daily-sync-facilitator-authors-no-owner-content
-  - team-daily-sync-driver-navigator-status-recorded
+  - step-contract
+  - update-kanban
+  - team-sync-brief
+  capabilities:
+    deep-reasoning: 2
+    coding: 0
+    tool-use: 5
+    long-context: 5
+    multimodal: 0
+    writing-quality: 3
+    instruction-following: 9
+    fast-iteration: 9
+    schema-adherence: 10
+  conditions:
+  - kind: precondition
+    slug: after-record
+    step: record

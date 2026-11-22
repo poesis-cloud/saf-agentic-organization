@@ -1,0 +1,177 @@
+# Copyright 2026 Poesis Cloud and contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+slug: solution-train-launch
+description: 'Define or revise one Solution Train: its mission, ARTs and suppliers, roles and cadence. Main artifact at the human gate: solution-train-canvas. Use for: Set up a Solution Train; change its ARTs, suppliers, roles or cadence.'
+orchestrator: solution-train-engineer
+instructions:
+- workflow-selection-handling
+- step-resolution-handling
+- no-next-step-handling
+- reports-handling
+- solution-train-engineer-catalog
+steps:
+- slug: draft
+  description: 'Main artifact, draft: the Solution Train Engineer creates or thickens the Solution Train canvas.'
+  actor: solution-train-engineer
+  skills: solution-train-engineer
+  artifact: solution-train-canvas
+  instructions:
+  - step-contract
+  - draft-main
+  - solution-train-launch-brief
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 5
+    long-context: 7
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 8
+  conditions:
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'solution-train-engineer')
+- slug: challenge-agile-coach
+  description: 'Challenge packet: the Agile Coach challenges the drafted Solution Train canvas. Not itself challenged.'
+  actor: agile-coach
+  skills: agile-coach
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - solution-train-launch-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-solution-architect
+  description: 'Challenge packet: the Solution Architect challenges the drafted Solution Train canvas. Not itself challenged.'
+  actor: solution-architect
+  skills: solution-architect
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - solution-train-launch-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 5
+    tool-use: 4
+    long-context: 6
+    multimodal: 0
+    writing-quality: 6
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: challenge-business-analyst
+  description: 'Challenge packet: the Business Analyst challenges the drafted Solution Train canvas. Not itself challenged.'
+  actor: business-analyst
+  skills: business-analyst
+  artifact: challenge
+  instructions:
+  - step-contract
+  - challenge-main
+  - solution-train-launch-brief
+  capabilities:
+    deep-reasoning: 8
+    coding: 0
+    tool-use: 3
+    long-context: 6
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 4
+    schema-adherence: 7
+  conditions:
+  - kind: precondition
+    slug: after-draft
+    step: draft
+  - kind: postcondition
+    slug: packet-targets-the-drafted-artifact
+    setSelector:
+      setQuery: workspace.filter(c, c.path == step.artifact.path && steps.exists(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == c.data.target))
+    setPredicate: selected.size() == 1
+- slug: revise
+  description: 'Main artifact, owner revision: the Solution Train Engineer answers every challenge packet and revises the Solution Train canvas for the human gate.'
+  actor: solution-train-engineer
+  skills: solution-train-engineer
+  artifact: solution-train-canvas
+  instructions:
+  - step-contract
+  - revise-main
+  - solution-train-launch-brief
+  capabilities:
+    deep-reasoning: 7
+    coding: 0
+    tool-use: 5
+    long-context: 7
+    multimodal: 0
+    writing-quality: 7
+    instruction-following: 8
+    fast-iteration: 3
+    schema-adherence: 8
+  conditions:
+  - kind: precondition
+    slug: after-challenge-agile-coach
+    step: challenge-agile-coach
+  - kind: precondition
+    slug: after-challenge-solution-architect
+    step: challenge-solution-architect
+  - kind: precondition
+    slug: after-challenge-business-analyst
+    step: challenge-business-analyst
+  - kind: postcondition
+    slug: revises-the-drafted-artifact
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.slug == 'draft' && s.outcome == 'pass' && s.artifact.path == step.artifact.path)
+    setPredicate: selected.size() == 1
+  - kind: postcondition
+    slug: every-packet-is-answered
+    setSelector:
+      setQuery: steps.filter(s, s.workflow == workflow.id && s.outcome == 'pass' && s.artifact.kind == 'challenge')
+    setPredicate: selected.all(s, workspace.exists(m, m.path == step.artifact.path && m.data.challengeLedger.exists(l, has(l.packet) && l.packet == s.artifact.path)))
+  - kind: postcondition
+    slug: owner-is-the-author
+    setSelector:
+      setQuery: workspace.filter(a, a.path == step.artifact.path)
+    setPredicate: selected.all(a, a.data.owner == 'solution-train-engineer')

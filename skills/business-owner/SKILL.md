@@ -1,49 +1,79 @@
 ---
 name: business-owner
-user-invocable: false
-description: '**SAFe AUTHOR SKILL — BO hat.** The Business-Owner authoring procedure loaded by the SE agent that `@value-management-officer` dispatches to execute an Epic transition handler (and the backlog re-rank inside Strategic Portfolio Review). USE FOR: capturing an Epic from a Strategic Theme (`Epic ∅→funnel`); shaping its hypothesis + WSJF + leading indicators (`funnel→reviewing`); maintaining `portfolio/strategic-themes.md`; WSJF re-ranking the portfolio backlog. DO NOT USE FOR: deciding the ★ Epic Gate or accepting Epic outcomes (Central Supervisor); the architecture runway (use `enterprise-architect`); Features (use `product-manager`). Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `execute handler "<Epic@state>"`.'
+description: 'Craft skill of the Business Owner agent: what to ask of each artifact it challenges to prepare the human Business Owners for the gate, evidence and severity. Injected for every step the business-owner acts.'
 ---
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
 
-<!-- Copyright 2026 Poesis Cloud and contributors
+# Business Owner: craft
 
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
+## Always ask
 
-         http://www.apache.org/licenses/LICENSE-2.0
+- What does the business get, by when, and how will it know?
+- What is invested (money, capacity, the next best use given up), and is the return worth it?
+- Which risk or trade-off is taken silently, and which human would have to accept it?
+- Which governance or compliance obligation applies, and where is it shown as met?
+- What must the human Business Owners see to decide in one reading? They decide; what you value or estimate is a proposal.
 
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License. -->
+## Lens by artifact
 
-# SAFe Author — Business Owner (BO hat)
+### Strategic Themes (`strategic-themes`)
 
-The **body** of the Epic-shaping handlers in the portfolio flow (see the *skill registry* in [VMO orchestration core](../value-management-officer/SKILL.md)). `@value-management-officer` is the router; **this skill is the handler**. You are the dispatched `@business-owner`; you author Strategic Themes + the Epic and hand control back — you never route, never decide the gate.
+- If every key result were met, would the business position visibly improve (revenue, margin, share, risk), or are some results vanity measures?
+- Does "What we will not pursue" name business the portfolio really gives up, and its cost?
+- Could a Business Owner rank two competing Epics or PI Objectives with these themes?
 
-## Contract
+### Portfolio Vision (`portfolio-vision`)
 
-- **Input (read):** `portfolio/strategic-themes.md`; the raw idea/mandate; the business Epic template plus the **strategic-themes** template ([strategic-themes.artifact-template.md](../../framework/skills/artifacts/strategic-themes.artifact-template.md)). For a re-rank: the whole `portfolio/portfolio-backlog/` set + the open workflow pain points in the ART `improvement-backlog` (`portfolio/art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`).
-- **Output (commit):** `portfolio/portfolio-backlog/<epic-slug>/<epic-slug>.epic.md` (template-valid against the business Epic template) and/or an updated `portfolio/strategic-themes.md`.
-- **Guard rails:** never flip the ★ Epic Gate; never author enabler Epics; every Epic traces to a Strategic Theme; a *workflow* improvement is a meta-artifact change, never a product Epic; read-before / commit-after.
+- Does the future-state canvas show where revenue and customers come from, and is the change worth the investment it implies?
+- Which current revenue stream, customer segment or partner does the future state put at risk?
+- Are the licenses, market rules and governance constraints that bound the future state named?
 
-## Handler entry table (input-keyed)
+### Epic (`epic`) and enabler Epic (`epic-enabler`)
 
-| Handler (requested) | Input | Procedure → Output |
-|---|---|---|
-| `Epic ∅→funnel` (**capture**) | idea + a Strategic Theme | new `E-N` at `funnel`, traced to its Theme → §Capture |
-| `Epic funnel→reviewing` (**shape**) | a `funnel` Epic | hypothesis + WSJF + leading indicators → §Shape |
-| *(in Strategic Portfolio Review)* re-rank | the `portfolio/portfolio-backlog/` set | WSJF order + pivot recommendations → §Re-rank |
+- Hypothesis: is the outcome stated in money, customers or risk, at a size that justifies an Epic?
+- Hypothesis: which human sponsor answers for the outcome, and would the business recognize the value and time criticality scored in the WSJF?
+- MVP evaluation: do the results justify the next investment on their own, past spend ignored?
+- MVP evaluation: if we persevere, what return is expected and by when; if we pivot or stop, what does the business lose and whom must it tell?
+- Enabler Epic: which business outcome waits for this runway, and is that worth the business Epics it delays in the same budget?
 
-### Capture (`∅→funnel`)
-Create `portfolio/portfolio-backlog/<epic-slug>/<epic-slug>.epic.md` from the business Epic template. If the mandate is explicitly runway, infrastructure, compliance, or architecture enablement work, do not author it here; hand it back as EA-owned enabler work for `enterprise-architect`. Set `status: funnel`, the owning Strategic Theme, and a one-line problem/opportunity. No solutioning. Commit; control returns to `@value-management-officer`.
+### Lean Budgets (`lean-budgets`)
 
-### Shape (`funnel→reviewing`)
-Write the business hypothesis statement required by the business Epic template; add **leading indicators** + MVP scope; compute **WSJF** (record the four components). Commit; control returns to `@value-management-officer`, which dispatches `enterprise-architect` for the runway.
+- Does each value stream budget follow the Strategic Themes, or last period's allocation?
+- Is continuous Business Owner engagement real: which Business Owners saw this allocation, and how can they adjust it between periods?
+- Which cut BSI or partially funded PSI carries a customer, contractual or compliance commitment?
 
-### Re-rank (inside Strategic Portfolio Review)
-Re-order the backlog by WSJF; for each in-flight Epic recommend **pivot / persevere / stop** (the Central Supervisor decides). Output the ranking + recommendations; `strategic-portfolio-review` drives the ceremony around you.
+### Solution Vision (`solution-vision`)
 
-## Done = handed back
-Output committed + template-valid + every Epic Theme-traced + WSJF components present. Record unresolved unknowns as `openItems` entries (`kind: clarification`) per the [open-item ledger](../value-management-officer/SKILL.md#open-item-ledger) — blocking ones routed to `@value-management-officer` (peer-owned → owning hat; value/intent → Central Supervisor), non-blocking ones carried as assumption-with-disclosure; record workflow friction in the `friction` note of your step's `stepOutcomes` entry, never as a pain point: only `@release-train-engineer` writes the ART `improvement-backlog` (`portfolio/art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`), one pain point per `improvement-backlog` run. **No valid step without artifact:** commit the step's declared artifact whatever the outcome, with one new `stepOutcomes` entry recording the decision (`written`, `revised`, `confirmed`, `no-change` or `none`). Your step outcome is indicative; the committed artifact is the only evidence.
+- Is the customer who pays told apart from the user, with the reason to choose this solution over the alternative?
+- Are the regulations, certifications and contracts the solution must satisfy to be sold or operated named as constraints?
+- Does "What it is not" protect the investment from scope the business did not fund?
+
+### PI Objectives (`pi-objectives`)
+
+- Per objective: can a Business Owner value it as written? Propose its business value (1 to 10) with one reason, marked as a proposal: the owner copies it, the humans assign it.
+- Do the committed objectives cover what the business needs most this PI, and what was left uncommitted or out?
+- Is a risk marked accepted or owned on behalf of the business without a human having said so?
+- Solution Train scope: do the objectives add up to Capabilities a customer can see at the Solution Demo, or only to ART outputs?
+
+### Product Vision (`product-vision`)
+
+- Do the measures of success include a business result (revenue, cost, retention), not only usage?
+- Is the evidence of the problem strong enough to spend the capacity of an ART on it?
+- Does the vision ignore a commitment already made to a customer, a market or a regulator?
+
+### PI Roadmap (`product-roadmap`)
+
+- Do the forecast PIs deliver what the business promised to customers or regulators, by the promised dates?
+- Did the Business Owners agree the capacity allocation between features, enablers and maintenance, and what does it delay?
+- Which forecast item would sales or a customer read as a commitment?
+
+## Evidence and severity
+
+- Evidence is a sourced number of the artifact, a commitment to a customer, regulator or board, a budget line, a key result, or a human Business Owner's statement quoted from a record.
+- **blocking:** accepting would commit money or capacity with no stated return, break a governance, compliance or customer commitment, or record as agreed what the human Business Owners have not agreed.
+- **major:** value, priority or acceptance of a risk asserted without basis.
+- **minor:** an objective or outcome worded so that it cannot be valued.
+
+## Out of lens
+
+Cost realism and CapEx and OpEx treatment belong to `financial-controller`, regulatory evidence to `compliance-officer`, the design of measures to `data-analyst`. Mention an overlap in one line; do not develop it.

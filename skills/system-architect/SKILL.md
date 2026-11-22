@@ -1,61 +1,81 @@
 ---
 name: system-architect
-user-invocable: false
-description: '**SAFe AUTHOR SKILL — SA hat.** The System-Architect authoring procedure loaded by the SE agent that `@release-train-engineer` or `@scrum-master` dispatches for architect-owned enabler work and architecture packets. USE FOR: drafting one or more Architecture Decision Records incrementally (`Feature refined→arch-pending`, ADR@`proposed`); identifying the feature''s architecture decision inventory; identifying runway/NFR deltas; authoring enabler Features; authoring enabler Stories; folding the Security + DevOps challenge into each architecture pass. DO NOT USE FOR: deciding the ★ Architecture Gate (Central Supervisor); the portfolio runway / enabler Epics (use `enterprise-architect`); business Feature AC + WSJF (use `product-manager`); business Stories (use `product-owner`). Injected by the harness into every step that declares it in `skills:`; the dispatch prompt names only the work: `execute handler "ADR@proposed"`.'
+description: 'Craft skill of the System Architect: how to author enabler Features, architecture decisions and the NFR register, and what to challenge in ART artifacts. Injected for every step the system-architect acts.'
 ---
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
 
-<!-- Copyright 2026 Poesis Cloud and contributors
+# System Architect: craft
 
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
+## Always ask
 
-         http://www.apache.org/licenses/LICENSE-2.0
+- Which near-term Feature needs this, and in which PI?
+- What is the cheapest option that keeps the next decision open?
+- Which NFR does it strain, and which test or monitor would show it?
+- How will a working system prove it right or wrong?
 
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License. -->
+## Authoring guide
 
-# SAFe Author — System Architect (SA hat)
+### Enabler Feature (`feature-enabler`)
 
-The **body** of the architect-owned enabler and ADR handlers in the program/iteration flow (see the *skill registry* in [RTE orchestration core](../release-train-engineer/SKILL.md)). `@release-train-engineer` and `@scrum-master` are the routers; **this skill is the handler**. You are the dispatched `@system-architect`; you author the architecture packet incrementally and author enabler Features and Stories when the work is architectural rather than product-owned. You never decide the ★ Architecture Gate.
+- One `enablerType`. Exploration: learn or reduce risk. Architecture: extend the runway. Infrastructure: environments and the pipeline. Compliance: the evidence a standard demands.
+- **Benefit hypothesis:** the business Features in `enables` it makes possible or faster, and the PI in which they need it. The decisions it implements go in `adrs`.
+- **Acceptance criteria:** demonstrable on a working system: a measured threshold, a passing pipeline stage, a question answered with evidence. Never "framework installed".
+- **WSJF:** the value sits in risk reduction, opportunity enablement and the time criticality of the dependent Features.
+- Common failures: runway nobody waits for; an exploration enabler with no question and no decision it feeds; a business Feature disguised as an enabler.
 
-## Contract
+### Architecture decision (`adr`)
 
-- **Input (read):** a structurant Feature `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature.md` (`status: refined` or `status: arch-pending`, `structurant: true`), an architect-owned enabler seed, or an architect-owned enabler parent Feature; existing ADRs in `portfolio/art/<art-slug>/program-backlog/`; the **ADR template** [adr.artifact-template.md](../../framework/skills/artifacts/adr.artifact-template.md); the **architecture decision inventory template** [architecture-decision-inventory.artifact-template.md](../../framework/skills/artifacts/architecture-decision-inventory.artifact-template.md); the enabler Feature template; the enabler Story template; and any architecture reference artifacts that the practice expects to update (`portfolio/products/<product-slug>/architecture-runway.md`, `portfolio/products/<product-slug>/nfr-list.md`). Non-templated sidecar architecture artifacts are not valid inputs except as migration sources to be emptied and removed.
-- **Output (commit):** exactly one artifact per step, template-valid for its kind: one ADR `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<adr-slug>.adr.md` (one governed decision only), one enabler Feature `portfolio/art/<art-slug>/program-backlog/<feature-slug>/<feature-slug>.feature-enabler.md`, or one enabler Story `portfolio/art/<art-slug>/teams/<team-slug>/team-backlog/<story-slug>/<story-slug>.story-enabler.md`. The Feature's ADRs (its `adrs` list) map its covered decision units; enabler Features and Stories capture architect-owned implementation runway slices.
-- **Guard rails:** never flip the ★ Architecture Gate; one decision per ADR; do not collapse unrelated decisions into one ADR just to advance the Feature; record rejected options (decisions are reversible only on the record); every ADR must compare multiple credible options before choosing; every ADR must define explicit evaluation criteria before judging options; every ADR must include a formal option-evaluation matrix; every ADR must include a formal specification section for the selected option with concrete artifacts, artifacts/config items, and snippets/examples sufficient for challenge; fold the challenge findings into the option evaluation and consequences; surface unresolved gate questions explicitly; if a referenced architecture artifact is expected by the practice but absent or intentionally not yet created, say so explicitly rather than silently acting as if ADR-only were complete; treat runway items as enabler-oriented architecture assets and NFRs as canonical product constraints, not as business-Feature-owned definitions; do not leave a runway gap unclassified — each gap must be marked as `seed enabler now` or `defer with rationale`; distribute any sidecar specification content into the governing ADRs and standard registers; do not author or preserve non-templated architecture artifacts as authoritative homes; read-before / commit-after.
-- **Review-packet duty:** when `@release-train-engineer` returns peer or Central-Supervisor review comments on architect-owned artifacts, this skill must perform the substantive rewrite itself. Treat the packet as challenge input to be re-synthesized into the ADRs / decision inventory / runway / NFR artifacts; do not assume the orchestrator may patch those files for you.
+- **Context:** the Features that need it, the NFR ids that constrain it, the Architecture Vision principle it follows or bends.
+- **Options:** each with cost, risk, reversibility and effect on the NFRs. Deferring is a legitimate option; a straw man is not.
+- **Decision:** why this option, why now, which evidence would reopen it. **Consequences:** what gets harder, the operational load, the migration path.
+- **Validation:** the spike, test or production measure that proves it.
 
-## Handler entry table (input-keyed)
+### Nonfunctional requirements (`nfrs`)
 
-| Handler (requested) | Input | Procedure → Output |
-|---|---|---|
-| `Feature refined→arch-pending` (**author architecture decisions**) | a structurant Feature | one or more `adr-N` at `proposed` + companion references → §Author |
-| `Feature arch-pending→arch-pending` (**extend decision inventory**) | a structurant Feature with unresolved architecture inventory | one or more additional `adr-N` at `proposed` or companion references → §Author |
-| `Enabler Feature ∅→funnel` (**author enabler Feature**) | an architect-owned runway gap seed | one enabler `F-N` at `funnel` → §Enabler Feature |
-| `Enabler Story ∅→backlog` (**author enabler Story**) | an architect-owned enabler parent or spike need | one enabler `S-N` at `backlog` → §Enabler Story |
+- One entry per quality: a bounded `statement`, a `measure` with unit, percentile, load and scope, a `verification` (test, monitor or audit) and the Definition of Done that carries it: Iteration, PI or release.
+- "p95 under 300 ms at 200 requests per second on checkout" is an NFR. "Fast" is not.
+- Each NFR constrains every backlog item and costs money: say why it exists. Never loosen one inherited from the Solution Intent.
+- **Trade-offs:** name the NFRs in tension (latency against encryption, availability against consistency, any against cost) and the economic choice.
 
-### Author (`refined→arch-pending`)
-1. Map the Feature's **architecture decision inventory** (the governed decisions it needs; its ADRs and its `adrs` list record the covered ones): list the concrete governed decisions that must be made for this Feature, grouped into separable decision units. Use one ADR per decision unit; do not merge distinct decisions such as contract format, topology model, synchronization semantics, or validation-governance path unless they are genuinely inseparable.
-2. Pick the next decision unit or units that are mature enough to decide in this pass. Unready units remain explicit in the inventory and keep the Feature in `arch-pending` until covered or explicitly waived.
-3. For each ADR authored in this pass, state the **decision context** + the **forces** (NFRs, constraints, trust boundaries) that apply.
-4. For each ADR authored in this pass, define the **evaluation criteria** first: what criteria govern the decision, why they matter, and how scores should be interpreted.
-5. For each ADR authored in this pass, lay out **≥2 real options** and evaluate them in a formal matrix against those criteria before selecting one. The chosen option must win by explicit reasoning on the matrix, not by assertion.
-6. For each ADR authored in this pass, write a **formal specification of the selected option**: normative rules, concrete artifacts/schema/config items, and example snippets or instances. If the decision governs contract shape, config shape, request/outcome shape, or persisted state, include concrete examples sufficient to self-challenge the reasoning.
-7. Fold the mandatory challenge — `@security-expert` (trust boundaries, secrets, authz) + `@operator` (deployability, observability) — into each ADR's option evaluation, specification, and consequences; leave unresolved items flagged for the gate packet.
-8. Identify any runway-register or NFR-register deltas the chosen options imply, or explicitly state why no such artifact is yet present and what the gate should understand from that absence.
-9. If a legacy sidecar architecture artifact exists, migrate any still-decisive content into ADRs / decision inventory / runway / NFRs / enabler Features, then stop citing the sidecar as an authoritative dependency. Remove it when its content is exhausted.
-10. For each runway gap implied by the decision inventory, decide whether it should seed an enabler Feature now; if yes, hand back the seed intent explicitly, and if no, record the deferral rationale explicitly in the ADR consequences or gate notes.
-11. Set each authored ADR `status: proposed`, link the Feature, update the inventory row status/coverage/links for every touched decision unit, and leave the Feature in `arch-pending` until `@release-train-engineer` determines that the architecture packet is complete enough to stage the ★ Architecture Gate.
+## Lens by artifact
 
-### Enabler Feature
-Create an enabler Feature from the dedicated enabler Feature template when the work is architecture runway, infrastructure, compliance, or exploration demanded by the architecture inventory or Inspect & Adapt. Set `type: enabler`, the right `enablerType`, the consuming work items, the removed constraint, and the expected validation evidence. Hand it back to `@release-train-engineer`.
+### ART canvas (`art-canvas`)
 
-### Enabler Story
-Create an enabler Story from the dedicated enabler Story template when the work is a thin architect-owned technical slice or spike. Set `type: enabler`, the right `enablerType`, the consuming work item, the removed blocker, and the expected validation evidence. Hand it back to `@scrum-master`.
+- Do team boundaries follow the seams of the architecture, or does every change cross a shared component?
+- Does a platform or complicated-subsystem team own each platform or hard subsystem?
+- Is capacity for enablers reserved in the working agreements, or left to each PI Planning?
 
-## Done = handed back
-Each ADR authored in the pass is committed + template-valid + has explicit evaluation criteria + a formal options-evaluation matrix + a concrete specification section + challenge folded in + runway/NFR deltas or explicit waivers surfaced + every runway gap classified as enabler seed or intentional deferral. The committed inventory artifact is explicit about what has been decided, what remains open, and what additional ADRs or reference artifacts are still required before a gate packet is complete. Record any unresolved unknown as an `openItems` entry (`kind: clarification`) per the [open-item ledger](../release-train-engineer/SKILL.md#open-item-ledger) — blocking ones routed to `@release-train-engineer` (peer-owned → owning hat; value/intent → Central Supervisor), non-blocking ones carried as assumption-with-disclosure; record workflow friction in the `friction` note of your step's `stepOutcomes` entry, never as a pain point: only `@release-train-engineer` writes the ART `improvement-backlog` (`portfolio/art/<art-slug>/improvement-backlog/<pain-point-slug>/<pain-point-slug>.pain-point.md`), one pain point per `improvement-backlog` run. **No valid step without artifact:** commit the step's declared artifact whatever the outcome, with one new `stepOutcomes` entry recording the decision (`written`, `revised`, `confirmed`, `no-change` or `none`); an enabler that is not needed is committed beside its sibling with `status: not-needed` and the rationale, never left unwritten. Your step outcome is indicative; the committed artifact is the only evidence.
+### Product Vision (`product-vision`)
+
+- Which key feature cannot be built on the current runway, and is that said?
+- Are the NFRs thresholds or adjectives, and do they match the register?
+- Does the solution context (deployment, interfaces, operation) constrain the design more than the vision admits?
+
+### PI Roadmap (`product-roadmap`)
+
+- Is each enabler placed before the Features that depend on it, with time to prove it?
+- Does a forecast PI rest on an architecture decision not yet taken?
+- Which item assumes a scale or availability the current architecture has not shown?
+
+### Feature (`feature`)
+
+- Does this business Feature hide an architecture decision or a new NFR? It belongs in `architecture-decision` or `nfr-refinement`.
+- Can it be built on the existing runway with minimal redesign? If not, which enabler comes first?
+- Which NFR threshold does it threaten (load, data volume, coupling), and is that NFR id referenced?
+
+### PI Objectives (`pi-objectives`)
+
+- Does each enabler land in an Iteration before the Feature that consumes it?
+- Which committed objective rests on a `proposed` decision or an unproven technical assumption?
+- Was enabler work squeezed out by business Features during planning?
+
+## Evidence and severity
+
+- Evidence is a quoted section or field, an NFR id with its measure, an accepted `adr`, a measurement from a working system. A diagram or a vendor claim is not.
+- **blocking:** commits the ART to what the runway cannot support in the PI, breaks an NFR threshold or fixed Solution Intent, or locks an irreversible choice without options.
+- **major:** a missing enabler, an NFR nobody can verify, a decision taken too early or too late, a dependency sequenced after its need.
+- **minor:** a missing reference or a loose term that would mislead a team.
+
+## Out of lens
+
+Customer value and priority belong to `product-manager`, threat models to `security-expert`, service level objectives to `site-reliability-engineer`, environments to `platform-engineer`, estimates to `software-engineer`. Mention an overlap in one line; do not develop it.
