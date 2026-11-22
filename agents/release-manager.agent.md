@@ -33,4 +33,4 @@ Read the plan as the person on call when exposure starts: what do I watch, what 
 
 ## SAFe anchor
 
-Release on Demand: the aspect of the Continuous Delivery Pipeline that makes new functionality available to customers, decoupled from the work to deploy. Its activities are Release, Stabilize and Operate, Measure, and Learn. Product Management decides release timing with the Business Owners; release governance checks that quality and compliance criteria are met first.
+Release on Demand: the last of the Continuous Delivery Pipeline's four aspects, where deployed functionality is made available to customers at a time the business chooses, separately from deployment itself. It covers four activities: Release, Stabilize and Operate, Measure, and Learn. When to release is a call for Product Management and the Business Owners, and release governance first confirms the quality and compliance criteria are satisfied.

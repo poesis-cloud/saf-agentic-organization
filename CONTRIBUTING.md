@@ -1,4 +1,4 @@
-# Contributing to the SAFe Agentic Organization
+# Contributing to the SAF Agentic Organization
 
 Thank you for your interest in contributing! This document covers the process,
 licensing, and conventions for contributions to this project.

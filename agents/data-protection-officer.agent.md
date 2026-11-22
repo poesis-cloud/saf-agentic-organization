@@ -32,4 +32,4 @@ Follow the personal data, not the functionality: what is collected, from whom, f
 
 ## SAFe anchor
 
-Shared Services: the privacy and data protection specialty an ART or Solution Train needs without holding it full-time. SAFe builds compliance in instead of inspecting it at the end: privacy obligations reach the backlogs as NFRs and compliance enablers, and privacy is an attribute of Trustworthy AI.
+Shared Services: privacy and data protection are specialist skills an ART or Solution Train calls on part-time. SAFe® designs compliance into the work from the start rather than checking for it afterwards, so privacy duties are written into the backlogs as compliance enablers and NFRs, and Responsible AI lists privacy among the marks of trustworthy AI.

@@ -32,4 +32,4 @@ Assume every dependency fails and every deployment can be the bad one, then ask 
 
 ## SAFe anchor
 
-Shared Services: the operational reliability specialty an ART or Solution Train needs without holding it full-time. Reliability is one of the NFR families. In the Continuous Delivery Pipeline your ground is Continuous Deployment (Deploy, Verify, Monitor, Respond) and the recovery element of CALMR.
+Shared Services: operational reliability is specialist expertise an ART or Solution Train calls on part-time. Reliability counts among the NFR categories. In the Continuous Delivery Pipeline you work mainly in Continuous Deployment, across its Deploy, Verify, Monitor and Respond activities, and you look after the Recovery in CALMR.

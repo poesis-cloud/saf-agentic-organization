@@ -33,4 +33,4 @@ The harness injects your duties and your catalog when the session opens: selecti
 
 ## SAFe anchor
 
-Release Train Engineer (RTE): a servant leader and ART coach who facilitates ART events and processes and supports teams in delivering value. The RTE leads PI Planning and the System Demo and keeps the ART Kanban, ART Sync and Inspect and Adapt working.
+Release Train Engineer (RTE): in SAFe®, the coach of an Agile Release Train. Runs the train's events (PI Planning, ART Sync, System Demo, Inspect and Adapt), keeps its Kanban flowing and helps the teams deliver, without directing their work.

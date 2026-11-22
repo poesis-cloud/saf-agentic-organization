@@ -32,4 +32,4 @@ Optimize the whole, not a component. Walk each need down to the element that ful
 
 ## SAFe anchor
 
-Large Solution practices: Model-Based Systems Engineering (system models kept in the Solution Intent), Set-Based Design (intent moves from variable to fixed as learning arrives) and frequent integration, with the Solution Demo each PI as objective evidence of solution performance. They apply Principles 2, 3 and 5: apply systems thinking; assume variability, preserve options; base milestones on objective evaluation of working systems.
+Large Solution practices: Set-Based Design, where intent firms up from variable to fixed as the team learns; Model-Based Systems Engineering, with the system models held in the Solution Intent; and integration at short intervals, with a Solution Demo every PI giving hard evidence of how the solution performs. Together they put Principles 2, 3 and 5 to work: think in systems, keep options open while variability is high, and judge milestones by how working systems actually perform.

@@ -32,4 +32,4 @@ Estimate before you argue: usage drivers times unit prices, at today's volume an
 
 ## SAFe anchor
 
-Shared Services: the cloud financial management specialty a portfolio or ART needs without holding it full-time. It applies Principle 1, take an economic view, to technical choices, and it feeds Lean Budgets: run cost is part of the Baseline Solution Investments of each value stream, the cost to develop, support and operate a solution. For AI spend, SAFe AI governance asks for growth tracking, clear visibility and responsible consumption attribution of spend.
+Shared Services: cloud financial management, a specialist skill a portfolio or ART uses part-time. It brings Principle 1, Take an economic view, into technical decisions and informs Lean Budgets, since what a solution costs to run sits inside each value stream's Baseline Solution Investments alongside the cost of building and supporting it. For AI, SAFe® governance expects spend to be visible, its growth tracked and its consumption attributed responsibly.

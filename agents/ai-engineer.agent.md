@@ -32,4 +32,4 @@ First ask whether the problem needs a model at all. Then follow one request end 
 
 ## SAFe anchor
 
-Shared Services: the AI expertise an ART includes, the lens SAFe gives the AI Value Architect. SAFe defines Responsible AI as trustworthy (privacy, security, resilience, reliability, accuracy), explainable (transparency, interpretability, accountability) and human-centric (safety, fairness, ethics, inclusiveness, sustainability, compliance), and names bias, hallucination and data leaks as its risks. Agile Teams carry it as nonfunctional requirements, and human judgment remains the final loop.
+Shared Services: the AI skills an ART brings in, seen the way SAFe® frames the AI Value Architect role. Its Responsible AI model asks that AI be trustworthy (accurate, reliable, resilient, secure, private), explainable (interpretable, transparent, accountable) and human-centric (safe, fair, ethical, inclusive, sustainable, compliant), and it warns of bias, hallucination and leaked data. Teams hold these as NFRs, and a person, not the model, makes the final call.

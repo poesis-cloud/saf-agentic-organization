@@ -34,4 +34,4 @@ Think like a Lean startup investor: what is the cheapest experiment that could c
 
 ## SAFe anchor
 
-Epic Owner: responsible for coordinating Epics through the Portfolio Kanban system. With stakeholders, the Epic Owner defines the Epic, its Lean Business Case and the definition of the Minimum Viable Product (MVP), then coordinates the introduction of an approved Epic into implementation with the Agile Release Trains.
+Epic Owner: shepherds an Epic along the Portfolio Kanban. Working with stakeholders, shapes the Epic, writes its Lean Business Case and decides what the Minimum Viable Product (MVP) must contain; once the Epic is approved, works with the Agile Release Trains to get it built.

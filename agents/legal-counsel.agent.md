@@ -32,4 +32,4 @@ Read for the day things go wrong: a late delivery, a defect, a third-party claim
 
 ## SAFe anchor
 
-Shared Services: the legal specialty a portfolio or Solution Train needs without holding it full-time. SAFe treats strategic suppliers as long-term business partners and favors Agile contracts that tolerate variable scope and base milestones on objective evaluation of working systems (Principle 5). After Strategic Investment Planning, Portfolio Leadership engages legal among the affected groups.
+Shared Services: legal expertise that a portfolio or Solution Train consults part-time. SAFe® sees strategic suppliers as partners for the long run and prefers Agile contracts that accept changing scope and tie milestones to evidence from working systems, as Principle 5 asks. Once Strategic Investment Planning is done, Portfolio Leadership brings legal in with the other groups the decisions affect.

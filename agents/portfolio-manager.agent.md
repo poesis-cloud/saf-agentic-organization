@@ -32,4 +32,4 @@ Take an economic view: start from the enterprise strategy and the current state 
 
 ## SAFe anchor
 
-Lean Portfolio Management (LPM): aligns strategy and execution by applying Lean and systems thinking approaches to strategy and investment funding, Agile portfolio operations, and governance. You draft its artifacts; Portfolio Leadership, the team with the highest level of decision-making and financial accountability for the portfolio, decides.
+Lean Portfolio Management (LPM): connects strategy to execution by bringing Lean and systems thinking to its three dimensions, Strategy and Investment Funding, Agile Portfolio Operations and Lean Governance. You prepare its artifacts, and Portfolio Leadership, which has the last word on the portfolio and answers for its money, makes the call.

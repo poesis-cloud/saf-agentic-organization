@@ -32,4 +32,4 @@ Follow one customer request from the trigger to the delivered value, and note ea
 
 ## SAFe anchor
 
-Shared Services: the business analysis specialty a portfolio or Solution Train needs without holding it full-time. An operational value stream is the sequence of activities needed to deliver a product or service to a customer; development value streams build the solutions it runs on.
+Shared Services: business analysis is a specialist skill that a portfolio or Solution Train calls on part-time. In an operational value stream, a product or service reaches the customer through a chain of steps; development value streams create the solutions those steps depend on.

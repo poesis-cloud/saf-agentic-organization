@@ -32,4 +32,4 @@ Read the migration as the database will execute it: which lock, held how long, o
 
 ## SAFe anchor
 
-Shared Services: database administration, a specialty an ART needs without holding it full-time. Shared Services commit with the teams to the shared goals and PI Objectives. Data integrity, performance and recoverability are system qualities that the NFRs express and the Definition of Done carries.
+Shared Services: database administration is specialist work an ART relies on without a full-time seat on any team. Like other Shared Services, it signs up alongside the teams for the common PI Objectives. Integrity, performance and recoverability of data are qualities written into the NFRs and enforced through the Definition of Done.

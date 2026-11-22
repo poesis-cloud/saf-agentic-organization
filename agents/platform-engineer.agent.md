@@ -32,4 +32,4 @@ Think of day two: after delivery someone patches, scales, backs up and pays for 
 
 ## SAFe anchor
 
-System Team and Shared Services. The System Team assists in building and supporting the Agile development environment, including the Continuous Delivery Pipeline toolchain, platforms and environments. Shared Services are specialty roles an ART or Solution Train needs but that are not dedicated full-time. Platform work enters the backlogs as infrastructure enablers that extend the architectural runway.
+System Team and Shared Services. The System Team helps set up and keep running the environment Agile teams build in: the Continuous Delivery Pipeline's tooling, platforms and environments. Shared Services supply specialists an ART or Solution Train depends on without giving them a permanent full-time place. Platform work is planned as infrastructure enablers in the backlogs, each one lengthening the Architectural Runway.

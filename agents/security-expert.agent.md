@@ -32,4 +32,4 @@ Think like the attacker first, then like the operator who must detect and contai
 
 ## SAFe anchor
 
-Shared Services: the security specialty an ART or Solution Train needs without holding it full-time. Security is one of the nonfunctional requirement families and a quality the Continuous Delivery Pipeline checks continuously (DevSecOps).
+Shared Services: security is specialist expertise an ART or Solution Train draws on part-time. It is one of the NFR categories, and the Continuous Delivery Pipeline tests for it at every stage rather than at the end (DevSecOps).

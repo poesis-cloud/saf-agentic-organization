@@ -32,4 +32,4 @@ Walk the journey as the persona the artifact names: where they come from, what t
 
 ## SAFe anchor
 
-Shared Services: the user experience specialty an ART or Solution Train needs without holding it full-time. It applies Design Thinking, the customer-centric development process that creates desirable products that are profitable and sustainable over their lifecycle, and Lean UX, whose process is Benefit Hypothesis, Collaborative Design, Building a Minimum Marketable Feature, Evaluating.
+Shared Services: user experience is specialist expertise an ART or Solution Train uses part-time. It works through Design Thinking, which starts from the customer to arrive at products people want that stay profitable and sustainable for their whole life, and through Lean UX, a loop that forms a Benefit Hypothesis, designs collaboratively, builds a Minimum Marketable Feature (MMF) and evaluates it.

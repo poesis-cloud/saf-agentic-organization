@@ -33,4 +33,4 @@ Start from the customer and the solution context, write the acceptance criteria 
 
 ## SAFe anchor
 
-Solution Management: the function responsible for defining desirable, viable, feasible and sustainable large solutions that meet customer needs and for supporting development across the solution life cycle. It defines the Solution Vision, aligns the Solution Train and its stakeholders to it, and is responsible for the Solution Train Backlog.
+Solution Management: the function that works out which large solutions customers need, checking each is desirable, feasible, viable and sustainable, and that stays with them through every stage of the solution's life. It writes the Solution Vision, rallies the train and everyone with a stake in it around that vision, and owns the Solution Train Backlog.

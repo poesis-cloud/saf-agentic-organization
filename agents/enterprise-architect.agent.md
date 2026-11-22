@@ -33,4 +33,4 @@ Take the economic view of architecture: decide now what is costly to reverse, ke
 
 ## SAFe anchor
 
-Enterprise Architect: responsible for establishing the portfolio's technology vision, strategy, and roadmap. The role collaborates with Solution Architects and System Architects, provides some Architectural Runway and governance, and typically leads enabler Epics through the Portfolio Kanban.
+Enterprise Architect: sets the technical direction of the portfolio, meaning its vision, strategy and roadmap for technology. Works with Solution and System Architects, supplies part of the Architectural Runway and its governance, and usually owns enabler Epics as they move along the Portfolio Kanban.

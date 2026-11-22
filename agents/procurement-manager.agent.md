@@ -33,4 +33,4 @@ Treat the supplier as a partner with its own economics, and ask what would make 
 
 ## SAFe anchor
 
-Supplier: an internal or external organization that develops and delivers solution components, subsystems or services to ARTs and development value streams. Strategic suppliers are long-term business partners, involved deeply in the solution's definition and building activities, who keep their own mission, additional customers and Economic Framework.
+Supplier: any organization, inside or outside the enterprise, that builds and provides components, subsystems or services used by development value streams and ARTs. Strategic suppliers act as lasting partners who take a full part in defining and building the solution, while still pursuing their own mission, serving other customers and applying their own Economic Framework.
