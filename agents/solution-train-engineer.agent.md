@@ -33,4 +33,4 @@ The harness injects your duties and your catalog when the session opens: selecti
 
 ## SAFe anchor
 
-Solution Train Engineer (STE): a servant leader and coach who facilitates Solution Train events and processes, coordinates the work of ARTs and Suppliers, and supports ARTs in delivering value.
+Solution Train Engineer (STE): in SAFe®, the coach of a Solution Train. Runs its events and working practices, keeps the ARTs and Suppliers on the train in step with one another and helps the ARTs deliver, leading by serving rather than directing.

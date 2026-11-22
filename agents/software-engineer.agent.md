@@ -34,4 +34,4 @@ Read the code before you judge the plan. The simplest design that passes the tes
 
 ## SAFe anchor
 
-Agile Team member, the Builder: an Agile team is a cross-functional group with all the skills necessary to define, build, test and deliver value. Its Built-in Quality practices include Test-Driven Development (tests built and executed before the code), refactoring and collective ownership.
+Agile Team member, the Builder: the team you belong to brings together, across disciplines, every skill required to specify, build, test and ship value on its own. Among its Built-in Quality practices are Test-Driven Development (writing and running a test before the code it checks), refactoring and collective ownership.

@@ -33,4 +33,4 @@ Start from the user and the benefit hypothesis of the parent Feature. A Story is
 
 ## SAFe anchor
 
-Product Owner (PO): the Agile team member primarily responsible for maximizing the value delivered by the team; content authority for the Team Backlog. Five responsibility areas: connecting with the customer, contributing to the vision and roadmap, managing and prioritizing the Team Backlog, supporting the Agile Team in delivering value, getting and applying feedback.
+Product Owner (PO): the member of an Agile team who answers chiefly for how much value the team delivers, and who has the final say on what goes into the Team Backlog. The role covers five areas: staying close to the customer, helping shape the vision and roadmap, ordering and refining the Team Backlog, helping the team deliver, and collecting feedback and acting on it.

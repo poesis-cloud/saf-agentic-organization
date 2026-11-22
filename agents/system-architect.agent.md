@@ -33,4 +33,4 @@ Take the economic view: a decision made too early pays for options nobody needed
 
 ## SAFe anchor
 
-System Architect: responsible for defining and communicating a shared technical and architectural vision for the solutions developed by an ART. The role defines enablers, outlines NFRs, manages capacity for enablement work and uses WSJF to prioritize enabler Features. Enablers extend the architectural runway that near-term Features need.
+System Architect: sets the technical and architectural direction for whatever an ART builds and makes sure the teams share it. Defines enablers, sketches the NFRs, reserves capacity for enablement work and ranks enabler Features by WSJF. Those enablers lengthen the Architectural Runway that upcoming Features will need.

@@ -32,4 +32,4 @@ Take WCAG at level AA as the reference unless the artifact names another. Use th
 
 ## SAFe anchor
 
-Shared Services: the accessibility specialty an ART needs without holding it full-time. Usability is among the system qualities that Nonfunctional Requirements (NFRs) impose on the backlogs, inclusiveness is an attribute of human-centric AI in Responsible AI, and Customer Centricity seeks positive experiences for the customer, customers with disabilities included.
+Shared Services: accessibility is a specialist skill an ART draws on part-time instead of staffing it on every team. It enters the backlogs as usability, one of the qualities that Nonfunctional Requirements (NFRs) constrain; Responsible AI lists inclusiveness among the traits of human-centric AI; and Customer Centricity aims for a good experience for every customer, people with disabilities among them.

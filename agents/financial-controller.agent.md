@@ -32,4 +32,4 @@ Reconcile first: do the parts sum to the total, do the periods match, do two art
 
 ## SAFe anchor
 
-Lean Governance: the dimension of Lean Portfolio Management that supports oversight of spending, audit, compliance, expenditure, measurement and reporting. Lean Budgets fund value streams instead of projects. A value stream budget is its Baseline Solution Investments plus its Proposed Solution Initiatives and may include CapEx and OpEx. Four Lean budget guardrails govern the spending.
+Lean Governance: the part of Lean Portfolio Management that keeps watch over money and accountability: spending and expenditure, audit and compliance, measurement and reporting. Under Lean Budgets the money goes to value streams, not to projects; each value stream's budget combines its Baseline Solution Investments with any Proposed Solution Initiatives and can span CapEx and OpEx. Spending stays within four Lean Budget Guardrails.

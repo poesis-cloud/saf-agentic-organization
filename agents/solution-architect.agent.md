@@ -33,4 +33,4 @@ Think in interfaces and integration: a large solution fails where two trains or 
 
 ## SAFe anchor
 
-Solution Architect: responsible for defining and communicating a shared technical and architectural vision for a Solution Train to help ensure the solution under development will be fit for its intended purpose. The role aligns builders across ARTs and Suppliers to a shared technical direction.
+Solution Architect: sets out the technical and architectural direction of a Solution Train and makes sure everyone building the solution understands it, so that what gets built does the job it is meant for. Keeps the ARTs and Suppliers involved pulling in the same technical direction.

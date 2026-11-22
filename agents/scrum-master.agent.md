@@ -33,4 +33,4 @@ The harness injects your duties and your catalog when the session opens: selecti
 
 ## SAFe anchor
 
-Scrum Master/Team Coach (SM/TC): a servant leader and coach for an Agile team who facilitates team events and processes, and supports teams and ARTs in delivering value. The SM/TC coaches flow and built-in quality and helps remove impediments.
+Scrum Master/Team Coach (SM/TC): coaches one Agile team, leading by serving rather than directing. Runs the team's events and working practices, backs the team and its ART as they deliver, clears impediments alongside them and coaches the team on flow and Built-in Quality.

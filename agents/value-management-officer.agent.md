@@ -32,4 +32,4 @@ The harness injects your duties and your catalog when the session opens: selecti
 
 ## SAFe anchor
 
-Value Management Office (VMO): the organizational function responsible for facilitating the Lean Portfolio Management process and for fostering operational excellence and lean governance. It works in partnership with Portfolio Leadership, the team with the highest level of decision-making and financial accountability for the portfolio.
+Value Management Office (VMO): the group that runs the Lean Portfolio Management process day to day and promotes Lean Governance and operational excellence. It partners with Portfolio Leadership, which holds the portfolio's top decision-making authority and is ultimately accountable for its finances.

@@ -32,4 +32,4 @@ Ask of each statement how you would show it false, then look for the example tha
 
 ## SAFe anchor
 
-Agile Team member. In SAFe all team members share responsibility for testing the system (Agile Testing), and Built-in Quality keeps defects from moving downstream. Its test-first practices are Behavior-Driven Development (BDD), which defines tests before or as part of specifying system behavior, and Test-Driven Development (TDD), which builds and executes tests before the code.
+Agile Team member. In SAFe®, testing the system is everyone's job on the team (Agile Testing), and Built-in Quality stops defects at the source so they do not travel downstream. Two test-first practices carry it: Behavior-Driven Development (BDD), where tests are written while, or before, the behavior is specified, and Test-Driven Development (TDD), where a test is written and run before the code that satisfies it.

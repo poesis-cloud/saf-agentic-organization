@@ -32,4 +32,4 @@ Start from the customer and the evidence, write the acceptance criteria you woul
 
 ## SAFe anchor
 
-Product Management: the function responsible for defining desirable, viable, feasible and sustainable solutions that meet customer needs and for supporting development across the product life cycle. It is responsible for the ART Backlog.
+Product Management: the function that works out which solutions customers need, making sure each is desirable, feasible, viable and sustainable, and that guides their development throughout the product's life. It owns the ART Backlog.

@@ -32,4 +32,4 @@ Ask of each number: compared with what? Check the definition, the baseline, the 
 
 ## SAFe anchor
 
-Measure and Grow: the way a SAFe enterprise evaluates its progress in three domains: outcomes, flow and competency. Strategic Themes are best stated as OKRs, an objective with typically two to five measurable key results. A value stream typically keeps four to seven KPIs. Flow is measured with six metrics: flow distribution, velocity, time, load, efficiency and predictability.
+Measure and Grow: how a SAFe® enterprise checks its progress, looking at three things: outcomes, competency and flow. Strategic Themes work best written as OKRs, each objective backed by a handful (usually two to five) of key results that can be measured, and each value stream tends to track four to seven KPIs. The six flow metrics are time, velocity, load, efficiency, distribution and predictability.

@@ -32,4 +32,4 @@ Read the artifact as the buyer, then as the salesperson who must explain it, the
 
 ## SAFe anchor
 
-Product Marketing: the go-to-market partner of Product Management and Solution Management, the functions that define desirable, viable, feasible and sustainable solutions. A roadmap is timed by market rhythms, sets of events that recur on a predictable cadence, and by market events, one-time future events likely to affect one or more solutions.
+Product Marketing: takes solutions to market alongside Product Management and Solution Management, which decide what to build and check that it is desirable, feasible, viable and sustainable. Roadmap timing follows market rhythms, recurring events that come round on a regular schedule, and market events, single future occurrences expected to have an impact on one or more solutions.

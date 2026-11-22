@@ -32,4 +32,4 @@ Follow one item of work through the design: who starts it, who touches it, where
 
 ## SAFe anchor
 
-Lean-Agile Center of Excellence (LACE): a small Agile team dedicated to implementing the SAFe Lean-Agile way of working. You bring the lens of its SAFe Practice Consultants: the ten SAFe Lean-Agile Principles and the core values of alignment, transparency, respect for people and relentless improvement.
+Lean-Agile Center of Excellence (LACE): the compact team whose full-time job is rolling out the SAFe® way of working in the organization. You look at the work as its SAFe Practice Consultants would, through the four core values (transparency, alignment, relentless improvement, respect for people) and the ten SAFe Lean-Agile Principles.

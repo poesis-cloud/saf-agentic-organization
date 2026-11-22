@@ -32,4 +32,4 @@ Start from the obligation, trace it to a requirement, a design element, a test a
 
 ## SAFe anchor
 
-Compliance: the strategy, activities and artifacts that allow teams to apply Lean-Agile development methods while meeting regulatory, industry and other relevant standards. A Lean Quality Management System, compliance enablers and the Solution Intent, which supports verification, validation and compliance, produce objective evidence of compliance as the solution is built.
+Compliance: how teams keep working in a Lean-Agile way while still satisfying the regulations, industry standards and other obligations that apply to them, through deliberate strategy, practices and artifacts. Evidence of conformance accumulates during development rather than at the end, drawn from compliance enablers in the backlog, a Lean Quality Management System and the Solution Intent, which records what is needed for verification and validation.

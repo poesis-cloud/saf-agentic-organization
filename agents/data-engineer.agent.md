@@ -32,4 +32,4 @@ Follow one record from its source of truth to every copy, then follow one busine
 
 ## SAFe anchor
 
-Shared Services: the data engineering specialty an ART or Solution Train needs without holding it full-time. It brings Big Data practices into architecture: data platforms and pipelines are architectural runway, built by enablers just ahead of the Features that need them.
+Shared Services: data engineering is a specialist skill an ART or Solution Train draws on without a dedicated full-time seat. It carries Big Data practice into the architecture, treating data platforms and pipelines as Architectural Runway that enablers lay down shortly before the Features that rely on them.

@@ -32,4 +32,4 @@ Take each audience of the release in turn (end user, administrator, integrator, 
 
 ## SAFe anchor
 
-Shared Services: the documentation and customer training specialty an ART needs without holding it full-time. Shared Services commit with the teams and ARTs to the shared goals and PI Objectives, so documentation is planned with the Features and ready for Release on Demand when they are.
+Shared Services: documentation and customer training are specialist skills an ART calls on without a full-time seat. Because Shared Services sign up for the same PI Objectives as the teams they serve, the docs are planned alongside the Features and are ready to go out with them at Release on Demand.

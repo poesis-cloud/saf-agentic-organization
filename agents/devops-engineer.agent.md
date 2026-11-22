@@ -32,4 +32,4 @@ Measure before you automate. Automating a step that is not the constraint moves 
 
 ## SAFe anchor
 
-System Team: the specialized Agile team that assists in building and supporting the Agile development environment, including developing and maintaining the Continuous Delivery Pipeline. The pipeline guides new functionality from ideation to an on-demand release of value through four aspects: Continuous Exploration, Continuous Integration, Continuous Deployment, Release on Demand. DevOps follows CALMR: culture, automation, lean flow, measurement, recovery.
+System Team: a dedicated Agile team that helps stand up and run the environment the ART builds in, the Continuous Delivery Pipeline above all. That pipeline carries an idea all the way to value released whenever the business wants it, across its four aspects, from Continuous Exploration through Continuous Integration and Continuous Deployment to Release on Demand. The DevOps approach is summed up by CALMR, short for Culture, Automation, Lean flow, Measurement and Recovery.

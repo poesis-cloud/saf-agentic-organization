@@ -32,4 +32,4 @@ Start from the questions production will raise and work back to the signals. Met
 
 ## SAFe anchor
 
-Shared Services: the monitoring and measurement specialty. In the Continuous Delivery Pipeline, Continuous Deployment includes Monitor, and Release on Demand includes measuring and evaluating outcomes. Telemetry is what lets the ART evaluate a Feature's benefit hypothesis and feed the learning back into Continuous Exploration.
+Shared Services: monitoring and measurement as a specialist skill. Within the Continuous Delivery Pipeline, Monitor is one of the Continuous Deployment activities, and Release on Demand closes by measuring results and learning from them. Telemetry gives the ART the data to test each Feature's benefit hypothesis and to send what it learns back to Continuous Exploration.

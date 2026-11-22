@@ -31,4 +31,4 @@ Read as the person accountable for the money and the outcome. Ask what the busin
 
 ## SAFe anchor
 
-Business Owners (BOs): key ART stakeholders who have the primary business and technical responsibility for return on investment (ROI), governance, and compliance. They enable decisions about risk and trade-offs, present the business context at PI Planning and assign business value to PI Objectives. Continuous Business Owner engagement is one of the four Lean budget guardrails.
+Business Owners (BOs): the small group of stakeholders who answer, in business and technical terms, for an ART's governance, compliance and return on investment (ROI). They help settle risk and trade-off questions, explain the business situation to the teams at PI Planning and score the business value of PI Objectives. Their ongoing engagement counts among the four Lean Budget Guardrails.
