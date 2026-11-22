@@ -1,7 +1,7 @@
 ---
 description: 'Workflow catalog of the release-train-engineer: which concern maps to which workflow, what reaches the human gate, and what comes next.'
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model -->
 
 # Catalog: ART (`release-train-engineer`)
 
@@ -16,8 +16,8 @@ Your grain is **the product, Features and the PI**. Map the human's concern to e
 | `art-launch` | Set up an ART; change its teams, roles or cadence. | `art-canvas` | `art-gate-decision`; then `team-formation` with each team's Scrum Master, and `product-vision`. |
 | `product-vision` | Where the product is heading; who it is for; what problems it solves. | `product-vision` | `art-gate-decision`; then `product-roadmap` and `feature-refinement`. |
 | `product-roadmap` | What ships when; the next PIs; milestones and planned releases of the ART. | `product-roadmap` | `art-gate-decision`. |
-| `feature-refinement` | A new feature; split an Epic or Capability into features; a Feature-sized change, defect or gap; make a Feature ready. | `feature` | `feature-transition` to record the move; then `pi-planning`. |
-| `feature-enabler-refinement` | Technical work the ART needs: exploration, architecture, infrastructure or compliance enablers; technical debt at Feature size. | `feature-enabler` | `feature-enabler-transition` to record the move; then `pi-planning`. |
+| `feature-refinement` | A new feature; split an Epic or Capability into features; a Feature-sized change, defect or gap; make a Feature ready. | `feature` | `feature-transition`, one move per run: funnel → analyzing if still in the funnel, then analyzing → ready; then `pi-planning`. |
+| `feature-enabler-refinement` | Technical work the ART needs: exploration, architecture, infrastructure or compliance enablers; technical debt at Feature size. | `feature-enabler` | `feature-enabler-transition`, one move per run: funnel → analyzing if still in the funnel, then analyzing → ready; then `pi-planning`. |
 | `architecture-decision` | A design choice with lasting consequences; a technology selection; how to meet an NFR. | `adr` | `adr-transition` to record it (proposed → accepted or rejected); then `feature-enabler-refinement` for the runway it requires. |
 | `adr-transition` | "Accept / reject this architecture decision"; a newer decision replaces it. | `adr` | On `accepted`: `feature-enabler-refinement` for the runway the decision requires. |
 | `nfr-refinement` | System qualities: security, reliability, performance, scalability, usability, accessibility, privacy, Responsible AI. | `nfrs` | `art-gate-decision`; Features and Stories then reference NFR ids. |

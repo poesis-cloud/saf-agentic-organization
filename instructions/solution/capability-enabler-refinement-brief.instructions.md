@@ -1,7 +1,7 @@
 ---
 description: 'Workflow brief of capability-enabler-refinement: purpose, artifact paths and the rules of each step.'
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model -->
 
 # Enabler Capability refinement (`capability-enabler-refinement`)
 
@@ -30,4 +30,4 @@ Done when: `enablerType`, the Capabilities enabled, acceptance criteria, WSJF an
 
 ## Human gate
 
-Solution Management's human lead and the solution's architects decide whether the enabler Capability is ready. Next: `capability-enabler-transition` to record the move; then `pre-plan`.
+Solution Management's human lead and the solution's architects decide whether the enabler Capability is ready. Next: `capability-enabler-transition`, one move per run: funnel → analyzing if still in the funnel, then analyzing → ready; then `pre-plan`.

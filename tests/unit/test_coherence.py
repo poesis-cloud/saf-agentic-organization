@@ -187,6 +187,10 @@ def test_every_item_with_a_state_moves_through_its_owner_transition() -> None:
             assert board == [], f"{slug}: only backlog items have a board"
         assert record["actor"] in SCHEMAS[record["artifact"]]["x-artifact"]["owners"], slug
         assert any("challenged" in c["slug"] for c in record["conditions"]), f"{slug}: no state past the human's go without a challenge"
+        legal = [c for c in record["conditions"] if c["slug"] == "records-a-legal-move"]
+        assert len(legal) == 1 and legal[0]["kind"] == "postcondition", f"{slug}: no move that skips or reverses a state"
+        states = set(re.findall(r"'([a-z-]+)'", legal[0]["setPredicate"]))
+        assert states <= set(SCHEMAS[record["artifact"]]["properties"]["status"]["enum"]), f"{slug}: {states}"
     for kind in BACKLOG_ITEMS | LIFECYCLE_MAINS:
         assert "transitions" in SCHEMAS[kind]["required"], f"{kind}: its state changes are recorded"
 

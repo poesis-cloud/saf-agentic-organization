@@ -17,7 +17,7 @@ targetPi: null   # PI slug the capability is planned for, or null
 arts: []   # Paths of the ART folders expected to contribute
 stepOutcomes: []   # each step that commits this file appends { step: <workflow>/<step>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <one line> }
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Template: drop this line and the guidance comments in the artifact. -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model. Template: drop this line and the guidance comments in the artifact. -->
 
 ## Description
 

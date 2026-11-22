@@ -1,7 +1,7 @@
 ---
 description: 'Workflow brief of feature-refinement: purpose, artifact paths and the rules of each step.'
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model -->
 
 # Feature refinement (`feature-refinement`)
 
@@ -30,4 +30,4 @@ Done when: Benefit hypothesis, acceptance criteria, NFR applicability and WSJF a
 
 ## Human gate
 
-Product Management's human lead decides whether the Feature is ready for PI Planning. Next: `feature-transition` to record the move; then `pi-planning`.
+Product Management's human lead decides whether the Feature is ready for PI Planning. Next: `feature-transition`, one move per run: funnel → analyzing if still in the funnel, then analyzing → ready; then `pi-planning`.

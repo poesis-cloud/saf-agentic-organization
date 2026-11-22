@@ -1,7 +1,7 @@
 ---
 description: 'Workflow brief of capability-refinement: purpose, artifact paths and the rules of each step.'
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model -->
 
 # Capability refinement (`capability-refinement`)
 
@@ -30,4 +30,4 @@ Done when: Benefit hypothesis, acceptance criteria, WSJF and the candidate Featu
 
 ## Human gate
 
-Solution Management's human lead decides whether the Capability is ready. Next: `capability-transition` to record the move; then `pre-plan`.
+Solution Management's human lead decides whether the Capability is ready. Next: `capability-transition`, one move per run: funnel → analyzing if still in the funnel, then analyzing → ready; then `pre-plan`.

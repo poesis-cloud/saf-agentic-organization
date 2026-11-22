@@ -1,7 +1,7 @@
 ---
 description: 'Workflow brief of iteration-retrospective: purpose, artifact paths and the rules of each step.'
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model -->
 
 # Iteration Retrospective (`iteration-retrospective`)
 

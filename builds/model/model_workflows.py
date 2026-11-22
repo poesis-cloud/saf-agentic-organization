@@ -119,11 +119,60 @@ def loop(slug, layer, title, kind, main_path, author, panel, purpose, concerns, 
                           panel=list(panel), purpose=purpose, concerns=concerns, draft=draft, challenge=challenge, revise=revise,
                           gate=gate, next=nxt, predecessors=list(predecessors), draft_conditions=list(draft_conditions)))
 
-def transition(slug, layer, title, kind, main_path, owner, states, purpose, concerns, rules, nxt, predecessors=(), conditions=(), board=True):
-    """board: a backlog item re-renders its layer's Kanban; another artifact with a lifecycle has no board."""
+def transition(slug, layer, title, kind, main_path, owner, states, purpose, concerns, rules, nxt, graph, predecessors=(), conditions=(), board=True):
+    """board: a backlog item re-renders its layer's Kanban; another artifact with a lifecycle has no board.
+
+    graph: the `StateGraph` the `records-a-legal-move` postcondition enforces; `states` is its prose.
+    """
     WORKFLOWS.append(dict(pattern="transition", slug=slug, layer=layer, title=title, kind=kind, main_path=main_path, author=owner,
-                          states=states, purpose=purpose, concerns=concerns, rules=rules, next=nxt, board=board,
-                          predecessors=list(predecessors), conditions=list(conditions)))
+                          states=states, purpose=purpose, concerns=concerns, rules=rules, next=nxt, board=board, graph=graph,
+                          predecessors=list(predecessors), conditions=[legal_move(graph), *conditions]))
+
+class StateGraph:
+    """The states of an item and the moves its transition workflow may record.
+
+    initial: the states an item may hold with an empty `transitions` history (its authoring loop sets them).
+    moves: the (from, to) pairs a transition step may append to `transitions`.
+    free: the (from, to) pairs the authoring loop may make without a `transitions` entry (a release
+    planned ↔ ready, a code change sent back to review).
+    """
+
+    def __init__(self, initial, moves, free=()):
+        self.initial, self.moves, self.free = list(initial), list(moves), list(free)
+
+def chain(*states):
+    """The moves of a linear Kanban: each state to the next."""
+    return list(zip(states, states[1:]))
+
+def _pairs(pairs):
+    return "[" + ", ".join(f"['{a}', '{b}']" for a, b in pairs) + "]"
+
+def _states(states):
+    return "[" + ", ".join(f"'{s}'" for s in states) + "]"
+
+def legal_move(graph):
+    """The item's history is a chain of allowed moves that ends in its status.
+
+    The evaluated state is the step's result, so the move is checked through the history the owner
+    appended: every entry is an allowed move, the last one leaves the state the previous one entered
+    (or an initial state) and enters the current status. A refusal changes nothing and still passes.
+    """
+    t = "a.data.transitions"
+    last, prev = f"{t}[size({t}) - 1]", f"{t}[size({t}) - 2]"
+    def reached(base, state):
+        free = f" || [{base}, {state}] in {_pairs(graph.free)}" if graph.free else ""
+        return f"{state} == {base}{free}"
+    first_from = f"{last}.from in {_states(graph.initial)}"
+    predicate = (f"selected.all(a, size({t}) == 0 ? a.data.status in {_states(graph.initial)} : "
+                 f"({t}.all(m, [m.from, m.to] in {_pairs(graph.moves)}) && ({reached(f'{last}.to', 'a.data.status')}) && "
+                 f"(size({t}) == 1 ? {first_from} : ({reached(prev + '.to', last + '.from')}))))")
+    return _cond("postcondition", "records-a-legal-move", "workspace.filter(a, a.path == step.artifact.path)", predicate)
+
+FLOW = StateGraph(["funnel"], chain("funnel", "analyzing", "ready", "implementing", "validating-on-staging",
+                                    "deploying-to-production", "releasing", "done"))
+EPIC_FLOW = StateGraph(["funnel"], [*chain("funnel", "reviewing", "analyzing", "ready", "implementing", "done"),
+                                    ("implementing", "implementing"),  # persevere: implementationStage mvp → persevere
+                                    *[(s, "done") for s in ("funnel", "reviewing", "analyzing", "ready")]])
 
 def challenged_before(slug, states):
     """No state past the human's go without an answered expert challenge (rejecting needs none)."""
@@ -249,7 +298,7 @@ loop("lean-business-case", "portfolio", "Lean Business Case", "lean-business-cas
 loop("epic-enabler-lean-business-case", "portfolio", "Enabler Epic Lean Business Case", "lean-business-case",
      f"{P}/epics/<epic-slug>/<epic-slug>.lean-business-case.md", "enterprise-architect",
      ["solution-architect", "financial-controller", "finops-engineer", "security-expert", "legal-counsel"],
-     "Analyze one enabler Epic under analysis: its MVP, its cost and the value it unlocks for the Epics it enables, ending in go or no-go.",
+     "Analyze one enabler Epic under analysis: its MVP, cost and value it unlocks for the Epics it enables, ending in go or no-go.",
      "Business case, MVP definition, cost estimate, go/no-go for an enabler Epic under analysis.",
      ["Read the enabler Epic, the Architecture Vision, the business Epics it enables and the Lean Budgets. One case per run; set `owner: enterprise-architect`.",
       "Define the MVP as the smallest runway that proves or disproves the hypothesis on one enabled Epic. Estimate MVP, implementation and run costs separately.",
@@ -338,9 +387,9 @@ transition("epic-transition", "portfolio", "Epic transition", "epic", f"{P}/epic
      "\"Approve / reject / move / stop this Epic\" after a gate.",
      ["`ready` and `implementing` need a Lean Business Case recommending `go`.",
       "Entering `implementing` sets `implementationStage: mvp`; a persevere decision sets `persevere`.",
-      "`done` sets `resolution`: delivered, no-go, pivoted or stopped."],
+      "`done` sets `resolution`: delivered, no-go, pivoted or stopped; before `implementing`, `done` can follow any state (no-go or stopped)."],
      "On `analyzing`: `lean-business-case`. On `ready`: the trains pull the Epic (`capability-refinement`, `feature-refinement` and their enabler siblings).",
-     conditions=epic_conditions())
+     EPIC_FLOW, conditions=epic_conditions())
 
 transition("epic-enabler-transition", "portfolio", "Enabler Epic transition", "epic-enabler", f"{P}/epics/<epic-slug>/<epic-slug>.epic-enabler.md", "enterprise-architect",
      "funnel → reviewing → analyzing → ready → implementing (mvp, then persevere) → done",
@@ -348,9 +397,9 @@ transition("epic-enabler-transition", "portfolio", "Enabler Epic transition", "e
      "\"Approve / reject / move / stop this enabler Epic\" after a gate.",
      ["`ready` and `implementing` need a Lean Business Case recommending `go`.",
       "Entering `implementing` sets `implementationStage: mvp`; a persevere decision sets `persevere`.",
-      "`done` sets `resolution`: delivered, no-go, pivoted or stopped."],
+      "`done` sets `resolution`: delivered, no-go, pivoted or stopped; before `implementing`, `done` can follow any state (no-go or stopped)."],
      "On `analyzing`: `epic-enabler-lean-business-case`. On `ready`: the trains pull it (`capability-enabler-refinement`, `feature-enabler-refinement`).",
-     conditions=epic_conditions())
+     EPIC_FLOW, conditions=epic_conditions())
 
 event("portfolio-sync", "portfolio", "Portfolio Sync", "portfolio-sync",
       "Inspect the flow of Epics and the portfolio's operations between Strategic Portfolio Reviews, and re-render the Portfolio Kanban.",
@@ -430,7 +479,7 @@ loop("capability-refinement", "solution", "Capability refinement", "capability",
      ["Does it fit one PI, and can its acceptance be demonstrated at a Solution Demo?", "Which Solution Intent constraints apply?"],
      ["Benefit hypothesis, acceptance criteria, WSJF and the candidate Feature split are filled."],
      "Solution Management's human lead decides whether the Capability is ready.",
-     "`capability-transition` to record the move; then `pre-plan`.",
+     "`capability-transition`, one move per run: funnel → analyzing if still in the funnel, then analyzing → ready; then `pre-plan`.",
      draft_conditions=[parent_post("parent-epic-is-approved", [("epic", APPROVED_EPIC)])])
 
 loop("capability-enabler-refinement", "solution", "Enabler Capability refinement", "capability-enabler",
@@ -445,7 +494,7 @@ loop("capability-enabler-refinement", "solution", "Enabler Capability refinement
       "Can completion be demonstrated on the integrated solution?"],
      ["`enablerType`, the Capabilities enabled, acceptance criteria, WSJF and the candidate split are filled."],
      "Solution Management's human lead and the solution's architects decide whether the enabler Capability is ready.",
-     "`capability-enabler-transition` to record the move; then `pre-plan`.", predecessors=["solution-intent"],
+     "`capability-enabler-transition`, one move per run: funnel → analyzing if still in the funnel, then analyzing → ready; then `pre-plan`.", predecessors=["solution-intent"],
      draft_conditions=[parent_post("parent-is-approved", [("epic", APPROVED_EPIC), ("epic-enabler", APPROVED_EPIC)])])
 
 loop("supplier-engagement", "solution", "Supplier engagement", "supplier-agreement",
@@ -468,7 +517,7 @@ transition("supplier-agreement-transition", "solution", "Supplier agreement tran
      ["`negotiating` follows the decision to proceed on these terms; `active` follows the signature by the humans; both need a challenged agreement.",
       "`ended` follows termination or the end of the term; say the continuity measures in the reason."],
      "On `active`: the supplier joins `pre-plan` and `solution-train-pi-planning`.",
-     conditions=[challenged_before("challenged-before-leaving-draft", "['negotiating', 'active', 'ended']")], board=False)
+     StateGraph(["draft"], chain("draft", "negotiating", "active", "ended")), conditions=[challenged_before("challenged-before-leaving-draft", "['negotiating', 'active', 'ended']")], board=False)
 
 event("pre-plan", "solution", "Pre-Plan", "pre-plan",
       "Align and prepare the ARTs and suppliers of the Solution Train for PI Planning.",
@@ -521,7 +570,7 @@ transition("capability-transition", "solution", "Capability transition", "capabi
      "Record the human's decision to move one Capability to a new Solution Train Kanban state, then re-render the Solution Train Kanban.",
      "\"Approve / move / accept this capability\" after a gate or a Solution Demo.",
      ["A Capability leaves `analyzing` only after it was challenged.", "`implementing` follows the PI commitment; `done` follows acceptance at a Solution Demo."],
-     "On `ready`: `pre-plan`.", conditions=flow_conditions())
+     "On `ready`: `pre-plan`.", FLOW, conditions=flow_conditions())
 
 transition("capability-enabler-transition", "solution", "Enabler Capability transition", "capability-enabler",
      f"{ST}/capabilities/<capability-slug>/<capability-slug>.capability-enabler.md", "solution-architect",
@@ -529,7 +578,7 @@ transition("capability-enabler-transition", "solution", "Enabler Capability tran
      "Record the human's decision to move one enabler Capability to a new Solution Train Kanban state, then re-render the Solution Train Kanban.",
      "\"Approve / move / accept this enabler capability\" after a gate or a Solution Demo.",
      ["An enabler Capability leaves `analyzing` only after it was challenged.", "`implementing` follows the PI commitment; `done` follows acceptance at a Solution Demo."],
-     "On `ready`: `pre-plan`.", conditions=flow_conditions())
+     "On `ready`: `pre-plan`.", FLOW, conditions=flow_conditions())
 
 gate("solution-gate-decision", "solution", "Solution gate decision")
 
@@ -585,7 +634,7 @@ loop("feature-refinement", "art", "Feature refinement", "feature", f"{ART}/featu
      ["Could a team demonstrate each acceptance criterion at a System Demo?", "Does it fit one PI, or should it be split?"],
      ["Benefit hypothesis, acceptance criteria, NFR applicability and WSJF are filled; unknowns sit under Open questions."],
      "Product Management's human lead decides whether the Feature is ready for PI Planning.",
-     "`feature-transition` to record the move; then `pi-planning`.", draft_conditions=[FEATURE_PARENT])
+     "`feature-transition`, one move per run: funnel → analyzing if still in the funnel, then analyzing → ready; then `pi-planning`.", draft_conditions=[FEATURE_PARENT])
 
 loop("feature-enabler-refinement", "art", "Enabler Feature refinement", "feature-enabler", f"{ART}/features/<feature-slug>/<feature-slug>.feature-enabler.md", "system-architect",
      ["product-manager", "software-engineer", "platform-engineer", "devops-engineer", "observability-engineer", "security-expert"],
@@ -597,7 +646,7 @@ loop("feature-enabler-refinement", "art", "Enabler Feature refinement", "feature
      ["Is the runway built just in time for the Features that need it?", "Can completion be demonstrated on a working system?"],
      ["`enablerType`, the Features enabled, acceptance criteria and WSJF are filled."],
      "The ART's lead architect and Product Management decide whether the enabler is ready.",
-     "`feature-enabler-transition` to record the move; then `pi-planning`.", draft_conditions=[FEATURE_ENABLER_PARENT])
+     "`feature-enabler-transition`, one move per run: funnel → analyzing if still in the funnel, then analyzing → ready; then `pi-planning`.", draft_conditions=[FEATURE_ENABLER_PARENT])
 
 loop("architecture-decision", "art", "Architecture decision", "adr", f"{ART}/adrs/<adr-slug>/<adr-slug>.adr.md", "system-architect",
      ["software-engineer", "security-expert", "platform-engineer", "data-engineer", "ai-engineer"],
@@ -618,7 +667,7 @@ transition("adr-transition", "art", "Architecture decision transition", "adr", f
      ["`accepted` sets `decisionDate` and needs a challenged decision; `rejected` needs no challenge.",
       "`superseded` follows the acceptance of a newer decision that lists this one under `supersedes`."],
      "On `accepted`: `feature-enabler-refinement` for the runway the decision requires.",
-     conditions=[challenged_before("challenged-before-accepted", "['accepted', 'superseded']")], board=False)
+     StateGraph(["proposed"], [("proposed", "accepted"), ("proposed", "rejected"), ("accepted", "superseded")]), conditions=[challenged_before("challenged-before-accepted", "['accepted', 'superseded']")], board=False)
 
 loop("nfr-refinement", "art", "NFR refinement", "nfrs", f"{ART}/nfrs.md", "system-architect",
      ["site-reliability-engineer", "observability-engineer", "security-expert", "quality-engineer", "accessibility-specialist", "ai-engineer"],
@@ -677,7 +726,8 @@ transition("release-transition", "art", "Release transition", "release", f"{ART}
      ["`released` and `rolled-back` need a challenged release; `released` sets `targetDate` to the release date.",
       "`rolled-back` follows a released release, triggered as its rollback plan says; `cancelled` needs no challenge."],
      "On `released`: `feature-transition` (releasing → done) once each Feature's benefit hypothesis is evaluated.",
-     conditions=[challenged_before("challenged-before-release", "['released', 'rolled-back']")], board=False)
+     StateGraph(["planned", "ready"], [*chain("planned", "ready", "released", "rolled-back"), ("planned", "cancelled"), ("ready", "cancelled")],
+                free=[("planned", "ready"), ("ready", "planned")]), conditions=[challenged_before("challenged-before-release", "['released', 'rolled-back']")], board=False)
 
 event("art-sync", "art", "ART Sync", "art-sync",
       "Inspect the ART's progress toward its PI Objectives (Coach Sync and PO Sync combined), handle dependencies and impediments, and re-render the ART Kanban.",
@@ -711,7 +761,7 @@ transition("feature-transition", "art", "Feature transition", "feature", f"{ART}
      "\"Approve / commit / move / accept this Feature\" after a gate, PI Planning, a System Demo or a release.",
      ["A Feature leaves `analyzing` only after it was challenged.", "`implementing` follows the PI commitment and sets `targetPi`.",
       "`done` follows release and the evaluation of the benefit hypothesis."],
-     "On `ready`: `pi-planning`. On `implementing`: `story-refinement` with the team's Scrum Master.", conditions=flow_conditions())
+     "On `ready`: `pi-planning`. On `implementing`: `story-refinement` with the team's Scrum Master.", FLOW, conditions=flow_conditions())
 
 transition("feature-enabler-transition", "art", "Enabler Feature transition", "feature-enabler", f"{ART}/features/<feature-slug>/<feature-slug>.feature-enabler.md", "system-architect",
      "funnel → analyzing → ready → implementing → validating-on-staging → deploying-to-production → releasing → done",
@@ -719,7 +769,7 @@ transition("feature-enabler-transition", "art", "Enabler Feature transition", "f
      "\"Approve / commit / move / accept this enabler Feature\" after a gate, PI Planning or a System Demo.",
      ["An enabler Feature leaves `analyzing` only after it was challenged.", "`implementing` follows the PI commitment and sets `targetPi`.",
       "`done` follows its demonstration on a working system and the evaluation of what it enables."],
-     "On `ready`: `pi-planning`. On `implementing`: `story-refinement` with the team's Scrum Master.", conditions=flow_conditions())
+     "On `ready`: `pi-planning`. On `implementing`: `story-refinement` with the team's Scrum Master.", FLOW, conditions=flow_conditions())
 
 gate("art-gate-decision", "art", "ART gate decision")
 
@@ -807,7 +857,7 @@ transition("story-transition", "team", "Story transition", "story", f"{TEAM}/sto
      ["A Story leaves `backlog` only after it was challenged.", "`in-progress` sets `iteration`.",
       "`accepted` means the acceptance criteria and the Definition of Done are met and the Story's code change, when it has one, is `merged`."],
      "On `ready`: `iteration-planning`. On `in-progress`: `story-implementation`.",
-     conditions=[_cond("postcondition", "challenged-before-ready", "workspace.filter(a, a.path == step.artifact.path && a.data.status != 'backlog')",
+     StateGraph(["backlog"], chain("backlog", "ready", "in-progress", "in-review", "accepted")), conditions=[_cond("postcondition", "challenged-before-ready", "workspace.filter(a, a.path == step.artifact.path && a.data.status != 'backlog')",
                        "selected.all(a, size(a.data.challengeLedger) > 0)"),
                  _cond("postcondition", "accepted-story-has-no-unmerged-change", "workspace.filter(a, a.path == step.artifact.path && a.data.status == 'accepted')",
                        "selected.all(a, !workspace.exists(c, c.kind == 'code-change' && c.data.story == a.path && c.data.status != 'merged'))")])
@@ -819,7 +869,9 @@ transition("code-change-transition", "team", "Code change transition", "code-cha
      ["`approved` and `merged` need a challenged change; `merged` follows `approved` and the human's merge.",
       "`changes-requested` sends the Story back to `story-implementation`, which sets `ready-for-review` again."],
      "On `merged`: `story-transition` (in-review → accepted).",
-     conditions=[challenged_before("challenged-before-approval", "['approved', 'merged']")], board=False)
+     StateGraph(["in-progress", "ready-for-review"], [("ready-for-review", "changes-requested"), ("ready-for-review", "approved"), ("approved", "merged")],
+                free=[("in-progress", "ready-for-review"), ("ready-for-review", "in-progress"),
+                      ("changes-requested", "in-progress"), ("changes-requested", "ready-for-review")]), conditions=[challenged_before("challenged-before-approval", "['approved', 'merged']")], board=False)
 
 gate("team-gate-decision", "team", "Team gate decision")
 
