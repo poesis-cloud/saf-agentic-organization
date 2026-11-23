@@ -1,7 +1,7 @@
 ---
 description: 'Workflow brief of feature-enabler-refinement: purpose, artifact paths and the rules of each step.'
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model -->
 
 # Enabler Feature refinement (`feature-enabler-refinement`)
 
@@ -30,4 +30,4 @@ Done when: `enablerType`, the Features enabled, acceptance criteria and WSJF are
 
 ## Human gate
 
-The ART's lead architect and Product Management decide whether the enabler is ready. Next: `feature-enabler-transition` to record the move; then `pi-planning`.
+The ART's lead architect and Product Management decide whether the enabler is ready. Next: `feature-enabler-transition`, one move per run: funnel → analyzing if still in the funnel, then analyzing → ready; then `pi-planning`.

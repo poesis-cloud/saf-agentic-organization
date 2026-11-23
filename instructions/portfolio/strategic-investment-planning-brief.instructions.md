@@ -1,7 +1,7 @@
 ---
 description: 'Workflow brief of strategic-investment-planning: purpose, artifact paths and the rules of each step.'
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model -->
 
 # Strategic Investment Planning (`strategic-investment-planning`)
 

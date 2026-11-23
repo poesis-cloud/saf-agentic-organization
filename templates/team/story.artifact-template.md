@@ -19,7 +19,7 @@ estimate: null   # Story points (modified Fibonacci), set by the team
 iteration: null   # Iteration slug the Story is planned in, or null
 stepOutcomes: []   # each step that commits this file appends { step: <workflow>/<step>, outcome: written | revised | confirmed | no-change | none, date: "YYYY-MM-DD", note: <one line> }
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Template: drop this line and the guidance comments in the artifact. -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model. Template: drop this line and the guidance comments in the artifact. -->
 
 ## Story
 

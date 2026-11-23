@@ -1,7 +1,7 @@
 ---
 description: 'Workflow brief of solution-train-pi-planning: purpose, artifact paths and the rules of each step.'
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model -->
 
 # Solution Train PI Planning (`solution-train-pi-planning`)
 

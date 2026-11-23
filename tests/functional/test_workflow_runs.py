@@ -4,8 +4,9 @@ The happy path proves each workflow can actually be completed from its brief and
 paths the brief gives are authorized, the filled templates are schema-valid, every condition
 passes and the run ends on `no-next-step`. The refusals prove the organization's rules are
 enforced by the harness, not by prose: no acceptance without challenge, no unanswered packet,
-no item ready before it was challenged, no Epic approved without a go business case, no draft that
-names another owner, no Story accepted while its code change is unmerged.
+no item ready before it was challenged, no move that skips or reverses a state, no Epic approved
+without a go business case, no draft that names another owner, no Story accepted while its code
+change is unmerged.
 """
 
 from __future__ import annotations
@@ -37,6 +38,11 @@ RELEASE = "portfolio/arts/<art-slug>/releases/<release-slug>/<release-slug>.rele
 STORY = "portfolio/arts/<art-slug>/teams/<team-slug>/stories/<story-slug>/<story-slug>.story.md"
 CODE_CHANGE = STORY.replace(".story.md", ".code-change.md")
 LEDGER = [{"packet": "portfolio/challenges/x.challenge.md", "challenger": "agile-coach", "verdict": "pass", "responses": []}]
+FLOW = ["funnel", "analyzing", "ready", "implementing", "validating-on-staging", "deploying-to-production", "releasing", "done"]
+EPIC_FLOW = ["funnel", "reviewing", "analyzing", "ready", "implementing", "done"]
+# The linear Kanbans a seeded item walked to reach its state.
+WALKS = {EPIC: EPIC_FLOW, EPIC_ENABLER: EPIC_FLOW, CAPABILITY: FLOW, CAPABILITY_ENABLER: FLOW, FEATURE: FLOW, FEATURE_ENABLER: FLOW,
+         STORY: ["backlog", "ready", "in-progress", "in-review", "accepted"], SUPPLIER: ["draft", "negotiating", "active", "ended"]}
 
 
 @pytest.fixture()
@@ -50,10 +56,21 @@ def rig(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Rig]:
     yield Rig(workspace)
 
 
+def move(start: str, target: str) -> dict[str, str]:
+    return {"from": start, "to": target, "date": "2026-11-21", "decidedBy": "the human lead", "reason": "decided at the gate"}
+
+
+def walk(pattern: str, status: str) -> list[dict[str, str]]:
+    """The history of an item that reached `status` one move at a time; none for an initial state."""
+    states = WALKS.get(pattern, [])
+    path = states[: states.index(status) + 1] if status in states else []
+    return [move(start, target) for start, target in zip(path, path[1:])]
+
+
 def seed(rig: Rig, pattern: str, status: str, **extra: Any) -> str:
-    """Commit one backlog item in the given state, under a slug named after that state."""
+    """Commit one backlog item in the given state, under a slug named after that state, with the history that led there."""
     key = pattern.rsplit("<", 1)[1].split(">")[0].replace("-", "_")
-    return rig.seed(concrete(pattern, **{key: f"seeded-{status}"}), TEMPLATES[pattern], {"status": status, **extra})
+    return rig.seed(concrete(pattern, **{key: f"seeded-{status}"}), TEMPLATES[pattern], {"status": status, "transitions": walk(pattern, status), **extra})
 
 
 def prerequisites(rig: Rig, workflow: str) -> dict[str, Any]:
@@ -148,19 +165,22 @@ def test_an_event_is_recorded_and_its_board_rendered(rig: Rig, workflow: str) ->
     assert rig.resolve(session, workflow)["outcome"]["status"] == "no-next-step"
 
 
-def _transition(rig: Rig, workflow: str, item: str, status: str, **fields: Any) -> Mapping[str, Any]:
+def _transition(rig: Rig, workflow: str, item: str, status: str, recorded: Mapping[str, str] | None = None, **fields: Any) -> Mapping[str, Any]:
+    """Run one transition to `status`; `recorded` replaces the history entry an honest owner appends."""
     paths = brief_paths(workflow)
     session = rig.open(workflow)
     step = rig.next_step(session, workflow, "record-transition")
     before = rig.read(item)
     after = {**before, "status": status, **fields,
-             "transitions": [*before["transitions"], {"from": before["status"], "to": status, "date": "2026-11-21", "decidedBy": "the human lead", "reason": "decided at the gate"}],
+             "transitions": [*before["transitions"], recorded or move(before["status"], status)],
              "stepOutcomes": [*before["stepOutcomes"], outcome(f"{workflow}/record-transition", "revised")]}
     report = rig.deliver(session, step, item, TEMPLATES[paths["main"]], after)
     if report["outcome"]["status"] == "pass":
         if "board" in paths:
             step = rig.next_step(session, workflow, "update-kanban")
-            board = rig.deliver(session, step, concrete(paths["board"]), paths["boardTemplate"], {"stepOutcomes": [outcome(f"{workflow}/update-kanban", "written")]})
+            board_path = concrete(paths["board"])
+            rendered = rig.read(board_path)["stepOutcomes"] if (rig.workspace / board_path).is_file() else []
+            board = rig.deliver(session, step, board_path, paths["boardTemplate"], {"stepOutcomes": [*rendered, outcome(f"{workflow}/update-kanban", "written")]})
             assert board["outcome"]["status"] == "pass", board
         assert rig.resolve(session, workflow)["outcome"]["status"] == "no-next-step"
     return report
@@ -212,6 +232,67 @@ def test_a_recorded_refusal_is_a_valid_transition_step(rig: Rig, workflow: str) 
     step = rig.next_step(session, workflow, "record-transition")
     refused = {**rig.read(item), "stepOutcomes": [outcome(f"{workflow}/record-transition", "no-change")]}
     assert rig.deliver(session, step, item, TEMPLATES[pattern], refused)["outcome"]["status"] == "pass"
+
+
+# One move per workflow that skips, reverses or leaves the graph, each with an answered challenge.
+ILLEGAL_MOVES = {
+    "epic-transition": ("funnel", "analyzing"),
+    "epic-enabler-transition": ("reviewing", "funnel"),
+    "capability-transition": ("funnel", "ready"),
+    "capability-enabler-transition": ("analyzing", "implementing"),
+    "supplier-agreement-transition": ("draft", "active"),
+    "feature-transition": ("funnel", "ready"),
+    "feature-enabler-transition": ("ready", "analyzing"),
+    "adr-transition": ("proposed", "superseded"),
+    "release-transition": ("planned", "released"),
+    "story-transition": ("backlog", "in-progress"),
+    "code-change-transition": ("ready-for-review", "merged"),
+}
+
+
+def test_every_transition_has_an_illegal_move() -> None:
+    assert set(ILLEGAL_MOVES) == set(TRANSITIONS)
+
+
+@pytest.mark.parametrize("workflow", TRANSITIONS)
+def test_a_move_that_skips_or_reverses_a_state_is_refused(rig: Rig, workflow: str) -> None:
+    pattern = FIRST_MOVES[workflow][0]
+    start, target = ILLEGAL_MOVES[workflow]
+    item = seed(rig, pattern, start, challengeLedger=LEDGER)
+    report = _transition(rig, workflow, item, target)
+    assert report["outcome"]["status"] == "fail"
+    assert failed_conditions(report) == ["records-a-legal-move"]
+    assert report["promotion"]["outcome"] == "withheld"
+
+
+def test_a_feature_is_made_ready_one_move_per_run(rig: Rig) -> None:
+    """The flow feature-refinement leaves: the Feature is still in the funnel at its gate."""
+    item = seed(rig, FEATURE, "funnel", challengeLedger=LEDGER)
+    assert _transition(rig, "feature-transition", item, "analyzing")["outcome"]["status"] == "pass"
+    assert _transition(rig, "feature-transition", item, "ready")["outcome"]["status"] == "pass"
+    assert [(t["from"], t["to"]) for t in rig.read(item)["transitions"]] == [("funnel", "analyzing"), ("analyzing", "ready")]
+
+
+@pytest.mark.parametrize("recorded", [move("analyzing", "ready"), move("funnel", "analyzing")], ids=["leaves-another-state", "enters-another-state"])
+def test_a_history_entry_must_record_the_move_made(rig: Rig, recorded: Mapping[str, str]) -> None:
+    """A funnel Feature set to ready, with a history entry that hides the skip."""
+    item = seed(rig, FEATURE, "funnel", challengeLedger=LEDGER)
+    assert failed_conditions(_transition(rig, "feature-transition", item, "ready", recorded=recorded)) == ["records-a-legal-move"]
+
+
+@pytest.mark.parametrize(("start", "target"), [("analyzing", "done"), ("implementing", "implementing")], ids=["no-go", "persevere"])
+def test_an_epic_can_stop_early_or_persevere(rig: Rig, start: str, target: str) -> None:
+    epic = seed(rig, EPIC, start, challengeLedger=LEDGER)
+    rig.seed(_business_case(epic), "portfolio/lean-business-case", {"epic": epic, "recommendation": "go"})
+    assert _transition(rig, "epic-transition", epic, target)["outcome"]["status"] == "pass"
+
+
+def test_a_code_change_sent_back_returns_to_review_and_is_approved(rig: Rig) -> None:
+    """story-implementation sets ready-for-review again without a history entry; the chain still holds."""
+    change = seed(rig, CODE_CHANGE, "ready-for-review", challengeLedger=LEDGER)
+    assert _transition(rig, "code-change-transition", change, "changes-requested")["outcome"]["status"] == "pass"
+    rig.seed(change, TEMPLATES[CODE_CHANGE], {**rig.read(change), "status": "ready-for-review"})
+    assert _transition(rig, "code-change-transition", change, "approved")["outcome"]["status"] == "pass"
 
 
 EPIC_TRANSITIONS = [("epic-transition", EPIC), ("epic-enabler-transition", EPIC_ENABLER)]
@@ -413,7 +494,7 @@ def test_every_declared_state_condition_has_a_refusal_test() -> None:
     refused = {
         "packet-targets-the-drafted-artifact", "every-packet-is-answered", "revises-the-drafted-artifact",
         "accepted-only-if-challenged", "approved-epic-has-a-go-business-case", *(case[4] for case in CASES),
-        "change-implements-a-planned-story", "owner-is-the-author", "accepted-story-has-no-unmerged-change",
+        "change-implements-a-planned-story", "owner-is-the-author", "accepted-story-has-no-unmerged-change", "records-a-legal-move",
         *REFUSED_STARTS.values(), *(case[3] for case in PARENT_CASES if case[3]),
         *(c["slug"] for slug in TRANSITIONS for c in CATALOG[slug]["steps"][0]["conditions"] if "challenged" in c["slug"]),
     }

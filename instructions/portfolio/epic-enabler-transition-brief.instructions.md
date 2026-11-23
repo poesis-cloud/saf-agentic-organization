@@ -1,7 +1,7 @@
 ---
 description: 'Workflow brief of epic-enabler-transition: purpose, artifact paths and the rules of each step.'
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model -->
 
 # Enabler Epic transition (`epic-enabler-transition`)
 
@@ -15,7 +15,7 @@ Record the human's decision to move one enabler Epic to a new Portfolio Kanban s
 
 - `ready` and `implementing` need a Lean Business Case recommending `go`.
 - Entering `implementing` sets `implementationStage: mvp`; a persevere decision sets `persevere`.
-- `done` sets `resolution`: delivered, no-go, pivoted or stopped.
+- `done` sets `resolution`: delivered, no-go, pivoted or stopped; before `implementing`, `done` can follow any state (no-go or stopped).
 
 ## After the run
 

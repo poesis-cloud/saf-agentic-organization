@@ -1,4 +1,4 @@
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model -->
 
 # Organization catalog
 
@@ -75,7 +75,7 @@ Reference of the roster, the workflow catalog, the challenge panels and the arti
 | `epic-hypothesis` | Capture or thicken one business Epic as an Epic hypothesis statement, ready for Portfolio Leadership to review. | `epic` | `epic-owner` | `enterprise-architect`, `business-owner`, `data-analyst` | 5 |
 | `epic-enabler-hypothesis` | Capture or thicken one enabler Epic (runway, platform, exploration or compliance) as an Epic hypothesis ready for Portfolio Leadership to review. | `epic-enabler` | `enterprise-architect` | `solution-architect`, `platform-engineer`, `business-owner`, `finops-engineer`, `data-analyst` | 7 |
 | `lean-business-case` | Analyze one Epic in the analyzing state: define its MVP, estimate its cost and projected value, and recommend go or no-go. | `lean-business-case` | `epic-owner` | `enterprise-architect`, `financial-controller`, `security-expert`, `data-protection-officer`, `legal-counsel` | 7 |
-| `epic-enabler-lean-business-case` | Analyze one enabler Epic under analysis: its MVP, its cost and the value it unlocks for the Epics it enables, ending in go or no-go. | `lean-business-case` | `enterprise-architect` | `solution-architect`, `financial-controller`, `finops-engineer`, `security-expert`, `legal-counsel` | 7 |
+| `epic-enabler-lean-business-case` | Analyze one enabler Epic under analysis: its MVP, cost and value it unlocks for the Epics it enables, ending in go or no-go. | `lean-business-case` | `enterprise-architect` | `solution-architect`, `financial-controller`, `finops-engineer`, `security-expert`, `legal-counsel` | 7 |
 | `epic-mvp-evaluation` | Evaluate the MVP of one implementing Epic against its hypothesis and recommend to persevere, pivot or stop. | `epic` | `epic-owner` | `data-analyst`, `business-owner`, `financial-controller` | 5 |
 | `epic-enabler-mvp-evaluation` | Evaluate the MVP of one implementing enabler Epic against its hypothesis and recommend to persevere, pivot or stop. | `epic-enabler` | `enterprise-architect` | `data-analyst`, `business-owner`, `financial-controller` | 5 |
 | `portfolio-roadmap` | Build or revise the multi-year view of how the Portfolio Vision will be achieved across the value streams. | `portfolio-roadmap` | `portfolio-manager` | `enterprise-architect`, `financial-controller`, `product-marketing-manager` | 5 |

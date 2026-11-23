@@ -90,7 +90,8 @@ make generate    # rewrite the generated files from builds/model
 make verify      # every workflow is run to its gate through the harness
 ```
 
-A hand edit of a generated file fails `tests/unit/test_generated.py`. A new agent also needs its
+Every generated file says so in its header (a YAML comment, the Markdown SPDX comment or a schema
+`$comment`). A hand edit of a generated file fails `tests/unit/test_generated.py`. A new agent also needs its
 `agents/<slug>.agent.md` and `skills/<slug>.skill.md`, with a lens section for every artifact it
 challenges; `python3 builds/model/generate.py . --packs <folder>` writes a digest of who authors
 and challenges what, to write them from.

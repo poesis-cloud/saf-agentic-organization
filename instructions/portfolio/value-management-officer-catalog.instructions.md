@@ -1,7 +1,7 @@
 ---
 description: 'Workflow catalog of the value-management-officer: which concern maps to which workflow, what reaches the human gate, and what comes next.'
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model -->
 
 # Catalog: Portfolio (`value-management-officer`)
 

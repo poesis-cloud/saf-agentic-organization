@@ -1,11 +1,11 @@
 ---
 description: 'Workflow brief of epic-enabler-lean-business-case: purpose, artifact paths and the rules of each step.'
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model -->
 
 # Enabler Epic Lean Business Case (`epic-enabler-lean-business-case`)
 
-Analyze one enabler Epic under analysis: its MVP, its cost and the value it unlocks for the Epics it enables, ending in go or no-go.
+Analyze one enabler Epic under analysis: its MVP, cost and value it unlocks for the Epics it enables, ending in go or no-go.
 
 - **Main artifact:** `lean-business-case` at `portfolio/epics/<epic-slug>/<epic-slug>.lean-business-case.md` (template `templates/portfolio/lean-business-case.artifact-template.md`), owned by `enterprise-architect`.
 - **Challenge packets:** `portfolio/epics/<epic-slug>/challenges/epic-enabler-lean-business-case-<your-agent-slug>.challenge.md` (template `templates/shared/challenge.artifact-template.md`).

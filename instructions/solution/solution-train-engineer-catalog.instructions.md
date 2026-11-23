@@ -1,7 +1,7 @@
 ---
 description: 'Workflow catalog of the solution-train-engineer: which concern maps to which workflow, what reaches the human gate, and what comes next.'
 ---
-<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 Poesis Cloud and contributors. SPDX-License-Identifier: Apache-2.0. Generated: builds/model -->
 
 # Catalog: Large Solution (`solution-train-engineer`)
 
@@ -17,8 +17,8 @@ Your grain is **the large solution and Capabilities**. Map the human's concern t
 | `solution-vision` | What the large solution should become; who it serves; solution context. | `solution-vision` | `solution-gate-decision`; then `solution-roadmap` and `capability-refinement`. |
 | `solution-roadmap` | When capabilities land; solution milestones; multi-year plan of the solution. | `solution-roadmap` | `solution-gate-decision`. |
 | `solution-intent` | Solution-level requirements and design; interfaces between ARTs; compliance evidence; what is fixed and what is still open. | `solution-intent` | `solution-gate-decision`; ARTs take the NFRs into `nfr-refinement`. |
-| `capability-refinement` | A new capability; split an Epic into capabilities; make a capability ready. | `capability` | `capability-transition` to record the move; then `pre-plan`. |
-| `capability-enabler-refinement` | Technical work across ARTs: exploration, architecture, infrastructure or compliance enablers at Capability size; closing variable intent; an enabler named by the Solution Intent. | `capability-enabler` | `capability-enabler-transition` to record the move; then `pre-plan`. |
+| `capability-refinement` | A new capability; split an Epic into capabilities; make a capability ready. | `capability` | `capability-transition`, one move per run: funnel → analyzing if still in the funnel, then analyzing → ready; then `pre-plan`. |
+| `capability-enabler-refinement` | Technical work across ARTs: exploration, architecture, infrastructure or compliance enablers at Capability size; closing variable intent; an enabler named by the Solution Intent. | `capability-enabler` | `capability-enabler-transition`, one move per run: funnel → analyzing if still in the funnel, then analyzing → ready; then `pre-plan`. |
 | `supplier-engagement` | Onboard or change a supplier; contract terms for a component or service. | `supplier-agreement` | `supplier-agreement-transition` to record it (draft → negotiating), then `active` once the humans signed. This artifact is a working agreement, not the signed contract. |
 | `supplier-agreement-transition` | "Proceed with / sign / end this supplier agreement". | `supplier-agreement` | On `active`: the supplier joins `pre-plan` and `solution-train-pi-planning`. |
 | `pre-plan` | Prepare the next PI across ARTs; which capabilities go to which ART. | `event-record` | Each ART runs `pi-planning` with its Release Train Engineer; then `solution-train-pi-planning`. |
