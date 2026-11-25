@@ -128,6 +128,13 @@ pick the orchestrator of your layer: `value-management-officer`, `solution-train
 drives one workflow run; the orchestrator names the next workflow at each gate. Host details
 are in [docs/hosts/copilot-plugin.md](docs/hosts/copilot-plugin.md).
 
+**Claude Code.** The organization also renders as a Claude Code plugin
+(`make plugin-claude CLAUDE_PLUGIN_DIR=<dir>`), used beside the harness's Claude Code plugin
+(`make plugin-claude` in `saf-agentic-harness`). Neither is published in a marketplace yet:
+load both with `claude --plugin-dir <harness plugin> --plugin-dir <organization plugin>
+--agent poesis-saf-agentic-organization:<orchestrator>` from a SAF workspace. Details are in
+[docs/hosts/claude-plugin.md](docs/hosts/claude-plugin.md).
+
 ## Deterministic harness
 
 The [`saf-agentic-harness`](https://github.com/poesis-cloud/saf-agentic-harness) plugin's hooks
@@ -149,6 +156,8 @@ indicative; artifacts are the only evidence.
 - [`conf/`](conf/): harness configuration: `harness`, `model-profiles`, `access-control-list` (least privilege by artifact kind, one role per agent, one writer per backlog kind), `workspace` (where each artifact lives)
 - [`builds/model/`](builds/model/): the organization model (roster, artifact kinds, workflows, panels) and the generator of the structured files above (`make generate`); agents, skills and shared instructions are hand-written
 - [`builds/plugin/`](builds/plugin/): the plugin renderer and its inputs
+- [`builds/claude-plugin/`](builds/claude-plugin/): the Claude Code plugin renderer and its
+  host-specific inputs
 - [`docs/`](docs/): [usage model](docs/usage-model.md), [catalog](docs/catalog.md), [step artifacts](docs/step-artifacts.md), [SAFe conformance](docs/safe-conformance.md)
 
 ## Verifying
