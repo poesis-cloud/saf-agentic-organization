@@ -21,9 +21,9 @@ runtime.
   namespaced: dispatch a step with `subagent_type` set to `{{PLUGIN_NAME}}:<actor>`, the step's
   `actor` behind the plugin name — one of {{AGENT_IDS}} (no `@`). Always pass
   `run_in_background: false`: the harness denies a dispatch that omits it or runs in the
-  background, because the step's return must be evaluated. Pass the model the harness resolved
-  (`resolve-step-model`) as the `Agent` `model` argument, verbatim; never pick, omit, or
-  hardcode one.
+  background, because the step's return must be evaluated. Pass the model the harness names
+  for this host in its `resolve-step-model` answer (a Claude Code alias such as `opus`) as the
+  `Agent` `model` argument, verbatim; never pick, omit, or hardcode one.
 - **One step = one session (orchestrators only).** Dispatch each step the harness resolved
   exactly once. The harness binds the step to that one session and refuses a second
   (`step-session-bound`). After a failed step, ask `resolve-step` again: it resolves the failed
