@@ -207,3 +207,34 @@ def test_the_init_skill_names_the_versions_marketplace(source: Path, tmp_path: P
     text = (tmp_path / "plugin" / "skills" / "init" / "SKILL.md").read_text(encoding="utf-8")
     assert 'Channel poesis-saf: {"source": "github", "repo": "poesis-cloud/saf-marketplace"}' in text
     render_claude_plugin._write_marketplace(tmp_path / "nowhere", "1.0.0")
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX registration")
+@pytest.mark.parametrize(
+    ("windows", "override", "expected"),
+    [
+        (False, False, "home/.local/state/saf-agentic/registry"),
+        (True, False, "AppData/Local/saf-agentic/registry"),
+        (True, True, "explicit"),
+    ],
+)
+def test_the_registration_writes_where_the_harness_launcher_reads(
+    tmp_path: Path, windows: bool, override: bool, expected: str
+) -> None:
+    """Review of #36: under Git Bash (Windows) the registration must use the registry the
+    harness launcher reads there, %LOCALAPPDATA%; SAF_AGENTIC_REGISTRY_DIR wins over both."""
+    import subprocess
+
+    plugin = tmp_path / "plugin"
+    render_claude_plugin.render(ORG, plugin)
+    environment = {"PATH": os.environ.get("PATH", ""), "HOME": str(tmp_path / "home"),
+                   "CLAUDE_PLUGIN_ROOT": str(plugin)}
+    if windows:
+        environment.update(OS="Windows_NT", LOCALAPPDATA=str(tmp_path / "AppData" / "Local"))
+    if override:
+        environment["SAF_AGENTIC_REGISTRY_DIR"] = str(tmp_path / "explicit")
+    done = subprocess.run(["/bin/sh", str(plugin / "bin" / "register.sh")], input="{}", text=True,
+                          capture_output=True, env=environment)
+    assert done.returncode == 0, done.stderr
+    entry = tmp_path / expected / "hosts" / "claude-code" / "frameworks" / PLUGIN / "root"
+    assert entry.read_text(encoding="utf-8").strip() == str(plugin)

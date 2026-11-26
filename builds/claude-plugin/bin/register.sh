@@ -7,7 +7,19 @@
 # is a rename.
 root=${CLAUDE_PLUGIN_ROOT:-$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)}
 cat >/dev/null 2>&1
-registry=${SAF_AGENTIC_REGISTRY_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/saf-agentic/registry}
+# The per-user SAF registry, where the Python launcher looks for it: SAF_AGENTIC_REGISTRY_DIR,
+# else %LOCALAPPDATA%\saf-agentic\registry on Windows (Git Bash runs the hooks there), else
+# $XDG_STATE_HOME/saf-agentic/registry. A Windows path is converted for sh when cygpath exists.
+native() {
+    if [ -n "$1" ] && command -v cygpath >/dev/null 2>&1; then cygpath -u "$1"; else printf '%s' "$1"; fi
+}
+if [ -n "${SAF_AGENTIC_REGISTRY_DIR:-}" ]; then
+    registry=$(native "$SAF_AGENTIC_REGISTRY_DIR")
+elif [ "${OS:-}" = Windows_NT ] && [ -n "${LOCALAPPDATA:-}" ]; then
+    registry="$(native "$LOCALAPPDATA")/saf-agentic/registry"
+else
+    registry=${XDG_STATE_HOME:-$HOME/.local/state}/saf-agentic/registry
+fi
 entry="$registry/hosts/claude-code/frameworks/{{PLUGIN_NAME}}/root"
 
 if mkdir -p "$(dirname -- "$entry")" &&
