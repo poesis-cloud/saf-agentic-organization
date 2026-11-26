@@ -42,6 +42,7 @@ HOOKS_FILE = Path("hooks") / "hooks.json"
 AGENTS = "agents"
 REGISTER = "register.sh"
 REGISTER_TIMEOUT = 30
+MARKETPLACE_REPOSITORY = "poesis-cloud/saf-marketplace"
 CLAUDE_MANIFEST_KEYS = (
     "name", "version", "description", "author", "homepage", "repository", "license", "keywords",
 )
@@ -65,6 +66,25 @@ def load_tools(source_root: Path) -> dict[str, list[str]]:
             raise RenderError(f"{rel}: no Claude Code tools for alias(es) {', '.join(unknown)}")
         tools[rel] = list(dict.fromkeys(tool for alias in agent_aliases for tool in aliases[alias]))
     return tools
+
+
+def marketplace(version: str) -> tuple[str, dict]:
+    """The SAF marketplace channel a plugin version is published on (the CD's own rule): a
+    pre-release (`-alpha`, `-beta`, `-rc`) on `preview`, a final release on `main`."""
+    if "-" in version.split("+", 1)[0]:
+        return "poesis-saf-preview", {"source": "github", "repo": MARKETPLACE_REPOSITORY, "ref": "preview"}
+    return "poesis-saf", {"source": "github", "repo": MARKETPLACE_REPOSITORY}
+
+
+def _write_marketplace(plugin_root: Path, version: str) -> None:
+    """Fill the `init` skill's marketplace placeholders with this version's channel."""
+    init = plugin_root / "skills" / "init" / "SKILL.md"
+    if not init.is_file():
+        return
+    name, source = marketplace(version)
+    text = init.read_text(encoding="utf-8")
+    text = text.replace("{{MARKETPLACE_SOURCE}}", shared.json.dumps(source)).replace("{{MARKETPLACE}}", name)
+    init.write_text(text, encoding="utf-8")
 
 
 def render_hooks() -> dict:
@@ -113,6 +133,7 @@ def render(source_root: Path, plugin_root: Path) -> tuple[int, int]:
         shared._write_skills(
             source_root, staging, skill_paths, extra_skills, layout, skills, plugin, orchestrators
         )
+        _write_marketplace(staging, str(manifest.get("version", "")))
         _write_plugin_files(build_root, staging, manifest)
         shared._promote(staging, plugin_root)
     finally:

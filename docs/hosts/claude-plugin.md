@@ -14,7 +14,7 @@
 | `tools.yaml` | The Claude Code vocabulary: each alias → the Claude Code tools it grants (`edit` → `Write`, `Edit`; `agent` → `Agent`; …). |
 | `host-binding.md` | Section appended to every rendered agent: dispatch with `Agent` and `run_in_background: false`, the one allowed plain harness command form, artifact writes through `Write`/`Edit` only, skill loading, the `init` skill, and the "No harness context" refusal. |
 | `bin/register.sh` | The `SessionStart` registration: writes `hosts/claude-code/frameworks/<plugin>/root` (the plugin root) into the per-user SAF registry. |
-| `skills/init/SKILL.md` | The workspace initialisation skill (`.saf/workspace.yaml`, written and committed in one `Bash` command). |
+| `skills/init/SKILL.md` | The workspace initialisation skill (`.saf/workspace.yaml` and `.claude/settings.json`, written and committed in one `Bash` command); the renderer fills in the marketplace channel of the plugin's version. |
 | `render_claude_plugin.py` | `render_claude_plugin.py <source-root> <plugin-root>` (or `make plugin-claude CLAUDE_PLUGIN_DIR=<plugin-root>`). It reuses the Copilot build's renderer for everything host-agnostic (layout, links, skills, staging and in-place promotion), and refuses the same unsafe targets. |
 
 ## Plugin layout
@@ -53,19 +53,37 @@ The plugin root is the framework root the harness registry records, so it holds 
   the tool result.
 - **Human gate.** Orchestrators ask the user in the conversation (`AskUserQuestion` in an
   interactive session). Non-interactive runs (`claude -p`) cannot hold a human gate.
-- **Workspace initialisation.** The `init` skill writes and commits `.saf/workspace.yaml` in one
-  `Bash` command. It writes no Claude Code settings: the plugins are not published in a
-  marketplace yet.
+- **Workspace initialisation.** The `init` skill writes and commits `.saf/workspace.yaml` and
+  `.claude/settings.json` in one `Bash` command (the harness denies every call while the marker
+  is uncommitted).
 
-## Install
+## Install and release
 
-Until both plugins are published, render them and load them per session:
+- **Users** install both plugins from the marketplace `poesis-cloud/saf-marketplace`, which
+  holds one catalogue per host: `.claude-plugin/marketplace.json` for Claude Code, beside the
+  Copilot catalogue. Stable channel `poesis-saf` (branch `main`), preview channel
+  `poesis-saf-preview` (branch `preview`):
 
-```bash
-make plugin-claude CLAUDE_PLUGIN_DIR=../saf-agentic-organization-claude-plugin
-# in saf-agentic-harness:
-make plugin-claude CLAUDE_PLUGIN_DIR=../saf-agentic-harness-claude-plugin
-cd <your SAF workspace>
-claude --plugin-dir <harness plugin> --plugin-dir <organization plugin> \
-       --agent poesis-saf-agentic-organization:release-train-engineer
-```
+  ```bash
+  claude plugin marketplace add poesis-cloud/saf-marketplace
+  claude plugin install poesis-saf-agentic-harness@poesis-saf
+  claude plugin install poesis-saf-agentic-organization@poesis-saf
+  ```
+
+  The `init` skill commits `.claude/settings.json`, which recommends that marketplace and
+  enables both plugins for everyone who opens the workspace. Its channel follows the plugin's
+  version: a pre-release names `poesis-saf-preview` (`ref: preview`).
+- **CD** runs on a `v<version>` tag: besides the Copilot plugin, it publishes the Claude Code
+  plugin zip in the release, commits the rendered plugin to the orphan branch `claude-plugin`
+  tagged `claude-plugin-v<version>`, and bumps this plugin's entry in the Claude Code catalogue
+  in the same marketplace pull request as the Copilot entry.
+- **Contributors** render both plugins and load them per session:
+
+  ```bash
+  make plugin-claude CLAUDE_PLUGIN_DIR=../saf-agentic-organization-claude-plugin
+  # in saf-agentic-harness:
+  make plugin-claude CLAUDE_PLUGIN_DIR=../saf-agentic-harness-claude-plugin
+  cd <your SAF workspace>
+  claude --plugin-dir <harness plugin> --plugin-dir <organization plugin> \
+         --agent poesis-saf-agentic-organization:release-train-engineer
+  ```

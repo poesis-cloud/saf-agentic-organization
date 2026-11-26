@@ -130,9 +130,11 @@ are in [docs/hosts/copilot-plugin.md](docs/hosts/copilot-plugin.md).
 
 **Claude Code.** The organization also renders as a Claude Code plugin
 (`make plugin-claude CLAUDE_PLUGIN_DIR=<dir>`), used beside the harness's Claude Code plugin
-(`make plugin-claude` in `saf-agentic-harness`). Neither is published in a marketplace yet:
-load both with `claude --plugin-dir <harness plugin> --plugin-dir <organization plugin>
---agent poesis-saf-agentic-organization:<orchestrator>` from a SAF workspace. Details are in
+(`make plugin-claude` in `saf-agentic-harness`). Both are published in the same marketplace,
+`poesis-cloud/saf-marketplace` (`claude plugin marketplace add poesis-cloud/saf-marketplace`, then
+`claude plugin install <plugin>@poesis-saf`); from a checkout, load them with `claude --plugin-dir
+<harness plugin> --plugin-dir <organization plugin> --agent
+poesis-saf-agentic-organization:<orchestrator>` from a SAF workspace. Details are in
 [docs/hosts/claude-plugin.md](docs/hosts/claude-plugin.md).
 
 ## Deterministic harness

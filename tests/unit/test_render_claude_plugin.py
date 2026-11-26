@@ -182,3 +182,25 @@ def test_the_real_organization_renders(tmp_path: Path) -> None:
     rendered = (tmp_path / "plugin" / "agents" / "release-train-engineer.md").read_text(encoding="utf-8")
     assert "{{" not in rendered and "## Host binding — Claude Code (plugin)" in rendered
     assert "run_in_background: false" in rendered
+    init = (tmp_path / "plugin" / "skills" / "init" / "SKILL.md").read_text(encoding="utf-8")
+    assert "{{" not in init and "poesis-saf-agentic-harness@poesis-saf" in init
+
+
+@pytest.mark.parametrize(
+    ("version", "name", "ref"),
+    [("1.0.0-alpha.4", "poesis-saf-preview", "preview"), ("1.0.0-rc.1+build", "poesis-saf-preview", "preview"),
+     ("1.0.0", "poesis-saf", None), ("1.0.0+build-1", "poesis-saf", None)],
+)
+def test_the_marketplace_channel_follows_the_version(version: str, name: str, ref: str | None) -> None:
+    channel, source = render_claude_plugin.marketplace(version)
+    assert channel == name and source["repo"] == "poesis-cloud/saf-marketplace"
+    assert source.get("ref") == ref
+
+
+def test_the_init_skill_names_the_versions_marketplace(source: Path, tmp_path: Path) -> None:
+    init = source / "builds" / "claude-plugin" / "skills" / "init" / "SKILL.md"
+    init.write_text(init.read_text(encoding="utf-8") + "Channel {{MARKETPLACE}}: {{MARKETPLACE_SOURCE}}\n", encoding="utf-8")
+    render_claude_plugin.render(source, tmp_path / "plugin")
+    text = (tmp_path / "plugin" / "skills" / "init" / "SKILL.md").read_text(encoding="utf-8")
+    assert 'Channel poesis-saf: {"source": "github", "repo": "poesis-cloud/saf-marketplace"}' in text
+    render_claude_plugin._write_marketplace(tmp_path / "nowhere", "1.0.0")

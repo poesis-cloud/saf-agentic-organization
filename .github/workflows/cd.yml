@@ -10,8 +10,12 @@
 #                            -alpha, -beta, or -rc, e.g. v1.0.0-alpha.2);
 #                          - the plugin, at the root of the orphan branch `copilot-plugin`,
 #                            tagged `plugin-v<version>`;
-#                          - a PR on poesis-cloud/saf-marketplace bumping the plugin entry's
-#                            version, ref and sha: on `main` (marketplace poesis-saf) for a
+#                          - the Claude Code plugin, at the root of the orphan branch
+#                            `claude-plugin`, tagged `claude-plugin-v<version>`;
+#                          - a PR on poesis-cloud/saf-marketplace bumping the plugin entries'
+#                            version, ref and sha in both catalogues (Copilot:
+#                            `.github/plugin/marketplace.json`; Claude Code:
+#                            `.claude-plugin/marketplace.json`): on `main` (poesis-saf) for a
 #                            final release, on `preview` (poesis-saf-preview) for a
 #                            pre-release. It merges once its validation passes. Skipped,
 #                            with a notice, when the GitHub App secrets are absent.
@@ -69,6 +73,7 @@ jobs:
         timeout-minutes: 10
         outputs:
             plugin-zip: ${{ steps.plugin.outputs.zip }}
+            claude-plugin-zip: ${{ steps.claude-plugin.outputs.zip }}
             version: ${{ steps.plugin.outputs.version }}
             prerelease: ${{ steps.plugin.outputs.prerelease }}
         steps:
@@ -131,6 +136,25 @@ jobs:
                   include-hidden-files: true
                   retention-days: 14
 
+            - name: Build the Claude Code plugin
+              id: claude-plugin
+              env:
+                  VERSION: ${{ steps.plugin.outputs.version }}
+              run: |
+                  NAME="poesis-saf-agentic-organization-claude-plugin-v${VERSION}"
+                  make plugin-claude CLAUDE_PLUGIN_DIR=build/claude-plugin
+                  (cd build/claude-plugin && zip -qr "../../${NAME}.zip" .)
+                  sha256sum "${NAME}.zip" > "${NAME}.zip.sha256"
+                  echo "zip=${NAME}.zip" >> "$GITHUB_OUTPUT"
+
+            - name: Upload the Claude Code plugin
+              uses: actions/upload-artifact@v4
+              with:
+                  name: organization-claude-plugin
+                  path: build/claude-plugin
+                  include-hidden-files: true
+                  retention-days: 14
+
             - name: Upload the plugin zip
               uses: actions/upload-artifact@v4
               with:
@@ -138,6 +162,8 @@ jobs:
                   path: |
                       ${{ steps.plugin.outputs.zip }}
                       ${{ steps.plugin.outputs.zip }}.sha256
+                      ${{ steps.claude-plugin.outputs.zip }}
+                      ${{ steps.claude-plugin.outputs.zip }}.sha256
                   retention-days: 14
 
     publish:
@@ -160,6 +186,8 @@ jobs:
                   files: |
                       ${{ needs.package.outputs.plugin-zip }}
                       ${{ needs.package.outputs.plugin-zip }}.sha256
+                      ${{ needs.package.outputs.claude-plugin-zip }}
+                      ${{ needs.package.outputs.claude-plugin-zip }}.sha256
                   generate_release_notes: true
                   # SemVer pre-release tags (-alpha / -beta / -rc) publish
                   # as GitHub pre-releases, never as the latest release.
@@ -225,11 +253,71 @@ jobs:
                   echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
                   echo "ref=${REF}" >> "$GITHUB_OUTPUT"
 
+    claude-plugin-branch:
+        # The Claude Code plugin at the root of the orphan branch `claude-plugin`, one commit
+        # per release (its parent is the previous release's), tagged `claude-plugin-v<version>`.
+        name: Publish the Claude Code plugin branch
+        needs: package
+        if: startsWith(github.ref, 'refs/tags/v')
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        permissions:
+            contents: write
+        outputs:
+            sha: ${{ steps.commit.outputs.sha }}
+            ref: ${{ steps.commit.outputs.ref }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Download the plugin
+              uses: actions/download-artifact@v4
+              with:
+                  name: organization-claude-plugin
+                  path: ${{ runner.temp }}/claude-plugin
+
+            - name: Commit and tag the plugin
+              id: commit
+              env:
+                  VERSION: ${{ needs.package.outputs.version }}
+              run: |
+                  REF="claude-plugin-v${VERSION}"
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  export GIT_INDEX_FILE="$RUNNER_TEMP/claude-plugin.index"
+                  # upload-artifact drops the executable bit: restore it on the registration.
+                  chmod +x "$RUNNER_TEMP/claude-plugin/bin/register.sh"
+                  git --work-tree="$RUNNER_TEMP/claude-plugin" add --all .
+                  TREE="$(git write-tree)"
+                  # Concurrent releases race on the branch: on a rejected push, refetch the
+                  # parent and commit again (an atomic push never moves the tag alone).
+                  for ATTEMPT in 1 2 3 4 5; do
+                      PARENT=""
+                      if git fetch --quiet origin claude-plugin; then
+                          PARENT="-p $(git rev-parse FETCH_HEAD)"
+                      fi
+                      # shellcheck disable=SC2086
+                      SHA="$(git commit-tree "$TREE" $PARENT -m "Organization Claude Code plugin ${VERSION} (from ${GITHUB_SHA})")"
+                      git tag -f -a "$REF" "$SHA" -m "Organization Claude Code plugin ${VERSION}"
+                      if git push --atomic origin "${SHA}:refs/heads/claude-plugin" "refs/tags/${REF}"; then
+                          break
+                      fi
+                      if [ "$ATTEMPT" = 5 ]; then
+                          echo "::error::could not publish claude-plugin after ${ATTEMPT} attempts"
+                          exit 1
+                      fi
+                      sleep $((ATTEMPT * 5))
+                  done
+                  echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+                  echo "ref=${REF}" >> "$GITHUB_OUTPUT"
+
     marketplace:
         # A PR on the marketplace catalogue branch of the release's channel, merging once
         # its validation passes. Credentials: a GitHub App installed on saf-marketplace only.
         name: Bump the marketplace entry
-        needs: [package, plugin-branch]
+        needs: [package, plugin-branch, claude-plugin-branch]
         if: startsWith(github.ref, 'refs/tags/v')
         runs-on: ubuntu-latest
         timeout-minutes: 10
@@ -296,6 +384,8 @@ jobs:
                   VERSION: ${{ needs.package.outputs.version }}
                   REF: ${{ needs.plugin-branch.outputs.ref }}
                   SHA: ${{ needs.plugin-branch.outputs.sha }}
+                  CLAUDE_REF: ${{ needs.claude-plugin-branch.outputs.ref }}
+                  CLAUDE_SHA: ${{ needs.claude-plugin-branch.outputs.sha }}
                   BASE: ${{ steps.channel.outputs.branch }}
                   MARKETPLACE: ${{ steps.channel.outputs.name }}
               run: |
@@ -303,7 +393,7 @@ jobs:
                   git config user.name "saf-marketplace-bot"
                   git config user.email "saf-marketplace-bot@users.noreply.github.com"
                   TITLE="Bump poesis-saf-agentic-organization to ${VERSION}"
-                  BODY="Points the organization plugin at \`${REF}\` (\`${SHA}\`) of poesis-cloud/saf-agentic-organization."
+                  BODY="Points the organization plugin at \`${REF}\` (\`${SHA}\`) and the organization Claude Code plugin at \`${CLAUDE_REF}\` (\`${CLAUDE_SHA}\`) of poesis-cloud/saf-agentic-organization."
                   # Concurrent plugin bumps edit the same catalogue: each attempt restarts from
                   # the freshest base, so a lost race only costs another attempt.
                   for ATTEMPT in 1 2 3 4 5; do
@@ -311,9 +401,11 @@ jobs:
                       git switch -C "$BRANCH" "origin/${BASE}"
                       python3 ../organization/.github/scripts/bump_marketplace.py \
                           .github/plugin/marketplace.json "$MARKETPLACE" "$VERSION" "$REF" "$SHA"
-                      git add .github/plugin/marketplace.json
+                      python3 ../organization/.github/scripts/bump_marketplace.py \
+                          .claude-plugin/marketplace.json "$MARKETPLACE" "$VERSION" "$CLAUDE_REF" "$CLAUDE_SHA"
+                      git add .github/plugin/marketplace.json .claude-plugin/marketplace.json
                       if git diff --cached --quiet; then
-                          echo "The marketplace already points at ${REF}."
+                          echo "The marketplace already points at ${REF} and ${CLAUDE_REF}."
                           exit 0
                       fi
                       git commit -q -m "$TITLE"
