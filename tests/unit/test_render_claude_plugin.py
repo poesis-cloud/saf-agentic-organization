@@ -182,6 +182,9 @@ def test_the_real_organization_renders(tmp_path: Path) -> None:
     rendered = (tmp_path / "plugin" / "agents" / "release-train-engineer.md").read_text(encoding="utf-8")
     assert "{{" not in rendered and "## Host binding — Claude Code (plugin)" in rendered
     assert "run_in_background: false" in rendered
+    assert "`poesis-saf-agentic-organization:init` skill" in rendered
+    assert "with the `init` skill" not in rendered and "`poesis-saf-agentic-organization:<stem>`" in rendered
+    assert rendered.count("--plugin-dir") >= 1
     init = (tmp_path / "plugin" / "skills" / "init" / "SKILL.md").read_text(encoding="utf-8")
     assert "{{" not in init and "poesis-saf-agentic-harness@poesis-saf" in init
 

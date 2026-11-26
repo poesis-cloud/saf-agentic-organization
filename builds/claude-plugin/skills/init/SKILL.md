@@ -97,4 +97,5 @@ If the commit fails (a pre-commit hook, for example), report its output and stop
 
 Tell the user the workspace is initialised and that the harness reads the marker when a
 session opens: they must **start a new session** in this folder and select an orchestrator
-again (`claude --agent <orchestrator>`, one of `{{ORCHESTRATORS}}`).
+again (`claude --agent <orchestrator>`, one of `{{ORCHESTRATORS}}`), with the same plugin options
+as this session (the same `--plugin-dir` arguments when the plugins are not installed).

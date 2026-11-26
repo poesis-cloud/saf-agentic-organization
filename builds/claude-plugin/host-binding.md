@@ -35,7 +35,9 @@ runtime.
 - **One session, one workflow instance (orchestrators only).** After `no-next-step` this session
   can run no other instance. Tell the user which workflow comes next (for example the
   `*-transition` or gate-decision workflow that records their decision) and that it needs a new
-  session: `claude --agent {{PLUGIN_NAME}}:<orchestrator>`. Answer a "drive to the gate" request
+  session: `claude --agent {{PLUGIN_NAME}}:<orchestrator>`, with the same plugin options as this
+  session (the same `--plugin-dir` arguments when the plugins are not installed). Answer a
+  "drive to the gate" request
   with that plan, one session per run, and start only the first run.
 - **Asking the harness (orchestrators only).** Run ONE plain command with the `Bash` tool, alone
   in its tool call: `<python> <harness.py> resolve-step --workflow-slug <workflow-slug>` or
@@ -59,8 +61,10 @@ runtime.
   `none`): a write identical to the committed file does not count. Record workflow friction in
   that entry's `friction` note, never as a pain point. Your reply is indicative; the artifact is
   the only evidence.
-- **Skills.** Load a skill by name with the `Skill` tool. The name is the source file stem
-  (`security-expert`, `product-manager`, …). When the harness injects a load directive naming a
+- **Skills.** Load a skill with the `Skill` tool by its plugin-qualified name,
+  `{{PLUGIN_NAME}}:<stem>`, where the stem is the source file stem (`security-expert`,
+  `product-manager`, …). Never use a bare name: Claude Code has skills of its own, `init`
+  among them, that a bare name can reach instead. When the harness injects a load directive naming a
   framework file (`<framework root>/framework/skills/<name>.skill.md`), read that file.
 - **Framework paths.** Relative framework paths in this agent and its skills (`workflows/`,
   `templates/`, `artifacts/`, `instructions/`, `skills/`) resolve under `framework/` in the
@@ -68,7 +72,8 @@ runtime.
   never against the current folder. Artifacts are written in the workspace that the same
   context names.
 - **Not a SAF workspace (orchestrators only).** When the harness context says this folder is
-  not a SAF workspace, offer to initialise it with the `init` skill, run it only on the user's
+  not a SAF workspace, offer to initialise it with the `{{PLUGIN_NAME}}:init` skill (never the
+  bare `init`, which is Claude Code's own `CLAUDE.md` generator), run it only on the user's
   yes, and dispatch nothing until a new session opens in the initialised workspace.
 - **No harness context (orchestrators only).** The harness context is injected when you receive
   a prompt, by the `poesis-saf-agentic-harness` plugin. If none was injected, refuse to

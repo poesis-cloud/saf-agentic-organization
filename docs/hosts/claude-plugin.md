@@ -53,6 +53,9 @@ The plugin root is the framework root the harness registry records, so it holds 
   the tool result.
 - **Human gate.** Orchestrators ask the user in the conversation (`AskUserQuestion` in an
   interactive session). Non-interactive runs (`claude -p`) cannot hold a human gate.
+- **Skills are invoked by plugin-qualified name** (`poesis-saf-agentic-organization:<skill>`).
+  Claude Code ships skills of its own, `init` among them (it generates a `CLAUDE.md`), that a bare
+  name can reach instead (observed, 2.1.323).
 - **Workspace initialisation.** The `init` skill writes and commits `.saf/workspace.yaml` and
   `.claude/settings.json` in one `Bash` command (the harness denies every call while the marker
   is uncommitted).
