@@ -1,5 +1,5 @@
 scope: product
-name: SAFe Agentic Organization
+name: SAF Agentic Organization
 milestones:
   - version: v0.1.0
     current: true
