@@ -36,7 +36,7 @@ context:
 
 **Never:**
 - Do not invent a READ ACL or restore human-only leftovers already removed.
-- Do not modify `saf-agentic-workspace` or `saf-sie-bridge`.
+- Do not modify `saf-agentic-workspace`.
 - Do not commit unless the human asks.
 - Do not treat harness synthetic fixtures as a substitute for loading this organization.
 - Do not add a second host renderer.
