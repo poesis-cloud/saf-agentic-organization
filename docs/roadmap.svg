@@ -13,9 +13,9 @@
 <circle cx="630.0" cy="270" r="14" fill="#fff" stroke="#1580c8" stroke-width="4"/>
 <rect x="500.0" y="300" width="260" height="56" rx="12" fill="#eaf3fa" stroke="#c9dff0"/><text x="630.0" y="324" font-size="16" font-weight="700" fill="#1580c8" text-anchor="middle">DATE TBD</text><text x="630.0" y="346" font-size="14" fill="#0b1f2c" text-anchor="middle">Capa: Clément</text>
 <rect x="465.0" y="380" width="330" height="200" fill="#fff" stroke="#d5e2eb"/><rect x="465.0" y="380" width="330" height="6" fill="#1580c8"/>
-<text x="485.0" y="420" font-size="17" font-weight="700" fill="#0b1f2c">• Agents</text>
-<text x="485.0" y="444" font-size="17" font-weight="700" fill="#0b1f2c">• Skills</text>
-<text x="485.0" y="468" font-size="17" font-weight="700" fill="#0b1f2c">• Workflows</text>
-<text x="485.0" y="492" font-size="17" font-weight="700" fill="#0b1f2c">• Instructions</text>
-<text x="485.0" y="516" font-size="17" font-weight="700" fill="#0b1f2c">• Artifacts</text>
+<text x="485.0" y="420" font-size="17" font-weight="700" fill="#0b1f2c">• ✓ Agents</text>
+<text x="485.0" y="444" font-size="17" font-weight="700" fill="#0b1f2c">• ✓ Skills</text>
+<text x="485.0" y="468" font-size="17" font-weight="700" fill="#0b1f2c">• ✓ Workflows</text>
+<text x="485.0" y="492" font-size="17" font-weight="700" fill="#0b1f2c">• ✓ Instructions</text>
+<text x="485.0" y="516" font-size="17" font-weight="700" fill="#0b1f2c">• ✓ Artifacts</text>
 <line x1="60" y1="620" x2="940" y2="620" stroke="#d5e2eb"/><text x="60" y="648" font-size="12" fill="#5b6b78">POESIS / ROADMAP · generated from roadmap.yml and GitHub milestones</text></svg>
