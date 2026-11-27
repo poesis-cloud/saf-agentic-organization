@@ -169,6 +169,16 @@ jobs:
                   copilot plugin list | tee "$RUNNER_TEMP/plugins.txt"
                   grep -F "poesis-saf-agentic-organization" "$RUNNER_TEMP/plugins.txt"
 
+            - name: Render and validate the Claude Code plugin
+              # The live-tree contract is asserted by tests/unit/test_render_claude_plugin.py.
+              run: |
+                  make plugin-claude CLAUDE_PLUGIN_DIR="$RUNNER_TEMP/claude-plugin"
+                  test -f "$RUNNER_TEMP/claude-plugin/.claude-plugin/plugin.json"
+                  test -f "$RUNNER_TEMP/claude-plugin/hooks/hooks.json"
+                  npm install --global --silent @anthropic-ai/claude-code
+                  claude --version
+                  claude plugin validate "$RUNNER_TEMP/claude-plugin"
+
     installers:
         name: Installers (${{ matrix.os }})
         runs-on: ${{ matrix.os }}
